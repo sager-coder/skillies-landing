@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -7,10 +7,21 @@ const inter = Inter({
   variable: "--font-geist-sans",
 });
 
+// ⚠️ Critical — without this, mobile browsers render the page at a
+// desktop layout width (~760-980px) and scale down. Fixing this is
+// what makes every CSS breakpoint actually fire on mobile.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#FAF5EB",
+};
+
 export const metadata: Metadata = {
   title: "Skillies.AI — Human Brain + AI Skills = Real Income",
   description:
-    "Learn to use AI skills that generate real income. Our flagship KDP Mastery Program has generated ₹8,00,000+ in royalties from 63 books. Join the founding batch.",
+    "A research-and-teach school for the age of AI. ₹8,71,982 earned from 63 books on Amazon KDP. Join the Calicut workshop or the 50-day program.",
   keywords: [
     "AI skills",
     "Amazon KDP",
@@ -18,11 +29,13 @@ export const metadata: Metadata = {
     "AI publishing",
     "Skillies.AI",
     "KDP course India",
+    "Kerala",
+    "Malappuram",
   ],
   openGraph: {
     title: "Skillies.AI — Human Brain + AI Skills = Real Income",
     description:
-      "Learn AI skills that make actual money. ₹8,00,000+ earned from 63 books using our AI-powered publishing system.",
+      "Earn while you sleep. ₹8,71,982 earned from 63 books using AI. Join the Calicut workshop.",
     siteName: "Skillies.AI",
     type: "website",
   },
