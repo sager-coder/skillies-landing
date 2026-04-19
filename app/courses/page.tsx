@@ -1,24 +1,19 @@
-import {
-  CoursePortalNav,
-  CoursePortalHero,
-  CourseCatalog,
-  CourseInstructors,
-} from "@/components/courses/Sections";
+import { CoursePortalNav, CourseInstructors } from "@/components/courses/Sections";
+import CoursesConstruction from "@/components/courses/Construction";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata = {
-  title: "Courses · Skillies.AI",
+  title: "Courses · Under Construction · Skillies.AI",
   description:
-    "KDP Mastery, Claude for book outlines, and more. Every skill we teach to help you earn real income with AI.",
+    "The Skillies.AI campus is being built. Nine courses in various stages of research, drafting, and recording. Cohort members get first access.",
 };
 
 export default function CoursesPage() {
   return (
     <main>
       <CoursePortalNav />
-      <CoursePortalHero />
-      <CourseCatalog />
+      <CoursesConstruction />
       <CourseInstructors />
       <FooterEditorial />
       <WhatsAppButton />
