@@ -79,6 +79,8 @@ export default function TopNav({
       </div>
       <a
         href={cta.href}
+        target={cta.href.startsWith("http") ? "_blank" : undefined}
+        rel={cta.href.startsWith("http") ? "noopener noreferrer" : undefined}
         style={{
           padding: "9px 18px",
           background: "#C62828",

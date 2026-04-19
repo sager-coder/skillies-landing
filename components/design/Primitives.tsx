@@ -93,15 +93,21 @@ export function KickerPill({
 export function PrimaryButton({
   children,
   href = "#",
+  target,
+  rel,
   onClick,
 }: {
   children: ReactNode;
   href?: string;
+  target?: string;
+  rel?: string;
   onClick?: () => void;
 }) {
   return (
     <a
       href={href}
+      target={target}
+      rel={rel}
       onClick={onClick}
       style={{
         display: "inline-flex",
@@ -147,15 +153,21 @@ export function PrimaryButton({
 export function SecondaryButton({
   children,
   href = "#",
+  target,
+  rel,
   onClick,
 }: {
   children: ReactNode;
   href?: string;
+  target?: string;
+  rel?: string;
   onClick?: () => void;
 }) {
   return (
     <a
       href={href}
+      target={target}
+      rel={rel}
       onClick={onClick}
       style={{
         display: "inline-flex",
