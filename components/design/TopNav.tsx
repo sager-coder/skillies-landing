@@ -12,6 +12,11 @@ const LINKS: Link[] = [
   { href: "/#program", label: "Program" },
 ];
 
+/* Note: workshop route also renders an in-page "#pay" anchor
+   (the PaymentDetails section). Its top-nav still shows "Reserve"
+   as the primary CTA pointing to WhatsApp — the anchor is a
+   secondary path for people who scrolled past. */
+
 export default function TopNav({
   cta = { href: "/workshop", label: "Reserve · ₹1,999" },
 }: {

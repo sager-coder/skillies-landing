@@ -1,5 +1,6 @@
 import WorkshopHero from "@/components/workshop/WorkshopHero";
 import BookReveal from "@/components/workshop/BookReveal";
+import PaymentDetails from "@/components/workshop/PaymentDetails";
 import {
   WorkshopAgenda,
   WorkshopPricing,
@@ -32,6 +33,7 @@ export default function WorkshopPage() {
       <BookReveal />
       <WorkshopAgenda />
       <WorkshopPricing />
+      <PaymentDetails />
       <WorkshopLocation />
       <WorkshopFAQ />
       <TalkToEhsan context="workshop" tone="cream" />
