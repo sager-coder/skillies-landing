@@ -307,6 +307,7 @@ export function RoyaltiesChart() {
         </div>
       </div>
       <div
+        className="dash-royalties-bars"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",

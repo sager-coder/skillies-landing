@@ -5,7 +5,7 @@ import React from "react";
 type Receipt = { n: string; l: string; s: string; c: string };
 
 const RECEIPTS: Receipt[] = [
-  { n: "₹8,00,000+", l: "earned from KDP", s: "Across 63 titles, 2025–26.", c: "#EF4444" },
+  { n: "₹8,71,982", l: "earned from KDP", s: "Across 63 titles, Mar 2024 – Apr 2026.", c: "#EF4444" },
   { n: "63", l: "books published", s: "AI-assisted, solo operator.", c: "#7A9A7A" },
   { n: "1", l: "laptop, one person", s: "No team, no inventory, no capital.", c: "#E6C178" },
 ];

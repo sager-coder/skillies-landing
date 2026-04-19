@@ -31,7 +31,7 @@ const AGENDA: AgendaItem[] = [
     mins: 60,
     type: "Teach",
     title: "The KDP opportunity, in real numbers",
-    desc: "The ₹8L breakdown, month by month. Which no-content categories are actually paying in 2026, which are dying, what Amazon&apos;s algorithm rewards right now — and what it punishes.",
+    desc: "The ₹8.72L breakdown, month by month. Which no-content categories are actually paying in 2026, which are dying, what Amazon&apos;s algorithm rewards right now — and what it punishes.",
     tools: "Ehsan&apos;s live dashboards · Publisher Rocket · KDP Reports",
   },
   {
@@ -1026,6 +1026,7 @@ export function StickyCTA() {
   if (!show) return null;
   return (
     <div
+      className="skillies-sticky-cta"
       style={{
         position: "fixed",
         bottom: 20,

@@ -207,6 +207,7 @@ export default function WorkshopHero() {
 
       <div
         aria-hidden
+        className="skillies-margin-note"
         style={{
           position: "absolute",
           top: "14%",

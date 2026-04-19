@@ -250,6 +250,10 @@ body {
   .skillies-floating-note,
   .skillies-est-stamp,
   .skillies-draft-stamp { display: none !important; }
+
+  /* StickyCTA is redundant on mobile (TopNav Reserve button is
+     always visible), and it overlaps content. Hide it. */
+  .skillies-sticky-cta { display: none !important; }
 }
 
 /* ---------- Phone (≤ 560px) ---------- */
@@ -402,7 +406,22 @@ img, svg, video, canvas, iframe {
   }
 }
 
-/* (Extra grid patterns merged into the main 720px block above.) */
+/* ---------- Exceptions to the grid-collapse net ----------
+   Certain grids MUST stay multi-col on mobile or they break.
+   ========================================================= */
+@media (max-width: 720px) {
+  /* Dashboard royalties bar chart — must keep 7 cols.
+     Shrink the height + gap so it fits narrow viewports. */
+  .dash-royalties-bars {
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 6px !important;
+    height: 160px !important;
+  }
+  .dash-royalties-bars [style*="font-size:11px"],
+  .dash-royalties-bars [style*="font-size:10px"] {
+    font-size: 9px !important;
+  }
+}
 
 /* =========================================================
    Body-level safety: never allow horizontal scroll.
