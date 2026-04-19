@@ -116,62 +116,215 @@ body {
 ::selection { background: var(--red); color: white; }
 
 /* =========================================================
-   Responsive overrides
-   The design bundle uses inline styles heavily. Targeted
-   class-based breakpoints collapse multi-column grids cleanly
-   on tablet (<= 960px) and phone (<= 640px) without touching
-   the component logic.
+   Responsive overrides — mobile-first correctness pass
+   The design is desktop-heavy with inline styles; these rules
+   are the defensive layer so mobile doesn't break.
+   Breakpoints: 960px (tablet), 720px (phablet), 560px (phone),
+   400px (small phone).
    ========================================================= */
 
-/* Tablet */
+/* ---------- Tablet (≤ 960px) ---------- */
 @media (max-width: 960px) {
+  /* Nav: hide desktop links, keep wordmark + CTA */
   .skillies-topnav-links { display: none !important; }
+
+  /* Named multi-col grids collapse to tablet-friendly sizes */
   .skillies-footer-cols { grid-template-columns: repeat(2, 1fr) !important; gap: 32px !important; }
-  .skillies-watch-grid { grid-template-columns: 1fr !important; }
-  .skillies-about-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
-}
-
-/* Phone */
-@media (max-width: 640px) {
-  .skillies-topnav {
-    padding: 10px 16px !important;
-  }
-  .skillies-footer-cols { grid-template-columns: 1fr !important; gap: 28px !important; }
-}
-
-/* TalkToEhsan — 3-col → 1-col on tablet */
-@media (max-width: 960px) {
-  .skillies-talk-grid { grid-template-columns: 1fr !important; gap: 32px !important; text-align: left !important; }
+  .skillies-about-grid  { grid-template-columns: 1fr !important; gap: 48px !important; }
+  .skillies-talk-grid   { grid-template-columns: 1fr !important; gap: 32px !important; text-align: left !important; }
   .skillies-talk-signature { text-align: left !important; }
+  .skillies-pay-grid    { grid-template-columns: 1fr !important; }
+  .skillies-watch-grid  { grid-template-columns: 1fr !important; }
+
+  /* Dashboard: sidebar becomes horizontal top-bar */
+  .dash-shell { flex-direction: column !important; }
+  .dash-sidebar {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    padding: 10px 12px !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    z-index: 20 !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--cream-dark) !important;
+    gap: 4px !important;
+  }
+  .dash-sidebar > button,
+  .dash-sidebar > a button {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+  /* Hide the user-profile card tucked at sidebar bottom on mobile */
+  .dash-sidebar > :last-child[style*="margin-top: auto"],
+  .dash-sidebar .dash-profile-card { display: none !important; }
 }
 
-/* PaymentDetails — 2-col → 1-col on tablet */
-@media (max-width: 960px) {
-  .skillies-pay-grid { grid-template-columns: 1fr !important; }
-}
-
-/* =========================================================
-   Broad safety net: collapse every CSS Grid with 2–7 columns
-   down to one column on narrow screens so the landing pages
-   don't overflow horizontally. The design components set
-   grid-template-columns via inline style, so we fall back on
-   attribute selectors.
-   ========================================================= */
+/* ---------- Inner flex rows that need to stack on mobile ---------- */
 @media (max-width: 720px) {
+  /* PaymentDetails left card: QR block beside fields → stack vertical */
+  .skillies-pay-inner {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+  .skillies-pay-inner > div:first-child {
+    width: 100% !important;
+    max-width: 260px !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* ---------- Phablet / large phone (≤ 720px) ---------- */
+@media (max-width: 720px) {
+  /* Safety net — collapse every inline multi-column grid */
   [style*="grid-template-columns: 1fr 1fr"],
+  [style*="grid-template-columns: 0.9fr"],
   [style*="grid-template-columns: 1.1fr"],
+  [style*="grid-template-columns: 1.2fr"],
   [style*="grid-template-columns: 1.3fr"],
+  [style*="grid-template-columns: 1.4fr"],
   [style*="grid-template-columns: 1.5fr"],
   [style*="grid-template-columns: 1.6fr"],
+  [style*="grid-template-columns: 1.7fr"],
   [style*="grid-template-columns: 1fr 340px"],
+  [style*="grid-template-columns: 1fr 160px"],
+  [style*="grid-template-columns: minmax(220px"],
+  [style*="grid-template-columns: minmax(240px"],
+  [style*="grid-template-columns: minmax(280px"],
+  [style*="grid-template-columns: minmax(320px"],
+  [style*="grid-template-columns: minmax(340px"],
+  [style*="grid-template-columns: minmax(360px"],
+  [style*="grid-template-columns: repeat(2, 1fr)"],
   [style*="grid-template-columns: repeat(3, 1fr)"],
   [style*="grid-template-columns: repeat(4, 1fr)"],
+  [style*="grid-template-columns: repeat(5, 1fr)"],
+  [style*="grid-template-columns: repeat(6, 1fr)"],
   [style*="grid-template-columns: repeat(7, 1fr)"],
   [style*="grid-template-columns: repeat(4, 1fr) auto"],
-  [style*="grid-template-columns: auto 1fr auto"] {
+  [style*="grid-template-columns: auto 1fr auto"],
+  [style*="grid-template-columns: 1fr auto 1fr"],
+  [style*="grid-template-columns: 42px 1fr"] {
     grid-template-columns: 1fr !important;
   }
+
+  /* HowItWorks has 1fr auto 1fr auto 1fr (3 cards + 2 arrows).
+     Hide the arrows (even children) on mobile. */
+  [style*="grid-template-columns: 1fr auto 1fr auto 1fr"] > :nth-child(2n) {
+    display: none !important;
+  }
+  [style*="grid-template-columns: 1fr auto 1fr auto 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Shrink big gaps */
+  [style*="gap: 72"] { gap: 32px !important; }
+  [style*="gap: 64"] { gap: 28px !important; }
+  [style*="gap: 56"] { gap: 24px !important; }
+  [style*="gap: 48"] { gap: 24px !important; }
+  [style*="gap: 40"] { gap: 20px !important; }
+
+  /* Hide decorative floating notes / stamps on mobile
+     (they collide with content on narrow viewports) */
+  .skillies-margin-note,
+  .skillies-floating-note,
+  .skillies-est-stamp,
+  .skillies-draft-stamp { display: none !important; }
+
+  /* The hero's margin handwritten quote is positioned absolute at
+     top: 16%, right: 3% and must be hidden. We add the class
+     .skillies-margin-note above in HeroV2. */
 }
+
+/* ---------- Phone (≤ 560px) ---------- */
+@media (max-width: 560px) {
+  /* Nav tighter */
+  .skillies-topnav { padding: 10px 14px !important; }
+
+  /* Single column footer */
+  .skillies-footer-cols { grid-template-columns: 1fr !important; gap: 28px !important; }
+
+  /* Reduce huge section paddings across the site.
+     All design sections set inline padding like "128px 48px" or
+     "120px 24px". This broad rule trims both. */
+  section {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  [style*="padding: 140px"] { padding-top: 88px !important; padding-bottom: 56px !important; }
+  [style*="padding: 128px"] { padding-top: 72px !important; padding-bottom: 72px !important; }
+  [style*="padding: 120px"] { padding-top: 64px !important; padding-bottom: 64px !important; }
+  [style*="padding: 112px"] { padding-top: 60px !important; padding-bottom: 60px !important; }
+  [style*="padding: 100px"] { padding-top: 56px !important; padding-bottom: 56px !important; }
+  [style*="padding: 80px"]  { padding-top: 48px !important; padding-bottom: 48px !important; }
+
+  /* Cards that use generous 40-48px inner padding */
+  [style*="padding: 44px 48px"] { padding: 28px 22px !important; }
+  [style*="padding: 40px 44px"] { padding: 24px 20px !important; }
+  [style*="padding: 40px 48px"] { padding: 24px 20px !important; }
+  [style*="padding: 36px 36px"] { padding: 22px 20px !important; }
+  [style*="padding: 32px 36px"] { padding: 22px 20px !important; }
+  [style*="padding: 32px 32px"] { padding: 20px 18px !important; }
+  [style*="padding: 28px 32px"] { padding: 20px 18px !important; }
+  [style*="padding: 24px 28px"] { padding: 18px 16px !important; }
+  [style*="padding: 22px 28px"] { padding: 18px 16px !important; }
+
+  /* Prevent fixed-width elements from overflowing */
+  [style*="width: 210px"],
+  [style*="width: 220px"],
+  [style*="width: 230px"],
+  [style*="width: 240px"],
+  [style*="width: 290px"] {
+    max-width: 100% !important;
+  }
+
+  /* Any min-width over 320px that's set inline can cause hscroll */
+  [style*="min-width: 320"],
+  [style*="min-width: 340"],
+  [style*="min-width: 360"] {
+    min-width: 0 !important;
+  }
+
+  /* Dashboard header padding tighter */
+  .dash-header { padding: 20px 18px 16px !important; }
+  .dash-body   { padding: 18px !important; }
+
+  /* Flex rows wrap on mobile — catches many "row of chips" patterns */
+  [style*="display: flex"][style*="gap: 28"] { gap: 12px !important; }
+  [style*="display: flex"][style*="gap: 24"] { gap: 12px !important; }
+
+  /* Hide arrow-icons between inline items (HowItWorks, ProgramEditorial arrows) */
+  .skillies-inline-arrow { display: none !important; }
+}
+
+/* ---------- Small phone (≤ 440px) ---------- */
+@media (max-width: 440px) {
+  /* Really small screens — further tighten */
+  section {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  /* Hide elements that are "bonus" and would crowd at this width */
+  .skillies-hide-xs { display: none !important; }
+
+  /* Shrink the hero headline size cap further */
+  [style*="font-size: clamp(82px"] { font-size: 56px !important; line-height: 0.85 !important; }
+  [style*="font-size: clamp(56px"] { font-size: 42px !important; }
+  [style*="font-size: clamp(52px"] { font-size: 40px !important; }
+  [style*="font-size: clamp(48px"] { font-size: 38px !important; }
+}
+
+/* ---------- Any viewport: prevent accidental horizontal scroll ---------- */
+img, svg, video, canvas, iframe {
+  max-width: 100%;
+}
+
 
 /* Shared motion keyframes referenced by design components */
 @keyframes pulseRing {

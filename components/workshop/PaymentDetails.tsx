@@ -163,7 +163,10 @@ export default function PaymentDetails() {
                 pointerEvents: "none",
               }}
             />
-            <div style={{ position: "relative", display: "flex", gap: 28 }}>
+            <div
+              className="skillies-pay-inner"
+              style={{ position: "relative", display: "flex", gap: 28 }}
+            >
               {/* QR block */}
               <div
                 style={{

@@ -128,6 +128,7 @@ function DraftStamp() {
   return (
     <div
       aria-hidden
+      className="skillies-draft-stamp"
       style={{
         position: "absolute",
         top: 48,

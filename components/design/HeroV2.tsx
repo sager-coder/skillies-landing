@@ -258,6 +258,7 @@ function FounderCard() {
       {/* decorative book stack, top-right */}
       <div
         aria-hidden
+        className="skillies-hide-xs skillies-founder-books"
         style={{
           position: "absolute",
           top: 24,
@@ -598,6 +599,7 @@ export default function HeroV2() {
       {/* handwritten margin note — now a founder whisper, not a fake mentor */}
       <div
         aria-hidden
+        className="skillies-margin-note"
         style={{
           position: "absolute",
           top: "16%",

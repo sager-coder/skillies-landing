@@ -29,6 +29,7 @@ export function DashSidebar({
 }) {
   return (
     <aside
+      className="dash-sidebar"
       style={{
         width: 240,
         background: "white",
@@ -73,6 +74,7 @@ export function DashSidebar({
         </button>
       ))}
       <div
+        className="dash-profile-card"
         style={{
           marginTop: "auto",
           padding: 14,

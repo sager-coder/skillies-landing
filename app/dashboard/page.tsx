@@ -24,7 +24,7 @@ export default function DashboardPage() {
   const [active, setActive] = useState<string>("home");
   const ActiveView = VIEWS[active] ?? OverviewView;
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div className="dash-shell" style={{ display: "flex", minHeight: "100vh" }}>
       <DashSidebar active={active} onNav={setActive} />
       <main style={{ flex: 1, minWidth: 0 }}>
         <ActiveView />
