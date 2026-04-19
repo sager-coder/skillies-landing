@@ -216,6 +216,7 @@ body {
   [style*="1.5fr 1fr"],
   [style*="1.6fr 1fr"],
   [style*="0.9fr 1.1fr"],
+  [style*="1.1fr 0.9fr"],
   [style*="1fr 1.4fr"],
   [style*="1fr 1.15fr"],
   [style*="1fr 340px"],
@@ -236,7 +237,11 @@ body {
   [style*="220px 1fr"],
   [style*="240px 1fr"],
   [style*="grid-template-columns: 1fr 1fr"],
-  [style*="grid-template-columns:1fr 1fr"] {
+  [style*="grid-template-columns:1fr 1fr"],
+  [style*="grid-template-columns: 1fr auto"],
+  [style*="grid-template-columns:1fr auto"],
+  [style*="grid-template-columns: auto 1fr"],
+  [style*="grid-template-columns:auto 1fr"] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
