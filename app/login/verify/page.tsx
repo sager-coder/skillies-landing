@@ -70,6 +70,10 @@ function VerifyForm() {
         type: "sms",
       });
       if (error) throw error;
+      // Enforce single-device access: kick out every prior session on other
+      // devices. The old device's refresh token is revoked; its access token
+      // dies on its own (≤1h), at which point it redirects to /login.
+      await supabase.auth.signOut({ scope: "others" });
       router.push(next);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Verification failed.";
