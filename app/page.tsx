@@ -4,7 +4,7 @@ import Transformation from "@/components/design/Transformation";
 import ProofWall from "@/components/design/ProofWall";
 import First7Days from "@/components/design/First7Days";
 import HowItWorks from "@/components/design/HowItWorks";
-import Program from "@/components/Program";
+import Program from "@/components/design/ProgramEditorial";
 import Guarantee from "@/components/Guarantee";
 import AboutEditorial from "@/components/design/AboutEditorial";
 import FAQ from "@/components/FAQ";

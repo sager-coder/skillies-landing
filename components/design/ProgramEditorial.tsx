@@ -1,0 +1,601 @@
+"use client";
+
+import React from "react";
+import { Kicker, PrimaryButton } from "./Primitives";
+
+/**
+ * ProgramEditorial — the 50-day flagship program.
+ * Replaces the old v1 Program.tsx Tailwind pricing grid with a proper
+ * editorial spread: masthead, track list, tier cards, closing link.
+ */
+
+type Track = {
+  n: string;
+  title: string;
+  hook: string;
+  body: string;
+  days: string;
+  accent: string;
+};
+
+const TRACKS: Track[] = [
+  {
+    n: "01",
+    title: "Niche research, AI-led",
+    hook: "Find what Amazon is actually buying — every week.",
+    body: "We scan Amazon's live best-sellers together. Claude decodes why they sell. You build a shortlist of under-served niches with proven demand.",
+    days: "Days 1 – 7",
+    accent: "#C62828",
+  },
+  {
+    n: "02",
+    title: "Book creation workflow",
+    hook: "Claude + Canva + KDP, start to finish.",
+    body: "The full pipeline: prompts to outline, outline to manuscript, manuscript to laid-out interior. You ship one book inside the first ten days.",
+    days: "Days 8 – 15",
+    accent: "#C9A24E",
+  },
+  {
+    n: "03",
+    title: "Cover design masterclass",
+    hook: "Covers that sell, not covers that please.",
+    body: "Templated covers in Canva, live critique on yours. Typography and contrast rules that make Amazon thumbnails click. Real before/afters from my own catalog.",
+    days: "Days 16 – 22",
+    accent: "#5B7B5B",
+  },
+  {
+    n: "04",
+    title: "KDP account setup, optimised",
+    hook: "Every backend form, filled with you.",
+    body: "PAN, bank, tax interview, royalty settings, pricing, keyword research — live screen-share, nothing skipped. No 'figure it out yourself.'",
+    days: "Days 23 – 30",
+    accent: "#1A1A1A",
+  },
+  {
+    n: "05",
+    title: "Scaling · 1 book to 60",
+    hook: "The stacking system I used to go from 1 → 63.",
+    body: "Reusable templates. Royalty math that compounds. Policy pitfalls that kill new accounts. How to batch six weeks of work into six Sunday mornings.",
+    days: "Days 31 – 42",
+    accent: "#C62828",
+  },
+  {
+    n: "06",
+    title: "Mentorship · and after",
+    hook: "Direct access to me, not just course material.",
+    body: "Weekly group calls. Private WhatsApp, me + cohort. Live office hours every Sunday. Then lifetime alumni access when new courses drop (Video, Etsy, Meta ads).",
+    days: "Days 43 – 50",
+    accent: "#C9A24E",
+  },
+];
+
+function TrackRow({ t }: { t: Track }) {
+  return (
+    <article
+      style={{
+        display: "grid",
+        gridTemplateColumns: "auto 1fr auto",
+        gap: 28,
+        padding: "28px 0",
+        borderTop: "1px solid rgba(26,26,26,0.10)",
+        alignItems: "baseline",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "'Instrument Serif', Georgia, serif",
+          fontStyle: "italic",
+          fontSize: 44,
+          color: t.accent,
+          letterSpacing: "-0.04em",
+          lineHeight: 0.85,
+          minWidth: 56,
+        }}
+      >
+        {t.n}
+      </div>
+      <div>
+        <h3
+          style={{
+            fontSize: 22,
+            fontWeight: 800,
+            color: "#1A1A1A",
+            letterSpacing: "-0.02em",
+            margin: "0 0 4px",
+          }}
+        >
+          {t.title}
+        </h3>
+        <p
+          style={{
+            fontFamily: "'Instrument Serif', serif",
+            fontStyle: "italic",
+            fontSize: 17,
+            color: t.accent,
+            margin: "0 0 10px",
+            lineHeight: 1.35,
+          }}
+        >
+          {t.hook}
+        </p>
+        <p
+          style={{
+            fontSize: 14,
+            color: "#6B7280",
+            margin: 0,
+            lineHeight: 1.65,
+            maxWidth: 600,
+          }}
+        >
+          {t.body}
+        </p>
+      </div>
+      <div
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          fontWeight: 700,
+          color: "#9CA3AF",
+          paddingTop: 8,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {t.days}
+      </div>
+    </article>
+  );
+}
+
+const FOUNDING_INCLUDES = [
+  "Everything in the standard tier",
+  "Weekly 1-on-1 review calls with Ehsan",
+  "Private WhatsApp — founder + cohort",
+  "First access to all future courses (Video, Etsy, Meta ads)",
+  "Grandfathered founder pricing, forever",
+];
+
+const STANDARD_INCLUDES = [
+  "50-day guided mentorship, live cohort",
+  "Group calls every Sunday",
+  "All templates, prompts, cover packs",
+  "KDP account setup, live walkthrough",
+  "Alumni community access after launch",
+  "Course recording library (replay anytime)",
+];
+
+function TierCard({
+  tone,
+  label,
+  price,
+  oldPrice,
+  priceNote,
+  tag,
+  subhead,
+  includes,
+  ctaLabel,
+  ctaHref,
+  highlighted,
+}: {
+  tone: "gold" | "red";
+  label: string;
+  price: string;
+  oldPrice?: string;
+  priceNote: string;
+  tag?: string;
+  subhead: string;
+  includes: string[];
+  ctaLabel: string;
+  ctaHref: string;
+  highlighted?: boolean;
+}) {
+  const palette = {
+    gold: {
+      accent: "#C9A24E",
+      accentDark: "#8a6a1f",
+      border: "rgba(201,162,78,0.55)",
+      ribbon: "#C9A24E",
+      ribbonText: "#1A1A1A",
+    },
+    red: {
+      accent: "#C62828",
+      accentDark: "#8B1A1A",
+      border: "rgba(26,26,26,0.10)",
+      ribbon: "#1A1A1A",
+      ribbonText: "#FAF5EB",
+    },
+  }[tone];
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        padding: "40px 36px 36px",
+        borderRadius: 24,
+        background: highlighted
+          ? "linear-gradient(135deg, rgba(201,162,78,0.08), #FAF5EB 60%)"
+          : "white",
+        border: `${highlighted ? 1.5 : 1}px solid ${palette.border}`,
+        boxShadow: highlighted
+          ? "0 40px 90px rgba(201,162,78,0.18)"
+          : "0 20px 50px rgba(0,0,0,0.05)",
+        overflow: "hidden",
+      }}
+    >
+      {tag && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            padding: "6px 16px",
+            background: palette.ribbon,
+            color: palette.ribbonText,
+            fontSize: 10,
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            fontWeight: 900,
+            borderBottomLeftRadius: 14,
+          }}
+        >
+          {tag}
+        </div>
+      )}
+
+      <div
+        style={{
+          fontSize: 11,
+          letterSpacing: "0.3em",
+          textTransform: "uppercase",
+          fontWeight: 700,
+          color: palette.accent,
+          marginBottom: 14,
+        }}
+      >
+        {label}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
+        <div
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontSize: 72,
+            fontWeight: 400,
+            letterSpacing: "-0.035em",
+            lineHeight: 0.9,
+            color: "#1A1A1A",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {price}
+        </div>
+        {oldPrice && (
+          <div
+            style={{
+              fontSize: 20,
+              color: "#9CA3AF",
+              textDecoration: "line-through",
+              fontWeight: 500,
+            }}
+          >
+            {oldPrice}
+          </div>
+        )}
+      </div>
+
+      <p
+        style={{
+          fontSize: 13,
+          color: "#6B7280",
+          margin: "0 0 6px",
+          letterSpacing: "0.02em",
+        }}
+      >
+        {priceNote}
+      </p>
+
+      <p
+        style={{
+          fontFamily: "'Instrument Serif', serif",
+          fontStyle: "italic",
+          fontSize: 17,
+          color: palette.accentDark,
+          margin: "16px 0 22px",
+          lineHeight: 1.4,
+          paddingBottom: 18,
+          borderBottom: "1px dashed rgba(26,26,26,0.12)",
+        }}
+      >
+        {subhead}
+      </p>
+
+      <ul
+        style={{
+          listStyle: "none",
+          padding: 0,
+          margin: "0 0 28px",
+          display: "grid",
+          gap: 12,
+        }}
+      >
+        {includes.map((x) => (
+          <li
+            key={x}
+            style={{
+              display: "flex",
+              gap: 10,
+              fontSize: 14,
+              color: "#1A1A1A",
+              lineHeight: 1.45,
+            }}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={palette.accent}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ flexShrink: 0, marginTop: 2 }}
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            {x}
+          </li>
+        ))}
+      </ul>
+
+      <PrimaryButton href={ctaHref}>{ctaLabel}</PrimaryButton>
+    </div>
+  );
+}
+
+export default function ProgramEditorial() {
+  return (
+    <section
+      id="program"
+      style={{
+        padding: "128px 24px",
+        background: "#FAF5EB",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+        {/* Masthead */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            marginBottom: 28,
+            fontSize: 11,
+            color: "#6B7280",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}
+        >
+          <span style={{ width: 44, height: 1, background: "#C62828" }} />
+          § 08 · The flagship program
+          <span style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }} />
+          <span>Small cohort · mentor-led</span>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.1fr 1fr",
+            gap: 48,
+            alignItems: "end",
+            marginBottom: 72,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "clamp(52px, 7vw, 100px)",
+              fontWeight: 900,
+              color: "#1A1A1A",
+              margin: 0,
+              letterSpacing: "-0.04em",
+              lineHeight: 0.92,
+            }}
+          >
+            KDP Mastery.
+            <br />
+            <em
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+                color: "#C62828",
+              }}
+            >
+              Fifty days.
+            </em>{" "}
+            One mentor.
+          </h2>
+          <p
+            style={{
+              fontSize: 17,
+              color: "#6B7280",
+              margin: 0,
+              lineHeight: 1.7,
+              maxWidth: 460,
+            }}
+          >
+            The program that took me from zero books to ₹1L/month royalties — packaged as a 50-day guided mentorship. Small cohort, live calls, your first sixty titles shipped alongside mine. No self-study, no lectures on repeat — real work, real deadlines, real royalties.
+          </p>
+        </div>
+
+        {/* 6-track program breakdown */}
+        <div style={{ marginBottom: 64 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "space-between",
+              gap: 24,
+              marginBottom: 4,
+              flexWrap: "wrap",
+            }}
+          >
+            <Kicker tone="red">The syllabus · 6 tracks, 50 days</Kicker>
+            <span
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontStyle: "italic",
+                fontSize: 15,
+                color: "#9CA3AF",
+              }}
+            >
+              Everything, in order.
+            </span>
+          </div>
+          <div
+            style={{
+              borderBottom: "1.5px solid #1A1A1A",
+              paddingBottom: 2,
+              marginTop: 14,
+            }}
+          />
+          {TRACKS.map((t) => (
+            <TrackRow key={t.n} t={t} />
+          ))}
+          <div style={{ borderTop: "1.5px solid #1A1A1A", marginTop: 0 }} />
+        </div>
+
+        {/* Pricing tiers */}
+        <div style={{ marginBottom: 48 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "space-between",
+              gap: 24,
+              marginBottom: 24,
+              flexWrap: "wrap",
+            }}
+          >
+            <Kicker tone="gold">Two windows · one cohort</Kicker>
+            <span
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontStyle: "italic",
+                fontSize: 15,
+                color: "#9CA3AF",
+              }}
+            >
+              Founding seats limited to workshop attendees.
+            </span>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 20,
+              alignItems: "stretch",
+            }}
+          >
+            <TierCard
+              tone="gold"
+              label="The Founding Batch"
+              price="₹45,000"
+              oldPrice="₹75,000"
+              priceNote="Workshop attendees only · 6 seats in the first batch"
+              tag="Founding"
+              subhead="Save ₹30K. Get weekly 1-on-1s. Grandfathered on everything we build next."
+              includes={FOUNDING_INCLUDES}
+              ctaLabel="Attend the workshop to unlock →"
+              ctaHref="/workshop"
+              highlighted
+            />
+            <TierCard
+              tone="red"
+              label="Standard Enrollment"
+              price="₹75,000"
+              priceNote="Open · live cohort starts rolling"
+              subhead="Same curriculum, same deliverable — in a group cohort. Ship your first book in 50 days, or we refund per the guarantee."
+              includes={STANDARD_INCLUDES}
+              ctaLabel="Enroll at standard rate"
+              ctaHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%20KDP%20Mastery%20program%20at%20%E2%82%B975%2C000."
+            />
+          </div>
+        </div>
+
+        {/* Closing strip */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "auto 1fr auto",
+            gap: 32,
+            alignItems: "center",
+            padding: "28px 36px",
+            borderRadius: 22,
+            background: "#1A1A1A",
+            color: "white",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "radial-gradient(ellipse at 85% 50%, rgba(201,162,78,0.25), transparent 60%)",
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              position: "relative",
+              fontSize: 11,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              color: "#E6C178",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Want founding?
+          </div>
+          <div
+            style={{
+              position: "relative",
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: "clamp(20px, 2.2vw, 28px)",
+              fontWeight: 400,
+              letterSpacing: "-0.015em",
+              lineHeight: 1.35,
+            }}
+          >
+            The ₹45,000 rate is <em style={{ fontStyle: "italic", color: "#E6C178" }}>only offered</em> to people in the room on May 31 in Calicut. It won&apos;t reopen.
+          </div>
+          <a
+            href="/workshop"
+            style={{
+              position: "relative",
+              padding: "14px 22px",
+              background: "#C62828",
+              color: "white",
+              fontSize: 13,
+              fontWeight: 700,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              borderRadius: 999,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              boxShadow: "0 12px 30px rgba(198,40,40,0.25)",
+            }}
+          >
+            See the workshop →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
