@@ -50,11 +50,11 @@ function DayCard({ day, title, body, tag, tagColor, highlight }: Day) {
             fontSize: 10,
             fontWeight: 900,
             letterSpacing: "0.2em",
-            padding: "4px 10px",
+            padding: "4px 12px",
             borderRadius: 999,
           }}
         >
-          ★ FIRST WIN
+          FIRST WIN
         </div>
       )}
       <div

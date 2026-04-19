@@ -241,7 +241,6 @@ export default function AboutEditorial() {
               </em>
             </h2>
             <p
-              className="font-ml"
               style={{
                 fontSize: 20,
                 color: "#7A9A7A",
@@ -836,7 +835,7 @@ export default function AboutEditorial() {
                 }}
               >
                 We find what actually works in 2026 — not 2018&apos;s playbook.
-                We teach it in Malayalam. We build tools for the businesses that
+                We teach it straight. We build tools for the businesses that
                 can&apos;t wait. No hype, no random skills, no &ldquo;secret
                 formulas.&rdquo; Only what&apos;s proven to make money this year.
               </p>

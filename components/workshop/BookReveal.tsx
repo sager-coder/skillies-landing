@@ -241,8 +241,7 @@ type Accent = "red" | "gold" | "green";
 function BookTypeCard({
   kicker,
   title,
-  malayalam,
-  translit,
+  hookLine,
   desc,
   bullets,
   mockup,
@@ -251,8 +250,7 @@ function BookTypeCard({
 }: {
   kicker: string;
   title: string;
-  malayalam: string;
-  translit?: string;
+  hookLine: string;
   desc: string;
   bullets: string[];
   mockup: ReactNode;
@@ -347,32 +345,18 @@ function BookTypeCard({
           {title}
         </h3>
         <p
-          className="font-ml"
           style={{
+            fontFamily: "'Instrument Serif', serif",
+            fontStyle: "italic",
             fontSize: 18,
             color: t.solid,
-            fontWeight: 700,
-            margin: "0 0 4px",
-            letterSpacing: "-0.02em",
+            fontWeight: 400,
+            margin: "0 0 14px",
+            letterSpacing: "-0.01em",
           }}
         >
-          {malayalam}
+          {hookLine}
         </p>
-        {translit && (
-          <p
-            style={{
-              fontSize: 11,
-              color: "#9CA3AF",
-              margin: "0 0 14px",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              fontWeight: 600,
-              fontStyle: "italic",
-            }}
-          >
-            {translit}
-          </p>
-        )}
         <p
           style={{
             fontSize: 14,
@@ -614,7 +598,7 @@ export default function BookReveal() {
               margin: 0,
             }}
           >
-            The three book types Amazon sells the most of — and the easiest to start with. No writing experience. No Malayalam required. Global audience, ready to buy.
+            The three book types Amazon sells the most of — and the easiest to start with. No writing experience. No credentials. Global audience, ready to buy.
           </p>
         </div>
         <div
@@ -627,8 +611,7 @@ export default function BookReveal() {
           <BookTypeCard
             kicker="TYPE 01"
             title="Spot the Difference"
-            malayalam="വ്യത്യാസങ്ങൾ കണ്ടെത്തുക"
-            translit="Vyathyasangal Kandethuka"
+            hookLine="Two scenes. Five hidden differences. Global buyers."
             desc="Two near-identical scenes side-by-side. 5–10 differences to find per page. Kids love them. Parents buy them. Schools and libraries stock them by the dozen."
             bullets={[
               "Claude writes prompts, you build scenes in Canva",
@@ -642,8 +625,7 @@ export default function BookReveal() {
           <BookTypeCard
             kicker="TYPE 02"
             title="Puzzle Books"
-            malayalam="പസിൽ പുസ്തകങ്ങൾ"
-            translit="Puzzle Pusthakangal"
+            hookLine="Crosswords, word searches, sudoku. Made in bulk."
             desc="Crosswords, word searches, sudoku, logic grids. Generated in bulk using AI puzzle tools. The hottest KDP category for adult hobbyists in 2026."
             bullets={[
               "Generator tools make 100+ puzzles in a sitting",
@@ -657,13 +639,12 @@ export default function BookReveal() {
           <BookTypeCard
             kicker="TYPE 03"
             title="Coloring Books"
-            malayalam="നിറം പൂശൽ പുസ്തകങ്ങൾ"
-            translit="Niram Pooshal Pusthakangal"
-            desc="Line-art illustrations on blank pages. Kids' animals, Kerala cultural motifs, adult mandalas. Claude + Canva do 80% of the work — you curate."
+            hookLine="Line-art pages. Curated, not drawn."
+            desc="Line-art illustrations on blank pages. Kids' animals, adult mandalas, seasonal themes. Claude + Canva do 80% of the work — you curate."
             bullets={[
               "Claude prompts + Canva templates = 30 pages in a day",
-              "Cultural niches (Kerala, Indian, festival) rank fast",
-              "Seasonal demand (Q4 gifting) spikes royalties",
+              "Themed niches (holiday, seasonal, gift) rank fast",
+              "Q4 gifting demand spikes royalties",
             ]}
             mockup={<ColoringMock />}
             accent="green"

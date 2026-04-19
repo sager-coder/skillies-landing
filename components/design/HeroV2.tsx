@@ -598,7 +598,7 @@ export default function HeroV2() {
                 color: "#1A1A1A",
               }}
             >
-              Research.
+              Human&nbsp;brain.
               <br />
               <em
                 style={{
@@ -608,24 +608,25 @@ export default function HeroV2() {
                   color: "#C62828",
                 }}
               >
-                Teach.
+                AI&nbsp;skills.
               </em>
               <br />
-              Earn.
+              Real&nbsp;income.
             </h1>
 
             <p
-              className="font-ml"
               style={{
-                fontSize: "clamp(22px, 2.4vw, 32px)",
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontSize: "clamp(26px, 2.8vw, 40px)",
                 color: "#3D5A3D",
-                fontWeight: 700,
-                margin: "0 0 26px",
+                fontWeight: 400,
+                margin: "0 0 22px",
                 letterSpacing: "-0.015em",
-                lineHeight: 1.22,
+                lineHeight: 1.2,
               }}
             >
-              Kerala&apos;s AI skills school — built by a teacher, for the age of AI.
+              Earn while you sleep.
             </p>
 
             <p
@@ -637,7 +638,7 @@ export default function HeroV2() {
                 lineHeight: 1.65,
               }}
             >
-              I teach in a Malappuram school. On the side, 63 books I published on Amazon KDP pay me ₹1,16,000 a month — without me touching them in six. Skillies.AI is the playbook. We research what&apos;s working in 2026, teach it in Malayalam, and build tools for Kerala businesses.
+              Skillies.AI is a research-and-teach school for the age of AI. We find what actually pays in 2026 — not 2018&apos;s playbook — and teach it to people who&apos;ll use it. Last month, the books I published on Amazon KDP paid me ₹1,16,000 without me touching them in six. Proof, not hype.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>

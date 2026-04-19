@@ -217,10 +217,13 @@ export default function FooterEditorial() {
                 maxWidth: 360,
               }}
             >
-              Kerala&apos;s AI skills school. We <em style={{ color: "#E6C178", fontStyle: "italic" }}>research</em>{" "}
-              what pays in 2026, <em style={{ color: "#E6C178", fontStyle: "italic" }}>teach</em>{" "}
-              it in Malayalam, and <em style={{ color: "#E6C178", fontStyle: "italic" }}>build</em>{" "}
-              tools for Kerala businesses. Proof-backed. Built in Malappuram.
+              A research-and-teach school for the age of AI. We{" "}
+              <em style={{ color: "#E6C178", fontStyle: "italic" }}>research</em>{" "}
+              what pays in 2026,{" "}
+              <em style={{ color: "#E6C178", fontStyle: "italic" }}>teach</em>{" "}
+              it plainly, and{" "}
+              <em style={{ color: "#E6C178", fontStyle: "italic" }}>build</em>{" "}
+              tools for businesses that need them. Proof-backed. Built in Malappuram.
             </p>
             <div
               style={{ display: "flex", flexDirection: "column", gap: 6 }}
@@ -330,17 +333,7 @@ export default function FooterEditorial() {
               margin: 0,
             }}
           >
-            ഉറങ്ങുമ്പോഴും പൈസ വരും
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontStyle: "normal",
-                color: "rgba(255,255,255,0.25)",
-                marginLeft: 10,
-              }}
-            >
-              — even while you sleep, money flows.
-            </span>
+            Earn while you sleep.
           </p>
         </div>
       </div>

@@ -180,7 +180,7 @@ const DETAILS: Array<[string, string, string]> = [
   ["Date", "May 31, 2026", "Sunday"],
   ["Hours", "10 AM – 4 PM", "Six hours"],
   ["Venue", "Hyatt Regency", "Calicut"],
-  ["Language", "Malayalam-first", "English tech terms"],
+  ["Language", "English taught", "Clear, no jargon"],
 ];
 
 export default function WorkshopHero() {
@@ -329,19 +329,20 @@ export default function WorkshopHero() {
               Workshop.
             </h1>
             <p
-              className="font-ml"
               style={{
-                fontSize: "clamp(22px, 2.6vw, 30px)",
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontSize: "clamp(24px, 2.8vw, 34px)",
                 color: "#3D5A3D",
-                fontWeight: 700,
+                fontWeight: 400,
                 margin: "22px 0 16px",
                 letterSpacing: "-0.02em",
-                lineHeight: 1.22,
+                lineHeight: 1.2,
               }}
             >
-              ഒരു ദിവസം. ഒരു ലാപ്ടോപ്.
+              One day. One laptop.
               <br />
-              ഒരു പുതിയ income stream.
+              One new income stream.
             </p>
             <p
               style={{
