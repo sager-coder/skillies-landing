@@ -3,11 +3,12 @@
 import React, { useState } from "react";
 import {
   DashSidebar,
-  DayHeader,
-  TaskList,
+  DashHeader,
   StatsRow,
-  MentorCard,
-  CohortFeed,
+  RoyaltiesChart,
+  FocusList,
+  NextPayoutCard,
+  FoundingBatch,
 } from "@/components/dashboard/Sections";
 
 export default function DashboardPage() {
@@ -16,7 +17,7 @@ export default function DashboardPage() {
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <DashSidebar active={active} onNav={setActive} />
       <main style={{ flex: 1, minWidth: 0 }}>
-        <DayHeader day={23} total={50} />
+        <DashHeader />
         <div style={{ padding: "32px 40px 80px" }}>
           <StatsRow />
           <div
@@ -26,10 +27,13 @@ export default function DashboardPage() {
               gap: 20,
             }}
           >
-            <TaskList />
             <div style={{ display: "grid", gap: 20, alignContent: "start" }}>
-              <MentorCard />
-              <CohortFeed />
+              <RoyaltiesChart />
+              <FocusList />
+            </div>
+            <div style={{ display: "grid", gap: 20, alignContent: "start" }}>
+              <NextPayoutCard />
+              <FoundingBatch />
             </div>
           </div>
         </div>

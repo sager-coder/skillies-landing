@@ -11,7 +11,7 @@ const COLUMNS: Col[] = [
     items: [
       ["KDP Mastery · 50-day program", "/#program"],
       ["Course catalog", "/courses"],
-      ["Student dashboard", "/dashboard"],
+      ["Live income dashboard", "/dashboard"],
       ["The 7-day onboarding", "/#program"],
     ],
   },
@@ -19,8 +19,8 @@ const COLUMNS: Col[] = [
     kicker: "Events",
     items: [
       ["Calicut workshop · May 31", "/workshop"],
-      ["Founding batch pricing", "/workshop#pricing"],
-      ["Paisa.AI weekly show", "/paisa"],
+      ["Workshop agenda", "/workshop#agenda"],
+      ["Workshop pricing", "/workshop#pricing"],
       ["Upcoming dates", "/#faq"],
     ],
   },
@@ -37,8 +37,8 @@ const COLUMNS: Col[] = [
 
 const SOCIAL: Array<[string, string]> = [
   ["Instagram · @skillies.ai", "https://instagram.com/skillies.ai"],
-  ["YouTube · Paisa.AI", "https://youtube.com"],
   ["WhatsApp · +91 80899 41131", "https://wa.me/918089941131"],
+  ["Email · ehsan@skillies.ai", "mailto:ehsan@skillies.ai"],
 ];
 
 export default function FooterEditorial() {

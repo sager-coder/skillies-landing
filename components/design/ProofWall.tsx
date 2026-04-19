@@ -2,190 +2,162 @@
 
 import React from "react";
 
-type Student = {
-  initials: string;
+/**
+ * The Receipts — Ehsan's actual income ledger.
+ * Replaces the fabricated 6-student grid with a honest breakdown
+ * of his own numbers: KDP royalties, Etsy printables, passive months.
+ */
+
+type Channel = {
   name: string;
-  city: string;
-  niche: string;
+  sub: string;
   amount: string;
-  quote: string;
-  color: string;
-  verified: boolean;
+  chart: number[];
+  accent: string;
 };
 
-const STUDENTS: Student[] = [
-  { initials: "PS", name: "Priya S.", city: "Calicut", niche: "Mindfulness", amount: "₹1,24,380", quote: "I published my first book on Day 37. First royalty hit my bank 3 weeks later.", color: "#C62828", verified: true },
-  { initials: "AM", name: "Arjun M.", city: "Kottayam", niche: "Kids activity", amount: "₹86,200", quote: "No writing background. Four books in 60 days. The AI workflow just works.", color: "#5B7B5B", verified: true },
-  { initials: "RK", name: "Rahul K.", city: "Kochi", niche: "Finance (low-content)", amount: "₹42,600", quote: "Quit my overtime job. This is my only income now. No regrets.", color: "#C9A24E", verified: true },
-  { initials: "AV", name: "Anjali V.", city: "Thrissur", niche: "Coloring books", amount: "₹68,940", quote: "11 titles live. My best month was ₹24K in royalties alone.", color: "#C62828", verified: true },
-  { initials: "MF", name: "Mohammed F.", city: "Malappuram", niche: "Self-help", amount: "₹2,18,700", quote: "Scaled across 5 sub-niches. The mentor check-ins kept me honest.", color: "#5B7B5B", verified: true },
-  { initials: "LB", name: "Leena B.", city: "Trivandrum", niche: "Recipe journals", amount: "₹54,100", quote: "Malayalam-first training was the unlock. Finally understood it.", color: "#C9A24E", verified: true },
+const CHANNELS: Channel[] = [
+  {
+    name: "Amazon KDP · Royalties",
+    sub: "63 books · zero new publishes since Oct 2025",
+    amount: "₹1,07,680",
+    chart: [0.52, 0.61, 0.55, 0.68, 0.72, 0.66, 0.74, 0.80, 0.75, 0.82, 0.88, 0.96],
+    accent: "#C62828",
+  },
+  {
+    name: "Etsy · PageBoo shop",
+    sub: "Digital printables · 64 visits, 2 orders",
+    amount: "₹8,340",
+    chart: [0.12, 0.18, 0.6, 0.08, 0.2, 0.22, 0.2, 0.04, 0.26, 0.3, 0.16, 0.24],
+    accent: "#C9A24E",
+  },
 ];
 
-function StudentChip({ initials, color }: { initials: string; color: string }) {
+const MONTHS = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
+
+function Sparkline({ data, color }: { data: number[]; color: string }) {
+  const w = 220;
+  const h = 56;
+  const pts = data
+    .map((v, i) => {
+      const x = (i / (data.length - 1)) * w;
+      const y = h - v * h;
+      return `${x},${y}`;
+    })
+    .join(" ");
+  const area = `0,${h} ${pts} ${w},${h}`;
   return (
-    <div
-      style={{
-        width: 36,
-        height: 36,
-        borderRadius: 999,
-        background: `linear-gradient(135deg, ${color}, ${color}dd)`,
-        color: "#FAF5EB",
-        display: "grid",
-        placeItems: "center",
-        fontSize: 11,
-        fontWeight: 900,
-        letterSpacing: "0.08em",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-        flexShrink: 0,
-      }}
+    <svg
+      width={w}
+      height={h}
+      viewBox={`0 0 ${w} ${h}`}
+      style={{ display: "block" }}
     >
-      {initials}
-    </div>
+      <polygon points={area} fill={`${color}20`} />
+      <polyline
+        points={pts}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle
+        cx={w}
+        cy={h - data[data.length - 1] * h}
+        r="3.5"
+        fill={color}
+      />
+    </svg>
   );
 }
 
-function ProofCard({ s }: { s: Student }) {
+function ChannelCard({ c }: { c: Channel }) {
   return (
     <div
       style={{
-        padding: 20,
-        borderRadius: 16,
+        padding: 24,
+        borderRadius: 18,
         background: "#FAF5EB",
         border: "1px solid rgba(26,26,26,0.08)",
-        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        gap: 18,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 14,
-        }}
-      >
-        <StudentChip initials={s.initials} color={s.color} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "#1A1A1A",
-              lineHeight: 1.2,
-            }}
-          >
-            {s.name}
-          </div>
-          <div
-            style={{
-              fontSize: 11,
-              color: "#6B7280",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              fontWeight: 600,
-              marginTop: 2,
-            }}
-          >
-            {s.city}
-          </div>
-        </div>
-        {s.verified && (
-          <div
-            title="Verified royalty statement"
-            style={{
-              fontSize: 9,
-              color: "#5B7B5B",
-              letterSpacing: "0.2em",
-              fontWeight: 700,
-              border: "1px solid rgba(91,123,91,0.35)",
-              padding: "3px 6px",
-              borderRadius: 4,
-            }}
-          >
-            ✓ VERIFIED
-          </div>
-        )}
-      </div>
-      <div
-        style={{
-          fontFamily: "'Instrument Serif', serif",
-          fontStyle: "italic",
-          fontSize: 14,
-          color: "rgba(26,26,26,0.75)",
-          lineHeight: 1.45,
-          marginBottom: 16,
-          minHeight: 60,
-        }}
-      >
-        &ldquo;{s.quote}&rdquo;
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          borderTop: "1px dashed rgba(26,26,26,0.12)",
-          paddingTop: 12,
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
         <div>
           <div
             style={{
               fontSize: 10,
-              letterSpacing: "0.25em",
+              letterSpacing: "0.28em",
               textTransform: "uppercase",
-              color: "#9CA3AF",
               fontWeight: 700,
+              color: c.accent,
+              marginBottom: 6,
             }}
           >
-            Earned
+            {c.name}
           </div>
-          <div
-            style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontSize: 28,
-              color: s.color,
-              letterSpacing: "-0.02em",
-              lineHeight: 1,
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            {s.amount}
+          <div style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.5 }}>
+            {c.sub}
           </div>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div
-            style={{
-              fontSize: 10,
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              color: "#9CA3AF",
-              fontWeight: 700,
-            }}
-          >
-            Niche
-          </div>
-          <div
-            style={{
-              fontSize: 13,
-              color: "#1A1A1A",
-              fontWeight: 600,
-              marginTop: 2,
-            }}
-          >
-            {s.niche}
-          </div>
+        <div
+          style={{
+            padding: "4px 10px",
+            borderRadius: 999,
+            background: `${c.accent}15`,
+            color: c.accent,
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            whiteSpace: "nowrap",
+          }}
+        >
+          LAST 30D
         </div>
+      </div>
+
+      <div>
+        <div
+          style={{
+            fontFamily: "'Instrument Serif', serif",
+            fontSize: 48,
+            color: "#1A1A1A",
+            letterSpacing: "-0.02em",
+            lineHeight: 1,
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {c.amount}
+        </div>
+      </div>
+
+      <Sparkline data={c.chart} color={c.accent} />
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: 10,
+          color: "#9CA3AF",
+          letterSpacing: "0.15em",
+          fontWeight: 600,
+        }}
+      >
+        <span>{MONTHS[0]} &apos;25</span>
+        <span>{MONTHS[MONTHS.length - 1]} &apos;26</span>
       </div>
     </div>
   );
 }
 
-const AGGREGATE: Array<[string, string]> = [
-  ["24", "students enrolled"],
-  ["19", "earning monthly"],
-  ["₹8,12,000", "total paid to students"],
-  ["79%", "hit first ₹ in 50 days"],
+const SUMMARY: Array<[string, string]> = [
+  ["63", "books on Amazon"],
+  ["6", "months zero publishes"],
+  ["₹15,50,000", "lifetime earnings"],
+  ["2", "income channels, 1 laptop"],
 ];
 
 export default function ProofWall() {
@@ -208,13 +180,13 @@ export default function ProofWall() {
           <span style={{ width: 44, height: 1, background: "#C62828" }} />
           § 04 · The Receipts
           <span style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }} />
-          <span>Proof, not promises.</span>
+          <span>Screenshots on request.</span>
         </div>
 
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "1.1fr 1fr",
             gap: 40,
             alignItems: "end",
             marginBottom: 56,
@@ -230,8 +202,6 @@ export default function ProofWall() {
               margin: 0,
             }}
           >
-            Six students.
-            <br />
             <em
               style={{
                 fontFamily: "'Instrument Serif', serif",
@@ -240,9 +210,11 @@ export default function ProofWall() {
                 fontWeight: 400,
               }}
             >
-              ₹5,94,920
+              ₹1,16,000
             </em>{" "}
-            collected.
+            last month.
+            <br />
+            Zero new books.
           </h2>
           <div>
             <p
@@ -250,32 +222,122 @@ export default function ProofWall() {
                 fontSize: 17,
                 color: "#6B7280",
                 margin: 0,
-                lineHeight: 1.6,
-                maxWidth: 460,
+                lineHeight: 1.65,
+                maxWidth: 480,
               }}
             >
-              Every number below is from a Skillies.AI student. Every royalty is verified against the Amazon dashboard. Every quote was sent in a WhatsApp message we have on file.
+              I haven&apos;t published a single new book since October 2025. These are digital assets sitting on Amazon — they kept paying while I taught class, ran my Etsy shop, and prepped the Calicut workshop. That&apos;s the whole point: build once, earn for years.
             </p>
           </div>
         </div>
 
+        {/* Two channel cards side-by-side */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "1fr 1fr",
             gap: 20,
+            marginBottom: 24,
           }}
         >
-          {STUDENTS.map((s, i) => (
-            <ProofCard key={i} s={s} />
+          {CHANNELS.map((c) => (
+            <ChannelCard key={c.name} c={c} />
           ))}
         </div>
 
+        {/* Total strip */}
         <div
           style={{
-            marginTop: 32,
             padding: "28px 32px",
             borderRadius: 20,
+            background:
+              "linear-gradient(135deg, rgba(198,40,40,0.06), rgba(201,162,78,0.08))",
+            border: "1px solid rgba(198,40,40,0.15)",
+            display: "grid",
+            gridTemplateColumns: "1.2fr 1fr",
+            gap: 32,
+            alignItems: "center",
+            marginBottom: 24,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "#C62828",
+                marginBottom: 10,
+              }}
+            >
+              Total · last 30 days
+            </div>
+            <div
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: 72,
+                color: "#1A1A1A",
+                letterSpacing: "-0.025em",
+                lineHeight: 1,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              ₹1,16,020
+            </div>
+            <p
+              style={{
+                fontSize: 14,
+                color: "#6B7280",
+                margin: "10px 0 0",
+                lineHeight: 1.5,
+                maxWidth: 420,
+              }}
+            >
+              Roughly half my teaching salary — from assets I built in 2025 and stopped touching.
+            </p>
+          </div>
+          <div
+            style={{
+              borderLeft: "1px solid rgba(26,26,26,0.12)",
+              paddingLeft: 32,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontStyle: "italic",
+                fontSize: 22,
+                color: "#1A1A1A",
+                lineHeight: 1.35,
+                marginBottom: 14,
+              }}
+            >
+              &ldquo;Build once.
+              <br />
+              Earn while you sleep,
+              <br />
+              teach, travel, breathe.&rdquo;
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "#6B7280",
+              }}
+            >
+              — That&apos;s the whole pitch.
+            </div>
+          </div>
+        </div>
+
+        {/* Summary strip */}
+        <div
+          style={{
+            padding: "24px 32px",
+            borderRadius: 18,
             background: "#FAF5EB",
             border: "1px solid rgba(26,26,26,0.08)",
             display: "grid",
@@ -284,12 +346,12 @@ export default function ProofWall() {
             alignItems: "center",
           }}
         >
-          {AGGREGATE.map(([v, k], i) => (
+          {SUMMARY.map(([v, k], i) => (
             <div key={i}>
               <div
                 style={{
                   fontFamily: "'Instrument Serif', serif",
-                  fontSize: 36,
+                  fontSize: 32,
                   color: "#1A1A1A",
                   letterSpacing: "-0.02em",
                   lineHeight: 1,
@@ -311,22 +373,25 @@ export default function ProofWall() {
               </div>
             </div>
           ))}
-          <div
+          <a
+            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20can%20you%20send%20me%20the%20KDP%20dashboard%20screenshots%3F"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
-              fontSize: 11,
-              color: "#C62828",
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
+              padding: "10px 16px",
+              borderRadius: 999,
+              background: "#1A1A1A",
+              color: "white",
+              fontSize: 12,
               fontWeight: 700,
-              textAlign: "right",
-              maxWidth: 140,
-              lineHeight: 1.4,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
             }}
           >
-            Data through
-            <br />
-            Mar 31, 2026
-          </div>
+            Ask for screenshots →
+          </a>
         </div>
       </div>
     </section>

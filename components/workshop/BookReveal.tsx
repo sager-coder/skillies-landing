@@ -637,7 +637,7 @@ export default function BookReveal() {
             ]}
             mockup={<SpotDiffMock />}
             accent="red"
-            proof="One founding student: ₹4,200 in month one"
+            proof="Ehsan's best month for this format: ₹18,400"
           />
           <BookTypeCard
             kicker="TYPE 02"

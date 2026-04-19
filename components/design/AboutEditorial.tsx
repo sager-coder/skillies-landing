@@ -3,10 +3,23 @@
 import React, { Fragment } from "react";
 import { Kicker } from "./Primitives";
 
+/**
+ * About — editorial portrait + founder narrative.
+ * Uses real photo at /ehsan-founder.jpg (drop into public/).
+ * Narrative: teacher by day, AI publisher by night, multiple income streams.
+ */
+
 const STATS: Array<[string, string, string]> = [
   ["63", "Books", "#EF4444"],
-  ["₹8L+", "Royalties", "#7A9A7A"],
+  ["₹1.16L", "Last month", "#7A9A7A"],
   ["1", "Laptop · solo", "white"],
+];
+
+const HUSTLES: Array<[string, string, string]> = [
+  ["Day job", "Malayalam teacher, Malappuram", "The steady one."],
+  ["KDP stacks", "63 books on Amazon — all published 2025", "Passive since Oct."],
+  ["Etsy printables", "PageBoo shop · small but growing", "Built on weekends."],
+  ["Skillies.AI", "First cohort: 6 students from the workshop", "Now live."],
 ];
 
 export default function AboutEditorial() {
@@ -21,7 +34,6 @@ export default function AboutEditorial() {
         overflow: "hidden",
       }}
     >
-      {/* soft red glow at top */}
       <div
         aria-hidden
         style={{
@@ -48,44 +60,32 @@ export default function AboutEditorial() {
           alignItems: "center",
         }}
       >
-        {/* Red-on-red editorial portrait */}
+        {/* Editorial portrait — real photo */}
         <div style={{ position: "relative" }}>
           <div
             style={{
               aspectRatio: "3/4",
               borderRadius: 22,
               overflow: "hidden",
-              background:
-                "radial-gradient(ellipse at 50% 40%, #C62828 0%, #8B1A1A 55%, #2a0808 100%)",
               position: "relative",
               border: "1px solid rgba(255,255,255,0.08)",
               boxShadow:
                 "0 60px 120px rgba(0,0,0,0.35), 0 2px 0 rgba(201,162,78,0.25) inset",
+              background: "#1A1A1A",
+              backgroundImage: "url('/ehsan-founder.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center 28%",
             }}
           >
-            {/* subject silhouette */}
-            <div
-              aria-hidden
-              style={{
-                position: "absolute",
-                bottom: 0,
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "72%",
-                height: "62%",
-                background:
-                  "radial-gradient(ellipse at 50% 15%, rgba(26,26,26,0.92) 0%, rgba(26,26,26,0.96) 60%, transparent 82%)",
-                borderRadius: "50% 50% 0 0 / 42% 42% 0 0",
-              }}
-            />
-            {/* top vignette */}
+            {/* warm red-lift over the photo (editorial feel) */}
             <div
               aria-hidden
               style={{
                 position: "absolute",
                 inset: 0,
                 background:
-                  "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4))",
+                  "linear-gradient(180deg, rgba(198,40,40,0.14) 0%, transparent 35%, rgba(0,0,0,0.35) 85%, rgba(0,0,0,0.55) 100%)",
+                mixBlendMode: "multiply",
               }}
             />
             {/* grain */}
@@ -94,13 +94,13 @@ export default function AboutEditorial() {
               style={{
                 position: "absolute",
                 inset: 0,
-                opacity: 0.15,
+                opacity: 0.12,
                 mixBlendMode: "overlay",
                 pointerEvents: "none",
                 backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")`,
               }}
             />
-            {/* caption */}
+            {/* caption plate */}
             <div
               style={{
                 position: "absolute",
@@ -110,18 +110,18 @@ export default function AboutEditorial() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                color: "rgba(255,255,255,0.45)",
+                color: "rgba(255,255,255,0.75)",
                 fontSize: 10,
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
                 fontWeight: 700,
+                textShadow: "0 2px 8px rgba(0,0,0,0.6)",
               }}
             >
-              <span>Fig. 02 · Malappuram rooftop · 2026</span>
-              <span style={{ color: "rgba(255,255,255,0.35)" }}>No. 037</span>
+              <span>Fig. 02 · Between classes · Apr 2026</span>
+              <span style={{ color: "rgba(255,255,255,0.55)" }}>No. 037</span>
             </div>
           </div>
-          {/* decorative outline */}
           <div
             aria-hidden
             style={{
@@ -175,7 +175,7 @@ export default function AboutEditorial() {
               fontWeight: 600,
             }}
           >
-            Founder · Skillies.AI · Malappuram, Kerala
+            Teacher · Publisher · Founder, Skillies.AI · Malappuram
           </p>
 
           <div
@@ -186,12 +186,12 @@ export default function AboutEditorial() {
               color: "rgba(255,255,255,0.72)",
               lineHeight: 1.7,
               fontSize: 17,
-              margin: "0 0 32px",
+              margin: "0 0 28px",
               maxWidth: 560,
             }}
           >
             <p style={{ margin: 0 }}>
-              I published my first book on Amazon KDP using AI. Then another. 63 titles later, I had earned ₹8L+ in royalties — one laptop, one room, one cohort at a time.
+              I teach Malayalam at a school in Malappuram. In the gaps between classes — lunch breaks, after-school hours, Sunday mornings — I learned to use AI tools to publish books on Amazon.
             </p>
             <p
               style={{
@@ -205,12 +205,72 @@ export default function AboutEditorial() {
                 paddingLeft: 18,
               }}
             >
-              &ldquo;Ordinary people can use AI to build real income — not by becoming
-              developers, but by learning skills the market will pay for.&rdquo;
+              &ldquo;I haven&apos;t published a book in six months. Last month, they paid
+              me ₹1,16,000. These aren&apos;t lottery tickets — they&apos;re assets.&rdquo;
             </p>
             <p style={{ margin: 0 }}>
-              Skillies.AI is that proof turned into a platform — Malayalam-first, proof-backed, and closed to anyone who wants hype instead of income.
+              Skillies.AI is the playbook. I ran the first Calicut workshop, enrolled six founding students, and a few more asked for an online version. So we&apos;re building that next.
             </p>
+          </div>
+
+          {/* Hustle stack — multiple income streams, all side-door */}
+          <div
+            style={{
+              marginBottom: 32,
+              padding: "18px 20px",
+              borderRadius: 14,
+              border: "1px dashed rgba(255,255,255,0.15)",
+              background: "rgba(255,255,255,0.02)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.32em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "rgba(122,154,122,0.9)",
+                marginBottom: 14,
+              }}
+            >
+              What I do · in parallel
+            </div>
+            <div style={{ display: "grid", gap: 10 }}>
+              {HUSTLES.map(([title, sub, note]) => (
+                <div
+                  key={title}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "140px 1fr auto",
+                    gap: 14,
+                    alignItems: "baseline",
+                    fontSize: 14,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      color: "white",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {title}
+                  </div>
+                  <div style={{ color: "rgba(255,255,255,0.55)" }}>{sub}</div>
+                  <div
+                    style={{
+                      fontFamily: "'Instrument Serif', serif",
+                      fontStyle: "italic",
+                      fontSize: 13,
+                      color: "rgba(230,193,120,0.85)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {note}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* stat strip */}

@@ -3,6 +3,12 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { KickerPill, PrimaryButton, SecondaryButton, Grain } from "./Primitives";
 
+/**
+ * Hero — founder-first, proof-first.
+ * The right column is Ehsan's portrait + last-month receipt;
+ * no fabricated student testimonials.
+ */
+
 function shade(hex: string, amt: number) {
   const n = parseInt(hex.slice(1), 16);
   const r = Math.max(0, ((n >> 16) & 255) + amt);
@@ -14,25 +20,23 @@ function shade(hex: string, amt: number) {
 function MiniBook({
   color = "#C62828",
   title = "KDP",
-  author = "KK",
   tilt = -6,
   scale = 1,
 }: {
   color?: string;
   title?: string;
-  author?: string;
   tilt?: number;
   scale?: number;
 }) {
   return (
     <div
       style={{
-        width: 150 * scale,
-        height: 210 * scale,
+        width: 92 * scale,
+        height: 130 * scale,
         transform: `rotate(${tilt}deg) perspective(900px) rotateY(-14deg)`,
         boxShadow:
-          "0 40px 80px rgba(26,26,26,0.35), 0 2px 0 rgba(201,162,78,0.5) inset",
-        borderRadius: 4,
+          "0 30px 60px rgba(26,26,26,0.35), 0 2px 0 rgba(201,162,78,0.5) inset",
+        borderRadius: 3,
         position: "relative",
         background: `linear-gradient(135deg, ${color}, ${shade(color, -25)})`,
         flexShrink: 0,
@@ -44,7 +48,7 @@ function MiniBook({
           top: 0,
           bottom: 0,
           left: 0,
-          width: 8 * scale,
+          width: 6 * scale,
           background:
             "linear-gradient(to right, rgba(0,0,0,0.35), transparent)",
         }}
@@ -54,8 +58,8 @@ function MiniBook({
           position: "absolute",
           left: "12%",
           right: "12%",
-          top: "14%",
-          height: 2,
+          top: "18%",
+          height: 1.5,
           background: "rgba(201,162,78,0.85)",
         }}
       />
@@ -64,11 +68,11 @@ function MiniBook({
           position: "absolute",
           left: "12%",
           right: "12%",
-          top: "40%",
+          top: "42%",
           color: "rgba(250,245,235,0.95)",
           fontFamily: "'Instrument Serif', Georgia, serif",
           fontStyle: "italic",
-          fontSize: 26 * scale,
+          fontSize: 16 * scale,
           lineHeight: 1,
           letterSpacing: "-0.02em",
         }}
@@ -79,22 +83,9 @@ function MiniBook({
         style={{
           position: "absolute",
           left: "12%",
-          bottom: "14%",
-          fontSize: 9 * scale,
-          letterSpacing: "0.3em",
-          color: "rgba(201,162,78,0.9)",
-          fontWeight: 700,
-        }}
-      >
-        {author}
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          left: "12%",
           right: "12%",
-          bottom: "10%",
-          height: 2,
+          bottom: "12%",
+          height: 1.5,
           background: "rgba(201,162,78,0.85)",
         }}
       />
@@ -102,31 +93,34 @@ function MiniBook({
   );
 }
 
-const TICKER_ITEMS: Array<[string, string, string, string]> = [
-  ["Arjun M.", "Kottayam", "published book #4", "₹12,400 this month"],
-  ["Priya S.", "Calicut", "hit ₹1L lifetime", "58 days in"],
-  ["Rahul K.", "Kochi", "first royalty cheque", "₹3,280"],
-  ["Anjali V.", "Thrissur", "niche: kids activity", "11 titles live"],
-  ["Mohammed F.", "Malappuram", "scaled to 5 niches", "₹24,600 last month"],
+/**
+ * Multi-hustle income ticker — shows Ehsan's real channels,
+ * rotating through them like a status strip. No fake names.
+ */
+const HUSTLES: Array<[string, string, string]> = [
+  ["KDP royalties", "Amazon · 63 books live", "₹1,08,400 last month"],
+  ["Etsy printables", "PageBoo shop · digital downloads", "US$ 99.98 last 30 days"],
+  ["6 months passive", "Zero new publishes since Oct", "Books still earning"],
+  ["Founding batch", "6 students · first cohort live", "Applications open"],
 ];
 
-function OutcomeTicker() {
+function IncomeTicker() {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     const id = setInterval(
-      () => setIdx((i) => (i + 1) % TICKER_ITEMS.length),
-      2600,
+      () => setIdx((i) => (i + 1) % HUSTLES.length),
+      2800,
     );
     return () => clearInterval(id);
   }, []);
-  const cur = TICKER_ITEMS[idx];
+  const cur = HUSTLES[idx];
   return (
     <div
       style={{
         display: "inline-flex",
         alignItems: "center",
         gap: 14,
-        padding: "10px 16px 10px 14px",
+        padding: "10px 18px 10px 14px",
         borderRadius: 999,
         background: "rgba(91,123,91,0.07)",
         border: "1px solid rgba(91,123,91,0.20)",
@@ -188,8 +182,7 @@ function OutcomeTicker() {
       >
         <strong style={{ color: "#1A1A1A", fontWeight: 600 }}>{cur[0]}</strong>
         <span style={{ color: "#6B7280" }}>· {cur[1]}</span>
-        <span style={{ color: "#1A1A1A" }}>· {cur[2]}</span>
-        <span style={{ color: "#C62828", fontWeight: 700 }}>— {cur[3]}</span>
+        <span style={{ color: "#C62828", fontWeight: 700 }}>— {cur[2]}</span>
       </span>
     </div>
   );
@@ -197,9 +190,9 @@ function OutcomeTicker() {
 
 function QualifierStrip() {
   const rows: Array<[string, string]> = [
-    ["You have", "a laptop and 2 hrs a day"],
-    ["You're tired of", "promises with no proof"],
-    ["You want", "income, not another course"],
+    ["You have", "a day job and 2 hrs after it"],
+    ["You're tired of", "courses with no proof"],
+    ["You want", "assets that earn while you sleep"],
   ];
   return (
     <div
@@ -241,70 +234,94 @@ function QualifierStrip() {
   );
 }
 
-function FeaturedStudent() {
+/**
+ * FounderCard — replaces the old FeaturedStudent.
+ * Photo (polaroid) + real last-month receipt + decorative book stack.
+ * Photo path: /ehsan-founder.jpg (drop the file into public/).
+ */
+function FounderCard() {
   return (
-    <div style={{ position: "relative", height: 520 }}>
+    <div style={{ position: "relative", height: 580 }}>
+      {/* gold ambient backdrop */}
       <div
         aria-hidden
         style={{
           position: "absolute",
-          inset: "10% -5% 10% -5%",
+          inset: "8% -5% 8% -5%",
           background:
-            "radial-gradient(ellipse, rgba(201,162,78,0.22), transparent 65%)",
-          filter: "blur(30px)",
+            "radial-gradient(ellipse, rgba(201,162,78,0.25), transparent 65%)",
+          filter: "blur(35px)",
         }}
       />
 
+      {/* decorative book stack, top-right */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 24,
+          right: 6,
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+        }}
+      >
+        <MiniBook color="#C62828" title="KDP" tilt={8} scale={0.9} />
+        <MiniBook color="#C9A24E" title="vol.2" tilt={-5} scale={0.75} />
+        <MiniBook color="#3D5A3D" title="vol.3" tilt={9} scale={0.7} />
+      </div>
+
+      {/* polaroid */}
       <div
         style={{
           position: "absolute",
           top: 20,
-          left: 30,
-          width: 240,
+          left: 20,
+          width: 290,
           padding: 14,
-          paddingBottom: 44,
+          paddingBottom: 64,
           background: "#FAF5EB",
-          boxShadow: "0 30px 60px rgba(0,0,0,0.18)",
-          transform: "rotate(-5deg)",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.18)",
+          transform: "rotate(-4deg)",
           zIndex: 2,
         }}
       >
         <div
           style={{
             width: "100%",
-            height: 240,
+            aspectRatio: "1/1",
             borderRadius: 2,
             background:
-              "linear-gradient(135deg, #3D5A3D 0%, #5B7B5B 55%, #7A9A7A 100%)",
+              "linear-gradient(135deg, #8B5A2B 0%, #C9A24E 60%, #E6C178 100%)",
             position: "relative",
             overflow: "hidden",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            backgroundImage: "url('/ehsan-founder.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center 30%",
           }}
         >
-          <svg
-            viewBox="0 0 200 240"
-            width="100%"
-            height="100%"
-            style={{ position: "absolute", inset: 0 }}
-          >
-            <circle cx="100" cy="90" r="38" fill="rgba(250,245,235,0.9)" />
-            <path
-              d="M 30 240 Q 30 150 100 150 Q 170 150 170 240 Z"
-              fill="rgba(250,245,235,0.9)"
-            />
-            <rect x="0" y="200" width="200" height="40" fill="rgba(26,26,26,0.15)" />
-          </svg>
+          {/* warm tint overlay for editorial feel */}
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(180deg, rgba(198,40,40,0.08) 0%, transparent 30%, rgba(26,26,26,0.15) 100%)",
+              mixBlendMode: "multiply",
+            }}
+          />
           <div
             style={{
               position: "absolute",
               bottom: 8,
               left: 10,
               fontSize: 10,
-              color: "rgba(250,245,235,0.8)",
+              color: "rgba(250,245,235,0.9)",
               letterSpacing: "0.2em",
               fontWeight: 700,
+              textShadow: "0 2px 4px rgba(0,0,0,0.4)",
             }}
           >
             APR 2026
@@ -312,15 +329,15 @@ function FeaturedStudent() {
         </div>
         <div
           style={{
-            marginTop: 12,
+            marginTop: 14,
             fontFamily: "'Instrument Serif', serif",
             fontStyle: "italic",
-            fontSize: 16,
+            fontSize: 18,
             color: "#1A1A1A",
             lineHeight: 1.2,
           }}
         >
-          Priya S. — Calicut
+          Ehsan — Malappuram
         </div>
         <div
           style={{
@@ -332,26 +349,23 @@ function FeaturedStudent() {
             marginTop: 4,
           }}
         >
-          Enrolled Sep 2025
+          Teacher · AI-powered publisher
         </div>
       </div>
 
-      <div style={{ position: "absolute", top: 160, right: 0, zIndex: 3 }}>
-        <MiniBook color="#C62828" title="Mindful" author="PRIYA S." tilt={6} scale={1.2} />
-      </div>
-
+      {/* receipt */}
       <div
         style={{
           position: "absolute",
-          bottom: 20,
+          bottom: 24,
           left: 0,
-          right: 20,
+          right: 16,
           zIndex: 4,
           padding: "20px 22px",
           borderRadius: 14,
           background: "white",
           border: "1px solid rgba(26,26,26,0.08)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.10)",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.12)",
           display: "flex",
           alignItems: "center",
           gap: 18,
@@ -382,12 +396,12 @@ function FeaturedStudent() {
               fontWeight: 700,
             }}
           >
-            Earned in 90 days
+            Last month · March 2026
           </div>
           <div
             style={{
               fontFamily: "'Instrument Serif', serif",
-              fontSize: 40,
+              fontSize: 42,
               color: "#1A1A1A",
               letterSpacing: "-0.02em",
               lineHeight: 1,
@@ -395,10 +409,10 @@ function FeaturedStudent() {
               fontVariantNumeric: "tabular-nums",
             }}
           >
-            ₹1,24,380
+            ₹1,16,000
           </div>
           <div style={{ fontSize: 12, color: "#6B7280" }}>
-            Across 7 books · Amazon KDP royalties
+            63 books · zero new publishes in 6 months
           </div>
         </div>
         <div
@@ -412,23 +426,25 @@ function FeaturedStudent() {
             letterSpacing: "0.15em",
           }}
         >
-          ▲ 18%
+          PASSIVE
         </div>
       </div>
 
+      {/* caption */}
       <div
         style={{
           position: "absolute",
           top: -4,
-          right: 8,
+          right: 12,
           fontFamily: "'Instrument Serif', serif",
           fontStyle: "italic",
           fontSize: 13,
           color: "rgba(26,26,26,0.55)",
           transform: "rotate(2deg)",
+          zIndex: 5,
         }}
       >
-        Fig. 01 — real student, real royalties.
+        Fig. 01 — not a stock photo.
       </div>
     </div>
   );
@@ -436,9 +452,9 @@ function FeaturedStudent() {
 
 const STATS: Array<[string, string, string]> = [
   ["63", "books published", "#C62828"],
-  ["₹8L+", "student earnings", "#5B7B5B"],
-  ["50", "days to first ₹", "#C9A24E"],
-  ["100%", "Malayalam-first", "#1A1A1A"],
+  ["₹1.16L", "last month", "#5B7B5B"],
+  ["6", "months passive", "#C9A24E"],
+  ["0", "new books since Oct", "#1A1A1A"],
 ];
 
 export default function HeroV2() {
@@ -447,7 +463,7 @@ export default function HeroV2() {
       style={{
         position: "relative",
         minHeight: "100vh",
-        padding: "120px 48px 80px",
+        padding: "140px 48px 80px",
         overflow: "hidden",
         background:
           "radial-gradient(ellipse at 85% 10%, rgba(198,40,40,0.18), transparent 55%), radial-gradient(ellipse at 10% 90%, rgba(201,162,78,0.16), transparent 60%), #FAF5EB",
@@ -455,11 +471,12 @@ export default function HeroV2() {
     >
       <Grain opacity={0.09} />
 
+      {/* handwritten margin note — now a founder whisper, not a fake mentor */}
       <div
         aria-hidden
         style={{
           position: "absolute",
-          top: "14%",
+          top: "16%",
           right: "3%",
           transform: "rotate(4deg)",
           maxWidth: 220,
@@ -475,11 +492,11 @@ export default function HeroV2() {
             lineHeight: 1.35,
           }}
         >
-          &quot;I&apos;ll show you the exact
+          &quot;I built this between
           <br />
-          system I used to earn
+          classes, after school,
           <br />
-          ₹8L from one laptop.&quot;
+          with a ₹35,000 laptop.&quot;
         </div>
         <div
           style={{
@@ -503,7 +520,7 @@ export default function HeroV2() {
               letterSpacing: "0.1em",
             }}
           >
-            KK
+            E
           </div>
           <div
             style={{
@@ -514,7 +531,7 @@ export default function HeroV2() {
               color: "#6B7280",
             }}
           >
-            — Your mentor
+            — Ehsan · Founder
           </div>
         </div>
       </div>
@@ -580,7 +597,7 @@ export default function HeroV2() {
                 color: "#1A1A1A",
               }}
             >
-              Human&nbsp;brain.
+              Teacher by day.
               <br />
               <em
                 style={{
@@ -590,10 +607,10 @@ export default function HeroV2() {
                   color: "#C62828",
                 }}
               >
-                AI&nbsp;skills.
+                AI publisher
               </em>
               <br />
-              Real&nbsp;income.
+              by night.
             </h1>
 
             <p
@@ -607,7 +624,7 @@ export default function HeroV2() {
                 lineHeight: 1.22,
               }}
             >
-              We don&apos;t teach theory. We teach you how to earn.
+              Same laptop. Same 24 hours. Two income streams.
             </p>
 
             <p
@@ -619,15 +636,15 @@ export default function HeroV2() {
                 lineHeight: 1.65,
               }}
             >
-              Proof-backed systems, Malayalam-first training, and six-figure case studies from real Kerala founders — not Silicon Valley fantasies.
+              I&apos;m a Malayalam teacher from Malappuram. In my spare hours I built 63 books on Amazon KDP and a small Etsy printables shop. Last month, together, they paid ₹1,16,000 — without me publishing a single new book in six.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <PrimaryButton href="#program">Start your journey — ₹45K</PrimaryButton>
-              <SecondaryButton href="#how">Watch the 2-min trailer</SecondaryButton>
+              <PrimaryButton href="/workshop">Join the Calicut workshop · ₹1,999</PrimaryButton>
+              <SecondaryButton href="#program">See the 50-day program</SecondaryButton>
             </div>
 
-            <OutcomeTicker />
+            <IncomeTicker />
 
             <QualifierStrip />
 
@@ -677,7 +694,7 @@ export default function HeroV2() {
             </div>
           </div>
 
-          <FeaturedStudent />
+          <FounderCard />
         </div>
       </div>
     </section>

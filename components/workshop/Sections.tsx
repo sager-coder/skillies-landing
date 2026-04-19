@@ -246,7 +246,7 @@ const FAQS = [
   { q: "I've never written a book. Can I still do this?", a: "Yes — that's the entire point. No-content books don't require writing. You're designing and curating, not authoring. If you can use a browser, you can publish." },
   { q: "Do I need to know English fluently?", a: "Basic English helps since KDP is in English, but we teach in Malayalam. All tech terms stay English (KDP, Claude, Canva). You'll be fine." },
   { q: "Will Amazon actually pay me? How?", a: "Yes. Amazon pays directly to your Indian bank account, monthly, in INR. You need a PAN card and bank account — that's it. We walk through setup live." },
-  { q: "How long until my first royalty?", a: "First book live: end of the workshop. First royalty payout: within 60 days of your first sale. Most founding students saw their first ₹500–2,000 in month one." },
+  { q: "How long until my first royalty?", a: "First book live: end of the workshop. First royalty payout: within 60 days of your first sale. Expect ₹500–2,000 in month one if you priced it right — small, but real and compounding." },
   { q: "What's the catch with ₹1,999?", a: "Early bird is a genuine price drop to fill seats before May 10. After that it's ₹2,499. No hidden fees, no upsell pressure. The Founding Batch (₹45,000) is optional and only offered at the end." },
   { q: "Is this a pyramid scheme / MLM / hype thing?", a: "No. You're publishing real books on Amazon, earning real royalties from global readers. We don't recruit, we don't sell courses about selling courses. Proof: 63 books, ₹8L+ earned by the founder, solo." },
 ];

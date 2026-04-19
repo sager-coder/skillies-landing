@@ -72,15 +72,20 @@ export function CoursePortalNav() {
             width: 34,
             height: 34,
             borderRadius: 999,
+            overflow: "hidden",
+            backgroundImage: "url('/ehsan-founder.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center 28%",
             background: "#5B7B5B",
             color: "white",
             display: "grid",
             placeItems: "center",
             fontWeight: 700,
             fontSize: 13,
+            flexShrink: 0,
           }}
         >
-          AR
+          <span style={{ fontSize: 0 }}>E</span>
         </div>
       </div>
     </nav>
@@ -105,7 +110,7 @@ export function CoursePortalHero() {
           margin: "14px 0 28px",
         }}
       >
-        Keep publishing, Arjun.
+        Keep publishing.
       </h1>
       <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 20 }}>
         <div
@@ -445,7 +450,7 @@ export function CourseCatalog() {
             border: "1px solid #F0E8D8",
           }}
         >
-          {["All", "KDP", "AI Tools", "Paisa"].map((f, i) => (
+          {["All", "KDP", "AI Tools", "Etsy Printables"].map((f, i) => (
             <button
               key={f}
               style={{
@@ -506,10 +511,10 @@ export function CourseCatalog() {
           locked
         />
         <CourseCard
-          title="Paisa AI Show — Behind the scenes"
+          title="Etsy Printables — second income stream"
           kicker="Coming soon"
           tone="green"
-          stats="How we produce the weekly Malayalam series"
+          stats="Sell digital printables on Etsy alongside your KDP books"
         />
       </div>
     </section>
@@ -567,7 +572,7 @@ export function CourseInstructors() {
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <KickerPill tone="red">₹15,50,000+ earned, solo</KickerPill>
             <KickerPill tone="green">63 books published</KickerPill>
-            <KickerPill tone="gold">5 founding students mentored</KickerPill>
+            <KickerPill tone="gold">Teacher by day, publisher by night</KickerPill>
           </div>
         </div>
         <SecondaryButton>Read bio</SecondaryButton>
