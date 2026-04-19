@@ -357,6 +357,66 @@ body {
   .skillies-inline-arrow { display: none !important; }
 }
 
+/* =========================================================
+   SPACING POLISH — tighten masthead rows + trailing margins
+   so mobile doesn't waste vertical space, but sections still
+   breathe. Runs at ≤ 560 px.
+   ========================================================= */
+@media (max-width: 560px) {
+  /* Masthead dateline rows: let them wrap cleanly when the right
+     caption is too long. The flex:1 hairline spacer gets hidden
+     so label + caption sit close together on two lines. */
+  [style*="letter-spacing: 0.32em"],
+  [style*="letter-spacing:0.32em"] {
+    flex-wrap: wrap !important;
+    row-gap: 8px !important;
+  }
+  /* Hide the decorative hairline spacer inside those rows.
+     This is the 'flex: 1; height: 1px' spacer used in every dateline. */
+  [style*="letter-spacing: 0.32em"] > span[aria-hidden],
+  [style*="letter-spacing: 0.32em"] > span:not([style*="width:"])[style*="flex: 1"],
+  [style*="letter-spacing: 0.32em"] > span:not([style*="width:"])[style*="flex:1"],
+  [style*="letter-spacing:0.32em"] > span:not([style*="width:"])[style*="flex: 1"],
+  [style*="letter-spacing:0.32em"] > span:not([style*="width:"])[style*="flex:1"] {
+    display: none !important;
+  }
+
+  /* Tighten margin-bottom on major section-inner containers */
+  [style*="margin-bottom: 96"],
+  [style*="margin-bottom:96"]  { margin-bottom: 40px !important; }
+  [style*="margin-bottom: 80"],
+  [style*="margin-bottom:80"]  { margin-bottom: 36px !important; }
+  [style*="margin-bottom: 72"],
+  [style*="margin-bottom:72"]  { margin-bottom: 32px !important; }
+  [style*="margin-bottom: 64"],
+  [style*="margin-bottom:64"]  { margin-bottom: 28px !important; }
+  [style*="margin-bottom: 56"],
+  [style*="margin-bottom:56"]  { margin-bottom: 24px !important; }
+  [style*="margin-bottom: 48"],
+  [style*="margin-bottom:48"]  { margin-bottom: 24px !important; }
+
+  /* Tighten margin-top on same scale */
+  [style*="margin-top: 96"],
+  [style*="margin-top:96"]  { margin-top: 40px !important; }
+  [style*="margin-top: 80"],
+  [style*="margin-top:80"]  { margin-top: 36px !important; }
+  [style*="margin-top: 72"],
+  [style*="margin-top:72"]  { margin-top: 32px !important; }
+  [style*="margin-top: 64"],
+  [style*="margin-top:64"]  { margin-top: 28px !important; }
+
+  /* Stat/receipt grids that collapsed to 1-col — reduce inter-row
+     gap so three stat cards in a column don't feel orphaned */
+  [style*="gap: 20"][style*="grid"],
+  [style*="gap:20"][style*="grid"],
+  [style*="gap: 18"][style*="grid"],
+  [style*="gap:18"][style*="grid"],
+  [style*="gap: 16"][style*="grid"],
+  [style*="gap:16"][style*="grid"] {
+    gap: 12px !important;
+  }
+}
+
 /* ---------- Small phone (≤ 440px) ---------- */
 @media (max-width: 440px) {
   /* Really small screens — further tighten */
@@ -372,6 +432,12 @@ body {
   [style*="font-size: clamp(56px"] { font-size: 42px !important; }
   [style*="font-size: clamp(52px"] { font-size: 40px !important; }
   [style*="font-size: clamp(48px"] { font-size: 38px !important; }
+
+  /* Section padding shrunk further */
+  [style*="padding: 128px"],
+  [style*="padding:128px"] { padding-top: 56px !important; padding-bottom: 56px !important; }
+  [style*="padding: 120px"],
+  [style*="padding:120px"] { padding-top: 52px !important; padding-bottom: 52px !important; }
 }
 
 /* ---------- Any viewport: prevent accidental horizontal scroll ---------- */
