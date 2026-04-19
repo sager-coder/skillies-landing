@@ -102,7 +102,42 @@ on conflict (id) do nothing;
 
 
 -- ---------------------------------------------------------------
--- 3. lessons · individual day-by-day units
+-- 3. enrollments · who has access to which course
+--    (defined before lessons because the lessons RLS policy
+--    references enrollments)
+-- ---------------------------------------------------------------
+create table if not exists public.enrollments (
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid not null references public.profiles(id) on delete cascade,
+  course_id    text not null references public.courses(id) on delete cascade,
+  tier         text not null check (tier in ('founding','standard','pro')),
+  enrolled_at  timestamptz not null default now(),
+  enrolled_by  uuid,                            -- admin id (null = self / Razorpay webhook)
+  notes        text,
+  unique (user_id, course_id)
+);
+
+alter table public.enrollments enable row level security;
+
+-- Students see only their own enrollments
+drop policy if exists "enrollments_select_own_or_admin" on public.enrollments;
+create policy "enrollments_select_own_or_admin"
+  on public.enrollments for select
+  using (
+    auth.uid() = user_id
+    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
+  );
+
+-- Only admins can grant / revoke (until Razorpay webhook is wired)
+drop policy if exists "enrollments_admin_write" on public.enrollments;
+create policy "enrollments_admin_write"
+  on public.enrollments for all
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true))
+  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
+
+
+-- ---------------------------------------------------------------
+-- 4. lessons · individual day-by-day units
 -- ---------------------------------------------------------------
 create table if not exists public.lessons (
   id               uuid primary key default gen_random_uuid(),
@@ -138,39 +173,6 @@ create policy "lessons_enrolled_select"
 drop policy if exists "lessons_admin_write" on public.lessons;
 create policy "lessons_admin_write"
   on public.lessons for all
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
-
-
--- ---------------------------------------------------------------
--- 4. enrollments · who has access to which course
--- ---------------------------------------------------------------
-create table if not exists public.enrollments (
-  id           uuid primary key default gen_random_uuid(),
-  user_id      uuid not null references public.profiles(id) on delete cascade,
-  course_id    text not null references public.courses(id) on delete cascade,
-  tier         text not null check (tier in ('founding','standard','pro')),
-  enrolled_at  timestamptz not null default now(),
-  enrolled_by  uuid,                            -- admin id (null = self / Razorpay webhook)
-  notes        text,
-  unique (user_id, course_id)
-);
-
-alter table public.enrollments enable row level security;
-
--- Students see only their own enrollments
-drop policy if exists "enrollments_select_own_or_admin" on public.enrollments;
-create policy "enrollments_select_own_or_admin"
-  on public.enrollments for select
-  using (
-    auth.uid() = user_id
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
-  );
-
--- Only admins can grant / revoke (until Razorpay webhook is wired)
-drop policy if exists "enrollments_admin_write" on public.enrollments;
-create policy "enrollments_admin_write"
-  on public.enrollments for all
   using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true))
   with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
 
