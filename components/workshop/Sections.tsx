@@ -681,92 +681,276 @@ export function WorkshopLocation() {
   );
 }
 
-const FAQS = [
-  { q: "I've never written a book. Can I still do this?", a: "Yes — that's the entire point. No-content books don't require writing. You're designing and curating, not authoring. If you can use a browser, you can publish." },
-  { q: "Do I need to know English fluently?", a: "Basic English is enough. KDP's interface is English and the workshop is taught in plain English — no jargon, no lecture-mode. If you can read a product listing on Amazon, you can do this." },
-  { q: "Will Amazon actually pay me? How?", a: "Yes. Amazon pays directly to your Indian bank account, monthly, in INR. You need a PAN card and bank account — that's it. We walk through setup live." },
-  { q: "How long until my first royalty?", a: "First book live: end of the workshop. First royalty payout: within 60 days of your first sale. Expect ₹500–2,000 in month one if you priced it right — small, but real and compounding." },
-  { q: "What's the catch with ₹1,999?", a: "Early bird is a genuine price drop to fill seats before May 10. After that it's ₹2,499. No hidden fees, no upsell pressure. The Founding Batch (₹45,000) is optional and only offered at the end." },
-  { q: "Is this a pyramid scheme / MLM / hype thing?", a: "No. You're publishing real books on Amazon, earning real royalties from global readers. We don't recruit, we don't sell courses about selling courses. Proof: 63 books, ₹8L+ earned by the founder, solo." },
+type FaqEntry = {
+  q: string;
+  short?: string; // italic serif one-liner summary
+  a: string;
+  pullQuote?: string;
+};
+
+const FAQS: FaqEntry[] = [
+  {
+    q: "I've never written a book. Can I still do this?",
+    short: "Yes. That's the whole point.",
+    a: "No-content books — spot the difference, puzzles, coloring — don't need writing. You're designing and curating, not authoring. If you can open a browser, follow a workflow, and click Upload, you can publish. That's it.",
+    pullQuote: "If you can use a browser, you can publish.",
+  },
+  {
+    q: "Do I need to fluent English?",
+    short: "Basic English is enough.",
+    a: "KDP's interface is in English and the workshop is taught in plain English — no jargon, no lecture-mode. If you can read an Amazon product listing, you'll be fine. I'll keep it simple.",
+  },
+  {
+    q: "Will Amazon actually pay me? How does that work?",
+    short: "Yes. Monthly. In INR, straight to your bank.",
+    a: "Amazon deposits royalties directly to your Indian bank account every month. You need a PAN card, a bank account, and your KDP tax info filled in — that's the whole setup. We walk through every form live so nobody leaves confused.",
+    pullQuote: "It's KDP + PAN + bank. That's the whole stack.",
+  },
+  {
+    q: "How long until my first royalty?",
+    short: "First book ships the same day. First payout: ~60 days.",
+    a: "Your first book goes live on Amazon at the end of the workshop. Your first royalty deposit lands within ~60 days of your first sale. Month one is usually ₹500–2,000 — small, but real, and it compounds every month you keep publishing.",
+  },
+  {
+    q: "What's the catch with ₹1,999?",
+    short: "No catch. Early-bird pricing ends May 10.",
+    a: "₹1,999 is a genuine early-bird drop to fill seats before May 10. After that it goes back to ₹2,499. No hidden fees, no upsell pressure during the day. The ₹45,000 Founding Batch is mentioned at 4 PM and it's entirely optional — walk out if you'd like.",
+  },
+  {
+    q: "Is this a pyramid / MLM / hype thing?",
+    short: "No. You're publishing real books to real readers.",
+    a: "You're uploading paperbacks to Amazon. Global readers buy them. Amazon pays you royalties. There's no network to join, no downline to recruit, no 'course about selling courses.' The proof is my own dashboard — ₹8,71,982 across 63 titles, all verifiable.",
+    pullQuote: "No downline. No recruiting. Just books on Amazon.",
+  },
 ];
 
-export function WorkshopFAQ() {
-  const [open, setOpen] = useState<number>(0);
+function FaqRow({ item, i }: { item: FaqEntry; i: number }) {
+  const num = String(i + 1).padStart(2, "0");
   return (
-    <section id="faq" style={{ padding: "120px 24px", background: "#FAF5EB" }}>
-      <div style={{ maxWidth: 780, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
-          <Kicker tone="red">Real Questions</Kicker>
-          <h2 style={{ fontSize: "clamp(40px, 5vw, 56px)", fontWeight: 800, color: "#1A1A1A", margin: "16px 0 0", letterSpacing: "-0.04em", lineHeight: 1 }}>
-            What people actually ask.
-          </h2>
+    <article
+      style={{
+        display: "grid",
+        gridTemplateColumns: "minmax(220px, 0.9fr) 1.4fr",
+        gap: 56,
+        padding: "44px 0",
+        borderTop: i === 0 ? "none" : "1px solid rgba(26,26,26,0.10)",
+      }}
+    >
+      {/* Left: question */}
+      <div>
+        <div
+          style={{
+            fontSize: 10,
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            color: "#C62828",
+            marginBottom: 10,
+          }}
+        >
+          Q · {num}
         </div>
-        <div style={{ display: "grid", gap: 12 }}>
-          {FAQS.map((item, i) => {
-            const isOpen = open === i;
-            return (
-              <div
-                key={i}
-                style={{
-                  background: "white",
-                  borderRadius: 18,
-                  border: `1px solid ${isOpen ? "rgba(198,40,40,0.25)" : "#F0E8D8"}`,
-                  overflow: "hidden",
-                  transition: "border-color .25s",
-                }}
-              >
-                <button
-                  onClick={() => setOpen(isOpen ? -1 : i)}
-                  style={{
-                    width: "100%",
-                    padding: "22px 28px",
-                    background: "transparent",
-                    border: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 20,
-                    cursor: "pointer",
-                    textAlign: "left",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 17,
-                      fontWeight: 700,
-                      color: isOpen ? "#C62828" : "#1A1A1A",
-                      letterSpacing: "-0.015em",
-                      lineHeight: 1.35,
-                    }}
-                  >
-                    {item.q}
-                  </span>
-                  <span
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 999,
-                      border: "1px solid " + (isOpen ? "rgba(198,40,40,0.4)" : "#F0E8D8"),
-                      display: "grid",
-                      placeItems: "center",
-                      flexShrink: 0,
-                      transition: "transform .35s cubic-bezier(.22,1,.36,1)",
-                      transform: isOpen ? "rotate(45deg)" : "none",
-                    }}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isOpen ? "#C62828" : "#1A1A1A"} strokeWidth="2.5" strokeLinecap="round">
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
-                  </span>
-                </button>
-                {isOpen && (
-                  <div style={{ padding: "0 28px 24px", fontSize: 15, color: "#6B7280", lineHeight: 1.65 }}>
-                    {item.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <h3
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontWeight: 400,
+            fontSize: "clamp(26px, 2.6vw, 36px)",
+            letterSpacing: "-0.015em",
+            lineHeight: 1.15,
+            color: "#1A1A1A",
+            margin: "0 0 10px",
+          }}
+        >
+          &ldquo;{item.q}&rdquo;
+        </h3>
+        {item.short && (
+          <p
+            style={{
+              fontSize: 14,
+              color: "#6B7280",
+              margin: 0,
+              lineHeight: 1.5,
+              fontStyle: "italic",
+              fontFamily: "'Instrument Serif', serif",
+            }}
+          >
+            {item.short}
+          </p>
+        )}
+      </div>
+
+      {/* Right: answer */}
+      <div>
+        <p
+          style={{
+            fontSize: 16,
+            color: "#3f3f46",
+            lineHeight: 1.8,
+            margin: 0,
+            maxWidth: 580,
+          }}
+        >
+          {item.a}
+        </p>
+        {item.pullQuote && (
+          <blockquote
+            style={{
+              marginTop: 18,
+              marginLeft: 0,
+              paddingLeft: 18,
+              borderLeft: "2px solid #C9A24E",
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: 18,
+              lineHeight: 1.45,
+              color: "#8a6a1f",
+            }}
+          >
+            {item.pullQuote}
+          </blockquote>
+        )}
+      </div>
+    </article>
+  );
+}
+
+export function WorkshopFAQ() {
+  return (
+    <section id="faq" style={{ padding: "128px 24px", background: "#FAF5EB" }}>
+      <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+        {/* Editorial masthead */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            marginBottom: 28,
+            fontSize: 11,
+            color: "#6B7280",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}
+        >
+          <span style={{ width: 44, height: 1, background: "#C62828" }} />
+          § Q &amp; A · The Honest Column
+          <span style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }} />
+          <span>Six questions, straight answers.</span>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.1fr 1fr",
+            gap: 48,
+            alignItems: "end",
+            marginBottom: 44,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "clamp(48px, 6vw, 80px)",
+              fontWeight: 900,
+              color: "#1A1A1A",
+              margin: 0,
+              letterSpacing: "-0.035em",
+              lineHeight: 0.98,
+            }}
+          >
+            What people actually ask,{" "}
+            <em
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+                color: "#C62828",
+              }}
+            >
+              answered straight.
+            </em>
+          </h2>
+          <p
+            style={{
+              fontSize: 17,
+              color: "#6B7280",
+              margin: 0,
+              lineHeight: 1.6,
+              maxWidth: 420,
+            }}
+          >
+            Every answer here comes from a real WhatsApp message I&apos;ve already replied to. If yours isn&apos;t below, ask me — I still reply personally.
+          </p>
+        </div>
+
+        {/* The Q&A column */}
+        <div
+          style={{
+            borderTop: "2px solid #1A1A1A",
+            borderBottom: "2px solid #1A1A1A",
+          }}
+        >
+          {FAQS.map((item, i) => (
+            <FaqRow key={i} item={item} i={i} />
+          ))}
+        </div>
+
+        {/* Signature + CTA */}
+        <div
+          style={{
+            marginTop: 40,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 24,
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontStyle: "italic",
+                fontSize: 28,
+                color: "#1A1A1A",
+                lineHeight: 1,
+              }}
+            >
+              — Ehsan
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                color: "#6B7280",
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                marginTop: 6,
+              }}
+            >
+              Founder · Replies personally
+            </div>
+          </div>
+          <a
+            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20have%20a%20question%20about%20the%20workshop."
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "14px 24px",
+              background: "#1A1A1A",
+              color: "white",
+              fontSize: 13,
+              fontWeight: 700,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              borderRadius: 999,
+              textDecoration: "none",
+            }}
+          >
+            Ask your own question →
+          </a>
         </div>
       </div>
     </section>
