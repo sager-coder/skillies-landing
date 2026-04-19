@@ -599,7 +599,7 @@ export function CourseInstructors() {
             Founder, Skillies.AI · Malappuram, Kerala
           </p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <KickerPill tone="red">₹15,50,000+ earned, solo</KickerPill>
+            <KickerPill tone="red">₹8,71,982 KDP royalties, solo</KickerPill>
             <KickerPill tone="green">63 books published</KickerPill>
             <KickerPill tone="gold">Teacher by day, publisher by night</KickerPill>
           </div>

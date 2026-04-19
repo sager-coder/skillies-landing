@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import KDPDashboardProof from "./KDPDashboardProof";
 
 /**
  * The Receipts — Ehsan's actual income ledger.
@@ -156,7 +157,7 @@ function ChannelCard({ c }: { c: Channel }) {
 const SUMMARY: Array<[string, string]> = [
   ["63", "books on Amazon"],
   ["6", "months zero publishes"],
-  ["₹15,50,000", "lifetime earnings"],
+  ["₹8,71,982", "KDP royalties lifetime"],
   ["2", "income channels, 1 laptop"],
 ];
 
@@ -229,6 +230,11 @@ export default function ProofWall() {
               I haven&apos;t published a single new book since October 2025. These are digital assets sitting on Amazon — they kept paying while I taught class, ran my Etsy shop, and prepped the Calicut workshop. That&apos;s the whole point: build once, earn for years.
             </p>
           </div>
+        </div>
+
+        {/* KDP dashboard — the main exhibit */}
+        <div style={{ marginBottom: 40 }}>
+          <KDPDashboardProof />
         </div>
 
         {/* Two channel cards side-by-side */}

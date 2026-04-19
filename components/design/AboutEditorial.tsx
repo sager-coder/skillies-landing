@@ -445,7 +445,7 @@ export default function AboutEditorial() {
                   margin: 0,
                 }}
               >
-                Sixty-three books published in a year. ₹15.5L lifetime. Last
+                Sixty-three books published in a year. ₹8,71,982 in KDP royalties to date. Last
                 month, ₹1.16L arrived in my bank account without me touching
                 a single new book in six months. I could keep stacking and
                 double it — but I already know that loop. The research part

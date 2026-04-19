@@ -181,7 +181,7 @@ type Stat = { label: string; val: string; sub: string; accent?: "red" | "gold" |
 const STATS: Stat[] = [
   { label: "Last month", val: "₹1,16,020", sub: "KDP + Etsy", accent: "gold" },
   { label: "Books live", val: "63", sub: "all published in 2025" },
-  { label: "Lifetime earnings", val: "₹15,50,000", sub: "since first book" },
+  { label: "KDP lifetime", val: "₹8,71,982", sub: "all 63 books · 2024–26" },
   { label: "Months passive", val: "6", sub: "zero new publishes", accent: "green" },
 ];
 
