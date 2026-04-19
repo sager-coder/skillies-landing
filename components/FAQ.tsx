@@ -30,12 +30,16 @@ const faqs = [
     a: "With enough books in the right niches, absolutely. KDP income compounds — each book is an asset that earns every month. 60+ books following our methodology can realistically generate ₹50,000 to ₹1,00,000+ per month in passive royalties. But it takes time, effort, and patience.",
   },
   {
-    q: "Is this only about publishing books?",
-    a: "KDP Mastery is our flagship program, but Skillies.AI is bigger than books. We're building a platform that teaches AI skills for real income — publishing is where we start because it's proven, scalable, and anyone can do it.",
+    q: "Is Skillies.AI just about KDP books?",
+    a: "No — KDP is where we start because it's proven. But Skillies.AI is a research-and-teach company. The whole reason I stopped publishing new books is to go deeper on what's next: automated video production (HeyGen + ElevenLabs), AI-assisted digital marketing, Etsy printables, and agent-built software. Expect more courses through 2026 — all on skills that actually pay in the AI age, not theory.",
+  },
+  {
+    q: "Why you? Why this school?",
+    a: "I'm a working teacher and researcher in Malappuram. I've been testing AI income workflows since 2020 — uHRS (Microsoft), then KDP, now video and agents. I teach in Malayalam, I don't dress up numbers, and I build the tools I teach with. If you want polished guru-branding, I'm the wrong school. If you want a teacher who still shows their working, I'm your guy.",
   },
   {
     q: "What happens after the 50 days?",
-    a: "You keep publishing. The skills, strategies, and AI workflows you learn are yours forever. Your KDP account and all your books belong to you. The mentorship period is 50 days, but the income stream you build is permanent.",
+    a: "You keep publishing. The skills, the workflows, the AI prompts, the cover templates — yours forever. Your KDP account and royalty stream belong to you. You also get into the alumni WhatsApp group, so when the next course drops (video, Etsy, Meta ads), you hear about it first.",
   },
 ];
 

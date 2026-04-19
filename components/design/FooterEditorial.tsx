@@ -217,7 +217,10 @@ export default function FooterEditorial() {
                 maxWidth: 360,
               }}
             >
-              Practical AI skills that turn into real income. Proof-backed, Malayalam-first. Built in Malappuram, Kerala.
+              Kerala&apos;s AI skills school. We <em style={{ color: "#E6C178", fontStyle: "italic" }}>research</em>{" "}
+              what pays in 2026, <em style={{ color: "#E6C178", fontStyle: "italic" }}>teach</em>{" "}
+              it in Malayalam, and <em style={{ color: "#E6C178", fontStyle: "italic" }}>build</em>{" "}
+              tools for Kerala businesses. Proof-backed. Built in Malappuram.
             </p>
             <div
               style={{ display: "flex", flexDirection: "column", gap: 6 }}

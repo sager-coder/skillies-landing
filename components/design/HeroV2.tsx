@@ -99,8 +99,9 @@ function MiniBook({
  */
 const HUSTLES: Array<[string, string, string]> = [
   ["KDP royalties", "Amazon · 63 books live", "₹1,08,400 last month"],
-  ["Etsy printables", "PageBoo shop · digital downloads", "US$ 99.98 last 30 days"],
+  ["Etsy printables", "PageBoo shop · weekends", "US$ 99.98 last 30 days"],
   ["6 months passive", "Zero new publishes since Oct", "Books still earning"],
+  ["In the lab", "HeyGen + ElevenLabs + Claude Code", "Next course, in research"],
   ["Founding batch", "6 students · first cohort live", "Applications open"],
 ];
 
@@ -597,7 +598,7 @@ export default function HeroV2() {
                 color: "#1A1A1A",
               }}
             >
-              Teacher by day.
+              Research.
               <br />
               <em
                 style={{
@@ -607,10 +608,10 @@ export default function HeroV2() {
                   color: "#C62828",
                 }}
               >
-                AI publisher
+                Teach.
               </em>
               <br />
-              by night.
+              Earn.
             </h1>
 
             <p
@@ -624,7 +625,7 @@ export default function HeroV2() {
                 lineHeight: 1.22,
               }}
             >
-              Same laptop. Same 24 hours. Two income streams.
+              Kerala&apos;s AI skills school — built by a teacher, for the age of AI.
             </p>
 
             <p
@@ -636,7 +637,7 @@ export default function HeroV2() {
                 lineHeight: 1.65,
               }}
             >
-              I&apos;m a Malayalam teacher from Malappuram. In my spare hours I built 63 books on Amazon KDP and a small Etsy printables shop. Last month, together, they paid ₹1,16,000 — without me publishing a single new book in six.
+              I teach in a Malappuram school. On the side, 63 books I published on Amazon KDP pay me ₹1,16,000 a month — without me touching them in six. Skillies.AI is the playbook. We research what&apos;s working in 2026, teach it in Malayalam, and build tools for Kerala businesses.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>

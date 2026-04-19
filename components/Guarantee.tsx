@@ -18,9 +18,9 @@ export default function Guarantee() {
               </p>
 
               <h2 className="text-2xl md:text-4xl font-bold text-charcoal mb-6 leading-tight">
-                Publish 60 books. Follow the process.
+                Show up. Ship the work.
                 <br />
-                <span className="text-red">If it doesn&apos;t work, we refund you.</span>
+                <span className="text-red">If your royalties don&apos;t hit ₹45,000, we refund you.</span>
               </h2>
 
               <div className="space-y-4 mb-8">
@@ -29,7 +29,7 @@ export default function Guarantee() {
                     ✓
                   </span>
                   <p className="text-charcoal/80">
-                    Complete all assignments and follow the exact Skillies.AI methodology
+                    Finish the 50-day program — every assignment, every check-in
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -37,7 +37,7 @@ export default function Guarantee() {
                     ✓
                   </span>
                   <p className="text-charcoal/80">
-                    Publish a minimum of 60 books on Amazon KDP in the format taught
+                    Follow the exact Skillies.AI workflow we teach — no shortcuts, no skipped steps
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -45,7 +45,7 @@ export default function Guarantee() {
                     ✓
                   </span>
                   <p className="text-charcoal/80">
-                    Put in minimum 5 hours daily for 6 months
+                    Keep publishing in the six months after — minimum 2 hrs a day, every day
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -53,16 +53,17 @@ export default function Guarantee() {
                     →
                   </span>
                   <p className="text-charcoal font-semibold">
-                    If after 6 months your KDP royalties haven&apos;t reached ₹45,000
-                    or ₹20,000/month — we refund the program fee minus what you&apos;ve
-                    already earned from Amazon.
+                    If after those six months your KDP royalties haven&apos;t reached
+                    ₹45,000 total, we refund the program fee minus whatever Amazon has
+                    already paid you.
                   </p>
                 </div>
               </div>
 
               <p className="text-sm text-gray italic">
-                That&apos;s how confident we are in this process. No other program in India
-                offers this.
+                We&apos;re the first cohort and we&apos;re still growing. This offer
+                stays on the table because I&apos;ve done it solo — so has every
+                student who put in the hours. Show up. Ship. We&apos;ll stand behind it.
               </p>
             </div>
           </div>

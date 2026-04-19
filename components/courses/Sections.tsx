@@ -478,7 +478,7 @@ export function CourseCatalog() {
       >
         <CourseCard
           title="KDP Mastery · 50-Day Program"
-          kicker="Flagship · 50 days"
+          kicker="Flagship · live"
           tone="red"
           stats="50 lessons · 7 modules · mentor access"
           progress={46}
@@ -487,14 +487,14 @@ export function CourseCatalog() {
           title="Cover Design with Claude + Canva"
           kicker="Module · 6 lessons"
           tone="gold"
-          stats="6 lessons · 1h 40m total"
+          stats="6 lessons · 1h 40m · templates included"
           progress={100}
         />
         <CourseCard
           title="Amazon Listings that Convert"
           kicker="Module · 4 lessons"
           tone="green"
-          stats="4 lessons · 58m · templates included"
+          stats="4 lessons · 58m · keyword + copy playbook"
           progress={25}
         />
         <CourseCard
@@ -504,17 +504,35 @@ export function CourseCatalog() {
           stats="3 lessons · 42m · open preview"
         />
         <CourseCard
-          title="Royalty Analytics & Scaling"
-          kicker="Advanced · Locked"
+          title="AI Video Production · HeyGen + ElevenLabs"
+          kicker="In research · 2026"
           tone="gold"
-          stats="8 lessons · requires KDP Mastery"
-          locked
+          stats="Avatars, voice, editing. Currently being built — drop below for early access."
         />
         <CourseCard
-          title="Etsy Printables — second income stream"
-          kicker="Coming soon"
+          title="Meta Ads with Claude Agents"
+          kicker="In research · 2026"
           tone="green"
-          stats="Sell digital printables on Etsy alongside your KDP books"
+          stats="Copy agents + funnel math. The new solo ad operator."
+        />
+        <CourseCard
+          title="Etsy Printables · weekend income"
+          kicker="In research · 2026"
+          tone="red"
+          stats="My second engine — ₹8K/mo on weekends. The full playbook, soon."
+        />
+        <CourseCard
+          title="Build apps with Claude Code"
+          kicker="In research · 2026"
+          tone="gold"
+          stats="The Skillies.AI web app is being built this way. Once it ships, so does the course."
+        />
+        <CourseCard
+          title="Royalty Analytics & Scaling"
+          kicker="Advanced · Locked"
+          tone="green"
+          stats="8 lessons · requires KDP Mastery"
+          locked
         />
       </div>
     </section>
