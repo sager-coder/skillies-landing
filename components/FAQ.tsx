@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: "Is the refund guarantee real?",
-    a: "Yes. If you publish 60 books following our exact process, put in 5 hours daily for 6 months, and your KDP royalties still haven't reached ₹45,000 — we refund your program fee minus what you've already earned from Amazon. It's in the signed agreement.",
+    a: "Yes. If you finish the 50-day program, follow the exact Skillies.AI workflow, and keep publishing 2 hrs/day for 6 months — and your KDP royalties still haven't hit ₹45,000 — we refund your program fee minus whatever Amazon has already paid you. It's in the signed agreement.",
   },
   {
     q: "What if Amazon bans my account?",

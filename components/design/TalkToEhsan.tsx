@@ -40,7 +40,7 @@ const PRESETS: Record<
   },
   program: {
     heading: "Enroll in the 50-day program.",
-    sub: "Scan the QR or tap the button. I'll walk you through whether the founding tier or standard enrollment fits better.",
+    sub: "Scan the QR or tap the button. I'll walk you through whether the Standard (₹75,000) cohort or the Pro 1-on-1 track (₹1,25,000) is the right fit.",
     message:
       "Hi Ehsan, I'd like to enroll in the 50-day KDP Mastery program. My name is ",
     ctaLabel: "Start enrollment",

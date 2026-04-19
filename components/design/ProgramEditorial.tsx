@@ -147,14 +147,6 @@ function TrackRow({ t }: { t: Track }) {
   );
 }
 
-const FOUNDING_INCLUDES = [
-  "Everything in the standard tier",
-  "Weekly 1-on-1 review calls with Ehsan",
-  "Private WhatsApp — founder + cohort",
-  "First access to all future courses (Video, Etsy, Meta ads)",
-  "Grandfathered founder pricing, forever",
-];
-
 const STANDARD_INCLUDES = [
   "50-day guided mentorship, live cohort",
   "Group calls every Sunday",
@@ -162,6 +154,15 @@ const STANDARD_INCLUDES = [
   "KDP account setup, live walkthrough",
   "Alumni community access after launch",
   "Course recording library (replay anytime)",
+];
+
+const PRO_INCLUDES = [
+  "Everything in the Standard tier",
+  "12 × 1-on-1 calls with Ehsan over the 50 days",
+  "Private WhatsApp — direct line, no cohort middleman",
+  "Custom niche + book-one plan built for you",
+  "First access to all future courses (Video, Etsy, Meta)",
+  "Launch-week support on your first title",
 ];
 
 function TierCard({
@@ -488,7 +489,7 @@ export default function ProgramEditorial() {
                 color: "#9CA3AF",
               }}
             >
-              Founding seats limited to workshop attendees.
+              Pro seats limited · talk to Ehsan before enrolling.
             </span>
           </div>
           <div
@@ -500,28 +501,68 @@ export default function ProgramEditorial() {
             }}
           >
             <TierCard
-              tone="gold"
-              label="The Founding Batch"
-              price="₹45,000"
-              oldPrice="₹75,000"
-              priceNote="Workshop attendees only · 6 seats in the first batch"
-              tag="Founding"
-              subhead="Save ₹30K. Get weekly 1-on-1s. Grandfathered on everything we build next."
-              includes={FOUNDING_INCLUDES}
-              ctaLabel="Attend the workshop to unlock →"
-              ctaHref="/workshop"
-              highlighted
-            />
-            <TierCard
               tone="red"
               label="Standard Enrollment"
               price="₹75,000"
-              priceNote="Open · live cohort starts rolling"
-              subhead="Same curriculum, same deliverable — in a group cohort. Ship your first book in 50 days, or we refund per the guarantee."
+              priceNote="Open · live cohort · rolling intake"
+              tag="Most Popular"
+              subhead="The full 50-day program in a live group cohort. Ship your first book in 50 days, or refund per the guarantee."
               includes={STANDARD_INCLUDES}
-              ctaLabel="Enroll at standard rate"
+              ctaLabel="Enroll in Standard"
               ctaHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%2050-day%20KDP%20Mastery%20program%20at%20%E2%82%B975%2C000%20%28standard%29.%20My%20name%20is%20"
+              highlighted
             />
+            <TierCard
+              tone="gold"
+              label="Pro · 1-on-1 Mentorship"
+              price="₹1,25,000"
+              priceNote="By application · 2-3 seats per cohort"
+              tag="Pro"
+              subhead="Standard, plus twelve 1-on-1 calls, a direct WhatsApp line, and a custom book-one plan built around your niche. Application only."
+              includes={PRO_INCLUDES}
+              ctaLabel="Apply for Pro track"
+              ctaHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20apply%20for%20the%20Pro%20%28%E2%82%B91%2C25%2C000%29%20tier%20of%20the%2050-day%20KDP%20Mastery%20program.%20My%20name%20is%20"
+            />
+          </div>
+
+          {/* Closed-batch note */}
+          <div
+            style={{
+              marginTop: 20,
+              padding: "14px 20px",
+              borderRadius: 12,
+              border: "1px dashed rgba(255,255,255,0.18)",
+              background: "rgba(26,26,26,0.04)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 16,
+              flexWrap: "wrap",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "#6B7280",
+              }}
+            >
+              Batch 001 · Closed
+            </div>
+            <div
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontStyle: "italic",
+                fontSize: 15,
+                color: "#6B7280",
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              The first founding batch at ₹45,000 sold out in the Calicut workshop (May 31). That rate won&apos;t reopen.
+            </div>
           </div>
         </div>
 
@@ -561,7 +602,7 @@ export default function ProgramEditorial() {
               whiteSpace: "nowrap",
             }}
           >
-            Want founding?
+            Need more?
           </div>
           <div
             style={{
@@ -573,10 +614,16 @@ export default function ProgramEditorial() {
               lineHeight: 1.35,
             }}
           >
-            The ₹45,000 rate is <em style={{ fontStyle: "italic", color: "#E6C178" }}>only offered</em> to people in the room on May 31 in Calicut. It won&apos;t reopen.
+            Beyond the 50-day program, I offer{" "}
+            <em style={{ fontStyle: "italic", color: "#E6C178" }}>
+              advanced 1-on-1 tracks and done-for-you services
+            </em>
+            {" "}— pricing starts at ₹1,25,000. Ask on WhatsApp.
           </div>
           <a
-            href="/workshop"
+            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20know%20about%20your%20advanced%201-on-1%20tracks%20and%20done-for-you%20services.%20My%20name%20is%20"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               position: "relative",
               padding: "14px 22px",
@@ -592,7 +639,7 @@ export default function ProgramEditorial() {
               boxShadow: "0 12px 30px rgba(198,40,40,0.25)",
             }}
           >
-            See the workshop →
+            Ask on WhatsApp →
           </a>
         </div>
       </div>

@@ -77,8 +77,8 @@ const AGENDA: AgendaItem[] = [
     end: "16:30",
     mins: 30,
     type: "Pitch",
-    title: "Close · The Founding Batch offer",
-    desc: "Only people in this room today unlock the ₹45,000 founding-batch price for the 50-day program. Full details, honest numbers, no pressure. Walk out, or sign up — either way we send you home with a live book.",
+    title: "Close · Next-cohort enrollment",
+    desc: "If the day has you ready to go deeper, this is when I walk through the 50-day program — Standard at ₹75,000, Pro 1-on-1 track at ₹1,25,000. Full details, honest numbers, no pressure. Walk out, or sign up — either way you leave with a live book.",
     variant: "close",
   },
 ];
@@ -529,7 +529,7 @@ const EARLY = [
   "Malabar biryani lunch",
   "Your first book live on Amazon",
   "Cover & keyword templates",
-  "Founding Batch access (₹45K pricing)",
+  "Priority seat in the next cohort",
   "Private WhatsApp group (60 days)",
 ];
 const REGULAR = [
@@ -537,7 +537,7 @@ const REGULAR = [
   "Malabar biryani lunch",
   "Your first book live on Amazon",
   "Cover & keyword templates",
-  "Standard Batch access",
+  "Next-cohort invitation",
   "Private WhatsApp group (60 days)",
 ];
 
@@ -726,7 +726,7 @@ const FAQS: FaqEntry[] = [
   {
     q: "What's the catch with ₹1,999?",
     short: "No catch. Early-bird pricing ends May 10.",
-    a: "₹1,999 is a genuine early-bird drop to fill seats before May 10. After that it goes back to ₹2,499. No hidden fees, no upsell pressure during the day. The ₹45,000 Founding Batch is mentioned at 4 PM and it's entirely optional — walk out if you'd like.",
+    a: "₹1,999 is a genuine early-bird drop to fill seats before May 10. After that it goes back to ₹2,499. No hidden fees, no upsell pressure during the day. At 4 PM I'll walk through the 50-day program (Standard ₹75,000 / Pro ₹1,25,000) — entirely optional, walk out if you'd like.",
   },
   {
     q: "Is this a pyramid / MLM / hype thing?",
