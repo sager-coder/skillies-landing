@@ -1,24 +1,38 @@
-import Hero from "@/components/Hero";
-import Promise from "@/components/Promise";
+import HeroV2 from "@/components/design/HeroV2";
+import PromiseEditorial from "@/components/design/PromiseEditorial";
+import Transformation from "@/components/design/Transformation";
+import ProofWall from "@/components/design/ProofWall";
+import First7Days from "@/components/design/First7Days";
 import WhatIsKDP from "@/components/WhatIsKDP";
 import Program from "@/components/Program";
 import Guarantee from "@/components/Guarantee";
-import About from "@/components/About";
+import AboutEditorial from "@/components/design/AboutEditorial";
 import FAQ from "@/components/FAQ";
-import Footer from "@/components/Footer";
+import FooterEditorial from "@/components/design/FooterEditorial";
+import TopNav from "@/components/design/TopNav";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function Home() {
   return (
     <main>
-      <Hero />
-      <Promise />
+      <TopNav />
+      <HeroV2 />
+      <section id="promise">
+        <PromiseEditorial />
+      </section>
+      <Transformation />
+      <section id="proof">
+        <ProofWall />
+      </section>
+      <First7Days />
       <WhatIsKDP />
       <Program />
       <Guarantee />
-      <About />
-      <FAQ />
-      <Footer />
+      <AboutEditorial />
+      <section id="faq">
+        <FAQ />
+      </section>
+      <FooterEditorial />
       <WhatsAppButton />
     </main>
   );

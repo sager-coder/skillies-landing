@@ -1,19 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Baloo+Chettan+2:wght@400;500;600;700;800&family=Anek+Malayalam:wght@400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;700;900&display=swap');
 @import "tailwindcss";
 
 :root {
+  /* Backgrounds */
   --background: #FAF5EB;
   --foreground: #1A1A1A;
+  --bg-cream: #FAF5EB;
+  --bg-cream-dark: #F0E8D8;
+  --bg-white: #FFFFFF;
+  --bg-charcoal: #1A1A1A;
+  --bg-charcoal-2: #2D2D2D;
+
+  /* Legacy aliases used in existing v1 components */
   --cream: #FAF5EB;
   --cream-dark: #F0E8D8;
-  --red: #C62828;
-  --red-light: #EF5350;
-  --red-dark: #8B1A1A;
-  --green: #5B7B5B;
-  --green-light: #7A9A7A;
-  --green-dark: #3D5A3D;
   --charcoal: #2D2D2D;
   --gray: #6B7280;
   --gray-light: #9CA3AF;
+
+  /* Brand red */
+  --red: #C62828;
+  --red-dark: #8B1A1A;
+  --red-bright: #EF4444;
+  --red-light: #EF5350;
+  --red-light-bg: #F5E6E6;
+
+  /* Green (sage) */
+  --green: #5B7B5B;
+  --green-light: #7A9A7A;
+  --green-dark: #3D5A3D;
+
+  /* Forest green — Paisa.AI */
+  --forest: #1F3A2E;
+  --forest-2: #2D4A3A;
+  --forest-deep: #142821;
+  --forest-glow: #3D5F4A;
+
+  /* Gold */
+  --gold: #C9A24E;
+  --gold-light: #E6C178;
+
+  /* Text */
+  --fg-1: #1A1A1A;
+  --fg-2: #2D2D2D;
+  --fg-muted: #6B7280;
+  --fg-subtle: #9CA3AF;
+
+  /* Borders */
+  --border-cream: #F0E8D8;
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+  --font-ml: 'Baloo Chettan 2', 'Anek Malayalam', 'Noto Sans Malayalam', 'Inter', system-ui, sans-serif;
 }
 
 @theme inline {
@@ -24,14 +63,20 @@
   --color-red: var(--red);
   --color-red-light: var(--red-light);
   --color-red-dark: var(--red-dark);
+  --color-red-bright: var(--red-bright);
   --color-green: var(--green);
   --color-green-light: var(--green-light);
   --color-green-dark: var(--green-dark);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-forest: var(--forest);
+  --color-forest-deep: var(--forest-deep);
   --color-charcoal: var(--charcoal);
   --color-gray: var(--gray);
   --color-gray-light: var(--gray-light);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-ml: var(--font-ml);
 }
 
 * {
@@ -43,26 +88,95 @@ html {
 }
 
 body {
-  background: var(--cream);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  background: var(--bg-cream);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
+/* Font utility classes used by design bundle components */
+.font-ml { font-family: var(--font-ml); letter-spacing: -0.01em; }
+.font-serif { font-family: var(--font-serif); letter-spacing: -0.01em; }
+.t-serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
-::-webkit-scrollbar-track {
-  background: var(--cream-dark);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--red);
-  border-radius: 3px;
-}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream-dark); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
 
 /* Selection */
-::selection {
-  background: var(--red);
-  color: white;
+::selection { background: var(--red); color: white; }
+
+/* =========================================================
+   Responsive overrides
+   The design bundle uses inline styles heavily. Targeted
+   class-based breakpoints collapse multi-column grids cleanly
+   on tablet (<= 960px) and phone (<= 640px) without touching
+   the component logic.
+   ========================================================= */
+
+/* Tablet */
+@media (max-width: 960px) {
+  .skillies-topnav-links { display: none !important; }
+  .skillies-footer-cols { grid-template-columns: repeat(2, 1fr) !important; gap: 32px !important; }
+  .skillies-watch-grid { grid-template-columns: 1fr !important; }
+  .skillies-about-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+}
+
+/* Phone */
+@media (max-width: 640px) {
+  .skillies-topnav {
+    padding: 10px 16px !important;
+  }
+  .skillies-footer-cols { grid-template-columns: 1fr !important; gap: 28px !important; }
+}
+
+/* =========================================================
+   Broad safety net: collapse every CSS Grid with 2–7 columns
+   down to one column on narrow screens so the landing pages
+   don't overflow horizontally. The design components set
+   grid-template-columns via inline style, so we fall back on
+   attribute selectors.
+   ========================================================= */
+@media (max-width: 720px) {
+  [style*="grid-template-columns: 1fr 1fr"],
+  [style*="grid-template-columns: 1.1fr"],
+  [style*="grid-template-columns: 1.3fr"],
+  [style*="grid-template-columns: 1.5fr"],
+  [style*="grid-template-columns: 1.6fr"],
+  [style*="grid-template-columns: 1fr 340px"],
+  [style*="grid-template-columns: repeat(3, 1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr)"],
+  [style*="grid-template-columns: repeat(7, 1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr) auto"],
+  [style*="grid-template-columns: auto 1fr auto"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Shared motion keyframes referenced by design components */
+@keyframes pulseRing {
+  0% { opacity: .35; transform: scale(1); }
+  80% { opacity: 0; transform: scale(2); }
+  100% { opacity: 0; transform: scale(2); }
+}
+@keyframes tickerIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: .4; transform: scale(1); }
+  50% { opacity: 0; transform: scale(1.8); }
+}
+@keyframes slideUp {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
 }
