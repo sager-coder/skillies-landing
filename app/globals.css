@@ -179,66 +179,77 @@ body {
   }
 }
 
-/* ---------- Phablet / large phone (≤ 720px) ---------- */
+/* ---------- Phablet / large phone (≤ 720px) ----------
+   NOTE: React renders inline styles in COMPRESSED form (no space
+   after ':'). Match the compressed format to actually hit elements.
+   ========================================================= */
 @media (max-width: 720px) {
   /* Safety net — collapse every inline multi-column grid */
-  [style*="grid-template-columns: 1fr 1fr"],
-  [style*="grid-template-columns: 0.9fr"],
-  [style*="grid-template-columns: 1.1fr"],
-  [style*="grid-template-columns: 1.2fr"],
-  [style*="grid-template-columns: 1.3fr"],
-  [style*="grid-template-columns: 1.4fr"],
-  [style*="grid-template-columns: 1.5fr"],
-  [style*="grid-template-columns: 1.6fr"],
-  [style*="grid-template-columns: 1.7fr"],
-  [style*="grid-template-columns: 1fr 340px"],
-  [style*="grid-template-columns: 1fr 160px"],
-  [style*="grid-template-columns: minmax(220px"],
-  [style*="grid-template-columns: minmax(240px"],
-  [style*="grid-template-columns: minmax(280px"],
-  [style*="grid-template-columns: minmax(320px"],
-  [style*="grid-template-columns: minmax(340px"],
-  [style*="grid-template-columns: minmax(360px"],
-  [style*="grid-template-columns: repeat(2, 1fr)"],
-  [style*="grid-template-columns: repeat(3, 1fr)"],
-  [style*="grid-template-columns: repeat(4, 1fr)"],
-  [style*="grid-template-columns: repeat(5, 1fr)"],
-  [style*="grid-template-columns: repeat(6, 1fr)"],
-  [style*="grid-template-columns: repeat(7, 1fr)"],
-  [style*="grid-template-columns: repeat(4, 1fr) auto"],
-  [style*="grid-template-columns: auto 1fr auto"],
-  [style*="grid-template-columns: 1fr auto 1fr"],
-  [style*="grid-template-columns: 42px 1fr"] {
+  [style*="grid-template-columns:1fr 1fr"],
+  [style*="grid-template-columns:0.9fr"],
+  [style*="grid-template-columns:1.1fr"],
+  [style*="grid-template-columns:1.2fr"],
+  [style*="grid-template-columns:1.3fr"],
+  [style*="grid-template-columns:1.4fr"],
+  [style*="grid-template-columns:1.5fr"],
+  [style*="grid-template-columns:1.6fr"],
+  [style*="grid-template-columns:1.7fr"],
+  [style*="grid-template-columns:1fr 340px"],
+  [style*="grid-template-columns:1fr 160px"],
+  [style*="grid-template-columns:1fr 140px"],
+  [style*="grid-template-columns:minmax(220px"],
+  [style*="grid-template-columns:minmax(240px"],
+  [style*="grid-template-columns:minmax(280px"],
+  [style*="grid-template-columns:minmax(320px"],
+  [style*="grid-template-columns:minmax(340px"],
+  [style*="grid-template-columns:minmax(360px"],
+  [style*="grid-template-columns:repeat(2,1fr)"],
+  [style*="grid-template-columns:repeat(2, 1fr)"],
+  [style*="grid-template-columns:repeat(3,1fr)"],
+  [style*="grid-template-columns:repeat(3, 1fr)"],
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns:repeat(4, 1fr)"],
+  [style*="grid-template-columns:repeat(5,1fr)"],
+  [style*="grid-template-columns:repeat(6,1fr)"],
+  [style*="grid-template-columns:repeat(7,1fr)"],
+  [style*="grid-template-columns:repeat(7, 1fr)"],
+  [style*="grid-template-columns:repeat(4, 1fr) auto"],
+  [style*="grid-template-columns:auto 1fr auto"],
+  [style*="grid-template-columns:1fr auto 1fr"],
+  [style*="grid-template-columns:42px 1fr"],
+  [style*="grid-template-columns:120px 1fr"],
+  [style*="grid-template-columns:140px 1fr"],
+  [style*="grid-template-columns:160px 1fr"],
+  [style*="grid-template-columns:180px 1fr"],
+  [style*="grid-template-columns:200px 1fr"],
+  [style*="grid-template-columns:220px 1fr"],
+  [style*="grid-template-columns:240px 1fr"],
+  [style*="grid-template-columns:auto 1fr"],
+  [style*="grid-template-columns:1fr auto"] {
     grid-template-columns: 1fr !important;
   }
 
-  /* HowItWorks has 1fr auto 1fr auto 1fr (3 cards + 2 arrows).
-     Hide the arrows (even children) on mobile. */
-  [style*="grid-template-columns: 1fr auto 1fr auto 1fr"] > :nth-child(2n) {
+  /* HowItWorks (3 cards + 2 arrows). Hide arrows (even children). */
+  [style*="grid-template-columns:1fr auto 1fr auto 1fr"] > :nth-child(2n) {
     display: none !important;
   }
-  [style*="grid-template-columns: 1fr auto 1fr auto 1fr"] {
+  [style*="grid-template-columns:1fr auto 1fr auto 1fr"] {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
 
-  /* Shrink big gaps */
-  [style*="gap: 72"] { gap: 32px !important; }
-  [style*="gap: 64"] { gap: 28px !important; }
-  [style*="gap: 56"] { gap: 24px !important; }
-  [style*="gap: 48"] { gap: 24px !important; }
-  [style*="gap: 40"] { gap: 20px !important; }
+  /* Shrink big gaps (match compressed form) */
+  [style*="gap:72"] { gap: 32px !important; }
+  [style*="gap:64"] { gap: 28px !important; }
+  [style*="gap:56"] { gap: 24px !important; }
+  [style*="gap:48"] { gap: 24px !important; }
+  [style*="gap:40"] { gap: 20px !important; }
 
-  /* Hide decorative floating notes / stamps on mobile
-     (they collide with content on narrow viewports) */
+  /* Hide decorative floating notes / stamps on mobile */
   .skillies-margin-note,
   .skillies-floating-note,
   .skillies-est-stamp,
   .skillies-draft-stamp { display: none !important; }
-
-  /* The hero's margin handwritten quote is positioned absolute at
-     top: 16%, right: 3% and must be hidden. We add the class
-     .skillies-margin-note above in HeroV2. */
 }
 
 /* ---------- Phone (≤ 560px) ---------- */
@@ -257,37 +268,37 @@ body {
     padding-right: 18px !important;
   }
 
-  [style*="padding: 140px"] { padding-top: 88px !important; padding-bottom: 56px !important; }
-  [style*="padding: 128px"] { padding-top: 72px !important; padding-bottom: 72px !important; }
-  [style*="padding: 120px"] { padding-top: 64px !important; padding-bottom: 64px !important; }
-  [style*="padding: 112px"] { padding-top: 60px !important; padding-bottom: 60px !important; }
-  [style*="padding: 100px"] { padding-top: 56px !important; padding-bottom: 56px !important; }
-  [style*="padding: 80px"]  { padding-top: 48px !important; padding-bottom: 48px !important; }
+  [style*="padding:140px"] { padding-top: 88px !important; padding-bottom: 56px !important; }
+  [style*="padding:128px"] { padding-top: 72px !important; padding-bottom: 72px !important; }
+  [style*="padding:120px"] { padding-top: 64px !important; padding-bottom: 64px !important; }
+  [style*="padding:112px"] { padding-top: 60px !important; padding-bottom: 60px !important; }
+  [style*="padding:100px"] { padding-top: 56px !important; padding-bottom: 56px !important; }
+  [style*="padding:80px"]  { padding-top: 48px !important; padding-bottom: 48px !important; }
 
   /* Cards that use generous 40-48px inner padding */
-  [style*="padding: 44px 48px"] { padding: 28px 22px !important; }
-  [style*="padding: 40px 44px"] { padding: 24px 20px !important; }
-  [style*="padding: 40px 48px"] { padding: 24px 20px !important; }
-  [style*="padding: 36px 36px"] { padding: 22px 20px !important; }
-  [style*="padding: 32px 36px"] { padding: 22px 20px !important; }
-  [style*="padding: 32px 32px"] { padding: 20px 18px !important; }
-  [style*="padding: 28px 32px"] { padding: 20px 18px !important; }
-  [style*="padding: 24px 28px"] { padding: 18px 16px !important; }
-  [style*="padding: 22px 28px"] { padding: 18px 16px !important; }
+  [style*="padding:44px 48px"] { padding: 28px 22px !important; }
+  [style*="padding:40px 44px"] { padding: 24px 20px !important; }
+  [style*="padding:40px 48px"] { padding: 24px 20px !important; }
+  [style*="padding:36px 36px"] { padding: 22px 20px !important; }
+  [style*="padding:32px 36px"] { padding: 22px 20px !important; }
+  [style*="padding:32px 32px"] { padding: 20px 18px !important; }
+  [style*="padding:28px 32px"] { padding: 20px 18px !important; }
+  [style*="padding:24px 28px"] { padding: 18px 16px !important; }
+  [style*="padding:22px 28px"] { padding: 18px 16px !important; }
 
   /* Prevent fixed-width elements from overflowing */
-  [style*="width: 210px"],
-  [style*="width: 220px"],
-  [style*="width: 230px"],
-  [style*="width: 240px"],
-  [style*="width: 290px"] {
+  [style*="width:210px"],
+  [style*="width:220px"],
+  [style*="width:230px"],
+  [style*="width:240px"],
+  [style*="width:290px"] {
     max-width: 100% !important;
   }
 
   /* Any min-width over 320px that's set inline can cause hscroll */
-  [style*="min-width: 320"],
-  [style*="min-width: 340"],
-  [style*="min-width: 360"] {
+  [style*="min-width:320"],
+  [style*="min-width:340"],
+  [style*="min-width:360"] {
     min-width: 0 !important;
   }
 
@@ -326,85 +337,72 @@ img, svg, video, canvas, iframe {
 }
 
 /* =========================================================
-   Defensive: clamp() fonts with big min values (hero/H1 range)
-   must not force layouts wider than the viewport on narrow
-   screens. Rewrite their effective size at mobile breakpoints.
+   Defensive: clamp() fonts with large min values force horizontal
+   overflow on phones because clamp(min, preferred, max) returns
+   MIN when preferred < min. Override them on narrow screens.
+   Selectors match React's compressed inline-style output
+   (no space after the colon and no space inside clamp() commas).
    ========================================================= */
 @media (max-width: 560px) {
-  /* Hero headline clamp: min was 82 → 46; max was 184 → 68 */
-  [style*="font-size: clamp(82px, 11vw, 184px)"] {
-    font-size: clamp(42px, 11vw, 68px) !important;
-    line-height: 0.88 !important;
+  /* Hero headline */
+  [style*="clamp(82px, 11vw, 184px)"],
+  [style*="clamp(82px,11vw,184px)"] {
+    font-size: clamp(40px, 11vw, 64px) !important;
+    line-height: 0.9 !important;
+    letter-spacing: -0.04em !important;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
   }
-  /* Section H1/H2 clamps */
-  [style*="font-size: clamp(52px, 7vw, 100px)"],
-  [style*="font-size: clamp(56px, 8vw, 112px)"],
-  [style*="font-size: clamp(54px, 6.5vw, 96px)"],
-  [style*="font-size: clamp(56px, 8vw, 120px)"] {
-    font-size: clamp(32px, 8vw, 48px) !important;
-    line-height: 1 !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
-  }
-  /* Sub-display clamps (H2s at 48-80) */
-  [style*="font-size: clamp(48px, 6vw, 80px)"],
-  [style*="font-size: clamp(44px, 5.5vw, 72px)"],
-  [style*="font-size: clamp(44px, 6vw, 80px)"],
-  [style*="font-size: clamp(44px, 6vw, 84px)"],
-  [style*="font-size: clamp(40px, 5vw, 68px)"],
-  [style*="font-size: clamp(40px, 5vw, 56px)"] {
+  /* Large display (~50–120) */
+  [style*="clamp(52px, 7vw, 100px)"],
+  [style*="clamp(56px, 8vw, 112px)"],
+  [style*="clamp(54px, 6.5vw, 96px)"],
+  [style*="clamp(56px, 8vw, 120px)"],
+  [style*="clamp(48px, 6vw, 80px)"],
+  [style*="clamp(44px, 5.5vw, 72px)"],
+  [style*="clamp(44px, 6vw, 80px)"],
+  [style*="clamp(44px, 6vw, 84px)"],
+  [style*="clamp(40px, 5vw, 68px)"],
+  [style*="clamp(40px, 5vw, 56px)"] {
     font-size: clamp(28px, 7vw, 42px) !important;
     line-height: 1.05 !important;
+    letter-spacing: -0.025em !important;
     word-break: break-word !important;
+    overflow-wrap: anywhere !important;
   }
-  /* Serif-display clamps (32-60) */
-  [style*="font-size: clamp(36px, 4.5vw, 60px)"],
-  [style*="font-size: clamp(36px, 4vw, 52px)"],
-  [style*="font-size: clamp(32px, 4vw, 52px)"],
-  [style*="font-size: clamp(30px, 3.8vw, 52px)"],
-  [style*="font-size: clamp(30px, 3.6vw, 48px)"] {
+  /* Serif-display (32–60) */
+  [style*="clamp(36px, 4.5vw, 60px)"],
+  [style*="clamp(36px, 4vw, 52px)"],
+  [style*="clamp(32px, 4vw, 52px)"],
+  [style*="clamp(30px, 3.8vw, 52px)"],
+  [style*="clamp(30px, 3.6vw, 48px)"] {
     font-size: clamp(24px, 6vw, 34px) !important;
     line-height: 1.1 !important;
   }
-  /* Medium display (22-34) */
-  [style*="font-size: clamp(26px, 2.8vw, 40px)"],
-  [style*="font-size: clamp(22px, 2.4vw, 34px)"],
-  [style*="font-size: clamp(22px, 2.6vw, 32px)"],
-  [style*="font-size: clamp(24px, 2.8vw, 34px)"] {
+  /* Medium display (22–34) */
+  [style*="clamp(26px, 2.8vw, 40px)"],
+  [style*="clamp(22px, 2.4vw, 34px)"],
+  [style*="clamp(22px, 2.6vw, 32px)"],
+  [style*="clamp(24px, 2.8vw, 34px)"] {
     font-size: clamp(18px, 5vw, 24px) !important;
   }
   /* Big receipt numerals */
-  [style*="font-size: clamp(54px, 7vw, 92px)"] {
+  [style*="clamp(54px, 7vw, 92px)"] {
     font-size: clamp(32px, 9vw, 54px) !important;
   }
+  /* H2 + smaller display headings */
+  [style*="clamp(40px, 5vw, 56px)"] {
+    font-size: clamp(28px, 7vw, 40px) !important;
+  }
 
-  /* All H1/H2/H3 at any size get word-break safety */
+  /* Universal H1/H2/H3 word-break safety */
   h1, h2, h3 {
     word-break: break-word;
     overflow-wrap: anywhere;
   }
 }
 
-/* =========================================================
-   More grid patterns that the earlier net missed.
-   ========================================================= */
-@media (max-width: 720px) {
-  [style*="grid-template-columns: 160px 1fr"],
-  [style*="grid-template-columns: 140px 1fr"],
-  [style*="grid-template-columns: 120px 1fr"],
-  [style*="grid-template-columns: 180px 1fr"],
-  [style*="grid-template-columns: 200px 1fr"],
-  [style*="grid-template-columns: 220px 1fr"],
-  [style*="grid-template-columns: 240px 1fr"],
-  [style*="grid-template-columns: 1fr 160px"],
-  [style*="grid-template-columns: 1fr 140px"],
-  [style*="grid-template-columns: auto 1fr"],
-  [style*="grid-template-columns: 1fr auto"] {
-    grid-template-columns: 1fr !important;
-  }
-}
+/* (Extra grid patterns merged into the main 720px block above.) */
 
 /* =========================================================
    Body-level safety: never allow horizontal scroll.
