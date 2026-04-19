@@ -520,7 +520,7 @@ export default function ProgramEditorial() {
               subhead="Same curriculum, same deliverable — in a group cohort. Ship your first book in 50 days, or we refund per the guarantee."
               includes={STANDARD_INCLUDES}
               ctaLabel="Enroll at standard rate"
-              ctaHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%20KDP%20Mastery%20program%20at%20%E2%82%B975%2C000."
+              ctaHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%2050-day%20KDP%20Mastery%20program%20at%20%E2%82%B975%2C000%20%28standard%29.%20My%20name%20is%20"
             />
           </div>
         </div>

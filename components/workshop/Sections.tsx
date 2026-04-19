@@ -931,7 +931,7 @@ export function WorkshopFAQ() {
             </div>
           </div>
           <a
-            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20have%20a%20question%20about%20the%20workshop."
+            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20have%20a%20question%20about%20the%20Calicut%20workshop%20on%20May%2031.%20My%20name%20is%20"
             target="_blank"
             rel="noopener noreferrer"
             style={{

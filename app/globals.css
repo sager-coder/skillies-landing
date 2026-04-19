@@ -139,6 +139,12 @@ body {
   .skillies-footer-cols { grid-template-columns: 1fr !important; gap: 28px !important; }
 }
 
+/* TalkToEhsan — 3-col → 1-col on tablet */
+@media (max-width: 960px) {
+  .skillies-talk-grid { grid-template-columns: 1fr !important; gap: 32px !important; text-align: left !important; }
+  .skillies-talk-signature { text-align: left !important; }
+}
+
 /* =========================================================
    Broad safety net: collapse every CSS Grid with 2–7 columns
    down to one column on narrow screens so the landing pages

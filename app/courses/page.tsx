@@ -1,5 +1,6 @@
 import { CoursePortalNav, CourseInstructors } from "@/components/courses/Sections";
 import CoursesConstruction from "@/components/courses/Construction";
+import TalkToEhsan from "@/components/design/TalkToEhsan";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
@@ -14,6 +15,7 @@ export default function CoursesPage() {
     <main>
       <CoursePortalNav />
       <CoursesConstruction />
+      <TalkToEhsan context="courses" tone="charcoal" />
       <CourseInstructors />
       <FooterEditorial />
       <WhatsAppButton />

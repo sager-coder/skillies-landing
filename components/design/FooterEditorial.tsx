@@ -118,7 +118,7 @@ export default function FooterEditorial() {
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <a
-              href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20the%20Skillies.AI%20KDP%20Mastery%20Program."
+              href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%2050-day%20KDP%20Mastery%20program.%20My%20name%20is%20"
               target="_blank"
               rel="noopener noreferrer"
               style={{

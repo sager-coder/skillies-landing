@@ -166,7 +166,7 @@ export default function KDPDashboardProof() {
           </p>
         </div>
         <a
-          href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20can%20you%20show%20me%20the%20KDP%20dashboard%20live%3F"
+          href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20see%20the%20KDP%20dashboard%20live.%20When%20are%20you%20free%20for%20a%20quick%20WhatsApp%20video%20call%3F%20My%20name%20is%20"
           target="_blank"
           rel="noopener noreferrer"
           style={{

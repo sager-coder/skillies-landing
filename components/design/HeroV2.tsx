@@ -912,7 +912,7 @@ export default function HeroV2() {
                   A full ledger — screenshots on request.
                 </span>
                 <a
-                  href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20can%20you%20share%20the%20KDP%20dashboard%20screenshots%3F"
+                  href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20can%20you%20share%20the%20KDP%20dashboard%20screenshots%3F%20My%20name%20is%20"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{

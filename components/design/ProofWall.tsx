@@ -380,7 +380,7 @@ export default function ProofWall() {
             </div>
           ))}
           <a
-            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20can%20you%20send%20me%20the%20KDP%20dashboard%20screenshots%3F"
+            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20saw%20your%20KDP%20dashboard%20on%20skillies.ai.%20Can%20you%20walk%20me%20through%20it%20live%20over%20WhatsApp%20video%3F%20My%20name%20is%20"
             target="_blank"
             rel="noopener noreferrer"
             style={{

@@ -7,6 +7,7 @@ import HowItWorks from "@/components/design/HowItWorks";
 import Program from "@/components/design/ProgramEditorial";
 import Guarantee from "@/components/Guarantee";
 import AboutEditorial from "@/components/design/AboutEditorial";
+import TalkToEhsan from "@/components/design/TalkToEhsan";
 import FAQ from "@/components/FAQ";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import TopNav from "@/components/design/TopNav";
@@ -29,6 +30,7 @@ export default function Home() {
       <Program />
       <Guarantee />
       <AboutEditorial />
+      <TalkToEhsan context="default" tone="cream" />
       <section id="faq">
         <FAQ />
       </section>

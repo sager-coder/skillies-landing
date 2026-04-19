@@ -7,6 +7,7 @@ import {
   WorkshopFAQ,
   StickyCTA,
 } from "@/components/workshop/Sections";
+import TalkToEhsan from "@/components/design/TalkToEhsan";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import TopNav from "@/components/design/TopNav";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -27,6 +28,7 @@ export default function WorkshopPage() {
       <WorkshopPricing />
       <WorkshopLocation />
       <WorkshopFAQ />
+      <TalkToEhsan context="workshop" tone="cream" />
       <FooterEditorial />
       <StickyCTA />
       <WhatsAppButton />
