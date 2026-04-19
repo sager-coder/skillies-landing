@@ -1438,6 +1438,7 @@ function CalendarGrid() {
         </p>
       </div>
       <div
+        className="dash-calendar-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "48px repeat(7, 1fr)",
