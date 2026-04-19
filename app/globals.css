@@ -146,12 +146,22 @@ body {
     top: 0 !important;
     padding: 10px 12px !important;
     flex-direction: row !important;
+    align-items: center !important;
     overflow-x: auto !important;
     white-space: nowrap !important;
     z-index: 20 !important;
     border-right: none !important;
     border-bottom: 1px solid var(--cream-dark) !important;
-    gap: 4px !important;
+    gap: 10px !important;
+  }
+  /* Wordmark container at the start — give it proper inline size + a
+     vertical divider from the tabs. Without this the padding-bottom
+     renders as vertical space collapsing onto the next button. */
+  .dash-sidebar > div:first-child {
+    padding: 0 14px 0 6px !important;
+    border-right: 1px solid var(--cream-dark) !important;
+    flex-shrink: 0 !important;
+    margin-right: 4px !important;
   }
   .dash-sidebar > button,
   .dash-sidebar > a button {
@@ -299,12 +309,34 @@ body {
     max-width: 100% !important;
   }
 
-  /* Any min-width over 320px that's set inline can cause hscroll */
+  /* Any min-width over 140px that's set inline can cause hscroll */
+  [style*="min-width:140"],
+  [style*="min-width:160"],
+  [style*="min-width:180"],
+  [style*="min-width:200"],
+  [style*="min-width:220"],
+  [style*="min-width:240"],
+  [style*="min-width:260"],
+  [style*="min-width:280"],
+  [style*="min-width:300"],
   [style*="min-width:320"],
   [style*="min-width:340"],
   [style*="min-width:360"] {
     min-width: 0 !important;
   }
+
+  /* Workshop ticket-stub: shrink the rotated card on mobile */
+  .ticket-card {
+    transform: rotate(-1deg) !important;
+    width: 100% !important;
+  }
+  .ticket-main { flex: 1 !important; padding: 16px 20px !important; }
+  .ticket-stub {
+    padding: 16px 14px !important;
+    min-width: 92px !important;
+    flex-shrink: 0 !important;
+  }
+  .ticket-stub [style*="font-size:58"] { font-size: 44px !important; }
 
   /* Dashboard header padding tighter */
   .dash-header { padding: 20px 18px 16px !important; }

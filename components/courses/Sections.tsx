@@ -568,21 +568,22 @@ export function CourseInstructors() {
         }}
       >
         <div
+          role="img"
+          aria-label="Ehsan Asgar P, founder"
           style={{
             width: 84,
             height: 84,
             borderRadius: 999,
-            background: "linear-gradient(135deg, #8B1A1A, #C62828)",
-            color: "white",
-            display: "grid",
-            placeItems: "center",
-            fontSize: 32,
-            fontWeight: 900,
-            letterSpacing: "-0.04em",
+            overflow: "hidden",
+            backgroundColor: "#8B1A1A",
+            backgroundImage: "url('/ehsan-founder.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center 28%",
+            backgroundRepeat: "no-repeat",
+            flexShrink: 0,
+            boxShadow: "0 10px 28px rgba(198,40,40,0.22)",
           }}
-        >
-          E
-        </div>
+        />
         <div>
           <h3
             style={{

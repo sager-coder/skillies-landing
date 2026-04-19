@@ -6,9 +6,11 @@ import { PrimaryButton, SecondaryButton, Grain } from "../design/Primitives";
 function TicketStub() {
   return (
     <div
+      className="ticket-card"
       style={{
         position: "relative",
         display: "inline-flex",
+        maxWidth: "100%",
         background: "#1A1A1A",
         color: "#FAF5EB",
         borderRadius: 14,
@@ -30,7 +32,7 @@ function TicketStub() {
             "repeating-linear-gradient(to bottom, rgba(250,245,235,0.35) 0 4px, transparent 4px 10px)",
         }}
       />
-      <div style={{ padding: "22px 28px", minWidth: 300 }}>
+      <div className="ticket-main" style={{ padding: "22px 28px", minWidth: 300 }}>
         <div
           style={{
             fontSize: 10,
@@ -69,6 +71,7 @@ function TicketStub() {
         </div>
       </div>
       <div
+        className="ticket-stub"
         style={{
           padding: "22px 24px",
           background: "#C62828",
