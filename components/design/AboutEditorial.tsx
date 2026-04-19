@@ -279,11 +279,12 @@ export default function AboutEditorial() {
                 maxWidth: 580,
               }}
             >
-              I teach Malayalam at a school in Malappuram. I&apos;ve been a
-              researcher since my MSc. Everything on this site — the books, the
-              workflows, this web app you&apos;re reading right now — I built it
-              myself, between classes and after the kids went home. Not because
-              I had to. Because the building is the research.
+              I teach English at a school in Malappuram. I&apos;ve been a
+              researcher in my own time, on my own bandwidth, since 2020.
+              Everything on this site — the books, the workflows, this web app
+              you&apos;re reading right now — I built it myself, between
+              classes and after the kids went home. Not because I had to.
+              Because the building is the research.
             </p>
           </div>
         </div>

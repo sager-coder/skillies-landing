@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "Why you? Why this school?",
-    a: "I'm a working teacher and researcher in Malappuram. I've been testing AI income workflows since 2020 — uHRS (Microsoft), then KDP, now video and agents. I teach in Malayalam, I don't dress up numbers, and I build the tools I teach with. If you want polished guru-branding, I'm the wrong school. If you want a teacher who still shows their working, I'm your guy.",
+    a: "I'm a working English teacher in Malappuram and a quiet researcher on the side. I've been testing AI income workflows since 2020 — uHRS (Microsoft), then KDP, now video and agents. I don't dress up numbers. I build the tools I teach with. If you want polished guru-branding, I'm the wrong school. If you want a teacher who still shows their working, I'm your guy.",
   },
   {
     q: "What happens after the 50 days?",

@@ -1384,7 +1384,7 @@ type TimeBlock = {
 const WEEK_SCHEDULE: TimeBlock[] = [
   // School Monday-Friday
   ...[0, 1, 2, 3, 4].flatMap((d) => [
-    { day: d, start: 8, end: 15, type: "school" as const, label: "Malayalam class" },
+    { day: d, start: 8, end: 15, type: "school" as const, label: "English class" },
     { day: d, start: 15, end: 17, type: "commute" as const, label: "Commute + rest" },
     { day: d, start: 17, end: 21, type: "skillies" as const, label: "Skillies work" },
   ]),
@@ -1591,7 +1591,7 @@ export function CalendarView() {
       <ViewHeader
         kicker="Teaching calendar"
         title="Where the hours actually go."
-        sub="Day job first — I'm a Malayalam teacher. Skillies lives in the evenings, the lunch breaks, and most of the weekend."
+        sub="Day job first — I'm an English teacher. Skillies lives in the evenings, the lunch breaks, and most of the weekend."
         note="School: Mon–Fri · 8:00 AM – 3:00 PM"
       />
       <div style={{ padding: "24px 40px 80px" }}>
