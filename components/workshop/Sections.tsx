@@ -3,83 +3,522 @@
 import React, { useEffect, useState } from "react";
 import { Kicker, PrimaryButton, SecondaryButton, Wordmark, Grain } from "../design/Primitives";
 
-const AGENDA: Array<{ t: string; h: string; d: string; highlight?: boolean }> = [
-  { t: "10:00", h: "Doors · chai · introductions", d: "Meet the other Malayalees betting on AI for real income. Short icebreaker." },
-  { t: "10:30", h: "The KDP opportunity, in real numbers", d: "₹8L breakdown. Which no-content categories pay in 2026. What Amazon rewards now — and what it punishes." },
-  { t: "11:30", h: "Your first book — cover to upload", d: "We build one coloring or puzzle book per person, end-to-end. Claude prompts, Canva layout, KDP upload — live, together.", highlight: true },
-  { t: "13:00", h: "Lunch · Malabar biryani (included)", d: "Networking. Paisa conversations. Cover reviews over lunch." },
-  { t: "14:00", h: "Scaling 1 book to 10 in 90 days", d: "The stacking system. Reusable templates. Royalty math. Amazon policy pitfalls to avoid." },
-  { t: "15:15", h: "Keywords, pricing, first 10 reviews", d: "What to title, how to price, how to earn reviews ethically. The three levers that move royalties fastest." },
-  { t: "16:00", h: "Close · Founding Batch offer", d: "Only workshop attendees unlock ₹45,000 pricing on the 50-day mentorship." },
+type AgendaItem = {
+  t: string;
+  end: string;
+  mins: number;
+  type: "Intro" | "Teach" | "Build" | "Break" | "Pitch";
+  title: string;
+  desc: string;
+  tools?: string;
+  you?: string;
+  variant?: "core" | "break" | "close";
+};
+
+const AGENDA: AgendaItem[] = [
+  {
+    t: "10:00",
+    end: "10:30",
+    mins: 30,
+    type: "Intro",
+    title: "Doors, chai, introductions",
+    desc: "Meet the other people in the room betting on AI income. Short icebreaker — who you are, what you&apos;re hoping to ship, and what&apos;s been stopping you.",
+    you: "You: arrive, settle, meet three people before the first session starts.",
+  },
+  {
+    t: "10:30",
+    end: "11:30",
+    mins: 60,
+    type: "Teach",
+    title: "The KDP opportunity, in real numbers",
+    desc: "The ₹8L breakdown, month by month. Which no-content categories are actually paying in 2026, which are dying, what Amazon&apos;s algorithm rewards right now — and what it punishes.",
+    tools: "Ehsan&apos;s live dashboards · Publisher Rocket · KDP Reports",
+  },
+  {
+    t: "11:30",
+    end: "13:00",
+    mins: 90,
+    type: "Build",
+    title: "Your first book — cover to upload",
+    desc: "The heart of the day. We build one coloring or puzzle book per person, end-to-end. Claude writes prompts, Canva lays the pages out, KDP ingests the upload — all live, all together, nobody left behind.",
+    tools: "Claude · Canva · KDP Create",
+    you: "You: walk out of this session with a live Amazon listing URL.",
+    variant: "core",
+  },
+  {
+    t: "13:00",
+    end: "14:00",
+    mins: 60,
+    type: "Break",
+    title: "Lunch — Malabar biryani, included",
+    desc: "Proper Kozhikode-style biryani. Cover reviews over the table. Questions nobody wanted to ask in front of the room. Some of the best paisa conversations happen here.",
+    variant: "break",
+  },
+  {
+    t: "14:00",
+    end: "15:15",
+    mins: 75,
+    type: "Teach",
+    title: "Scaling 1 book to 10 in 90 days",
+    desc: "The stacking system I used to go from 1 book to 63. Reusable templates. Royalty math that actually compounds. The Amazon policy pitfalls that kill new accounts — and how to avoid every one.",
+    tools: "Templates · royalty spreadsheet · Amazon policy deck",
+  },
+  {
+    t: "15:15",
+    end: "16:00",
+    mins: 45,
+    type: "Teach",
+    title: "Keywords, pricing, first 10 reviews",
+    desc: "What to title your book so it actually shows up. How to price it so it sells. How to earn the first ten reviews ethically — because without them, Amazon won&apos;t rank you.",
+    tools: "Keyword vault · pricing calculator · review ethics checklist",
+  },
+  {
+    t: "16:00",
+    end: "16:30",
+    mins: 30,
+    type: "Pitch",
+    title: "Close · The Founding Batch offer",
+    desc: "Only people in this room today unlock the ₹45,000 founding-batch price for the 50-day program. Full details, honest numbers, no pressure. Walk out, or sign up — either way we send you home with a live book.",
+    variant: "close",
+  },
 ];
 
-export function WorkshopAgenda() {
+const TYPE_PALETTE: Record<
+  AgendaItem["type"],
+  { accent: string; soft: string; textOnSoft: string }
+> = {
+  Intro: { accent: "#5B7B5B", soft: "rgba(91,123,91,0.10)", textOnSoft: "#3D5A3D" },
+  Teach: { accent: "#C62828", soft: "rgba(198,40,40,0.08)", textOnSoft: "#C62828" },
+  Build: { accent: "#C9A24E", soft: "rgba(201,162,78,0.14)", textOnSoft: "#8a6a1f" },
+  Break: { accent: "#8B5A2B", soft: "rgba(139,90,43,0.10)", textOnSoft: "#6B4020" },
+  Pitch: { accent: "#1A1A1A", soft: "rgba(26,26,26,0.85)", textOnSoft: "#E6C178" },
+};
+
+function DayArc() {
+  // Horizontal visualization of the 6-hour day with session blocks
+  const startMins = 10 * 60; // 10:00
+  const endMins = 16 * 60 + 30; // 16:30
+  const total = endMins - startMins;
   return (
-    <section id="agenda" style={{ padding: "120px 24px", background: "white" }}>
-      <div style={{ maxWidth: 880, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
-          <Kicker tone="red">The Day</Kicker>
-          <h2 style={{ fontSize: "clamp(40px, 5vw, 56px)", fontWeight: 800, color: "#1A1A1A", margin: "16px 0 12px", letterSpacing: "-0.04em", lineHeight: 1 }}>
-            Six hours. One laptop.
-            <br />Your first book live.
-          </h2>
-          <p style={{ fontSize: 16, color: "#6B7280", margin: "14px auto 0", maxWidth: 520, lineHeight: 1.6 }}>
-            Tight schedule. No fluff. You leave with a book on Amazon, not a binder of theory.
-          </p>
-        </div>
-        {AGENDA.map((it, i) => (
+    <div
+      style={{
+        position: "relative",
+        padding: "28px 4px 44px",
+        marginBottom: 56,
+      }}
+    >
+      {/* hour ticks */}
+      <div
+        style={{
+          position: "relative",
+          height: 8,
+          borderRadius: 999,
+          background: "rgba(26,26,26,0.06)",
+          overflow: "hidden",
+        }}
+      >
+        {AGENDA.map((it, i) => {
+          const [sh, sm] = it.t.split(":").map(Number);
+          const [eh, em] = it.end.split(":").map(Number);
+          const start = sh * 60 + sm - startMins;
+          const end = eh * 60 + em - startMins;
+          const left = (start / total) * 100;
+          const width = ((end - start) / total) * 100;
+          const pal = TYPE_PALETTE[it.type];
+          return (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: `${left}%`,
+                width: `${width}%`,
+                background: pal.accent,
+                opacity: it.variant === "break" ? 0.35 : 0.85,
+                borderRight:
+                  i < AGENDA.length - 1
+                    ? "1.5px solid rgba(255,255,255,0.7)"
+                    : "none",
+              }}
+            />
+          );
+        })}
+      </div>
+      {/* hour labels */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: 14,
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: "0.22em",
+          color: "#9CA3AF",
+          fontFamily: "ui-monospace, Menlo, monospace",
+        }}
+      >
+        {["10 AM", "11", "12", "1 PM", "2", "3", "4", "4:30"].map((l, i) => (
+          <span key={i}>{l}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AgendaCard({ item, i }: { item: AgendaItem; i: number }) {
+  const pal = TYPE_PALETTE[item.type];
+  const isCore = item.variant === "core";
+  const isBreak = item.variant === "break";
+  const isClose = item.variant === "close";
+
+  let cardBg = "white";
+  let cardBorder = "1px solid rgba(26,26,26,0.08)";
+  let cardShadow = "0 6px 18px rgba(0,0,0,0.03)";
+  let textColor = "#1A1A1A";
+  let descColor = "#6B7280";
+  let timeColor = pal.accent;
+  let toolsBg = "#FAF5EB";
+
+  if (isCore) {
+    cardBg =
+      "linear-gradient(135deg, rgba(201,162,78,0.07) 0%, rgba(250,245,235,0.7) 100%)";
+    cardBorder = "1.5px solid rgba(201,162,78,0.5)";
+    cardShadow = "0 30px 70px rgba(201,162,78,0.18)";
+  }
+  if (isBreak) {
+    cardBg =
+      "linear-gradient(135deg, rgba(139,90,43,0.06) 0%, rgba(250,245,235,0.8) 100%)";
+    cardBorder = "1px dashed rgba(139,90,43,0.28)";
+  }
+  if (isClose) {
+    cardBg = "#1A1A1A";
+    cardBorder = "1px solid rgba(255,255,255,0.08)";
+    cardShadow = "0 30px 70px rgba(0,0,0,0.20)";
+    textColor = "#FAF5EB";
+    descColor = "rgba(255,255,255,0.6)";
+    timeColor = "#E6C178";
+    toolsBg = "rgba(255,255,255,0.05)";
+  }
+
+  return (
+    <div style={{ position: "relative", display: "flex", gap: 28 }}>
+      {/* Timeline dot + connector */}
+      <div
+        aria-hidden
+        style={{
+          position: "relative",
+          width: 18,
+          flexShrink: 0,
+          paddingTop: 38,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: 42,
+            bottom: -12,
+            left: 8,
+            width: 2,
+            background:
+              i === AGENDA.length - 1
+                ? "transparent"
+                : "linear-gradient(to bottom, rgba(26,26,26,0.15), rgba(26,26,26,0.05))",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 30,
+            left: 2,
+            width: 14,
+            height: 14,
+            borderRadius: 999,
+            background: isCore
+              ? "#C9A24E"
+              : isClose
+                ? "#1A1A1A"
+                : "white",
+            border: `2px solid ${pal.accent}`,
+            boxShadow: isCore
+              ? "0 0 0 4px rgba(201,162,78,0.25)"
+              : "none",
+          }}
+        />
+      </div>
+
+      {/* Card */}
+      <div
+        style={{
+          flex: 1,
+          padding: isCore ? "32px 36px" : "26px 30px",
+          borderRadius: 22,
+          background: cardBg,
+          border: cardBorder,
+          boxShadow: cardShadow,
+          marginBottom: 18,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {isCore && (
           <div
-            key={i}
             style={{
-              display: "grid",
-              gridTemplateColumns: "90px 1fr auto",
-              gap: 24,
-              padding: "24px 0",
-              borderTop: i === 0 ? "none" : "1px solid #F0E8D8",
-              background: it.highlight
-                ? "linear-gradient(90deg, rgba(198,40,40,0.04), transparent 50%)"
-                : "transparent",
-              marginLeft: it.highlight ? -24 : 0,
-              marginRight: it.highlight ? -24 : 0,
-              paddingLeft: it.highlight ? 24 : 0,
-              paddingRight: it.highlight ? 24 : 0,
-              borderRadius: it.highlight ? 16 : 0,
+              position: "absolute",
+              top: -1,
+              right: -1,
+              padding: "5px 14px",
+              background: "#C9A24E",
+              color: "#2a1f08",
+              fontSize: 9,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              fontWeight: 900,
+              borderBottomLeftRadius: 14,
+              borderTopRightRadius: 22,
             }}
           >
+            The heart of the day
+          </div>
+        )}
+
+        {/* Header row */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: 20,
+            marginBottom: 14,
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
             <div
               style={{
-                fontFamily: "ui-monospace, Menlo, monospace",
-                fontSize: 15,
-                fontWeight: 700,
-                color: "#C62828",
-                letterSpacing: "0.02em",
-                paddingTop: 3,
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontSize: 42,
+                color: timeColor,
+                letterSpacing: "-0.03em",
+                lineHeight: 0.85,
+                fontVariantNumeric: "tabular-nums",
               }}
             >
-              {it.t}
+              {item.t}
             </div>
-            <div>
-              <h3 style={{ fontSize: 19, fontWeight: 700, color: "#1A1A1A", margin: "0 0 6px", letterSpacing: "-0.015em" }}>{it.h}</h3>
-              <p style={{ fontSize: 15, color: "#6B7280", margin: 0, lineHeight: 1.6 }}>{it.d}</p>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: isClose ? "rgba(255,255,255,0.45)" : "#9CA3AF",
+              }}
+            >
+              → {item.end}
             </div>
-            {it.highlight && (
+          </div>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "5px 12px",
+              borderRadius: 999,
+              background: isClose
+                ? "rgba(255,255,255,0.08)"
+                : pal.soft,
+              color: isClose ? "#E6C178" : pal.textOnSoft,
+              fontSize: 10,
+              fontWeight: 800,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+            }}
+          >
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 999,
+                background: isClose ? "#E6C178" : pal.accent,
+              }}
+            />
+            {item.type} · {item.mins} min
+          </div>
+        </div>
+
+        <h3
+          style={{
+            fontSize: isCore ? 26 : 22,
+            fontWeight: 800,
+            color: textColor,
+            margin: "0 0 10px",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.2,
+          }}
+        >
+          {item.title}
+        </h3>
+
+        <p
+          style={{
+            fontSize: 15,
+            color: descColor,
+            margin: 0,
+            lineHeight: 1.65,
+          }}
+          dangerouslySetInnerHTML={{ __html: item.desc }}
+        />
+
+        {(item.tools || item.you) && (
+          <div
+            style={{
+              marginTop: 18,
+              paddingTop: 14,
+              borderTop: isClose
+                ? "1px dashed rgba(255,255,255,0.15)"
+                : "1px dashed rgba(26,26,26,0.12)",
+              display: "grid",
+              gap: 8,
+            }}
+          >
+            {item.tools && (
               <div
                 style={{
-                  alignSelf: "flex-start",
-                  padding: "4px 10px",
-                  borderRadius: 999,
-                  background: "rgba(198,40,40,0.1)",
-                  fontSize: 10,
-                  fontWeight: 800,
-                  letterSpacing: "0.18em",
-                  color: "#C62828",
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 10,
+                  fontSize: 13,
                 }}
               >
-                CORE
+                <span
+                  style={{
+                    fontSize: 9,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    fontWeight: 700,
+                    color: isClose ? "#E6C178" : pal.accent,
+                    minWidth: 56,
+                    paddingTop: 2,
+                  }}
+                >
+                  Tools
+                </span>
+                <span
+                  style={{ color: descColor, lineHeight: 1.5 }}
+                  dangerouslySetInnerHTML={{ __html: item.tools }}
+                />
+              </div>
+            )}
+            {item.you && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 10,
+                  fontSize: 13,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 9,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    fontWeight: 700,
+                    color: isClose ? "#E6C178" : pal.accent,
+                    minWidth: 56,
+                    paddingTop: 2,
+                  }}
+                >
+                  You
+                </span>
+                <span
+                  style={{
+                    color: textColor,
+                    lineHeight: 1.5,
+                    fontStyle: "italic",
+                    fontFamily: "'Instrument Serif', serif",
+                    fontSize: 14,
+                  }}
+                  dangerouslySetInnerHTML={{ __html: item.you }}
+                />
               </div>
             )}
           </div>
-        ))}
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function WorkshopAgenda() {
+  return (
+    <section id="agenda" style={{ padding: "128px 24px", background: "white" }}>
+      <div style={{ maxWidth: 960, margin: "0 auto" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            marginBottom: 28,
+            fontSize: 11,
+            color: "#6B7280",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}
+        >
+          <span style={{ width: 44, height: 1, background: "#C62828" }} />
+          § The Itinerary
+          <span style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }} />
+          <span>Sunday · May 31 · 2026</span>
+        </div>
+
+        <h2
+          style={{
+            fontSize: "clamp(44px, 5.5vw, 72px)",
+            fontWeight: 900,
+            color: "#1A1A1A",
+            margin: "0 0 16px",
+            letterSpacing: "-0.035em",
+            lineHeight: 0.98,
+            maxWidth: 800,
+          }}
+        >
+          Six hours.{" "}
+          <em
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              color: "#C62828",
+            }}
+          >
+            One book, live on Amazon
+          </em>{" "}
+          by the end.
+        </h2>
+
+        <p
+          style={{
+            fontSize: 17,
+            color: "#6B7280",
+            margin: "0 0 10px",
+            lineHeight: 1.6,
+            maxWidth: 620,
+          }}
+        >
+          Tight schedule. No lecture mode. You leave with a book on Amazon, not a binder of theory. Here&apos;s exactly what happens, minute by minute.
+        </p>
+
+        <DayArc />
+
+        <div>
+          {AGENDA.map((item, i) => (
+            <AgendaCard key={i} item={item} i={i} />
+          ))}
+        </div>
       </div>
     </section>
   );
