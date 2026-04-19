@@ -82,19 +82,24 @@ export default function KDPDashboardProof() {
         </div>
       </div>
 
-      {/* Actual screenshot area */}
+      {/* Actual screenshot */}
       <div
         style={{
           position: "relative",
-          aspectRatio: "16/10",
-          background:
-            "linear-gradient(160deg, #F7EED3 0%, #FAF5EB 50%, #F0E8D8 100%)",
-          backgroundImage: "url('/kdp-dashboard.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "top center",
-          backgroundRepeat: "no-repeat",
+          background: "white",
+          lineHeight: 0,
         }}
       >
+        <img
+          src="/kdp-dashboard.png"
+          alt="Actual Kindle Direct Publishing Royalties Estimator showing ₹8,71,982.06 total royalties across 63 books"
+          style={{
+            display: "block",
+            width: "100%",
+            height: "auto",
+          }}
+        />
+
         {/* Verified stamp overlay */}
         <div
           style={{
@@ -118,69 +123,6 @@ export default function KDPDashboardProof() {
         >
           VERIFIED<br />
           <span style={{ fontSize: 8, letterSpacing: "0.25em", fontWeight: 700 }}>APR 2026</span>
-        </div>
-
-        {/* Fallback content (rendered over gradient if image missing) */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            padding: "36px 44px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            color: "#1A1A1A",
-            pointerEvents: "none",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 11,
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              fontWeight: 700,
-              color: "#6B7280",
-              marginBottom: 8,
-              textShadow: "0 1px 0 rgba(255,255,255,0.6)",
-            }}
-          >
-            Royalties Estimator · Kindle Direct Publishing
-          </div>
-          <div
-            style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
-              fontSize: "clamp(54px, 7vw, 92px)",
-              fontWeight: 400,
-              color: "#1A1A1A",
-              letterSpacing: "-0.025em",
-              lineHeight: 0.95,
-              margin: "8px 0 10px",
-              fontVariantNumeric: "tabular-nums",
-              textShadow: "0 2px 0 rgba(255,255,255,0.5)",
-            }}
-          >
-            ₹8,71,982.06<sup style={{ fontSize: "0.4em", color: "#6B7280" }}>*</sup>
-          </div>
-          <div
-            style={{
-              fontSize: 14,
-              color: "#1A1A1A",
-              fontWeight: 600,
-              textShadow: "0 1px 0 rgba(255,255,255,0.6)",
-            }}
-          >
-            All 63 books · Mar 26, 2024 – Apr 19, 2026
-          </div>
-          <div
-            style={{
-              fontSize: 12,
-              color: "#6B7280",
-              marginTop: 4,
-              fontStyle: "italic",
-            }}
-          >
-            *Rounded. Includes estimated KENP royalties.
-          </div>
         </div>
       </div>
 
