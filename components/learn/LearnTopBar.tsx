@@ -37,7 +37,7 @@ export default function LearnTopBar() {
         justifyContent: "space-between",
       }}
     >
-      <a href="/learn" style={{ textDecoration: "none" }}>
+      <a href="/" style={{ textDecoration: "none" }}>
         <Wordmark size={20} />
       </a>
       <div style={{ position: "relative" }}>
