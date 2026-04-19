@@ -451,12 +451,135 @@ function FounderCard() {
   );
 }
 
-const STATS: Array<[string, string, string]> = [
-  ["63", "books published", "#C62828"],
-  ["₹1.16L", "last month", "#5B7B5B"],
-  ["6", "months passive", "#C9A24E"],
-  ["0", "new books since Oct", "#1A1A1A"],
+type LedgerEntry = {
+  n: string;
+  label: string;
+  sub: string;
+  color: string;
+  visual: "books" | "sparkline" | "dots" | "dash";
+};
+
+const LEDGER: LedgerEntry[] = [
+  {
+    n: "63",
+    label: "books written",
+    sub: "All of 2025 · KDP paperbacks",
+    color: "#C62828",
+    visual: "books",
+  },
+  {
+    n: "₹1.16L",
+    label: "paid in March",
+    sub: "KDP + Etsy · net of fees",
+    color: "#5B7B5B",
+    visual: "sparkline",
+  },
+  {
+    n: "6",
+    label: "months untouched",
+    sub: "Since Oct 2025 · no new uploads",
+    color: "#C9A24E",
+    visual: "dots",
+  },
+  {
+    n: "0",
+    label: "new books since",
+    sub: "The whole engine is passive now",
+    color: "#1A1A1A",
+    visual: "dash",
+  },
 ];
+
+function LedgerVisual({ kind, color }: { kind: LedgerEntry["visual"]; color: string }) {
+  const w = 180;
+  const h = 26;
+  if (kind === "books") {
+    // 63 thin vertical "book spines"
+    return (
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+        {Array.from({ length: 63 }).map((_, i) => {
+          const hVar = 14 + ((i * 7) % 10);
+          const xi = (i / 63) * (w - 2);
+          const alpha = 0.5 + ((i * 3) % 10) / 20;
+          return (
+            <rect
+              key={i}
+              x={xi}
+              y={h - hVar - 2}
+              width={1.6}
+              height={hVar}
+              fill={color}
+              opacity={alpha}
+            />
+          );
+        })}
+      </svg>
+    );
+  }
+  if (kind === "sparkline") {
+    const data = [0.32, 0.40, 0.38, 0.46, 0.52, 0.50, 0.58, 0.64, 0.62, 0.74, 0.82, 0.95];
+    const pts = data
+      .map((v, i) => {
+        const x = (i / (data.length - 1)) * (w - 4) + 2;
+        const y = h - v * (h - 4) - 2;
+        return `${x},${y}`;
+      })
+      .join(" ");
+    const area = `2,${h - 2} ${pts} ${w - 2},${h - 2}`;
+    return (
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+        <polygon points={area} fill={`${color}1F`} />
+        <polyline
+          points={pts}
+          fill="none"
+          stroke={color}
+          strokeWidth={1.6}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle
+          cx={w - 2}
+          cy={h - data[data.length - 1] * (h - 4) - 2}
+          r={2.4}
+          fill={color}
+        />
+      </svg>
+    );
+  }
+  if (kind === "dots") {
+    // 6 hollow rings — one per month untouched
+    return (
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <circle
+            key={i}
+            cx={10 + i * 18}
+            cy={h / 2}
+            r={6}
+            fill="none"
+            stroke={color}
+            strokeWidth={1.4}
+            opacity={0.85}
+          />
+        ))}
+      </svg>
+    );
+  }
+  // dash — a long em-dash
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+      <line
+        x1={2}
+        y1={h / 2}
+        x2={w - 2}
+        y2={h / 2}
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 export default function HeroV2() {
   return (
@@ -535,26 +658,6 @@ export default function HeroV2() {
             — Ehsan · Founder
           </div>
         </div>
-      </div>
-
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          bottom: "10%",
-          left: "3%",
-          transform: "rotate(-14deg)",
-          border: "3px solid #C62828",
-          borderRadius: 6,
-          padding: "8px 14px",
-          color: "#C62828",
-          fontSize: 11,
-          fontWeight: 900,
-          letterSpacing: "0.3em",
-          opacity: 0.5,
-        }}
-      >
-        EST. 2025 · CALICUT
       </div>
 
       <div style={{ position: "relative", maxWidth: 1240, margin: "0 auto" }}>
@@ -650,49 +753,180 @@ export default function HeroV2() {
 
             <QualifierStrip />
 
+            {/* Ledger card — replaces the old 4-column stat row */}
             <div
               style={{
-                display: "flex",
-                alignItems: "stretch",
-                gap: 0,
-                borderTop: "1px solid rgba(26,26,26,0.15)",
-                borderBottom: "1px solid rgba(26,26,26,0.15)",
-                padding: "18px 0",
-                marginTop: 28,
+                marginTop: 32,
+                position: "relative",
+                padding: "22px 28px 24px",
+                borderRadius: 16,
+                background: "rgba(250,245,235,0.7)",
+                border: "1px solid rgba(26,26,26,0.10)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
               }}
             >
-              {STATS.map(([v, k, c], i, arr) => (
-                <Fragment key={k}>
-                  <div style={{ flex: 1, paddingRight: 16 }}>
+              {/* subtle paper grain */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  opacity: 0.05,
+                  mixBlendMode: "multiply",
+                  pointerEvents: "none",
+                  borderRadius: 16,
+                  backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' seed='13'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")`,
+                }}
+              />
+              {/* ledger header */}
+              <div
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  marginBottom: 18,
+                  fontSize: 10,
+                  letterSpacing: "0.32em",
+                  textTransform: "uppercase",
+                  fontWeight: 700,
+                  color: "#9CA3AF",
+                }}
+              >
+                <span style={{ width: 20, height: 1, background: "#C62828" }} />
+                <span>By the numbers · as of March 2026</span>
+                <span
+                  style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }}
+                />
+                <span
+                  style={{
+                    fontFamily: "'Instrument Serif', serif",
+                    fontStyle: "italic",
+                    textTransform: "none",
+                    letterSpacing: "0",
+                    color: "#6B7280",
+                    fontWeight: 400,
+                    fontSize: 12,
+                  }}
+                >
+                  Receipts, not promises
+                </span>
+              </div>
+
+              {/* 4 ledger columns */}
+              <div
+                style={{
+                  position: "relative",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4, 1fr)",
+                  gap: 0,
+                }}
+              >
+                {LEDGER.map((s, i, arr) => (
+                  <Fragment key={s.label}>
                     <div
                       style={{
-                        fontFamily: "'Instrument Serif', Georgia, serif",
-                        fontSize: 34,
-                        lineHeight: 1,
-                        color: c,
-                        letterSpacing: "-0.02em",
+                        paddingRight: 18,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 8,
                       }}
                     >
-                      {v}
+                      <div
+                        style={{
+                          fontFamily: "'Instrument Serif', Georgia, serif",
+                          fontSize: 52,
+                          lineHeight: 0.95,
+                          color: s.color,
+                          letterSpacing: "-0.03em",
+                          fontStyle: "italic",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {s.n}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          letterSpacing: "0.22em",
+                          textTransform: "uppercase",
+                          color: "#1A1A1A",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {s.label}
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "'Instrument Serif', serif",
+                          fontStyle: "italic",
+                          fontSize: 12,
+                          color: "#6B7280",
+                          lineHeight: 1.35,
+                        }}
+                      >
+                        {s.sub}
+                      </div>
+                      <div style={{ marginTop: 2 }}>
+                        <LedgerVisual kind={s.visual} color={s.color} />
+                      </div>
                     </div>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        letterSpacing: "0.22em",
-                        textTransform: "uppercase",
-                        color: "#6B7280",
-                        fontWeight: 700,
-                        marginTop: 6,
-                      }}
-                    >
-                      {k}
-                    </div>
-                  </div>
-                  {i < arr.length - 1 && (
-                    <div style={{ width: 1, background: "rgba(26,26,26,0.1)" }} />
-                  )}
-                </Fragment>
-              ))}
+                    {i < arr.length - 1 && (
+                      <div
+                        style={{
+                          width: 1,
+                          background:
+                            "linear-gradient(to bottom, transparent, rgba(26,26,26,0.12), transparent)",
+                          marginRight: 18,
+                          marginLeft: -18,
+                        }}
+                      />
+                    )}
+                  </Fragment>
+                ))}
+              </div>
+
+              {/* footer */}
+              <div
+                style={{
+                  position: "relative",
+                  marginTop: 20,
+                  paddingTop: 14,
+                  borderTop: "1px dashed rgba(26,26,26,0.12)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  fontSize: 11,
+                  color: "#6B7280",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'Instrument Serif', serif",
+                    fontStyle: "italic",
+                    fontSize: 13,
+                    color: "#6B7280",
+                  }}
+                >
+                  A full ledger — screenshots on request.
+                </span>
+                <a
+                  href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20can%20you%20share%20the%20KDP%20dashboard%20screenshots%3F"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: "#C62828",
+                    textDecoration: "none",
+                  }}
+                >
+                  Ask on WhatsApp →
+                </a>
+              </div>
             </div>
           </div>
 
