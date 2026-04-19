@@ -3,7 +3,7 @@ import PromiseEditorial from "@/components/design/PromiseEditorial";
 import Transformation from "@/components/design/Transformation";
 import ProofWall from "@/components/design/ProofWall";
 import First7Days from "@/components/design/First7Days";
-import WhatIsKDP from "@/components/WhatIsKDP";
+import HowItWorks from "@/components/design/HowItWorks";
 import Program from "@/components/Program";
 import Guarantee from "@/components/Guarantee";
 import AboutEditorial from "@/components/design/AboutEditorial";
@@ -25,7 +25,7 @@ export default function Home() {
         <ProofWall />
       </section>
       <First7Days />
-      <WhatIsKDP />
+      <HowItWorks />
       <Program />
       <Guarantee />
       <AboutEditorial />
