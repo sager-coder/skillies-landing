@@ -125,8 +125,9 @@ body {
 
 /* ---------- Tablet (≤ 960px) ---------- */
 @media (max-width: 960px) {
-  /* Nav: hide desktop links, keep wordmark + CTA */
+  /* Nav: hide desktop links, show the hamburger instead */
   .skillies-topnav-links { display: none !important; }
+  .skillies-topnav-hamburger { display: inline-flex !important; }
 
   /* Named multi-col grids collapse to tablet-friendly sizes */
   .skillies-footer-cols { grid-template-columns: repeat(2, 1fr) !important; gap: 32px !important; }
