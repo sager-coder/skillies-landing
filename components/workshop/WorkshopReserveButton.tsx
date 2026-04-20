@@ -400,6 +400,7 @@ function Ticket({
   onClose: () => void;
 }) {
   const paymentShort = receipt.paymentId.slice(-8).toUpperCase();
+  const groupUrl = process.env.NEXT_PUBLIC_WORKSHOP_WA_GROUP_URL || "";
   return (
     <div>
       <div
@@ -432,7 +433,7 @@ function Ticket({
       </h2>
       <p
         style={{
-          margin: "0 0 18px",
+          margin: "0 0 14px",
           fontSize: 13,
           color: "#6B7280",
           lineHeight: 1.55,
@@ -442,6 +443,34 @@ function Ticket({
         to the venue on May 31. A Razorpay receipt is also on its way to
         your email.
       </p>
+
+      {/* Primary next-step: the cohort WhatsApp group, if configured */}
+      {groupUrl && (
+        <a
+          href={groupUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            padding: "12px 16px",
+            background: "#25D366",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: 14,
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: "0.01em",
+            marginBottom: 14,
+            boxShadow: "0 10px 26px rgba(37,211,102,0.25)",
+          }}
+        >
+          <span>Join the WhatsApp group · May 31 attendees</span>
+          <span aria-hidden>↗</span>
+        </a>
+      )}
 
       {/* Ticket card — this is what prints */}
       <div
@@ -618,8 +647,8 @@ function Ticket({
             lineHeight: 1.5,
           }}
         >
-          Present this ticket at entry. Ehsan will WhatsApp the venue
-          address 3 days before the event. Questions? +91 80899 41131.
+          Present this ticket at entry. Venue address + what-to-bring will
+          be posted in the WhatsApp group above. Questions? +91 80899 41131.
         </div>
       </div>
 

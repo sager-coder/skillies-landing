@@ -392,6 +392,7 @@ function SuccessPanel({
   priceLabel: string;
   onClose: () => void;
 }) {
+  const cohortGroup = process.env.NEXT_PUBLIC_PROGRAM_WA_GROUP_URL || "";
   return (
     <div>
       <div
@@ -425,7 +426,7 @@ function SuccessPanel({
       </h2>
       <p
         style={{
-          margin: "0 0 18px",
+          margin: "0 0 16px",
           fontSize: 14,
           color: "#6B7280",
           lineHeight: 1.6,
@@ -435,6 +436,34 @@ function SuccessPanel({
         Mastery. Sign in with the same phone number — you&rsquo;ll get a
         one-time code, then you&rsquo;re straight in.
       </p>
+
+      {cohortGroup && (
+        <a
+          href={cohortGroup}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            padding: "12px 16px",
+            background: "#25D366",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: 14,
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: "0.01em",
+            marginBottom: 14,
+            boxShadow: "0 10px 26px rgba(37,211,102,0.25)",
+          }}
+        >
+          <span>Join the cohort WhatsApp group</span>
+          <span aria-hidden>↗</span>
+        </a>
+      )}
+
       <div style={{ display: "flex", gap: 10 }}>
         <a
           href="/login"
