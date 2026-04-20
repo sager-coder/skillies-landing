@@ -8,13 +8,19 @@
 -- 1. profiles · extends auth.users with our app-side fields
 -- ---------------------------------------------------------------
 create table if not exists public.profiles (
-  id          uuid primary key references auth.users(id) on delete cascade,
-  phone       text unique,
-  full_name   text,
-  email       text,
-  is_admin    boolean not null default false,
-  created_at  timestamptz not null default now()
+  id                 uuid primary key references auth.users(id) on delete cascade,
+  phone              text unique,
+  full_name          text,
+  email              text,
+  is_admin           boolean not null default false,
+  bound_device_id    text,                -- one-device-per-account lock; null = unbound
+  device_bound_at    timestamptz,         -- when the lock was set (for audit)
+  created_at         timestamptz not null default now()
 );
+
+-- Safety for databases that already have this table without the new columns.
+alter table public.profiles add column if not exists bound_device_id text;
+alter table public.profiles add column if not exists device_bound_at timestamptz;
 
 alter table public.profiles enable row level security;
 

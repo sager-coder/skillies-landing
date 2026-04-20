@@ -70,6 +70,46 @@ function VerifyForm() {
         type: "sms",
       });
       if (error) throw error;
+
+      // Bind (or verify) this browser as the student's one allowed device.
+      // Persistent random UUID lives in localStorage so the same browser
+      // keeps its identity across sessions, cache clears short of
+      // "Clear site data", and reboots. A fresh browser / different phone
+      // → different UUID → server rejects as locked.
+      let deviceId: string | null = null;
+      try {
+        deviceId = window.localStorage.getItem("skillies_device_id");
+        if (!deviceId) {
+          deviceId =
+            typeof crypto !== "undefined" && "randomUUID" in crypto
+              ? crypto.randomUUID()
+              : String(Date.now()) + "-" + Math.random().toString(36).slice(2);
+          window.localStorage.setItem("skillies_device_id", deviceId);
+        }
+      } catch {
+        deviceId =
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : String(Date.now()) + "-" + Math.random().toString(36).slice(2);
+      }
+
+      const claim = await fetch("/api/auth/claim-device", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ deviceId }),
+      });
+      if (claim.status === 403) {
+        // Locked to another device. Kill the session we just created so
+        // the attacker/secondary browser doesn't retain an access token.
+        await supabase.auth.signOut();
+        router.push("/login?locked=1");
+        return;
+      }
+      if (!claim.ok) {
+        const body = (await claim.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error || "Couldn't bind this device.");
+      }
+
       router.push(next);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Verification failed.";

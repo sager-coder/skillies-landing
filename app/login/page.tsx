@@ -44,6 +44,7 @@ function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/learn";
+  const locked = params.get("locked") === "1";
 
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
@@ -105,6 +106,34 @@ function LoginForm() {
       >
         Enter your <em style={{ fontStyle: "italic", color: "#C62828" }}>WhatsApp number.</em>
       </h1>
+
+      {locked && (
+        <div
+          style={{
+            marginTop: 16,
+            padding: "14px 16px",
+            background: "rgba(201,162,78,0.10)",
+            border: "1px solid rgba(201,162,78,0.35)",
+            borderRadius: 12,
+            fontSize: 13,
+            lineHeight: 1.55,
+            color: "#8a6a1f",
+          }}
+        >
+          <b>This account is locked to another device.</b> Skillies.AI
+          courses are one-device-per-student to keep them affordable —
+          if you&rsquo;ve genuinely lost or switched phones,{" "}
+          <a
+            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20need%20to%20reset%20my%20device%20on%20skillies.ai.%20My%20phone%20is%20"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#8a6a1f", fontWeight: 700 }}
+          >
+            WhatsApp Ehsan
+          </a>{" "}
+          and he&rsquo;ll unlock it for you.
+        </div>
+      )}
       <p style={{ fontSize: 15, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
         We’ll text you a one-time code. The number you used to enrol with Ehsan.
       </p>
