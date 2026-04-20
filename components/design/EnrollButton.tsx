@@ -96,6 +96,13 @@ export default function EnrollButton({
 
     setBusy(true);
     try {
+      // `?test=1` in the URL swaps the tier price for a ₹1 charge so we
+      // can smoke-test the live Razorpay → webhook → Supabase-enrollment
+      // path end-to-end without moving real money. Everyone else pays the
+      // server-side tier price.
+      const isTestRun =
+        typeof window !== "undefined" &&
+        new URL(window.location.href).searchParams.get("test") === "1";
       const orderRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -105,6 +112,7 @@ export default function EnrollButton({
           email,
           course,
           tier,
+          ...(isTestRun ? { amount: 100 } : {}),
         }),
       });
       const orderData = (await orderRes.json()) as {
