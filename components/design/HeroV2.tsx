@@ -495,19 +495,20 @@ function LedgerVisual({ kind, color }: { kind: LedgerEntry["visual"]; color: str
   const w = 180;
   const h = 26;
   if (kind === "books") {
-    // 63 thin vertical "book spines"
+    // 63 thin vertical "book spines" — toned down so they read as texture,
+    // not a dominant chart. Opacity band is 0.25–0.55.
     return (
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
         {Array.from({ length: 63 }).map((_, i) => {
           const hVar = 14 + ((i * 7) % 10);
           const xi = (i / 63) * (w - 2);
-          const alpha = 0.5 + ((i * 3) % 10) / 20;
+          const alpha = 0.25 + ((i * 3) % 10) / 33;
           return (
             <rect
               key={i}
               x={xi}
               y={h - hVar - 2}
-              width={1.6}
+              width={1.3}
               height={hVar}
               fill={color}
               opacity={alpha}
@@ -566,18 +567,33 @@ function LedgerVisual({ kind, color }: { kind: LedgerEntry["visual"]; color: str
       </svg>
     );
   }
-  // dash — a long em-dash
+  // passive — a dashed flat baseline (no new production activity) followed
+  // by a small heartbeat pulse and an end dot (income still arriving).
+  // The "still earning" green matches the sparkline tone.
+  const green = "#5B7B5B";
+  const hbX = w - 56;
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
       <line
         x1={2}
         y1={h / 2}
-        x2={w - 2}
+        x2={hbX}
         y2={h / 2}
         stroke={color}
-        strokeWidth={2}
+        strokeWidth={1.6}
         strokeLinecap="round"
+        strokeDasharray="3 5"
+        opacity={0.55}
       />
+      <path
+        d={`M ${hbX},${h / 2} l 6,0 l 3,-9 l 4,14 l 4,-18 l 4,13 l 4,0 l 18,0`}
+        stroke={green}
+        strokeWidth={1.6}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx={w - 2} cy={h / 2} r={2.8} fill={green} />
     </svg>
   );
 }
