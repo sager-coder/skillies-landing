@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Kicker, PrimaryButton } from "./Primitives";
+import { Kicker } from "./Primitives";
+import EnrollButton from "./EnrollButton";
 
 /**
  * ProgramEditorial — the 50-day flagship program.
@@ -175,7 +176,8 @@ function TierCard({
   subhead,
   includes,
   ctaLabel,
-  ctaHref,
+  tier,
+  fallbackHref,
   highlighted,
 }: {
   tone: "gold" | "red";
@@ -187,7 +189,8 @@ function TierCard({
   subhead: string;
   includes: string[];
   ctaLabel: string;
-  ctaHref: string;
+  tier: "standard" | "pro";
+  fallbackHref: string;
   highlighted?: boolean;
 }) {
   const palette = {
@@ -348,7 +351,26 @@ function TierCard({
         ))}
       </ul>
 
-      <PrimaryButton href={ctaHref}>{ctaLabel}</PrimaryButton>
+      <EnrollButton tier={tier} label={ctaLabel} priceLabel={price} />
+      <div
+        style={{
+          marginTop: 14,
+          fontSize: 12,
+          color: "#9CA3AF",
+          lineHeight: 1.5,
+        }}
+      >
+        Prefer UPI + WhatsApp?{" "}
+        <a
+          href={fallbackHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#6B7280", textDecoration: "underline" }}
+        >
+          Message Ehsan
+        </a>
+        .
+      </div>
     </div>
   );
 }
@@ -508,8 +530,9 @@ export default function ProgramEditorial() {
               tag="Most Popular"
               subhead="The full 50-day program in a live group cohort. Ship your first book in 50 days, or refund per the guarantee."
               includes={STANDARD_INCLUDES}
-              ctaLabel="Enroll in Standard"
-              ctaHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%2050-day%20KDP%20Mastery%20program%20at%20%E2%82%B975%2C000%20%28standard%29.%20My%20name%20is%20"
+              ctaLabel="Enroll · Pay ₹75,000"
+              tier="standard"
+              fallbackHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%2050-day%20KDP%20Mastery%20program%20at%20%E2%82%B975%2C000%20%28standard%29.%20My%20name%20is%20"
               highlighted
             />
             <TierCard
@@ -520,8 +543,9 @@ export default function ProgramEditorial() {
               tag="Pro"
               subhead="Standard, plus twelve 1-on-1 calls, a direct WhatsApp line, and a custom book-one plan built around your niche. Application only."
               includes={PRO_INCLUDES}
-              ctaLabel="Apply for Pro track"
-              ctaHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20apply%20for%20the%20Pro%20%28%E2%82%B91%2C25%2C000%29%20tier%20of%20the%2050-day%20KDP%20Mastery%20program.%20My%20name%20is%20"
+              ctaLabel="Apply · Pay ₹1,25,000"
+              tier="pro"
+              fallbackHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20apply%20for%20the%20Pro%20%28%E2%82%B91%2C25%2C000%29%20tier%20of%20the%2050-day%20KDP%20Mastery%20program.%20My%20name%20is%20"
             />
           </div>
 
