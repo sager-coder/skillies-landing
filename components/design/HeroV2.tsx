@@ -432,21 +432,34 @@ function FounderCard() {
         </div>
       </div>
 
-      {/* caption */}
+      {/* caption — editorial-style photo label anchored to the polaroid */}
       <div
         style={{
           position: "absolute",
-          top: -4,
-          right: 12,
+          top: -2,
+          left: 20,
+          width: 290,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
           fontFamily: "'Instrument Serif', serif",
           fontStyle: "italic",
-          fontSize: 13,
+          fontSize: 12,
           color: "rgba(26,26,26,0.55)",
-          transform: "rotate(2deg)",
+          letterSpacing: "0.01em",
           zIndex: 5,
         }}
       >
-        Fig. 01 — not a stock photo.
+        <span style={{ whiteSpace: "nowrap" }}>Fig. 01</span>
+        <span
+          aria-hidden
+          style={{
+            flex: 1,
+            height: 1,
+            background: "rgba(26,26,26,0.22)",
+          }}
+        />
+        <span style={{ whiteSpace: "nowrap" }}>not a stock photo</span>
       </div>
     </div>
   );
@@ -469,7 +482,7 @@ const LEDGER: LedgerEntry[] = [
     visual: "books",
   },
   {
-    n: "₹1.16L",
+    n: "₹1,16,000",
     label: "paid in March",
     sub: "KDP + Etsy · net of fees",
     color: "#5B7B5B",

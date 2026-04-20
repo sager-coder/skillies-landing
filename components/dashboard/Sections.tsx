@@ -14,7 +14,6 @@ type NavItem = { k: string; label: string; icon: string };
 const NAV: NavItem[] = [
   { k: "home", label: "Overview", icon: "M3 12l9-9 9 9M5 10v10h14V10" },
   { k: "royalties", label: "KDP Royalties", icon: "M3 17l6-6 4 4 8-8 M14 7h7v7" },
-  { k: "books", label: "My Books · 63", icon: "M4 4h12a4 4 0 014 4v12H8a4 4 0 01-4-4V4z M8 4v12" },
   { k: "etsy", label: "Etsy · PageBoo", icon: "M4 6h16M4 12h16M4 18h10" },
   { k: "cohort", label: "Founding batch", icon: "M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2 M9 10a4 4 0 100-8 4 4 0 000 8z M21 20v-2a4 4 0 00-3-3.87 M17 6a4 4 0 010 6" },
   { k: "calendar", label: "Teaching calendar", icon: "M8 7V3M16 7V3M3 11h18 M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" },

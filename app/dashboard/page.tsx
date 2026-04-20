@@ -5,7 +5,6 @@ import { DashSidebar } from "@/components/dashboard/Sections";
 import {
   OverviewView,
   RoyaltiesView,
-  BooksView,
   EtsyView,
   FoundingBatchView,
   CalendarView,
@@ -14,7 +13,6 @@ import {
 const VIEWS: Record<string, React.ComponentType> = {
   home: OverviewView,
   royalties: RoyaltiesView,
-  books: BooksView,
   etsy: EtsyView,
   cohort: FoundingBatchView,
   calendar: CalendarView,
