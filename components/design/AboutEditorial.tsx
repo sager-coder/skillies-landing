@@ -20,11 +20,6 @@ const HUSTLES: Array<[string, string, string]> = [
 
 const RESEARCHING: Array<{ tool: string; what: string; accent: string }> = [
   {
-    tool: "HeyGen + ElevenLabs",
-    what: "Automated video production — avatars, voice, editing. Next income stream, and next course.",
-    accent: "#C62828",
-  },
-  {
     tool: "Claude Code",
     what: "Agent orchestration. I'm building the Skillies.AI web app with it, line by line, instead of outsourcing.",
     accent: "#C9A24E",
@@ -42,7 +37,6 @@ const RESEARCHING: Array<{ tool: string; what: string; accent: string }> = [
 ];
 
 const AI_FRONTIERS: Array<[string, string]> = [
-  ["Video production", "HeyGen · Sora · avatars"],
   ["Accounting", "AI bookkeeping agents"],
   ["Digital marketing", "Claude + Meta ads + copy agents"],
   ["Teaching", "Personal AI tutors"],

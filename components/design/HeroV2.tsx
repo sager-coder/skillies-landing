@@ -101,7 +101,6 @@ const HUSTLES: Array<[string, string, string]> = [
   ["KDP royalties", "Amazon · 63 books live", "₹1,08,400 last month"],
   ["Etsy printables", "PageBoo shop · weekends", "US$ 99.98 last 30 days"],
   ["6 months passive", "Zero new publishes since Oct", "Books still earning"],
-  ["In the lab", "HeyGen + ElevenLabs + Claude Code", "Next course, in research"],
   ["Next cohort", "Standard ₹75,000 · Pro ₹1,25,000", "Rolling intake"],
 ];
 

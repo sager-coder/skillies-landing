@@ -515,7 +515,7 @@ export function CourseCatalog() {
           stats="3 lessons · 42m · open preview"
         />
         <CourseCard
-          title="AI Video Production · HeyGen + ElevenLabs"
+          title="AI Video Production"
           kicker="In research · 2026"
           tone="gold"
           stats="Avatars, voice, editing. Currently being built — drop below for early access."

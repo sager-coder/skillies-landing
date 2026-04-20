@@ -62,8 +62,8 @@ const COURSES: Course[] = [
     tone: "green",
   },
   {
-    title: "AI Video Production · HeyGen + ElevenLabs",
-    tagline: "Avatars, voiceovers, editing. What I'm researching this month.",
+    title: "AI Video Production",
+    tagline: "Avatars, voiceovers, editing — the automated stack. In research.",
     status: "IN RESEARCH",
     progress: 12,
     eta: "~ Q3 2026",

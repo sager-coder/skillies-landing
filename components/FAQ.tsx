@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: "Is Skillies.AI just about KDP books?",
-    a: "No — KDP is where we start because it's proven. But Skillies.AI is a research-and-teach company. The whole reason I stopped publishing new books is to go deeper on what's next: automated video production (HeyGen + ElevenLabs), AI-assisted digital marketing, Etsy printables, and agent-built software. Expect more courses through 2026 — all on skills that actually pay in the AI age, not theory.",
+    a: "No — KDP is where we start because it's proven. But Skillies.AI is a research-and-teach company. The whole reason I stopped publishing new books is to go deeper on what's next: AI-assisted digital marketing, Etsy printables, and agent-built software. Expect more courses through 2026 — all on skills that actually pay in the AI age, not theory.",
   },
   {
     q: "Why you? Why this school?",
