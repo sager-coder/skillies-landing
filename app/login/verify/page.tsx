@@ -82,12 +82,15 @@ function VerifyForm() {
   const onResend = async () => {
     setErr(null);
     try {
-      const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        phone,
-        options: { channel: "sms" },
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ phone }),
       });
-      if (error) throw error;
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Couldn't resend code.");
+      }
       setResendCooldown(30);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Couldn't resend code.";

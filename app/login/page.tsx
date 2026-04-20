@@ -2,7 +2,6 @@
 
 import React, { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Wordmark, Grain } from "@/components/design/Primitives";
 
 function LoginShell({ children }: { children: React.ReactNode }) {
@@ -55,29 +54,25 @@ function LoginForm() {
     setErr(null);
     setBusy(true);
     try {
-      const cleaned = phone.replace(/\D/g, "");
-      if (cleaned.length < 10) {
-        setErr("Enter a valid phone number with country code (e.g. 91…).");
-        setBusy(false);
-        return;
-      }
-      const e164 = cleaned.startsWith("91") ? `+${cleaned}` : `+91${cleaned}`;
-
-      const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: e164,
-        options: { channel: "sms" },
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ phone }),
       });
-      if (error) throw error;
-
-      router.push(`/login/verify?phone=${encodeURIComponent(e164)}&next=${encodeURIComponent(next)}`);
+      const data = (await res.json()) as {
+        ok?: boolean;
+        phone?: string;
+        error?: string;
+      };
+      if (!res.ok || !data.ok || !data.phone) {
+        throw new Error(data.error || "Couldn't send code. Try again.");
+      }
+      router.push(
+        `/login/verify?phone=${encodeURIComponent(data.phone)}&next=${encodeURIComponent(next)}`,
+      );
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Something went wrong. Try again.";
-      if (msg.toLowerCase().includes("sms provider")) {
-        setErr("SMS provider not configured yet. WhatsApp Ehsan to get manual access while we activate.");
-      } else {
-        setErr(msg);
-      }
+      setErr(msg);
     } finally {
       setBusy(false);
     }
