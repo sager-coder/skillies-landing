@@ -276,6 +276,52 @@ body {
   /* StickyCTA is redundant on mobile (TopNav Reserve button is
      always visible), and it overlaps content. Hide it. */
   .skillies-sticky-cta { display: none !important; }
+
+  /* FounderCard on mobile: unpin the absolute-positioned polaroid +
+     receipt so they flow naturally and the card height collapses to
+     its content. Desktop keeps the overlapping-collage look; mobile
+     gets a tidy column: caption → polaroid → receipt. */
+  .skillies-founder-card {
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding-top: 24px !important;
+  }
+  .skillies-founder-caption {
+    position: static !important;
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+  }
+  .skillies-founder-polaroid {
+    position: static !important;
+    order: 2 !important;
+    transform: rotate(-2deg) !important;
+    width: 100% !important;
+    max-width: 340px !important;
+    margin: 0 !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+  }
+  .skillies-founder-receipt {
+    position: static !important;
+    order: 3 !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: 0 !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+  }
 }
 
 /* ---------- Phone (≤ 560px) ---------- */

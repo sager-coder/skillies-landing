@@ -242,7 +242,7 @@ function QualifierStrip() {
  */
 function FounderCard() {
   return (
-    <div style={{ position: "relative", height: 580 }}>
+    <div className="skillies-founder-card" style={{ position: "relative", height: 580 }}>
       {/* gold ambient backdrop */}
       <div
         aria-hidden
@@ -276,6 +276,7 @@ function FounderCard() {
 
       {/* polaroid */}
       <div
+        className="skillies-founder-polaroid"
         style={{
           position: "absolute",
           top: 20,
@@ -357,6 +358,7 @@ function FounderCard() {
 
       {/* receipt */}
       <div
+        className="skillies-founder-receipt"
         style={{
           position: "absolute",
           bottom: 24,
@@ -434,6 +436,7 @@ function FounderCard() {
 
       {/* caption — editorial-style photo label anchored to the polaroid */}
       <div
+        className="skillies-founder-caption"
         style={{
           position: "absolute",
           top: -2,
