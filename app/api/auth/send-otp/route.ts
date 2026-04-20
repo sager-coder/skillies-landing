@@ -7,6 +7,10 @@ export const runtime = "nodejs";
 type Body = { phone?: string };
 
 function clientIp(req: Request): string {
+  // Cloudflare proxy (orange cloud) sets this; prefer it because it's the
+  // real client IP before CF added its own node to the hop chain.
+  const cf = req.headers.get("cf-connecting-ip");
+  if (cf) return cf;
   const fwd = req.headers.get("x-forwarded-for") || "";
   const first = fwd.split(",")[0]?.trim();
   return first || req.headers.get("x-real-ip") || "unknown";
