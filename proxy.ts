@@ -40,21 +40,26 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // One-device-per-account enforcement. Runs on /learn and /admin for
-  // any signed-in user. The httpOnly `skillies_device` cookie is issued
-  // by /api/auth/claim-device right after OTP verify. If it's missing or
-  // doesn't match profiles.bound_device_id, this device isn't the one
-  // the student bound — redirect to /login?locked=1. Users whose
-  // bound_device_id is still null (legacy / brand-new) fall through.
-  if (user && (path.startsWith("/learn") || path.startsWith("/admin"))) {
+  // Protect /admin against unauthenticated users. The admin-vs-student
+  // authorization (is_admin check) lives on /admin/page.tsx itself,
+  // server-side — keeping it there avoids RLS / Edge read subtleties
+  // that can silently return a falsy is_admin and ping-pong admins to
+  // /learn even when their profile row has is_admin = true.
+  if (path.startsWith("/admin") && !user) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("next", path);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // One-device-per-account enforcement. Only on /learn — /admin has its
+  // own server-side gate and admins are exempt from the lock anyway.
+  if (user && path.startsWith("/learn")) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("bound_device_id, is_admin")
       .eq("id", user.id)
       .single();
 
-    // Admins are exempt from the single-device rule — they need to move
-    // between phone (teaching) and laptop (back-end work) freely.
     if (profile?.bound_device_id && !profile?.is_admin) {
       const cookie = req.cookies.get("skillies_device")?.value;
       if (!cookie || cookie !== profile.bound_device_id) {
@@ -62,11 +67,6 @@ export async function proxy(req: NextRequest) {
         lockUrl.searchParams.set("locked", "1");
         return NextResponse.redirect(lockUrl);
       }
-    }
-
-    // is_admin check for /admin
-    if (path.startsWith("/admin") && !profile?.is_admin) {
-      return NextResponse.redirect(new URL("/learn", req.url));
     }
   }
 
