@@ -8,7 +8,12 @@ type Body = {
   full_name?: string;
   email?: string;
   course?: string;
-  tier?: "founding" | "standard" | "pro";
+  tier?:
+    | "founding"
+    | "standard"
+    | "pro"
+    | "workshop-early"
+    | "workshop-regular";
   amount?: number; // paise; allows a ₹1 test override without shipping new tier pricing
 };
 
@@ -18,7 +23,10 @@ const TIER_AMOUNTS_PAISE: Record<string, number> = {
   founding: 4_500_000,   // ₹45,000 — closed batch reference
   standard: 7_500_000,   // ₹75,000
   pro: 12_500_000,       // ₹1,25,000
+  "workshop-early": 199_900,   // ₹1,999 — Calicut workshop early bird
+  "workshop-regular": 249_900, // ₹2,499 — Calicut workshop regular
 };
+const VALID_TIERS = Object.keys(TIER_AMOUNTS_PAISE);
 
 export async function POST(req: Request) {
   const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
@@ -52,7 +60,7 @@ export async function POST(req: Request) {
   if (!full_name) {
     return NextResponse.json({ error: "Name is required." }, { status: 400 });
   }
-  if (!["founding", "standard", "pro"].includes(tier)) {
+  if (!VALID_TIERS.includes(tier)) {
     return NextResponse.json({ error: "Invalid tier." }, { status: 400 });
   }
 

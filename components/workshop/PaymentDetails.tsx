@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Grain } from "../design/Primitives";
+import WorkshopReserveButton from "./WorkshopReserveButton";
 
 /**
  * PaymentDetails — clear, inline payment instructions for the
@@ -101,7 +102,7 @@ export default function PaymentDetails() {
               margin: 0,
             }}
           >
-            How to pay.{" "}
+            Pay online.{" "}
             <em
               style={{
                 fontFamily: "'Instrument Serif', Georgia, serif",
@@ -110,7 +111,7 @@ export default function PaymentDetails() {
                 color: "#E6C178",
               }}
             >
-              Three steps.
+              Or UPI.
             </em>
           </h2>
           <p
@@ -122,10 +123,94 @@ export default function PaymentDetails() {
               maxWidth: 440,
             }}
           >
-            No online checkout yet. You pay by UPI to the number below,
-            screenshot the confirmation, and WhatsApp it to me. I
-            confirm your seat the moment I see it.
+            One tap to Razorpay for card / UPI / netbanking — seat confirmed
+            automatically. Prefer the old way? UPI to the number below and
+            WhatsApp me the screenshot still works.
           </p>
+        </div>
+
+        {/* Primary: online checkout via Razorpay */}
+        <div
+          style={{
+            marginBottom: 56,
+            padding: "32px 32px 28px",
+            borderRadius: 22,
+            background:
+              "linear-gradient(135deg, rgba(239,68,68,0.18), rgba(201,162,78,0.10))",
+            border: "1.5px solid rgba(239,68,68,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 24,
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ flex: "1 1 260px", minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "#EF4444",
+                marginBottom: 10,
+              }}
+            >
+              Instant · recommended
+            </div>
+            <div
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: "clamp(28px, 3vw, 40px)",
+                fontWeight: 400,
+                letterSpacing: "-0.015em",
+                lineHeight: 1.15,
+                color: "white",
+              }}
+            >
+              Reserve your seat{" "}
+              <em style={{ fontStyle: "italic", color: "#E6C178" }}>in 30 seconds.</em>
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                color: "rgba(255,255,255,0.55)",
+                marginTop: 8,
+                lineHeight: 1.55,
+              }}
+            >
+              Pays through Razorpay · takes UPI, cards, netbanking. Seat is
+              auto-confirmed the moment payment clears.
+            </div>
+          </div>
+          <WorkshopReserveButton
+            tier="workshop-early"
+            priceLabel="₹1,999"
+            label="Reserve seat · ₹1,999"
+          />
+        </div>
+
+        {/* Or manual section divider */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            margin: "8px 0 32px",
+            fontSize: 11,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            color: "rgba(255,255,255,0.35)",
+          }}
+        >
+          <span
+            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }}
+          />
+          <span>Or pay manually via UPI</span>
+          <span
+            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }}
+          />
         </div>
 
         {/* Two-column layout: QR card on left, steps on right */}

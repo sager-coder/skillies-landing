@@ -77,6 +77,21 @@ export async function POST(req: Request) {
   const course = (notes.course || "").trim();
   const tier = (notes.tier || "").trim();
 
+  // Workshop tiers don't map to a course; they're a physical event. ACK and
+  // let Ehsan see the standard Razorpay email notification. No /learn access
+  // gets granted.
+  if (tier.startsWith("workshop")) {
+    console.log("[rzp webhook] workshop seat paid", {
+      payment_id: payment.id,
+      phone: phoneRaw,
+      full_name,
+      email,
+      tier,
+      amount: payment.amount,
+    });
+    return NextResponse.json({ ok: true, kind: "workshop" });
+  }
+
   if (!phoneRaw || !course || !["founding", "standard", "pro"].includes(tier)) {
     // Payment is real, but our metadata is missing — accept & log so the retry
     // doesn't hammer us, but surface enough info for manual follow-up.
