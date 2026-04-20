@@ -178,6 +178,7 @@ export default function First7Days() {
         </div>
 
         <div
+          className="skillies-first7-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(7, 1fr)",

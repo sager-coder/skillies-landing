@@ -510,24 +510,22 @@ function LedgerVisual({ kind, color }: { kind: LedgerEntry["visual"]; color: str
   const w = 180;
   const h = 26;
   if (kind === "books") {
-    // 63 thin vertical "book spines" — toned down so they read as texture,
-    // not a dominant chart. Opacity band is 0.25–0.55.
+    // 21 clusters × 3 books each, visually balanced and legible on
+    // mobile retinas. Each cluster is a short triad of bars so the
+    // bars stay crisp without reading as 63 hair-thin strokes.
+    const clusters = 21;
     return (
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
-        {Array.from({ length: 63 }).map((_, i) => {
-          const hVar = 14 + ((i * 7) % 10);
-          const xi = (i / 63) * (w - 2);
-          const alpha = 0.25 + ((i * 3) % 10) / 33;
+        {Array.from({ length: clusters }).map((_, i) => {
+          const hVar = 13 + ((i * 7) % 11);
+          const clusterX = (i / clusters) * (w - 4);
+          const alpha = 0.4 + ((i * 3) % 10) / 28;
           return (
-            <rect
-              key={i}
-              x={xi}
-              y={h - hVar - 2}
-              width={1.3}
-              height={hVar}
-              fill={color}
-              opacity={alpha}
-            />
+            <g key={i}>
+              <rect x={clusterX} y={h - hVar - 2} width={1.6} height={hVar} fill={color} opacity={alpha} />
+              <rect x={clusterX + 2.4} y={h - hVar - 2} width={1.6} height={hVar - 2} fill={color} opacity={alpha * 0.85} />
+              <rect x={clusterX + 4.8} y={h - hVar - 2} width={1.6} height={hVar - 4} fill={color} opacity={alpha * 0.7} />
+            </g>
           );
         })}
       </svg>

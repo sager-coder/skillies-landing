@@ -278,6 +278,30 @@ body {
      always visible), and it overlaps content. Hide it. */
   .skillies-sticky-cta { display: none !important; }
 
+  /* ProofWall summary strip (4 stats + 'Ask for screenshots' CTA):
+     2-col stats grid with the CTA full-width beneath. Overrides the
+     generic repeat(4,1fr) collapse from the mobile safety net. */
+  .skillies-proof-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px 24px !important;
+    padding: 22px 20px !important;
+  }
+  .skillies-proof-summary > a {
+    grid-column: 1 / -1 !important;
+    justify-self: stretch !important;
+    text-align: center !important;
+  }
+
+  /* First7Days: 7 day-cards can't stay in a single row on mobile.
+     Override the generic repeat(7,1fr) → 1-col collapse with a
+     sensible ladder: 3 cols on tablets, 2 on phones. Day 7 has the
+     'highlight' badge, so leaving it alone on its own final row is
+     a feature — it becomes the visual full stop. */
+  .skillies-first7-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
   /* FounderCard on mobile: unpin the absolute-positioned polaroid +
      receipt so they flow naturally and the card height collapses to
      its content. Desktop keeps the overlapping-collage look; mobile
@@ -478,6 +502,12 @@ body {
   }
   /* Hide elements that are "bonus" and would crowd at this width */
   .skillies-hide-xs { display: none !important; }
+
+  /* First7Days: drop to 2 cols on phones — day 7 sits solo on the
+     final row, which is the correct emphasis for the 'ship' day. */
+  .skillies-first7-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 
   /* Shrink the hero headline size cap further */
   [style*="font-size: clamp(82px"] { font-size: 56px !important; line-height: 0.85 !important; }

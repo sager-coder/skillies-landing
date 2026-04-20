@@ -341,6 +341,7 @@ export default function ProofWall() {
 
         {/* Summary strip */}
         <div
+          className="skillies-proof-summary"
           style={{
             padding: "24px 32px",
             borderRadius: 18,

@@ -314,17 +314,23 @@ export default function Transformation() {
                 Monthly royalties (avg, month 3+)
               </div>
               <div
-                style={{ display: "flex", alignItems: "baseline", gap: 12 }}
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 12,
+                  flexWrap: "wrap",
+                }}
               >
                 <div
                   style={{
                     fontFamily: "'Instrument Serif', serif",
-                    fontSize: 54,
+                    fontSize: "clamp(36px, 5vw, 54px)",
                     letterSpacing: "-0.02em",
                     color: "#1A1A1A",
+                    fontVariantNumeric: "tabular-nums",
                   }}
                 >
-                  ₹18,000–42,000
+                  ₹18,000 – ₹42,000
                 </div>
                 <div style={{ fontSize: 11, color: "#6B7280" }}>/ mo</div>
               </div>
