@@ -128,6 +128,8 @@ body {
   /* Nav: hide desktop links, show the hamburger instead */
   .skillies-topnav-links { display: none !important; }
   .skillies-topnav-hamburger { display: inline-flex !important; }
+  /* 'Sign in' text-link lives in the drawer on mobile, not the bar */
+  .skillies-topnav-signin { display: none !important; }
 
   /* Named multi-col grids collapse to tablet-friendly sizes */
   .skillies-footer-cols { grid-template-columns: repeat(2, 1fr) !important; gap: 32px !important; }

@@ -12,7 +12,7 @@ const COLUMNS: Col[] = [
       ["KDP Mastery · 50-day program", "/#program"],
       ["Course catalog", "/courses"],
       ["Live income dashboard", "/dashboard"],
-      ["The 7-day onboarding", "/#program"],
+      ["Sign in · Student portal", "/login"],
     ],
   },
   {

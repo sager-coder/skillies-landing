@@ -564,6 +564,152 @@ export default function ProgramEditorial() {
               The first founding batch at ₹45,000 sold out in the Calicut workshop (May 31). That rate won&apos;t reopen.
             </div>
           </div>
+
+          {/* After-payment flow — demystifies the enrollment → login path */}
+          <div
+            style={{
+              marginTop: 28,
+              padding: "24px 26px",
+              borderRadius: 18,
+              background: "white",
+              border: "1px solid rgba(26,26,26,0.08)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.04)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                marginBottom: 16,
+                fontSize: 10,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "#C62828",
+              }}
+            >
+              <span style={{ width: 20, height: 1, background: "#C62828" }} />
+              After you pay
+              <span
+                style={{
+                  flex: 1,
+                  height: 1,
+                  background: "rgba(26,26,26,0.08)",
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: "'Instrument Serif', serif",
+                  fontStyle: "italic",
+                  textTransform: "none",
+                  letterSpacing: "0",
+                  color: "#6B7280",
+                  fontWeight: 400,
+                  fontSize: 12,
+                }}
+              >
+                Four steps, about 24 hours.
+              </span>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: 18,
+              }}
+            >
+              {[
+                [
+                  "01",
+                  "Pay by UPI",
+                  "To +91 87143 18352 or ehsansager@okhdfcbank.",
+                ],
+                [
+                  "02",
+                  "Screenshot to WhatsApp",
+                  "Send the payment confirmation to +91 80899 41131.",
+                ],
+                [
+                  "03",
+                  "Ehsan enrols you",
+                  "Manual, personal, within 24 hours. You get a WhatsApp ping.",
+                ],
+                [
+                  "04",
+                  "Sign in at skillies.ai",
+                  "Tap Sign in, enter the same phone number, OTP, you're in.",
+                ],
+              ].map(([n, t, d]) => (
+                <div key={n}>
+                  <div
+                    style={{
+                      fontFamily: "'Instrument Serif', serif",
+                      fontSize: 28,
+                      fontStyle: "italic",
+                      color: "#C62828",
+                      lineHeight: 1,
+                      marginBottom: 8,
+                    }}
+                  >
+                    {n}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#1A1A1A",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {t}
+                  </div>
+                  <div
+                    style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.5 }}
+                  >
+                    {d}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div
+              style={{
+                marginTop: 18,
+                paddingTop: 14,
+                borderTop: "1px dashed rgba(26,26,26,0.12)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
+                flexWrap: "wrap",
+                fontSize: 12,
+                color: "#6B7280",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Instrument Serif', serif",
+                  fontStyle: "italic",
+                  fontSize: 13,
+                }}
+              >
+                Already paid? Your portal is one tap away.
+              </span>
+              <a
+                href="/login"
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: "#C62828",
+                  textDecoration: "none",
+                }}
+              >
+                Sign in →
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Closing strip */}
@@ -602,7 +748,7 @@ export default function ProgramEditorial() {
               whiteSpace: "nowrap",
             }}
           >
-            Need more?
+            Beyond the program
           </div>
           <div
             style={{

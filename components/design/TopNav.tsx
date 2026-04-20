@@ -119,7 +119,27 @@ export default function TopNav({
           ))}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <a
+            href="/login"
+            onClick={closeAnd()}
+            className="skillies-topnav-signin"
+            style={{
+              fontSize: 13,
+              color: "#6B7280",
+              textDecoration: "none",
+              fontWeight: 500,
+              letterSpacing: "0.01em",
+              whiteSpace: "nowrap",
+              transition: "color .2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#1A1A1A")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}
+            onFocus={(e) => (e.currentTarget.style.color = "#1A1A1A")}
+            onBlur={(e) => (e.currentTarget.style.color = "#6B7280")}
+          >
+            Sign in
+          </a>
           <a
             href={cta.href}
             target={cta.href.startsWith("http") ? "_blank" : undefined}
@@ -278,12 +298,35 @@ export default function TopNav({
           ))}
 
           <a
+            href="/login"
+            onClick={closeAnd()}
+            style={{
+              marginTop: 20,
+              padding: "16px 20px",
+              background: "rgba(26,26,26,0.04)",
+              border: "1px solid rgba(26,26,26,0.12)",
+              color: "#1A1A1A",
+              textDecoration: "none",
+              borderRadius: 14,
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span>Sign in · Student portal</span>
+            <span aria-hidden>→</span>
+          </a>
+
+          <a
             href="https://wa.me/918089941131"
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeAnd()}
             style={{
-              marginTop: 24,
+              marginTop: 10,
               padding: "16px 20px",
               background: "rgba(37, 211, 102, 0.12)",
               border: "1px solid rgba(37,211,102,0.35)",
