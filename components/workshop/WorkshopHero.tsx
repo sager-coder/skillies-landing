@@ -368,11 +368,7 @@ export default function WorkshopHero() {
                 marginBottom: 28,
               }}
             >
-              <PrimaryButton
-                href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20ready%20to%20reserve%20my%20seat%20at%20the%20Calicut%20workshop%20on%20May%2031%20%E2%80%94%20%E2%82%B91%2C999%20early%20bird.%20Please%20share%20the%20payment%20details.%20My%20name%20is%20"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <PrimaryButton href="#pay">
                 Reserve Your Seat · ₹1,999
               </PrimaryButton>
               <SecondaryButton href="#agenda">

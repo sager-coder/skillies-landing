@@ -597,13 +597,7 @@ export function WorkshopPricing() {
                 </li>
               ))}
             </ul>
-            <PrimaryButton
-              href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20ready%20to%20reserve%20my%20seat%20at%20the%20Calicut%20workshop%20on%20May%2031%20%E2%80%94%20%E2%82%B91%2C999%20early%20bird.%20Please%20share%20the%20payment%20details.%20My%20name%20is%20"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Grab Early Bird Seat
-            </PrimaryButton>
+            <PrimaryButton href="#pay">Grab Early Bird Seat</PrimaryButton>
           </div>
           <div style={{ padding: 36, borderRadius: 26, background: "white", border: "1px solid #F0E8D8" }}>
             <Kicker tone="red">Regular</Kicker>
@@ -621,13 +615,7 @@ export function WorkshopPricing() {
                 </li>
               ))}
             </ul>
-            <SecondaryButton
-              href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20ready%20to%20reserve%20my%20seat%20at%20the%20Calicut%20workshop%20on%20May%2031%20%E2%80%94%20%E2%82%B92%2C499%20regular.%20Please%20share%20the%20payment%20details.%20My%20name%20is%20"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Reserve Regular
-            </SecondaryButton>
+            <SecondaryButton href="#pay">Reserve Regular</SecondaryButton>
           </div>
         </div>
       </div>
@@ -996,9 +984,7 @@ export function WorkshopTopBar() {
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <a
-          href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20ready%20to%20reserve%20my%20seat%20at%20the%20Calicut%20workshop%20on%20May%2031%20%E2%80%94%20%E2%82%B91%2C999%20early%20bird.%20Please%20share%20the%20payment%20details.%20My%20name%20is%20"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="#pay"
           style={{
             padding: "8px 18px",
             background: "#C62828",
@@ -1048,9 +1034,7 @@ export function StickyCTA() {
         <strong style={{ color: "#EF4444" }}>89/150</strong> seats · Early bird ends May 10
       </span>
       <a
-        href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20ready%20to%20reserve%20my%20seat%20at%20the%20Calicut%20workshop%20on%20May%2031%20%E2%80%94%20%E2%82%B91%2C999%20early%20bird.%20Please%20share%20the%20payment%20details.%20My%20name%20is%20"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="#pay"
         style={{
           padding: "10px 20px",
           background: "#C62828",

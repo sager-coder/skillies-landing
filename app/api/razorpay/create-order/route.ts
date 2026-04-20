@@ -75,7 +75,7 @@ export async function POST(req: Request) {
     const order = await razor.orders.create({
       amount,
       currency: "INR",
-      receipt: `skillies_${course}_${Date.now()}`,
+      receipt: `skl_${course.slice(0, 18)}_${Date.now()}`.slice(0, 40),
       notes: {
         course,
         tier,
@@ -92,7 +92,27 @@ export async function POST(req: Request) {
       keyId,
     });
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Failed to create order.";
+    // Razorpay's SDK throws plain objects, not Error instances. Pull the
+    // actual reason out so the UI and logs aren't stuck on "Failed to
+    // create order."
+    const anyErr = e as {
+      message?: string;
+      error?: { description?: string; code?: string; reason?: string };
+      statusCode?: number;
+    };
+    const msg =
+      anyErr?.error?.description ||
+      anyErr?.error?.reason ||
+      anyErr?.message ||
+      "Failed to create order.";
+    console.error("[rzp create-order] failed", {
+      statusCode: anyErr?.statusCode,
+      code: anyErr?.error?.code,
+      description: anyErr?.error?.description,
+      reason: anyErr?.error?.reason,
+      tier,
+      amount,
+    });
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
