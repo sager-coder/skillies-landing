@@ -49,32 +49,63 @@ export default async function LearnHomePage() {
               margin: "12px 0 14px",
             }}
           >
-            You’re logged in, but not enrolled in any course yet.
+            You’re signed in — no course on this number yet.
           </h1>
           <p style={{ fontSize: 17, color: "#6B7280", lineHeight: 1.65 }}>
-            If you’ve already paid via UPI and sent the screenshot, give Ehsan a few hours to mark you enrolled — he does it personally. Or message him on WhatsApp to confirm.
+            If you just paid, your enrolment should land in a few seconds
+            (Razorpay sends a signed webhook straight to our system). If
+            it doesn&rsquo;t, it usually means the phone number on the
+            payment didn&rsquo;t match this one. Either pick up where you
+            left off on the program page, or ping Ehsan.
           </p>
-          <a
-            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27ve%20paid%20but%20I%20don%27t%20see%20my%20course%20yet.%20My%20phone%20is%20"
-            target="_blank"
-            rel="noopener noreferrer"
+          <div
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
               marginTop: 24,
-              padding: "14px 24px",
-              background: "#25D366",
-              color: "white",
-              fontWeight: 700,
-              borderRadius: 999,
-              textDecoration: "none",
-              fontSize: 14,
-              letterSpacing: "0.05em",
+              display: "flex",
+              gap: 10,
+              flexWrap: "wrap",
             }}
           >
-            Ping Ehsan on WhatsApp
-          </a>
+            <a
+              href="/#program"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "14px 24px",
+                background: "#C62828",
+                color: "white",
+                fontWeight: 700,
+                borderRadius: 999,
+                textDecoration: "none",
+                fontSize: 14,
+                letterSpacing: "0.02em",
+                boxShadow: "0 12px 28px rgba(198,40,40,0.22)",
+              }}
+            >
+              Enrol in the 50-day program →
+            </a>
+            <a
+              href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20signed%20in%20but%20don%27t%20see%20my%20course.%20My%20phone%20is%20"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "14px 22px",
+                background: "transparent",
+                border: "1px solid rgba(26,26,26,0.18)",
+                color: "#1A1A1A",
+                fontWeight: 600,
+                borderRadius: 999,
+                textDecoration: "none",
+                fontSize: 14,
+              }}
+            >
+              Ping Ehsan →
+            </a>
+          </div>
         </section>
       </main>
     );

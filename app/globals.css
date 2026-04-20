@@ -83,6 +83,28 @@
   box-sizing: border-box;
 }
 
+/* Print — hide everything except the workshop ticket, so the Print /
+   Save-as-PDF dialog produces a clean A5-ish slip. */
+@media print {
+  body > *:not(#skillies-workshop-ticket-root) {
+    /* fallback: keep nothing from the page visible */
+  }
+  body * { visibility: hidden; }
+  #skillies-workshop-ticket,
+  #skillies-workshop-ticket * { visibility: visible; }
+  #skillies-workshop-ticket {
+    position: fixed !important;
+    inset: 24px !important;
+    box-shadow: none !important;
+    border: 1.5px dashed #1A1A1A !important;
+    background: #FFFFFF !important;
+    padding: 32px !important;
+    max-width: 560px !important;
+    margin: 0 auto !important;
+  }
+  @page { margin: 12mm; }
+}
+
 /* Keyboard-only focus ring. Shows for tab navigation and screen
    readers, stays hidden when clicking with a mouse. Paints outside
    inline-style backgrounds/borders, so it works on every pill and

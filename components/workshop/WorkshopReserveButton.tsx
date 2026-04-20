@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 type RazorpayHandlerResponse = {
   razorpay_payment_id: string;
+  razorpay_order_id: string;
 };
 
 type RazorpayWindow = Window & {
@@ -51,6 +52,13 @@ export default function WorkshopReserveButton({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [receipt, setReceipt] = useState<{
+    name: string;
+    phone: string;
+    email: string;
+    paymentId: string;
+    priceLabel: string;
+  } | null>(null);
   const nameRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -136,7 +144,14 @@ export default function WorkshopReserveButton({
         modal: {
           ondismiss: () => setBusy(false),
         },
-        handler: (_r: RazorpayHandlerResponse) => {
+        handler: (r: RazorpayHandlerResponse) => {
+          setReceipt({
+            name,
+            phone,
+            email,
+            paymentId: r.razorpay_payment_id,
+            priceLabel,
+          });
           setBusy(false);
           setDone(true);
         },
@@ -221,85 +236,11 @@ export default function WorkshopReserveButton({
               color: "#1A1A1A",
             }}
           >
-            {done ? (
-              <div>
-                <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: 999,
-                    background: "rgba(91,123,91,0.14)",
-                    color: "#3D5A3D",
-                    display: "grid",
-                    placeItems: "center",
-                    marginBottom: 14,
-                  }}
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                </div>
-                <h2
-                  style={{
-                    margin: "0 0 6px",
-                    fontFamily: "'Instrument Serif', Georgia, serif",
-                    fontWeight: 400,
-                    fontSize: 30,
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1.1,
-                  }}
-                >
-                  Seat reserved.
-                </h2>
-                <p
-                  style={{
-                    margin: "0 0 18px",
-                    fontSize: 14,
-                    color: "#6B7280",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {priceLabel} received. Ehsan will WhatsApp you the venue
-                  details + what to bring before the event (May 31, Calicut).
-                  Razorpay receipt is on the way to your email.
-                </p>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <a
-                    href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20just%20reserved%20my%20seat%20for%20the%20Calicut%20workshop.%20My%20name%20is%20"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      flex: 1,
-                      padding: "13px 20px",
-                      background: "#25D366",
-                      color: "white",
-                      textAlign: "center",
-                      textDecoration: "none",
-                      borderRadius: 999,
-                      fontSize: 14,
-                      fontWeight: 700,
-                    }}
-                  >
-                    Ping Ehsan →
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => setOpen(false)}
-                    style={{
-                      padding: "13px 20px",
-                      background: "transparent",
-                      border: "1px solid rgba(26,26,26,0.18)",
-                      borderRadius: 999,
-                      fontSize: 14,
-                      fontWeight: 500,
-                      color: "#6B7280",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
+            {done && receipt ? (
+              <Ticket
+                receipt={receipt}
+                onClose={() => setOpen(false)}
+              />
             ) : (
               <form onSubmit={submit}>
                 <div
@@ -442,6 +383,282 @@ export default function WorkshopReserveButton({
         </div>
       )}
     </>
+  );
+}
+
+function Ticket({
+  receipt,
+  onClose,
+}: {
+  receipt: {
+    name: string;
+    phone: string;
+    email: string;
+    paymentId: string;
+    priceLabel: string;
+  };
+  onClose: () => void;
+}) {
+  const paymentShort = receipt.paymentId.slice(-8).toUpperCase();
+  return (
+    <div>
+      <div
+        style={{
+          width: 48,
+          height: 48,
+          borderRadius: 999,
+          background: "rgba(91,123,91,0.14)",
+          color: "#3D5A3D",
+          display: "grid",
+          placeItems: "center",
+          marginBottom: 10,
+        }}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </div>
+      <h2
+        style={{
+          margin: "0 0 4px",
+          fontFamily: "'Instrument Serif', Georgia, serif",
+          fontWeight: 400,
+          fontSize: 28,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.1,
+        }}
+      >
+        Seat reserved.
+      </h2>
+      <p
+        style={{
+          margin: "0 0 18px",
+          fontSize: 13,
+          color: "#6B7280",
+          lineHeight: 1.55,
+        }}
+      >
+        {receipt.priceLabel} received. Here&rsquo;s your ticket — bring it
+        to the venue on May 31. A Razorpay receipt is also on its way to
+        your email.
+      </p>
+
+      {/* Ticket card — this is what prints */}
+      <div
+        id="skillies-workshop-ticket"
+        style={{
+          position: "relative",
+          padding: "20px 22px 22px",
+          borderRadius: 14,
+          background:
+            "linear-gradient(135deg, #FAF5EB 0%, #FFFFFF 50%, #F7EED3 100%)",
+          border: "1.5px dashed rgba(26,26,26,0.25)",
+          marginBottom: 14,
+          overflow: "hidden",
+        }}
+      >
+        {/* Perforation dots, left */}
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            left: -10,
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: 20,
+            height: 20,
+            borderRadius: 999,
+            background: "white",
+            border: "1px solid rgba(26,26,26,0.15)",
+          }}
+        />
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            right: -10,
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: 20,
+            height: 20,
+            borderRadius: 999,
+            background: "white",
+            border: "1px solid rgba(26,26,26,0.15)",
+          }}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 14,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 10,
+              letterSpacing: "0.28em",
+              textTransform: "uppercase",
+              fontWeight: 900,
+              color: "#C62828",
+            }}
+          >
+            SKILLIES<span style={{ color: "#1A1A1A" }}>.AI</span> · TICKET
+          </div>
+          <div
+            style={{
+              fontSize: 9,
+              letterSpacing: "0.2em",
+              fontWeight: 700,
+              color: "#9CA3AF",
+              fontFamily: "ui-monospace, Menlo, monospace",
+            }}
+          >
+            #{paymentShort}
+          </div>
+        </div>
+
+        <div
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontSize: 22,
+            letterSpacing: "-0.015em",
+            lineHeight: 1.15,
+            color: "#1A1A1A",
+            marginBottom: 2,
+          }}
+        >
+          The KDP Workshop{" "}
+          <em style={{ fontStyle: "italic", color: "#C62828" }}>
+            · Calicut
+          </em>
+        </div>
+        <div
+          style={{
+            fontSize: 12,
+            color: "#6B7280",
+            marginBottom: 14,
+          }}
+        >
+          Saturday · 31 May 2026 · Calicut, Kerala
+        </div>
+
+        <div
+          style={{
+            borderTop: "1px dashed rgba(26,26,26,0.15)",
+            paddingTop: 12,
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 12,
+            fontSize: 12,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: 9,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "#9CA3AF",
+                marginBottom: 4,
+              }}
+            >
+              Attendee
+            </div>
+            <div style={{ fontWeight: 600, color: "#1A1A1A" }}>
+              {receipt.name}
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                color: "#6B7280",
+                fontFamily: "ui-monospace, Menlo, monospace",
+              }}
+            >
+              {receipt.phone}
+            </div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div
+              style={{
+                fontSize: 9,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: "#9CA3AF",
+                marginBottom: 4,
+              }}
+            >
+              Paid
+            </div>
+            <div style={{ fontWeight: 600, color: "#1A1A1A" }}>
+              {receipt.priceLabel}
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                color: "#5B7B5B",
+                fontWeight: 600,
+              }}
+            >
+              Confirmed ✓
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "1px dashed rgba(26,26,26,0.15)",
+            fontSize: 11,
+            color: "#6B7280",
+            lineHeight: 1.5,
+          }}
+        >
+          Present this ticket at entry. Ehsan will WhatsApp the venue
+          address 3 days before the event. Questions? +91 80899 41131.
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <button
+          type="button"
+          onClick={() => window.print()}
+          style={{
+            flex: 1,
+            padding: "13px 20px",
+            background: "#1A1A1A",
+            color: "white",
+            border: "none",
+            borderRadius: 999,
+            fontSize: 14,
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          Download / Print ticket
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          style={{
+            padding: "13px 20px",
+            background: "transparent",
+            border: "1px solid rgba(26,26,26,0.18)",
+            borderRadius: 999,
+            fontSize: 14,
+            fontWeight: 500,
+            color: "#6B7280",
+            cursor: "pointer",
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
   );
 }
 

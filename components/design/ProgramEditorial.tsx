@@ -177,7 +177,6 @@ function TierCard({
   includes,
   ctaLabel,
   tier,
-  fallbackHref,
   highlighted,
 }: {
   tone: "gold" | "red";
@@ -190,7 +189,6 @@ function TierCard({
   includes: string[];
   ctaLabel: string;
   tier: "standard" | "pro";
-  fallbackHref: string;
   highlighted?: boolean;
 }) {
   const palette = {
@@ -352,25 +350,6 @@ function TierCard({
       </ul>
 
       <EnrollButton tier={tier} label={ctaLabel} priceLabel={price} />
-      <div
-        style={{
-          marginTop: 14,
-          fontSize: 12,
-          color: "#9CA3AF",
-          lineHeight: 1.5,
-        }}
-      >
-        Prefer UPI + WhatsApp?{" "}
-        <a
-          href={fallbackHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "#6B7280", textDecoration: "underline" }}
-        >
-          Message Ehsan
-        </a>
-        .
-      </div>
     </div>
   );
 }
@@ -532,7 +511,6 @@ export default function ProgramEditorial() {
               includes={STANDARD_INCLUDES}
               ctaLabel="Enroll · Pay ₹75,000"
               tier="standard"
-              fallbackHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%2050-day%20KDP%20Mastery%20program%20at%20%E2%82%B975%2C000%20%28standard%29.%20My%20name%20is%20"
               highlighted
             />
             <TierCard
@@ -545,7 +523,6 @@ export default function ProgramEditorial() {
               includes={PRO_INCLUDES}
               ctaLabel="Apply · Pay ₹1,25,000"
               tier="pro"
-              fallbackHref="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20apply%20for%20the%20Pro%20%28%E2%82%B91%2C25%2C000%29%20tier%20of%20the%2050-day%20KDP%20Mastery%20program.%20My%20name%20is%20"
             />
           </div>
 
