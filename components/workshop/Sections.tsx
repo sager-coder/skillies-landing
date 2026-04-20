@@ -18,67 +18,69 @@ type AgendaItem = {
 const AGENDA: AgendaItem[] = [
   {
     t: "10:00",
-    end: "10:30",
-    mins: 30,
+    end: "10:20",
+    mins: 20,
     type: "Intro",
-    title: "Doors, chai, introductions",
-    desc: "Meet the other people in the room betting on AI income. Short icebreaker — who you are, what you’re hoping to ship, and what’s been stopping you.",
-    you: "You: arrive, settle, meet three people before the first session starts.",
+    title: "Doors open · set up your laptop",
+    desc: "Quick check-in. Open your laptop, get on the wifi, open Claude and Canva. No slides, no icebreakers — we start the real work in 20 minutes.",
+    you: "You: arrive, log in, and meet the person next to you.",
   },
   {
-    t: "10:30",
-    end: "11:30",
-    mins: 60,
+    t: "10:20",
+    end: "11:00",
+    mins: 40,
     type: "Teach",
-    title: "The KDP opportunity, in real numbers",
-    desc: "The ₹8.72L breakdown, month by month. Which no-content categories are actually paying in 2026, which are dying, what Amazon’s algorithm rewards right now — and what it punishes.",
-    tools: "Ehsan’s live dashboards · Publisher Rocket · KDP Reports",
+    title: "The ₹10,000 book",
+    desc: "One spot-the-difference book. Built in two days. Earned ₹10,000. I walk you through the exact listing, the niche, why it worked, and the four KDP pillars (research · create · cover · upload) — so you know where today fits and what you still have to learn after.",
+    tools: "Ehsan’s live KDP dashboard · that book’s listing · royalty screenshot",
   },
   {
-    t: "11:30",
+    t: "11:00",
     end: "13:00",
-    mins: 90,
+    mins: 120,
     type: "Build",
-    title: "Your first book — cover to upload",
-    desc: "The heart of the day. We build one coloring or puzzle book per person, end-to-end. Claude writes prompts, Canva lays the pages out, KDP ingests the upload — all live, all together, nobody left behind.",
-    tools: "Claude · Canva · KDP Create",
-    you: "You: walk out of this session with a live Amazon listing URL.",
+    title: "Build your own spot-the-difference book",
+    desc: "The heart of the day. Everyone in the room builds ONE real book, together with me. Claude writes the scene prompts, Canva lays the pages, we review interiors together before anyone moves on. By lunch, every person has a 30-page manuscript ready to upload.",
+    tools: "Claude · Canva · one prompt stack · one layout template",
+    you: "You: walk out of this session with a finished book interior saved to your laptop.",
     variant: "core",
   },
   {
     t: "13:00",
-    end: "14:00",
-    mins: 60,
+    end: "13:20",
+    mins: 20,
     type: "Break",
-    title: "Lunch — Malabar biryani, included",
-    desc: "Proper Kozhikode-style biryani. Cover reviews over the table. Questions nobody wanted to ask in front of the room. Some of the best paisa conversations happen here.",
+    title: "Short reset",
+    desc: "Stand up. Stretch. Grab something nearby if you need it. We come back sharp at 13:20 for the cover session — the most common reason KDP books don’t sell.",
     variant: "break",
   },
   {
-    t: "14:00",
-    end: "15:15",
-    mins: 75,
-    type: "Teach",
-    title: "Scaling 1 book to 10 in 90 days",
-    desc: "The stacking system I used to go from 1 book to 63. Reusable templates. Royalty math that actually compounds. The Amazon policy pitfalls that kill new accounts — and how to avoid every one.",
-    tools: "Templates · royalty spreadsheet · Amazon policy deck",
+    t: "13:20",
+    end: "14:40",
+    mins: 80,
+    type: "Build",
+    title: "Design the cover that actually sells",
+    desc: "You design the cover for the book you just built. Typography rules that win thumbnail wars. Real before/afters from my own catalog. Live critique on every cover before anyone finishes.",
+    tools: "Canva · cover template pack · the 5-rule thumbnail checklist",
+    you: "You: walk out of this session with a full cover (front, spine, back) ready for KDP.",
+    variant: "core",
   },
   {
-    t: "15:15",
+    t: "14:40",
+    end: "15:30",
+    mins: 50,
+    type: "Teach",
+    title: "The path forward",
+    desc: "We don’t have time to teach niche research and the full KDP upload end-to-end today — those are big chapters. What I give you: the exact path I followed, so you can shortcut my two years into about six months on your own. Tools I use, order I’d do it in, and the mistakes that cost me the most.",
+    tools: "The six-month playbook · niche research cheat sheet · upload checklist",
+  },
+  {
+    t: "15:30",
     end: "16:00",
-    mins: 45,
-    type: "Teach",
-    title: "Keywords, pricing, first 10 reviews",
-    desc: "What to title your book so it actually shows up. How to price it so it sells. How to earn the first ten reviews ethically — because without them, Amazon won’t rank you.",
-    tools: "Keyword vault · pricing calculator · review ethics checklist",
-  },
-  {
-    t: "16:00",
-    end: "16:30",
     mins: 30,
     type: "Pitch",
-    title: "Close · Next-cohort enrollment",
-    desc: "If the day has you ready to go deeper, this is when I walk through the 50-day program — Standard at ₹75,000, Pro 1-on-1 track at ₹1,25,000. Full details, honest numbers, no pressure. Walk out, or sign up — either way you leave with a live book.",
+    title: "If you want the short cut — the 30-day program",
+    desc: "Everything I learned in two years, packaged as a 30-day guided cohort. Offline in Calicut or online — your choice. Full refund if you don’t think it’s worth it after the first two weeks. No pressure here — walk out, or sign up. Either way you leave with one real book + cover.",
     variant: "close",
   },
 ];
@@ -452,6 +454,214 @@ function AgendaCard({ item, i }: { item: AgendaItem; i: number }) {
   );
 }
 
+export function WorkshopNextStep() {
+  return (
+    <section
+      style={{
+        padding: "96px 24px",
+        background: "linear-gradient(180deg, #1A1A1A 0%, #242424 100%)",
+        color: "white",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 20% 30%, rgba(201,162,78,0.18), transparent 55%), radial-gradient(ellipse at 85% 80%, rgba(198,40,40,0.14), transparent 55%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          maxWidth: 1040,
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "1.15fr 1fr",
+          gap: 56,
+          alignItems: "center",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              color: "#E6C178",
+              marginBottom: 14,
+            }}
+          >
+            After the workshop
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(40px, 5vw, 60px)",
+              fontWeight: 800,
+              letterSpacing: "-0.035em",
+              lineHeight: 1.0,
+              margin: "0 0 20px",
+            }}
+          >
+            The workshop is the taste.{" "}
+            <em
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+                color: "#EF4444",
+              }}
+            >
+              The 30-day program is the system.
+            </em>
+          </h2>
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.7,
+              color: "rgba(255,255,255,0.72)",
+              margin: "0 0 18px",
+              maxWidth: 560,
+            }}
+          >
+            Six hours teaches you one book + one cover. That&rsquo;s the hardest
+            part to do alone, but it isn&rsquo;t the whole job. The 30-day
+            cohort compresses everything I learned in{" "}
+            <em style={{ color: "#E6C178", fontStyle: "italic" }}>
+              two years
+            </em>{" "}
+            — niche research that finds books that actually earn, the full book
+            stack across all three formats, KDP upload, scaling from 1 to 10+
+            titles — into{" "}
+            <em style={{ color: "#E6C178", fontStyle: "italic" }}>thirty days</em>.
+          </p>
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              margin: "0 0 28px",
+              display: "grid",
+              gap: 10,
+              fontSize: 14,
+              color: "rgba(255,255,255,0.82)",
+            }}
+          >
+            {[
+              "Offline in Calicut · or online · your choice",
+              "Weekly live sessions + daily asynchronous reviews",
+              "Every book type — spot-the-diff, puzzles, coloring",
+              "Full KDP upload walkthrough · niche research that pays",
+              "Complete refund if you don't think it's worth it after 2 weeks",
+            ].map((x) => (
+              <li
+                key={x}
+                style={{ display: "flex", gap: 10, alignItems: "flex-start" }}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#E6C178"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ flexShrink: 0, marginTop: 2 }}
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                <span>{x}</span>
+              </li>
+            ))}
+          </ul>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <a
+              href="/#program"
+              style={{
+                padding: "13px 24px",
+                background: "#EF4444",
+                color: "white",
+                textDecoration: "none",
+                borderRadius: 999,
+                fontSize: 14,
+                fontWeight: 700,
+                letterSpacing: "0.02em",
+              }}
+            >
+              See the 30-day program →
+            </a>
+            <span
+              style={{
+                padding: "13px 18px",
+                fontSize: 13,
+                color: "rgba(255,255,255,0.55)",
+                fontFamily: "'Instrument Serif', serif",
+                fontStyle: "italic",
+              }}
+            >
+              No pressure in the room · decide any time.
+            </span>
+          </div>
+        </div>
+
+        <div
+          style={{
+            padding: "28px 30px",
+            borderRadius: 20,
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              color: "#EF4444",
+              marginBottom: 10,
+            }}
+          >
+            The refund promise
+          </div>
+          <div
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: 26,
+              lineHeight: 1.3,
+              color: "white",
+              margin: "0 0 14px",
+              letterSpacing: "-0.015em",
+            }}
+          >
+            &ldquo;Complete refund if you don&rsquo;t think it&rsquo;s worth
+            it after the first two weeks.&rdquo;
+          </div>
+          <p
+            style={{
+              fontSize: 14,
+              color: "rgba(255,255,255,0.65)",
+              lineHeight: 1.65,
+              margin: 0,
+            }}
+          >
+            No forms, no questions. Confidence looks like this. If I&rsquo;m
+            wrong about this being worth your money, the money goes back.
+            That&rsquo;s it.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function WorkshopAgenda() {
   return (
     <section id="agenda" style={{ padding: "128px 24px", background: "white" }}>
@@ -495,9 +705,8 @@ export function WorkshopAgenda() {
               color: "#C62828",
             }}
           >
-            One book, live on Amazon
-          </em>{" "}
-          by the end.
+            One book + cover, built in the room.
+          </em>
         </h2>
 
         <p
@@ -506,10 +715,10 @@ export function WorkshopAgenda() {
             color: "#6B7280",
             margin: "0 0 10px",
             lineHeight: 1.6,
-            maxWidth: 620,
+            maxWidth: 640,
           }}
         >
-          Tight schedule. No lecture mode. You leave with a book on Amazon, not a binder of theory. Here’s exactly what happens, minute by minute.
+          Six hours isn&rsquo;t enough to teach all four KDP pillars (niche · book · cover · upload). So we do the one that&rsquo;s hardest to learn alone — book + cover, together — and I hand you the exact path to do the rest at home. The full two-year system is the 30-day program afterwards.
         </p>
 
         <DayArc />
@@ -525,20 +734,20 @@ export function WorkshopAgenda() {
 }
 
 const EARLY = [
-  "Full day (10 AM – 4 PM)",
-  "Malabar biryani lunch",
-  "Your first book live on Amazon",
-  "Cover & keyword templates",
-  "Priority seat in the next cohort",
-  "Private WhatsApp group (60 days)",
+  "Full day · 10 AM – 4 PM",
+  "One spot-the-difference book, built in the room",
+  "One full KDP cover, designed with you",
+  "Claude prompt stack + Canva template pack",
+  "The six-month playbook (path I followed in 2 years)",
+  "Priority seat in the 30-day cohort · refund-backed",
 ];
 const REGULAR = [
-  "Full day (10 AM – 4 PM)",
-  "Malabar biryani lunch",
-  "Your first book live on Amazon",
-  "Cover & keyword templates",
-  "Next-cohort invitation",
-  "Private WhatsApp group (60 days)",
+  "Full day · 10 AM – 4 PM",
+  "One spot-the-difference book, built in the room",
+  "One full KDP cover, designed with you",
+  "Claude prompt stack + Canva template pack",
+  "The six-month playbook (path I followed in 2 years)",
+  "Invitation to the 30-day cohort · refund-backed",
 ];
 
 export function WorkshopPricing() {
@@ -585,7 +794,7 @@ export function WorkshopPricing() {
               <span style={{ color: "#9CA3AF", textDecoration: "line-through", fontSize: 18 }}>₹2,499</span>
             </div>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "0 0 22px", lineHeight: 1.6 }}>
-              Save ₹500. Same seat, same lunch, same outcome.
+              Save ₹500. Same seat, same outcome. Ends May 10.
             </p>
             <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "grid", gap: 10 }}>
               {EARLY.map((x) => (
@@ -669,11 +878,11 @@ export function WorkshopLocation() {
             <span style={{ color: "#EF4444" }}>10:00 AM sharp.</span>
           </h2>
           <div style={{ display: "grid", gap: 16, color: "rgba(255,255,255,0.72)", fontSize: 15, lineHeight: 1.7 }}>
-            <div><strong style={{ color: "white" }}>Full day:</strong> 10 AM – 4 PM, with chai + Malabar biryani included</div>
-            <div><strong style={{ color: "white" }}>Bring:</strong> Your laptop. Charger. Notebook.</div>
+            <div><strong style={{ color: "white" }}>Full day:</strong> 10 AM – 4 PM · working session, not a conference</div>
+            <div><strong style={{ color: "white" }}>Bring:</strong> Your laptop. Charger. Notebook. A light lunch if you don&rsquo;t want to step out for a break.</div>
             <div><strong style={{ color: "white" }}>Language:</strong> English, plain and clear</div>
             <div><strong style={{ color: "white" }}>Seats:</strong> Hard-capped at 150 — no overflow</div>
-            <div><strong style={{ color: "white" }}>You leave with:</strong> Your first book, live on Amazon.</div>
+            <div><strong style={{ color: "white" }}>You leave with:</strong> One spot-the-difference book + its cover, ready to upload from home.</div>
           </div>
         </div>
       </div>
@@ -691,30 +900,31 @@ type FaqEntry = {
 const FAQS: FaqEntry[] = [
   {
     q: "I've never written a book. Can I still do this?",
-    short: "Yes. That's the whole point.",
-    a: "No-content books — spot the difference, puzzles, coloring — don't need writing. You're designing and curating, not authoring. If you can open a browser, follow a workflow, and click Upload, you can publish. That's it.",
+    short: "Yes. Spot-the-difference books don't need writing.",
+    a: "The book you build in the room is a spot-the-difference book — two near-identical scenes, five hidden differences per page. No writing, no credentials, no language. Claude generates the scene prompts, Canva lays the pages out, you curate and click Publish. If you can use a browser, you can publish.",
     pullQuote: "If you can use a browser, you can publish.",
   },
   {
-    q: "Do I need to fluent English?",
-    short: "Basic English is enough.",
-    a: "KDP's interface is in English and the workshop is taught in plain English — no jargon, no lecture-mode. If you can read an Amazon product listing, you'll be fine. I'll keep it simple.",
+    q: "Six hours — will you teach me everything?",
+    short: "No. Six hours is one book + the path.",
+    a: "KDP has four pillars: niche research, book creation, cover, upload. Six hours is enough to build ONE book + its cover together — the best-possible working tutorial. What we don't cover (picking niches that actually pay, the KDP upload form, scaling from 1 to 60 books) I walk you through as a clear path you can follow on your own over about six months. The 30-day cohort compresses that into 30 days.",
   },
   {
     q: "Will Amazon actually pay me? How does that work?",
     short: "Yes. Monthly. In INR, straight to your bank.",
-    a: "Amazon deposits royalties directly to your Indian bank account every month. You need a PAN card, a bank account, and your KDP tax info filled in — that's the whole setup. We walk through every form live so nobody leaves confused.",
+    a: "Amazon deposits royalties directly to your Indian bank account every month. You need a PAN card, a bank account, and your KDP tax info filled in — that's the whole setup. I give you the exact upload checklist so you can finish it from home once your book is ready.",
     pullQuote: "It's KDP + PAN + bank. That's the whole stack.",
   },
   {
-    q: "How long until my first royalty?",
-    short: "First book ships the same day. First payout: ~60 days.",
-    a: "Your first book goes live on Amazon at the end of the workshop. Your first royalty deposit lands within ~60 days of your first sale. Month one is usually ₹500–2,000 — small, but real, and it compounds every month you keep publishing.",
+    q: "What's this about the ₹10,000 book?",
+    short: "One book. Two days. Real Amazon royalties.",
+    a: "A single spot-the-difference book I made in two days has paid me ₹10,000 so far and still earns. I walk you through the exact listing, niche, and why it worked at the start of the workshop — then we build the same format together. I don't promise you'll hit ₹10,000 with your first book; I promise you'll walk out with a book built the same way mine was.",
   },
   {
-    q: "What's the catch with ₹1,999?",
-    short: "No catch. Early-bird pricing ends May 10.",
-    a: "₹1,999 is a genuine early-bird drop to fill seats before May 10. After that it goes back to ₹2,499. No hidden fees, no upsell pressure during the day. At 4 PM I'll walk through the 50-day program (Standard ₹75,000 / Pro ₹1,25,000) — entirely optional, walk out if you'd like.",
+    q: "What's the 30-day program? And the refund policy?",
+    short: "The full stack, in 30 days, offline or online, refund-backed.",
+    a: "The workshop is the taste. The 30-day program is everything I learned in two years: niche research that finds books that actually earn, the full book-creation stack for all three formats (spot-the-diff, puzzles, coloring), covers, KDP upload, scaling to 10+ titles. You pick offline (Calicut batch) or online. Complete refund if you genuinely don't think it's worth it after the first two weeks — I'm confident enough to put that in writing.",
+    pullQuote: "Complete refund if it's not worth it. No hoops.",
   },
   {
     q: "Is this a pyramid / MLM / hype thing?",
