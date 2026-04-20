@@ -53,7 +53,9 @@ export async function proxy(req: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    if (profile?.bound_device_id) {
+    // Admins are exempt from the single-device rule — they need to move
+    // between phone (teaching) and laptop (back-end work) freely.
+    if (profile?.bound_device_id && !profile?.is_admin) {
       const cookie = req.cookies.get("skillies_device")?.value;
       if (!cookie || cookie !== profile.bound_device_id) {
         const lockUrl = new URL("/login", req.url);

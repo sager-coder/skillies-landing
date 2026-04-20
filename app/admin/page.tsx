@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import LearnTopBar from "@/components/learn/LearnTopBar";
 import AdminEnrollPanel from "@/components/admin/AdminEnrollPanel";
 import AdminResetDevicePanel from "@/components/admin/AdminResetDevicePanel";
+import AdminLessonsPanel from "@/components/admin/AdminLessonsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,10 @@ export default async function AdminPage() {
         </p>
 
         <AdminEnrollPanel />
+
+        <div style={{ marginTop: 24 }}>
+          <AdminLessonsPanel />
+        </div>
 
         <div style={{ marginTop: 24 }}>
           <AdminResetDevicePanel />

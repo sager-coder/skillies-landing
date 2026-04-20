@@ -25,6 +25,14 @@ export default async function LessonPage({ params }: Props) {
     .maybeSingle();
   if (!enrollment) redirect("/learn");
 
+  // Masked phone for the per-user video watermark — e.g. "+91•••••8352".
+  // Showing the full number would be a privacy leak in shared screens;
+  // last 4 is enough to identify a leaker when matched back in the DB.
+  const rawPhone = (user.phone || "").replace(/\D/g, "");
+  const watermark = rawPhone.length >= 4
+    ? `+91•••••${rawPhone.slice(-4)}`
+    : "";
+
   const { data: lesson } = await supabase
     .from("lessons")
     .select("id, day, title, description, video_id, duration_seconds, is_published, course_id")
@@ -129,6 +137,7 @@ export default async function LessonPage({ params }: Props) {
           videoId={lesson.video_id}
           lessonId={lesson.id}
           title={lesson.title}
+          watermark={watermark || null}
         />
 
         {lesson.description && (

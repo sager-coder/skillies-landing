@@ -9,19 +9,53 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
  * - Otherwise → shows a placeholder card so lesson pages still render
  *   while videos are being recorded (Phase 1 launch state).
  *
+ * Every loaded video has a personalised watermark overlaid on top: the
+ * student's masked phone number, drifting position every ~25s. It's
+ * baked into any screen recording the student makes, so a leaked
+ * recording can be traced back to the account that leaked it — the
+ * Netflix / Loom approach.
+ *
  * On player events, marks lesson as completed (>= 90% watched).
  */
 export default function LessonPlayer({
   videoId,
   lessonId,
   title,
+  watermark,
 }: {
   videoId: string | null;
   lessonId: string;
   title: string;
+  /** Rendered on top of the iframe, usually the student's masked phone. */
+  watermark?: string | null;
 }) {
   const ref = useRef<HTMLIFrameElement>(null);
   const [completed, setCompleted] = useState(false);
+  const [wmPos, setWmPos] = useState<{ x: number; y: number; align: "L" | "R" }>({
+    x: 6,
+    y: 8,
+    align: "L",
+  });
+
+  // Drift the watermark around the corners + midpoints of the frame so a
+  // screen recorder can't just crop one corner off. Moves every ~25s.
+  useEffect(() => {
+    if (!videoId) return;
+    const positions: { x: number; y: number; align: "L" | "R" }[] = [
+      { x: 6, y: 8, align: "L" },
+      { x: 6, y: 50, align: "L" },
+      { x: 6, y: 88, align: "L" },
+      { x: 94, y: 8, align: "R" },
+      { x: 94, y: 50, align: "R" },
+      { x: 94, y: 88, align: "R" },
+    ];
+    let i = 0;
+    const id = setInterval(() => {
+      i = (i + 1) % positions.length;
+      setWmPos(positions[i]);
+    }, 25_000);
+    return () => clearInterval(id);
+  }, [videoId]);
 
   // Listen for Cloudflare Stream player events via postMessage.
   // The iframe sends 'play', 'pause', 'ended', 'timeupdate' events.
@@ -132,6 +166,48 @@ export default function LessonPlayer({
           border: 0,
         }}
       />
+
+      {/* Per-user watermark — drifts between 6 positions every 25s. Baked
+          into any screen recording the student makes. pointer-events off so
+          clicks go through to the player. */}
+      {watermark && (
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: `${wmPos.y}%`,
+              [wmPos.align === "L" ? "left" : "right"]: `${
+                wmPos.align === "L" ? wmPos.x : 100 - wmPos.x
+              }%`,
+              transform: `translateY(-50%) ${
+                wmPos.align === "R" ? "translateX(0)" : ""
+              }`,
+              padding: "4px 10px",
+              borderRadius: 6,
+              background: "rgba(0,0,0,0.35)",
+              backdropFilter: "blur(2px)",
+              WebkitBackdropFilter: "blur(2px)",
+              color: "rgba(255,255,255,0.6)",
+              fontSize: 11,
+              fontFamily: "ui-monospace, Menlo, monospace",
+              letterSpacing: "0.08em",
+              mixBlendMode: "overlay",
+              transition: "top 1.2s ease-in-out, left 1.2s ease-in-out, right 1.2s ease-in-out",
+              userSelect: "none",
+            }}
+          >
+            SKILLIES.AI · {watermark}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

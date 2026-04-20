@@ -54,33 +54,38 @@ export async function POST(req: Request) {
   const admin = createSupabaseAdminClient();
   const { data: profile, error } = await admin
     .from("profiles")
-    .select("bound_device_id")
+    .select("bound_device_id, is_admin")
     .eq("id", user.id)
     .single();
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  if (!profile?.bound_device_id) {
-    const { error: updErr } = await admin
-      .from("profiles")
-      .update({
-        bound_device_id: deviceId,
-        device_bound_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
-    if (updErr) {
-      return NextResponse.json({ error: updErr.message }, { status: 500 });
+  // Admins are exempt — they can log in from any device without stamping
+  // a binding. We still issue the cookie so the browser has one, but we
+  // don't write `bound_device_id`, so the proxy never locks them out.
+  if (!profile?.is_admin) {
+    if (!profile?.bound_device_id) {
+      const { error: updErr } = await admin
+        .from("profiles")
+        .update({
+          bound_device_id: deviceId,
+          device_bound_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+      if (updErr) {
+        return NextResponse.json({ error: updErr.message }, { status: 500 });
+      }
+    } else if (profile.bound_device_id !== deviceId) {
+      return NextResponse.json(
+        {
+          error: "locked",
+          message:
+            "This account is locked to another device. WhatsApp Ehsan if you genuinely need a reset.",
+        },
+        { status: 403 },
+      );
     }
-  } else if (profile.bound_device_id !== deviceId) {
-    return NextResponse.json(
-      {
-        error: "locked",
-        message:
-          "This account is locked to another device. WhatsApp Ehsan if you genuinely need a reset.",
-      },
-      { status: 403 },
-    );
   }
 
   const res = NextResponse.json({ ok: true });
