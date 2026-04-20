@@ -561,7 +561,7 @@ export default function ProgramEditorial() {
                 minWidth: 0,
               }}
             >
-              The first founding batch at ₹45,000 sold out in the Calicut workshop (May 31). That rate won&apos;t reopen.
+              The first founding batch at ₹45,000 sold out in the Calicut workshop (May 31). That rate won’t reopen.
             </div>
           </div>
 

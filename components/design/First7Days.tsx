@@ -254,7 +254,7 @@ export default function First7Days() {
             <div
               style={{ fontSize: 13, color: "#6B7280", marginTop: 2 }}
             >
-              Weekly mentor reviews. New niche every week. By Day 50 you&apos;ll have 4–7 titles live.
+              Weekly mentor reviews. New niche every week. By Day 50 you’ll have 4–7 titles live.
             </div>
           </div>
           <a

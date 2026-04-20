@@ -83,6 +83,25 @@
   box-sizing: border-box;
 }
 
+/* Keyboard-only focus ring. Shows for tab navigation and screen
+   readers, stays hidden when clicking with a mouse. Paints outside
+   inline-style backgrounds/borders, so it works on every pill and
+   card without per-component wiring. */
+:focus-visible {
+  outline: 2px solid rgba(198, 40, 40, 0.55);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+a:focus-visible,
+button:focus-visible {
+  outline-offset: 3px;
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline-offset: 1px;
+}
+
 html {
   scroll-behavior: smooth;
 }

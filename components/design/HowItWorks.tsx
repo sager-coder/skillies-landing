@@ -413,7 +413,7 @@ export default function HowItWorks() {
               margin: 0,
             }}
           >
-            You don&apos;t need to be a writer. You don&apos;t need a degree.
+            You don’t need to be a writer. You don’t need a degree.
             You need a laptop, two hours a day, and the patience{" "}
             <em style={{ fontStyle: "italic", color: "#C62828" }}>
               to run the loop sixty times.

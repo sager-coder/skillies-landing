@@ -924,7 +924,7 @@ function StackingOutcome() {
             maxWidth: 480,
           }}
         >
-          A single puzzle or coloring book earns ₹500–2,000/month. Ten of them earn ₹15,000+. Sixty earns ₹60,000+ passive — that&apos;s the goal of the 50-day program.
+          A single puzzle or coloring book earns ₹500–2,000/month. Ten of them earn ₹15,000+. Sixty earns ₹60,000+ passive — that’s the goal of the 50-day program.
         </p>
       </div>
       <div
@@ -1012,7 +1012,7 @@ export default function BookReveal() {
             marginRight: "auto",
           }}
         >
-          <Kicker tone="red">What You&apos;ll Actually Publish</Kicker>
+          <Kicker tone="red">What You’ll Actually Publish</Kicker>
           <h2
             style={{
               fontSize: "clamp(44px, 5.6vw, 72px)",

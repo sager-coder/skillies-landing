@@ -772,7 +772,7 @@ export default function HeroV2() {
                 lineHeight: 1.65,
               }}
             >
-              Skillies.AI is a research-and-teach school for the age of AI. We find what actually pays in 2026 — not 2018&apos;s playbook — and teach it to people who&apos;ll use it. Last month, the books I published on Amazon KDP paid me ₹1,16,000 without me touching them in six. Proof, not hype.
+              Skillies.AI is a research-and-teach school for the age of AI. We find what actually pays in 2026 — not 2018’s playbook — and teach it to people who’ll use it. Last month, the books I published on Amazon KDP paid me ₹1,16,000 without me touching them in six. Proof, not hype.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>

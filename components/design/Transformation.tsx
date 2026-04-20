@@ -355,7 +355,7 @@ export default function Transformation() {
         <em
           style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}
         >
-          Numbers on the right are Ehsan&apos;s own — 63 books published solo across 2025, ₹1.16L earned in March 2026 with zero new publishes since October. Your results depend on the hours you put in.
+          Numbers on the right are Ehsan’s own — 63 books published solo across 2025, ₹1.16L earned in March 2026 with zero new publishes since October. Your results depend on the hours you put in.
         </em>
       </div>
       <div style={{ height: 120 }} />

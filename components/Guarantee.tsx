@@ -20,7 +20,7 @@ export default function Guarantee() {
               <h2 className="text-2xl md:text-4xl font-bold text-charcoal mb-6 leading-tight">
                 Show up. Ship the work.
                 <br />
-                <span className="text-red">If your royalties don&apos;t hit ₹45,000, we refund you.</span>
+                <span className="text-red">If your royalties don’t hit ₹45,000, we refund you.</span>
               </h2>
 
               <div className="space-y-4 mb-8">
@@ -53,7 +53,7 @@ export default function Guarantee() {
                     →
                   </span>
                   <p className="text-charcoal font-semibold">
-                    If after those six months your KDP royalties haven&apos;t reached
+                    If after those six months your KDP royalties haven’t reached
                     ₹45,000 total, we refund the program fee minus whatever Amazon has
                     already paid you.
                   </p>
@@ -61,9 +61,9 @@ export default function Guarantee() {
               </div>
 
               <p className="text-sm text-gray italic">
-                We&apos;re the first cohort and we&apos;re still growing. This offer
-                stays on the table because I&apos;ve done it solo — so has every
-                student who put in the hours. Show up. Ship. We&apos;ll stand behind it.
+                We’re the first cohort and we’re still growing. This offer
+                stays on the table because I’ve done it solo — so has every
+                student who put in the hours. Show up. Ship. We’ll stand behind it.
               </p>
             </div>
           </div>

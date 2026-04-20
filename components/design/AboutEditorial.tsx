@@ -259,8 +259,8 @@ export default function AboutEditorial() {
                 paddingLeft: 22,
               }}
             >
-              &ldquo;I could publish more books and earn more. I&apos;m
-              choosing not to. I&apos;m a researcher first, a teacher second —
+              &ldquo;I could publish more books and earn more. I’m
+              choosing not to. I’m a researcher first, a teacher second —
               and Skillies.AI is what happens when those two meet.&rdquo;
             </p>
 
@@ -273,10 +273,10 @@ export default function AboutEditorial() {
                 maxWidth: 580,
               }}
             >
-              I teach English at a school in Malappuram. I&apos;ve been a
+              I teach English at a school in Malappuram. I’ve been a
               researcher in my own time, on my own bandwidth, since 2020.
               Everything on this site — the books, the workflows, this web app
-              you&apos;re reading right now — I built it myself, between
+              you’re reading right now — I built it myself, between
               classes and after the kids went home. Not because I had to.
               Because the building is the research.
             </p>
@@ -370,7 +370,7 @@ export default function AboutEditorial() {
                   margin: 0,
                 }}
               >
-                I found uHRS — Microsoft&apos;s data-labelling platform — and
+                I found uHRS — Microsoft’s data-labelling platform — and
                 taught a few friends how to use it. Inside three months they
                 earned more than I did. Not because they worked harder, but
                 because I was busy researching how to automate the work
@@ -382,7 +382,7 @@ export default function AboutEditorial() {
                     color: "#E6C178",
                   }}
                 >
-                  I wasn&apos;t a grinder. I was a researcher.
+                  I wasn’t a grinder. I was a researcher.
                 </em>
               </p>
             </article>
@@ -452,7 +452,7 @@ export default function AboutEditorial() {
                     color: "#E6C178",
                   }}
                 >
-                  So now I&apos;m off looking at what&apos;s next.
+                  So now I’m off looking at what’s next.
                 </em>
               </p>
             </article>
@@ -511,10 +511,10 @@ export default function AboutEditorial() {
                 }}
               >
                 I sat with one question: &ldquo;what do I actually want to do
-                with my time?&rdquo; The answer wasn&apos;t &ldquo;publish more
+                with my time?&rdquo; The answer wasn’t &ldquo;publish more
                 books.&rdquo; It was: learn the next thing, teach it to people
-                who&apos;ll actually use it, and build the tools we all need.
-                That&apos;s Skillies.AI —{" "}
+                who’ll actually use it, and build the tools we all need.
+                That’s Skillies.AI —{" "}
                 <em
                   style={{
                     fontFamily: "'Instrument Serif', serif",
@@ -571,11 +571,11 @@ export default function AboutEditorial() {
               maxWidth: 780,
             }}
           >
-            What I&apos;m{" "}
+            What I’m{" "}
             <em style={{ fontStyle: "italic", color: "#E6C178" }}>
               actually researching
             </em>{" "}
-            right now — not what I&apos;m selling.
+            right now — not what I’m selling.
           </h3>
 
           <div
@@ -663,8 +663,8 @@ export default function AboutEditorial() {
               maxWidth: 700,
             }}
           >
-            Could I have hired someone to build this web app? Yes. I didn&apos;t —
-            because building it is the research. When it ships next month, I&apos;ll
+            Could I have hired someone to build this web app? Yes. I didn’t —
+            because building it is the research. When it ships next month, I’ll
             know exactly how to teach it.
           </p>
         </div>
@@ -829,10 +829,10 @@ export default function AboutEditorial() {
                   margin: "0 0 8px",
                 }}
               >
-                We find what actually works in 2026 — not 2018&apos;s playbook.
+                We find what actually works in 2026 — not 2018’s playbook.
                 We teach it straight. We build tools for the businesses that
-                can&apos;t wait. No hype, no random skills, no &ldquo;secret
-                formulas.&rdquo; Only what&apos;s proven to make money this year.
+                can’t wait. No hype, no random skills, no &ldquo;secret
+                formulas.&rdquo; Only what’s proven to make money this year.
               </p>
               <p
                 style={{
@@ -843,8 +843,8 @@ export default function AboutEditorial() {
                   margin: "16px 0 0",
                 }}
               >
-                One day we&apos;ll be India&apos;s most trusted AI skills school.
-                We&apos;re 6 students in. We&apos;re not in a hurry.
+                One day we’ll be India’s most trusted AI skills school.
+                We’re 6 students in. We’re not in a hurry.
               </p>
             </div>
           </div>

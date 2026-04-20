@@ -1058,7 +1058,7 @@ export function EtsyView() {
                 margin: 0,
               }}
             >
-              Etsy is small. Two sales last month. ~₹8K. I keep it running because it&apos;s different traffic, and it teaches me printable design — which becomes its own course later.
+              Etsy is small. Two sales last month. ~₹8K. I keep it running because it’s different traffic, and it teaches me printable design — which becomes its own course later.
             </p>
           </Panel>
         </div>

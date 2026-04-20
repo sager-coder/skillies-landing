@@ -64,7 +64,7 @@ export default async function LessonPage({ params }: Props) {
             Day {lesson.day} drops soon.
           </h1>
           <p style={{ fontSize: 17, color: "#6B7280", lineHeight: 1.65 }}>
-            Ehsan is recording this lesson now. You&apos;ll get a WhatsApp ping the moment it&apos;s live.
+            Ehsan is recording this lesson now. You’ll get a WhatsApp ping the moment it’s live.
           </p>
         </section>
       </main>

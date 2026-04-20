@@ -111,7 +111,7 @@ function LoginForm() {
         Enter your <em style={{ fontStyle: "italic", color: "#C62828" }}>WhatsApp number.</em>
       </h1>
       <p style={{ fontSize: 15, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
-        We&apos;ll text you a one-time code. The number you used to enrol with Ehsan.
+        We’ll text you a one-time code. The number you used to enrol with Ehsan.
       </p>
 
       <form onSubmit={onSubmit}>

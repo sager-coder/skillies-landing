@@ -97,7 +97,7 @@ export default function LessonPlayer({
             &ldquo;{title}&rdquo;
           </div>
           <div style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", marginTop: 16 }}>
-            This lesson&apos;s video is being filmed. You&apos;ll get a WhatsApp ping when it lands.
+            This lesson’s video is being filmed. You’ll get a WhatsApp ping when it lands.
           </div>
         </div>
       </div>

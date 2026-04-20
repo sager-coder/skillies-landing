@@ -147,8 +147,8 @@ function ChannelCard({ c }: { c: Channel }) {
           fontWeight: 600,
         }}
       >
-        <span>{MONTHS[0]} &apos;25</span>
-        <span>{MONTHS[MONTHS.length - 1]} &apos;26</span>
+        <span>{MONTHS[0]} ’25</span>
+        <span>{MONTHS[MONTHS.length - 1]} ’26</span>
       </div>
     </div>
   );
@@ -227,7 +227,7 @@ export default function ProofWall() {
                 maxWidth: 480,
               }}
             >
-              I haven&apos;t published a single new book since October 2025. These are digital assets sitting on Amazon — they kept paying while I taught class, ran my Etsy shop, and prepped the Calicut workshop. That&apos;s the whole point: build once, earn for years.
+              I haven’t published a single new book since October 2025. These are digital assets sitting on Amazon — they kept paying while I taught class, ran my Etsy shop, and prepped the Calicut workshop. That’s the whole point: build once, earn for years.
             </p>
           </div>
         </div>
@@ -334,7 +334,7 @@ export default function ProofWall() {
                 color: "#6B7280",
               }}
             >
-              — That&apos;s the whole pitch.
+              — That’s the whole pitch.
             </div>
           </div>
         </div>

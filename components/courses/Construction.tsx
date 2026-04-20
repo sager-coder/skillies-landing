@@ -458,7 +458,7 @@ export default function CoursesConstruction() {
             >
               The 50-day KDP Mastery program is live for the six-student cohort
               that came out of the Calicut workshop. Everything else is being
-              built — often drawn from that same cohort&apos;s sessions.
+              built — often drawn from that same cohort’s sessions.
             </p>
           </div>
         </div>
@@ -571,8 +571,8 @@ export default function CoursesConstruction() {
                 lineHeight: 1.5,
               }}
             >
-              &ldquo;Dates slip. Scope changes. I&apos;d rather show you the log
-              honestly than promise launches I can&apos;t keep.&rdquo; — E.
+              &ldquo;Dates slip. Scope changes. I’d rather show you the log
+              honestly than promise launches I can’t keep.&rdquo; — E.
             </div>
             <div
               style={{

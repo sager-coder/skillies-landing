@@ -622,7 +622,7 @@ export function FoundingBatch() {
         </span>
       </div>
       <p style={{ fontSize: 13, color: "#6B7280", margin: "0 0 16px", lineHeight: 1.55 }}>
-        Six students from the first Calicut workshop. Everyone in week three now. Four are asking for an online version — that&apos;s what we&apos;re building next.
+        Six students from the first Calicut workshop. Everyone in week three now. Four are asking for an online version — that’s what we’re building next.
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 12 }}>
         {members.map((m, i) => (

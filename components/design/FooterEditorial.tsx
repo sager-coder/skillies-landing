@@ -114,7 +114,7 @@ export default function FooterEditorial() {
               lineHeight: 1.6,
             }}
           >
-            One message to Ehsan. That&apos;s the start. No commitment until you&apos;re ready.
+            One message to Ehsan. That’s the start. No commitment until you’re ready.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <a

@@ -49,10 +49,10 @@ export default async function LearnHomePage() {
               margin: "12px 0 14px",
             }}
           >
-            You&apos;re logged in, but not enrolled in any course yet.
+            You’re logged in, but not enrolled in any course yet.
           </h1>
           <p style={{ fontSize: 17, color: "#6B7280", lineHeight: 1.65 }}>
-            If you&apos;ve already paid via UPI and sent the screenshot, give Ehsan a few hours to mark you enrolled — he does it personally. Or message him on WhatsApp to confirm.
+            If you’ve already paid via UPI and sent the screenshot, give Ehsan a few hours to mark you enrolled — he does it personally. Or message him on WhatsApp to confirm.
           </p>
           <a
             href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27ve%20paid%20but%20I%20don%27t%20see%20my%20course%20yet.%20My%20phone%20is%20"

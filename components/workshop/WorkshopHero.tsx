@@ -376,7 +376,7 @@ export default function WorkshopHero() {
                 Reserve Your Seat · ₹1,999
               </PrimaryButton>
               <SecondaryButton href="#agenda">
-                See the Day&apos;s Agenda
+                See the Day’s Agenda
               </SecondaryButton>
             </div>
 

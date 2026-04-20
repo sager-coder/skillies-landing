@@ -116,7 +116,7 @@ export default function PromiseEditorial() {
                 margin: "0 0 32px",
               }}
             >
-              <span>We don&apos;t teach AI for</span>{" "}
+              <span>We don’t teach AI for</span>{" "}
               <em style={{ color: "#EF4444", fontStyle: "italic" }}>hype.</em>
               <br />
               <span>We teach it for </span>
@@ -139,7 +139,7 @@ export default function PromiseEditorial() {
               >
                 can you make real money with this skill?
               </em>{" "}
-              If the answer is no, we don&apos;t teach it. If the answer is yes, we teach it until you have.
+              If the answer is no, we don’t teach it. If the answer is yes, we teach it until you have.
             </p>
 
             <div

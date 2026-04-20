@@ -22,7 +22,7 @@ const AGENDA: AgendaItem[] = [
     mins: 30,
     type: "Intro",
     title: "Doors, chai, introductions",
-    desc: "Meet the other people in the room betting on AI income. Short icebreaker — who you are, what you&apos;re hoping to ship, and what&apos;s been stopping you.",
+    desc: "Meet the other people in the room betting on AI income. Short icebreaker — who you are, what you’re hoping to ship, and what’s been stopping you.",
     you: "You: arrive, settle, meet three people before the first session starts.",
   },
   {
@@ -31,8 +31,8 @@ const AGENDA: AgendaItem[] = [
     mins: 60,
     type: "Teach",
     title: "The KDP opportunity, in real numbers",
-    desc: "The ₹8.72L breakdown, month by month. Which no-content categories are actually paying in 2026, which are dying, what Amazon&apos;s algorithm rewards right now — and what it punishes.",
-    tools: "Ehsan&apos;s live dashboards · Publisher Rocket · KDP Reports",
+    desc: "The ₹8.72L breakdown, month by month. Which no-content categories are actually paying in 2026, which are dying, what Amazon’s algorithm rewards right now — and what it punishes.",
+    tools: "Ehsan’s live dashboards · Publisher Rocket · KDP Reports",
   },
   {
     t: "11:30",
@@ -69,7 +69,7 @@ const AGENDA: AgendaItem[] = [
     mins: 45,
     type: "Teach",
     title: "Keywords, pricing, first 10 reviews",
-    desc: "What to title your book so it actually shows up. How to price it so it sells. How to earn the first ten reviews ethically — because without them, Amazon won&apos;t rank you.",
+    desc: "What to title your book so it actually shows up. How to price it so it sells. How to earn the first ten reviews ethically — because without them, Amazon won’t rank you.",
     tools: "Keyword vault · pricing calculator · review ethics checklist",
   },
   {
@@ -509,7 +509,7 @@ export function WorkshopAgenda() {
             maxWidth: 620,
           }}
         >
-          Tight schedule. No lecture mode. You leave with a book on Amazon, not a binder of theory. Here&apos;s exactly what happens, minute by minute.
+          Tight schedule. No lecture mode. You leave with a book on Amazon, not a binder of theory. Here’s exactly what happens, minute by minute.
         </p>
 
         <DayArc />
@@ -890,7 +890,7 @@ export function WorkshopFAQ() {
               maxWidth: 420,
             }}
           >
-            Every answer here comes from a real WhatsApp message I&apos;ve already replied to. If yours isn&apos;t below, ask me — I still reply personally.
+            Every answer here comes from a real WhatsApp message I’ve already replied to. If yours isn’t below, ask me — I still reply personally.
           </p>
         </div>
 

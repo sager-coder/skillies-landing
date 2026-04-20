@@ -642,7 +642,7 @@ export default function PaymentDetails() {
                     margin: "0 0 12px",
                   }}
                 >
-                  Send the payment screenshot to Ehsan at +91 80899 41131. Seat confirmed the moment it&apos;s seen.
+                  Send the payment screenshot to Ehsan at +91 80899 41131. Seat confirmed the moment it’s seen.
                 </p>
                 <a
                   href={WA_CONFIRM}
@@ -711,7 +711,7 @@ export default function PaymentDetails() {
               lineHeight: 1.5,
             }}
           >
-            Your seat isn&apos;t locked until I see the screenshot. 89 of
+            Your seat isn’t locked until I see the screenshot. 89 of
             150 seats taken so far — pay early, sleep easy.
           </div>
           <div
