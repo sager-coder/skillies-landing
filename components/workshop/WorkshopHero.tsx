@@ -369,7 +369,7 @@ export default function WorkshopHero() {
               }}
             >
               <PrimaryButton href="#pay">
-                Reserve Your Seat · ₹1,999
+                Reserve Your Seat · ₹999
               </PrimaryButton>
               <SecondaryButton href="#agenda">
                 See the Day’s Agenda
@@ -412,7 +412,7 @@ export default function WorkshopHero() {
                   }}
                 />
               </span>
-              Early bird ends May 10 — save ₹500
+              Early bird ₹999 · first 50 seats only
             </div>
           </div>
 

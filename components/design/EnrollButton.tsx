@@ -139,7 +139,7 @@ export default function EnrollButton({
         amount: orderData.amount,
         currency: orderData.currency,
         name: "Skillies.AI",
-        description: `${tier === "pro" ? "KDP Mastery · Pro" : tier === "founding" ? "KDP Mastery · Founding" : "KDP Mastery · Standard"}`,
+        description: `${tier === "pro" ? "KDP Mastery · Founding Mentorship" : tier === "founding" ? "KDP Mastery · Founding (Batch 001)" : "KDP Mastery · Cohort"}`,
         image: "/favicon.ico",
         prefill: {
           name,
@@ -250,7 +250,7 @@ export default function EnrollButton({
                     marginBottom: 8,
                   }}
                 >
-                  Enroll · {tier === "pro" ? "Pro" : "Standard"}
+                  Enroll · {tier === "pro" ? "Mentorship" : "Cohort"}
                 </div>
                 <h2
                   id="enroll-title"

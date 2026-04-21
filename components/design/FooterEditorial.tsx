@@ -9,7 +9,8 @@ const COLUMNS: Col[] = [
   {
     kicker: "Learn",
     items: [
-      ["KDP Mastery · 50-day program", "/#program"],
+      ["KDP Mastery · 50-day cohort", "/#program"],
+      ["Private Mentorship · 3 seats", "/mentorship"],
       ["Course catalog", "/courses"],
       ["Live income dashboard", "/dashboard"],
       ["Sign in · Student portal", "/login"],

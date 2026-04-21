@@ -7,6 +7,7 @@ type Link = { href: string; label: string };
 
 const LINKS: Link[] = [
   { href: "/workshop", label: "Workshop" },
+  { href: "/mentorship", label: "Mentorship" },
   { href: "/courses", label: "Courses" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/#program", label: "Program" },
@@ -18,7 +19,7 @@ const LINKS: Link[] = [
    secondary path for people who scrolled past. */
 
 export default function TopNav({
-  cta = { href: "/workshop", label: "Reserve · ₹1,999" },
+  cta = { href: "/workshop", label: "Reserve · ₹999" },
 }: {
   cta?: { href: string; label: string };
 }) {

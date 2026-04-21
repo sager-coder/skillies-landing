@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Kicker } from "./Primitives";
 import EnrollButton from "./EnrollButton";
 
@@ -148,22 +149,22 @@ function TrackRow({ t }: { t: Track }) {
   );
 }
 
-const STANDARD_INCLUDES = [
-  "50-day guided mentorship, live cohort",
-  "Group calls every Sunday",
+const COHORT_INCLUDES = [
+  "50-day live cohort · weekly Zoom Q&A",
   "All templates, prompts, cover packs",
-  "KDP account setup, live walkthrough",
+  "KDP account setup walkthrough",
   "Alumni community access after launch",
   "Course recording library (replay anytime)",
+  "Refund-backed guarantee · see FAQ",
 ];
 
-const PRO_INCLUDES = [
-  "Everything in the Standard tier",
-  "12 × 1-on-1 calls with Ehsan over the 50 days",
-  "Private WhatsApp — direct line, no cohort middleman",
-  "Custom niche + book-one plan built for you",
-  "First access to all future courses (Video, Etsy, Meta)",
-  "Launch-week support on your first title",
+const MENTORSHIP_INCLUDES = [
+  "Everything in the Cohort tier",
+  "45-min KDP account audit at kickoff",
+  "12 × bi-weekly 1-on-1 Zoom calls with Ehsan (6 months)",
+  "Private WhatsApp line · 48-hr SLA · Mon–Fri",
+  "Written reviews of up to 10 of your books",
+  "Founding-price testimonial exchange (₹75,000 off)",
 ];
 
 function TierCard({
@@ -177,6 +178,7 @@ function TierCard({
   includes,
   ctaLabel,
   tier,
+  href,
   highlighted,
 }: {
   tone: "gold" | "red";
@@ -188,9 +190,14 @@ function TierCard({
   subhead: string;
   includes: string[];
   ctaLabel: string;
-  tier: "standard" | "pro";
+  tier?: "standard" | "pro";
+  href?: string;
   highlighted?: boolean;
 }) {
+  // TierCard renders either an EnrollButton (Razorpay flow via tier prop)
+  // or a plain link (href prop — used for products whose sale happens on
+  // a separate page, like /mentorship which needs a WhatsApp application
+  // first before any payment).
   const palette = {
     gold: {
       accent: "#C9A24E",
@@ -349,7 +356,33 @@ function TierCard({
         ))}
       </ul>
 
-      <EnrollButton tier={tier} label={ctaLabel} priceLabel={price} />
+      {href ? (
+        <Link
+          href={href}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "16px 28px",
+            background: "#1A1A1A",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: 999,
+            fontSize: 15,
+            fontWeight: 700,
+            letterSpacing: "0.02em",
+            boxShadow: "0 16px 36px rgba(26,26,26,0.2)",
+          }}
+        >
+          {ctaLabel} →
+        </Link>
+      ) : (
+        <EnrollButton
+          tier={tier as "standard" | "pro"}
+          label={ctaLabel}
+          priceLabel={price}
+        />
+      )}
     </div>
   );
 }
@@ -428,7 +461,7 @@ export default function ProgramEditorial() {
               maxWidth: 460,
             }}
           >
-            The program that took me from zero books to ₹1L/month royalties — packaged as a 50-day guided mentorship. Small cohort, live calls, your first sixty titles shipped alongside mine. No self-study, no lectures on repeat — real work, real deadlines, real royalties.
+            The program that took me from zero books to ₹1L/month royalties — packaged as a 50-day guided cohort. Weekly live Q&A with me, the full four-pillar system, and your first books shipped alongside the batch. No self-study, no lectures on repeat — real work, real deadlines, real royalties.
           </p>
         </div>
 
@@ -481,7 +514,7 @@ export default function ProgramEditorial() {
               flexWrap: "wrap",
             }}
           >
-            <Kicker tone="gold">Two windows · one cohort</Kicker>
+            <Kicker tone="gold">Two paths · two prices</Kicker>
             <span
               style={{
                 fontFamily: "'Instrument Serif', serif",
@@ -490,7 +523,7 @@ export default function ProgramEditorial() {
                 color: "#9CA3AF",
               }}
             >
-              Pro seats limited · talk to Ehsan before enrolling.
+              Mentorship is application-only · 3 founding seats.
             </span>
           </div>
           <div
@@ -503,26 +536,27 @@ export default function ProgramEditorial() {
           >
             <TierCard
               tone="red"
-              label="Standard Enrollment"
-              price="₹75,000"
+              label="Cohort Enrollment"
+              price="₹35,000"
               priceNote="Open · live cohort · rolling intake"
               tag="Most Popular"
               subhead="The full 50-day program in a live group cohort. Ship your first book in 50 days, or refund per the guarantee."
-              includes={STANDARD_INCLUDES}
-              ctaLabel="Enroll · Pay ₹75,000"
+              includes={COHORT_INCLUDES}
+              ctaLabel="Enroll · Pay ₹35,000"
               tier="standard"
               highlighted
             />
             <TierCard
               tone="gold"
-              label="Pro · 1-on-1 Mentorship"
-              price="₹1,25,000"
-              priceNote="By application · 2-3 seats per cohort"
-              tag="Pro"
-              subhead="Standard, plus twelve 1-on-1 calls, a direct WhatsApp line, and a custom book-one plan built around your niche. Application only."
-              includes={PRO_INCLUDES}
-              ctaLabel="Apply · Pay ₹1,25,000"
-              tier="pro"
+              label="Founding Mentorship"
+              price="₹1,75,000"
+              oldPrice="₹2,50,000"
+              priceNote="3 founding seats · closes April 28"
+              tag="Premium"
+              subhead="Six months, 1-on-1 with me. Account audit, bi-weekly calls, direct WhatsApp, book reviews. Full details and apply on the mentorship page."
+              includes={MENTORSHIP_INCLUDES}
+              ctaLabel="See Mentorship · Apply"
+              href="/mentorship"
             />
           </div>
 
@@ -749,7 +783,7 @@ export default function ProgramEditorial() {
               whiteSpace: "nowrap",
             }}
           >
-            Beyond the program
+            Before the cohort
           </div>
           <div
             style={{
@@ -761,16 +795,14 @@ export default function ProgramEditorial() {
               lineHeight: 1.35,
             }}
           >
-            Beyond the 50-day program, I offer{" "}
+            Still deciding? Start with the{" "}
             <em style={{ fontStyle: "italic", color: "#E6C178" }}>
-              advanced 1-on-1 tracks and done-for-you services
+              one-day Calicut workshop on May 31
             </em>
-            {" "}— pricing starts at ₹1,25,000. Ask on WhatsApp.
+            {" "}— six hours, one book built in the room, ₹999 early bird. The cleanest way to meet me before committing to the cohort.
           </div>
-          <a
-            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20know%20about%20your%20advanced%201-on-1%20tracks%20and%20done-for-you%20services.%20My%20name%20is%20"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/workshop"
             style={{
               position: "relative",
               padding: "14px 22px",
@@ -786,8 +818,8 @@ export default function ProgramEditorial() {
               boxShadow: "0 12px 30px rgba(198,40,40,0.25)",
             }}
           >
-            Ask on WhatsApp →
-          </a>
+            See the workshop →
+          </Link>
         </div>
       </div>
     </section>

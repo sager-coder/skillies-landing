@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Kicker, PrimaryButton, SecondaryButton, Wordmark, Grain } from "../design/Primitives";
+import { Kicker, Wordmark, Grain } from "../design/Primitives";
+import WorkshopReserveButton from "./WorkshopReserveButton";
 
 type AgendaItem = {
   t: string;
@@ -733,15 +734,7 @@ export function WorkshopAgenda() {
   );
 }
 
-const EARLY = [
-  "Full day · 10 AM – 4 PM",
-  "One spot-the-difference book, built in the room",
-  "One full KDP cover, designed with you",
-  "Claude prompt stack + Canva template pack",
-  "The six-month playbook (path I followed in 2 years)",
-  "Priority seat in the 30-day cohort · refund-backed",
-];
-const REGULAR = [
+const CORE_PERKS = [
   "Full day · 10 AM – 4 PM",
   "One spot-the-difference book, built in the room",
   "One full KDP cover, designed with you",
@@ -749,21 +742,38 @@ const REGULAR = [
   "The six-month playbook (path I followed in 2 years)",
   "Invitation to the 30-day cohort · refund-backed",
 ];
+const VIP_EXTRAS = [
+  "Front-row seat · premium view of every live build",
+  "Signed copy of a best-selling KDP book from Ehsan's catalog",
+  "Post-event WhatsApp group with Ehsan · 30 days direct access",
+  "Priority seat in the 30-day cohort",
+];
 
 export function WorkshopPricing() {
   return (
     <section id="pricing" style={{ padding: "120px 24px", background: "#FAF5EB" }}>
-      <div style={{ maxWidth: 960, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1160, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <Kicker tone="gold">Seats</Kicker>
           <h2 style={{ fontSize: "clamp(40px, 5vw, 56px)", fontWeight: 800, color: "#1A1A1A", margin: "16px 0 12px", letterSpacing: "-0.04em" }}>
-            Two windows. One room.
+            Three windows. One room.
           </h2>
+          <p style={{ fontSize: 15, color: "#6B7280", margin: "0 auto", maxWidth: 520, lineHeight: 1.6 }}>
+            150 seats total. First 50 go at Early Bird. Next 75 at Regular.
+            Last 25 reserved for VIP.
+          </p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 20,
+          }}
+        >
+          {/* EARLY BIRD · ₹999 · gold-featured */}
           <div
             style={{
-              padding: 36,
+              padding: 32,
               borderRadius: 26,
               background: "white",
               border: "2px solid rgba(201,162,78,0.45)",
@@ -786,18 +796,18 @@ export function WorkshopPricing() {
                 letterSpacing: "0.2em",
               }}
             >
-              EARLY BIRD
+              FIRST 50
             </div>
-            <Kicker tone="gold">Ends May 10</Kicker>
+            <Kicker tone="gold">Early bird · 50 seats</Kicker>
             <div style={{ display: "flex", alignItems: "baseline", gap: 10, margin: "20px 0 6px" }}>
-              <span style={{ fontSize: 56, fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.045em", lineHeight: 1 }}>₹1,999</span>
-              <span style={{ color: "#9CA3AF", textDecoration: "line-through", fontSize: 18 }}>₹2,499</span>
+              <span style={{ fontSize: 52, fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.045em", lineHeight: 1 }}>₹999</span>
+              <span style={{ color: "#9CA3AF", textDecoration: "line-through", fontSize: 16 }}>₹1,999</span>
             </div>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "0 0 22px", lineHeight: 1.6 }}>
-              Save ₹500. Same seat, same outcome. Ends May 10.
+              Half off. Same seat, same outcome. Closes at 50 sold.
             </p>
             <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "grid", gap: 10 }}>
-              {EARLY.map((x) => (
+              {CORE_PERKS.map((x) => (
                 <li key={x} style={{ display: "flex", gap: 10, fontSize: 14, color: "#1A1A1A" }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A24E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
                     <path d="M20 6L9 17l-5-5" />
@@ -806,16 +816,48 @@ export function WorkshopPricing() {
                 </li>
               ))}
             </ul>
-            <PrimaryButton href="#pay">Grab Early Bird Seat</PrimaryButton>
+            <WorkshopReserveButton
+              tier="workshop-early"
+              priceLabel="₹999"
+              label="Grab Early Bird · ₹999"
+              variant="filled"
+            />
           </div>
-          <div style={{ padding: 36, borderRadius: 26, background: "white", border: "1px solid #F0E8D8" }}>
-            <Kicker tone="red">Regular</Kicker>
-            <div style={{ fontSize: 56, fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.045em", margin: "20px 0 6px", lineHeight: 1 }}>₹2,499</div>
+
+          {/* REGULAR · ₹1,999 */}
+          <div
+            style={{
+              padding: 32,
+              borderRadius: 26,
+              background: "white",
+              border: "1px solid #F0E8D8",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                background: "#1A1A1A",
+                color: "white",
+                fontSize: 10,
+                fontWeight: 800,
+                padding: "6px 14px",
+                borderBottomLeftRadius: 16,
+                letterSpacing: "0.2em",
+              }}
+            >
+              NEXT 75
+            </div>
+            <Kicker tone="red">Regular · 75 seats</Kicker>
+            <div style={{ fontSize: 52, fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.045em", margin: "20px 0 6px", lineHeight: 1 }}>₹1,999</div>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "0 0 22px", lineHeight: 1.6 }}>
-              Same day. Same seat. No early bird discount.
+              Once Early Bird is gone. Same full day, same room.
             </p>
             <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "grid", gap: 10 }}>
-              {REGULAR.map((x) => (
+              {CORE_PERKS.map((x) => (
                 <li key={x} style={{ display: "flex", gap: 10, fontSize: 14, color: "#1A1A1A" }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
                     <path d="M20 6L9 17l-5-5" />
@@ -824,7 +866,121 @@ export function WorkshopPricing() {
                 </li>
               ))}
             </ul>
-            <SecondaryButton href="#pay">Reserve Regular</SecondaryButton>
+            <WorkshopReserveButton
+              tier="workshop-regular"
+              priceLabel="₹1,999"
+              label="Reserve Regular · ₹1,999"
+              variant="outline"
+            />
+          </div>
+
+          {/* VIP · ₹2,999 · dark premium */}
+          <div
+            style={{
+              padding: 32,
+              borderRadius: 26,
+              background: "linear-gradient(135deg, #1A1A1A 0%, #242424 100%)",
+              border: "1.5px solid rgba(230,193,120,0.35)",
+              position: "relative",
+              overflow: "hidden",
+              color: "white",
+              boxShadow: "0 30px 70px rgba(26,26,26,0.25)",
+            }}
+          >
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "radial-gradient(ellipse at 80% 10%, rgba(230,193,120,0.18), transparent 55%)",
+                pointerEvents: "none",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                background: "#E6C178",
+                color: "#2a1f08",
+                fontSize: 10,
+                fontWeight: 800,
+                padding: "6px 14px",
+                borderBottomLeftRadius: 16,
+                letterSpacing: "0.2em",
+                zIndex: 1,
+              }}
+            >
+              LAST 25 · VIP
+            </div>
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  fontSize: 11,
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  fontWeight: 700,
+                  color: "#E6C178",
+                  marginBottom: 4,
+                }}
+              >
+                VIP · 25 seats
+              </div>
+              <div style={{ fontSize: 52, fontWeight: 900, color: "white", letterSpacing: "-0.045em", margin: "20px 0 6px", lineHeight: 1 }}>₹2,999</div>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: "0 0 22px", lineHeight: 1.6 }}>
+                Everything in Regular, plus direct access to Ehsan before and
+                after the room.
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "grid", gap: 10 }}>
+                {CORE_PERKS.map((x) => (
+                  <li key={x} style={{ display: "flex", gap: 10, fontSize: 14, color: "rgba(255,255,255,0.85)" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    {x}
+                  </li>
+                ))}
+              </ul>
+              <div
+                style={{
+                  padding: "14px 16px",
+                  borderRadius: 12,
+                  background: "rgba(230,193,120,0.08)",
+                  border: "1px dashed rgba(230,193,120,0.35)",
+                  marginBottom: 22,
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    fontWeight: 700,
+                    color: "#E6C178",
+                    marginBottom: 8,
+                  }}
+                >
+                  VIP extras
+                </div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
+                  {VIP_EXTRAS.map((x) => (
+                    <li key={x} style={{ display: "flex", gap: 10, fontSize: 13, color: "white" }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E6C178" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                      {x}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <WorkshopReserveButton
+                tier="workshop-vip"
+                priceLabel="₹2,999"
+                label="Book VIP · ₹2,999"
+                variant="filled"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -1241,10 +1397,10 @@ export function StickyCTA() {
       }}
     >
       <span style={{ fontSize: 13, fontWeight: 500 }}>
-        <strong style={{ color: "#EF4444" }}>89/150</strong> seats · Early bird ends May 10
+        <strong style={{ color: "#EF4444" }}>Early bird</strong> · 50 seats at ₹999
       </span>
       <a
-        href="#pay"
+        href="#pricing"
         style={{
           padding: "10px 20px",
           background: "#C62828",
@@ -1255,7 +1411,7 @@ export function StickyCTA() {
           textDecoration: "none",
         }}
       >
-        Reserve ₹1,999 →
+        Reserve ₹999 →
       </a>
     </div>
   );

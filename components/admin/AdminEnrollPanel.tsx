@@ -107,9 +107,9 @@ export default function AdminEnrollPanel() {
               onChange={(e) => setTier(e.target.value as "founding" | "standard" | "pro")}
               style={inputStyle}
             >
-              <option value="standard">Standard · ₹75,000</option>
-              <option value="pro">Pro · ₹1,25,000</option>
-              <option value="founding">Founding · ₹45,000 (Batch 001)</option>
+              <option value="standard">Cohort · ₹35,000</option>
+              <option value="pro">Mentorship · ₹1,75,000 (founding)</option>
+              <option value="founding">Founding · ₹45,000 (Batch 001 · legacy)</option>
             </select>
           </Field>
         </div>

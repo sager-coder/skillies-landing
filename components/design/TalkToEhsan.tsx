@@ -18,7 +18,7 @@ import { Grain } from "./Primitives";
  *   />
  */
 
-type Context = "default" | "workshop" | "program" | "courses" | "proof";
+type Context = "default" | "workshop" | "program" | "mentorship" | "courses" | "proof";
 
 const PRESETS: Record<
   Context,
@@ -35,15 +35,22 @@ const PRESETS: Record<
     heading: "Book the Calicut workshop.",
     sub: "Scan the QR or tap the button. Tell me your name — I'll send the reservation form and payment details in the next reply.",
     message:
-      "Hi Ehsan, I want to reserve a seat at the Calicut workshop on May 31 (₹1,999 early bird). My name is ",
-    ctaLabel: "Reserve · ₹1,999",
+      "Hi Ehsan, I want to reserve a seat at the Calicut workshop on May 31 (₹999 early bird). My name is ",
+    ctaLabel: "Reserve · ₹999",
   },
   program: {
-    heading: "Enroll in the 50-day program.",
-    sub: "Scan the QR or tap the button. I'll walk you through whether the Standard (₹75,000) cohort or the Pro 1-on-1 track (₹1,25,000) is the right fit.",
+    heading: "Enroll in the 50-day cohort.",
+    sub: "Scan the QR or tap the button. I'll walk you through whether the ₹35,000 group cohort or the founding ₹1,75,000 mentorship is the right fit.",
     message:
-      "Hi Ehsan, I'd like to enroll in the 50-day KDP Mastery program. My name is ",
+      "Hi Ehsan, I'd like to enroll in the 50-day KDP Mastery cohort. My name is ",
     ctaLabel: "Start enrollment",
+  },
+  mentorship: {
+    heading: "Apply for founding mentorship.",
+    sub: "Three seats at ₹1,75,000 founding price (regular ₹2,50,000). Six months of 1-on-1 KDP work with me directly. Closes Monday April 28 or when filled.",
+    message:
+      "MENTORSHIP — I'd like to apply for one of the 3 founding slots at ₹1,75,000. My name is ",
+    ctaLabel: "Apply · ₹1,75,000",
   },
   courses: {
     heading: "Get notified on each drop.",

@@ -101,7 +101,7 @@ const HUSTLES: Array<[string, string, string]> = [
   ["KDP royalties", "Amazon · 63 books live", "₹1,08,400 last month"],
   ["Etsy printables", "PageBoo shop · weekends", "US$ 99.98 last 30 days"],
   ["6 months passive", "Zero new publishes since Oct", "Books still earning"],
-  ["Next cohort", "Standard ₹75,000 · Pro ₹1,25,000", "Rolling intake"],
+  ["Next cohort", "Cohort ₹35,000 · Mentorship ₹1,75,000 founding", "Rolling intake"],
 ];
 
 function IncomeTicker() {
@@ -776,7 +776,7 @@ export default function HeroV2() {
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <PrimaryButton href="/workshop">Join the Calicut workshop · ₹1,999</PrimaryButton>
+              <PrimaryButton href="/workshop">Join the Calicut workshop · ₹999</PrimaryButton>
               <SecondaryButton href="#program">See the 50-day program</SecondaryButton>
             </div>
 

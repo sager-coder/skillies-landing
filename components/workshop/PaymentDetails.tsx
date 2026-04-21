@@ -162,8 +162,8 @@ export default function PaymentDetails() {
           </div>
           <WorkshopReserveButton
             tier="workshop-early"
-            priceLabel="₹1,999"
-            label="Reserve seat · ₹1,999"
+            priceLabel="₹999"
+            label="Reserve seat · ₹999"
           />
         </div>
 

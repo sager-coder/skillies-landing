@@ -36,11 +36,11 @@ async function loadRazorpayScript(): Promise<boolean> {
  */
 export default function WorkshopReserveButton({
   tier = "workshop-early",
-  priceLabel = "₹1,999",
-  label = "Reserve seat · ₹1,999",
+  priceLabel = "₹999",
+  label = "Reserve seat · ₹999",
   variant = "filled",
 }: {
-  tier?: "workshop-early" | "workshop-regular";
+  tier?: "workshop-early" | "workshop-regular" | "workshop-vip";
   priceLabel?: string;
   label?: string;
   variant?: "filled" | "outline";
