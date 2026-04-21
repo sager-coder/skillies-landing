@@ -200,6 +200,6 @@ export default async function CoursePage({ params }: Props) {
 
 function tierLabel(t: string) {
   if (t === "founding") return "Founding · Batch 001";
-  if (t === "pro") return "Pro · 1-on-1";
-  return "Standard";
+  if (t === "pro") return "Mentorship · 1-on-1";
+  return "Cohort";
 }

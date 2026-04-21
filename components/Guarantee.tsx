@@ -20,7 +20,7 @@ export default function Guarantee() {
               <h2 className="text-2xl md:text-4xl font-bold text-charcoal mb-6 leading-tight">
                 Show up. Ship the work.
                 <br />
-                <span className="text-red">If your royalties don’t hit ₹45,000, we refund you.</span>
+                <span className="text-red">If your royalties don’t hit ₹35,000, we refund you.</span>
               </h2>
 
               <div className="space-y-4 mb-8">
@@ -29,7 +29,7 @@ export default function Guarantee() {
                     ✓
                   </span>
                   <p className="text-charcoal/80">
-                    Finish the 50-day program — every assignment, every check-in
+                    Finish the 50-day cohort — every assignment, every check-in
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -54,8 +54,8 @@ export default function Guarantee() {
                   </span>
                   <p className="text-charcoal font-semibold">
                     If after those six months your KDP royalties haven’t reached
-                    ₹45,000 total, we refund the program fee minus whatever Amazon has
-                    already paid you.
+                    ₹35,000 total (the cohort fee), we refund the program fee
+                    minus whatever Amazon has already paid you.
                   </p>
                 </div>
               </div>

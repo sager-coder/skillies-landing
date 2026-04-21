@@ -80,8 +80,8 @@ const AGENDA: AgendaItem[] = [
     end: "16:00",
     mins: 30,
     type: "Pitch",
-    title: "If you want the short cut — the 30-day program",
-    desc: "Everything I learned in two years, packaged as a 30-day guided cohort. Offline in Calicut or online — your choice. Full refund if you don’t think it’s worth it after the first two weeks. No pressure here — walk out, or sign up. Either way you leave with one real book + cover.",
+    title: "If you want the short cut — the 50-day cohort",
+    desc: "Everything I learned in two years, packaged as a 50-day guided cohort. Weekly live Q&A with me, full four-pillar stack, refund-backed. No pressure here — walk out, or sign up. Either way you leave with one real book + cover.",
     variant: "close",
   },
 ];
@@ -518,7 +518,7 @@ export function WorkshopNextStep() {
                 color: "#EF4444",
               }}
             >
-              The 30-day program is the system.
+              The 50-day cohort is the system.
             </em>
           </h2>
           <p
@@ -531,7 +531,7 @@ export function WorkshopNextStep() {
             }}
           >
             Six hours teaches you one book + one cover. That&rsquo;s the hardest
-            part to do alone, but it isn&rsquo;t the whole job. The 30-day
+            part to do alone, but it isn&rsquo;t the whole job. The 50-day
             cohort compresses everything I learned in{" "}
             <em style={{ color: "#E6C178", fontStyle: "italic" }}>
               two years
@@ -539,7 +539,7 @@ export function WorkshopNextStep() {
             — niche research that finds books that actually earn, the full book
             stack across all three formats, KDP upload, scaling from 1 to 10+
             titles — into{" "}
-            <em style={{ color: "#E6C178", fontStyle: "italic" }}>thirty days</em>.
+            <em style={{ color: "#E6C178", fontStyle: "italic" }}>fifty days</em>.
           </p>
           <ul
             style={{
@@ -594,7 +594,7 @@ export function WorkshopNextStep() {
                 letterSpacing: "0.02em",
               }}
             >
-              See the 30-day program →
+              See the 50-day cohort →
             </a>
             <span
               style={{
@@ -719,7 +719,7 @@ export function WorkshopAgenda() {
             maxWidth: 640,
           }}
         >
-          Six hours isn&rsquo;t enough to teach all four KDP pillars (niche · book · cover · upload). So we do the one that&rsquo;s hardest to learn alone — book + cover, together — and I hand you the exact path to do the rest at home. The full two-year system is the 30-day program afterwards.
+          Six hours isn&rsquo;t enough to teach all four KDP pillars (niche · book · cover · upload). So we do the one that&rsquo;s hardest to learn alone — book + cover, together — and I hand you the exact path to do the rest at home. The full two-year system is the 50-day cohort afterwards.
         </p>
 
         <DayArc />
@@ -740,13 +740,13 @@ const CORE_PERKS = [
   "One full KDP cover, designed with you",
   "Claude prompt stack + Canva template pack",
   "The six-month playbook (path I followed in 2 years)",
-  "Invitation to the 30-day cohort · refund-backed",
+  "Invitation to the 50-day cohort · refund-backed",
 ];
 const VIP_EXTRAS = [
   "Front-row seat · premium view of every live build",
   "Signed copy of a best-selling KDP book from Ehsan's catalog",
   "Post-event WhatsApp group with Ehsan · 30 days direct access",
-  "Priority seat in the 30-day cohort",
+  "Priority seat in the 50-day cohort",
 ];
 
 export function WorkshopPricing() {
@@ -1063,7 +1063,7 @@ const FAQS: FaqEntry[] = [
   {
     q: "Six hours — will you teach me everything?",
     short: "No. Six hours is one book + the path.",
-    a: "KDP has four pillars: niche research, book creation, cover, upload. Six hours is enough to build ONE book + its cover together — the best-possible working tutorial. What we don't cover (picking niches that actually pay, the KDP upload form, scaling from 1 to 60 books) I walk you through as a clear path you can follow on your own over about six months. The 30-day cohort compresses that into 30 days.",
+    a: "KDP has four pillars: niche research, book creation, cover, upload. Six hours is enough to build ONE book + its cover together — the best-possible working tutorial. What we don't cover (picking niches that actually pay, the KDP upload form, scaling from 1 to 10+ books) I walk you through as a clear path you can follow on your own over about six months. The 50-day cohort compresses that into 50 days.",
   },
   {
     q: "Will Amazon actually pay me? How does that work?",
@@ -1077,9 +1077,9 @@ const FAQS: FaqEntry[] = [
     a: "A single spot-the-difference book I made in two days has paid me ₹10,000 so far and still earns. I walk you through the exact listing, niche, and why it worked at the start of the workshop — then we build the same format together. I don't promise you'll hit ₹10,000 with your first book; I promise you'll walk out with a book built the same way mine was.",
   },
   {
-    q: "What's the 30-day program? And the refund policy?",
-    short: "The full stack, in 30 days, offline or online, refund-backed.",
-    a: "The workshop is the taste. The 30-day program is everything I learned in two years: niche research that finds books that actually earn, the full book-creation stack for all three formats (spot-the-diff, puzzles, coloring), covers, KDP upload, scaling to 10+ titles. You pick offline (Calicut batch) or online. Complete refund if you genuinely don't think it's worth it after the first two weeks — I'm confident enough to put that in writing.",
+    q: "What's the 50-day cohort? And the refund policy?",
+    short: "The full stack, in 50 days, live-cohort online, refund-backed.",
+    a: "The workshop is the taste. The 50-day cohort is everything I learned in two years: niche research that finds books that actually earn, the full book-creation stack for all three formats (spot-the-diff, puzzles, coloring), covers, KDP upload, scaling to 10+ titles. Runs live over Zoom with weekly Q&A. Complete refund if you genuinely don't think it's worth it after the first two weeks — I'm confident enough to put that in writing.",
     pullQuote: "Complete refund if it's not worth it. No hoops.",
   },
   {

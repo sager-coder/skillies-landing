@@ -584,7 +584,7 @@ export default function ProgramEditorial() {
                 color: "#6B7280",
               }}
             >
-              Batch 001 · Closed
+              Founding batch · Calicut workshop only
             </div>
             <div
               style={{
@@ -596,7 +596,7 @@ export default function ProgramEditorial() {
                 minWidth: 0,
               }}
             >
-              The first founding batch at ₹45,000 sold out in the Calicut workshop (May 31). That rate won’t reopen.
+              A limited number of founding-rate cohort seats open exclusively to May 31 Calicut attendees. Not advertised publicly.
             </div>
           </div>
 

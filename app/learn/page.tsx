@@ -237,8 +237,8 @@ export default async function LearnHomePage() {
 
 function tierLabel(t: string) {
   if (t === "founding") return "Founding · Batch 001";
-  if (t === "pro") return "Pro · 1-on-1";
-  return "Standard";
+  if (t === "pro") return "Mentorship · 1-on-1";
+  return "Cohort";
 }
 function tierColor(t: string) {
   if (t === "founding" || t === "pro") return "#C9A24E";

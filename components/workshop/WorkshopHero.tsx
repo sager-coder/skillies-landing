@@ -138,42 +138,51 @@ function TicketStub() {
             textAlign: "right",
           }}
         >
-          No. 089
+          Vol. 01
         </div>
       </div>
     </div>
   );
 }
 
-function SeatMeter({ taken = 89, total = 150 }: { taken?: number; total?: number }) {
-  const pct = Math.round((taken / total) * 100);
+// Three-tier seat capacity visualizer — shows the ₹999 / ₹1,999 / ₹2,999
+// split (50 / 75 / 25 of 150). No fake counts; the proportions are the
+// honest scarcity story. A dynamic per-tier "sold" badge can be layered
+// on top later once seat-count enforcement ships on the server.
+function SeatMeter() {
+  const segments: Array<{ w: number; bg: string; label: string }> = [
+    { w: 50 / 150, bg: "#C9A24E", label: "50 · ₹999" },
+    { w: 75 / 150, bg: "#C62828", label: "75 · ₹1,999" },
+    { w: 25 / 150, bg: "#1A1A1A", label: "25 · ₹2,999" },
+  ];
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
       <div
         style={{
           position: "relative",
           width: 280,
           height: 8,
-          background: "rgba(26,26,26,0.08)",
+          display: "flex",
           borderRadius: 999,
           overflow: "hidden",
+          background: "rgba(26,26,26,0.08)",
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: `${pct}%`,
-            background: "linear-gradient(90deg, #C62828, #EF4444)",
-            borderRadius: 999,
-          }}
-        />
+        {segments.map((s, i) => (
+          <div
+            key={i}
+            style={{
+              flex: s.w,
+              background: s.bg,
+              borderRight: i < segments.length - 1 ? "2px solid #FAF5EB" : "none",
+            }}
+          />
+        ))}
       </div>
-      <div style={{ fontSize: 13, color: "#1A1A1A", fontWeight: 600 }}>
-        <strong style={{ color: "#C62828", fontWeight: 800 }}>{taken}</strong>
-        <span style={{ color: "#9CA3AF", fontWeight: 400 }}> / {total} seats taken</span>
+      <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>
+        <span style={{ color: "#C9A24E", fontWeight: 700 }}>50 early</span>
+        <span> · 75 regular · </span>
+        <span style={{ color: "#1A1A1A", fontWeight: 700 }}>25 VIP</span>
       </div>
     </div>
   );
@@ -376,7 +385,7 @@ export default function WorkshopHero() {
               </SecondaryButton>
             </div>
 
-            <SeatMeter taken={89} total={150} />
+            <SeatMeter />
 
             <div
               style={{
