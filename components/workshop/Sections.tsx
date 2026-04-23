@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Kicker, Wordmark, Grain } from "../design/Primitives";
 import WorkshopReserveButton from "./WorkshopReserveButton";
+import { WORKSHOPS, DEFAULT_WORKSHOP, type Workshop } from "./workshops";
 
 type AgendaItem = {
   t: string;
@@ -683,7 +684,7 @@ export function WorkshopAgenda() {
           <span style={{ width: 44, height: 1, background: "#C62828" }} />
           § The Itinerary
           <span style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }} />
-          <span>Sunday · May 31 · 2026</span>
+          <span>4 Sundays · May → June 2026</span>
         </div>
 
         <h2
@@ -750,18 +751,108 @@ const VIP_EXTRAS = [
 ];
 
 export function WorkshopPricing() {
+  // The workshop tour currently runs in 4 cities. Users pick one here;
+  // the selection flows into each `WorkshopReserveButton` below so the
+  // Razorpay order, the printed ticket, and the WhatsApp group invite
+  // all carry the right city + date.
+  const [selected, setSelected] = useState<Workshop>(DEFAULT_WORKSHOP);
+
   return (
     <section id="pricing" style={{ padding: "120px 24px", background: "#FAF5EB" }}>
       <div style={{ maxWidth: 1160, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <Kicker tone="gold">Seats</Kicker>
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <Kicker tone="gold">Kerala Tour · 4 Sundays</Kicker>
           <h2 style={{ fontSize: "clamp(40px, 5vw, 56px)", fontWeight: 800, color: "#1A1A1A", margin: "16px 0 12px", letterSpacing: "-0.04em" }}>
-            Three windows. One room.
+            Pick your city.
           </h2>
-          <p style={{ fontSize: 15, color: "#6B7280", margin: "0 auto", maxWidth: 520, lineHeight: 1.6 }}>
-            150 seats total. First 50 go at Early Bird. Next 75 at Regular.
-            Last 25 reserved for VIP.
+          <p style={{ fontSize: 15, color: "#6B7280", margin: "0 auto", maxWidth: 560, lineHeight: 1.6 }}>
+            Same 6-hour workshop, four Sundays across Kerala. 150 seats per
+            city. Early Bird 50 · Regular 75 · VIP 25.
           </p>
+        </div>
+
+        {/* City picker row — tap a city, pricing below reflects that
+            workshop's id + date on every reserve button. */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: 12,
+            marginBottom: 48,
+          }}
+        >
+          {WORKSHOPS.map((w) => {
+            const active = w.id === selected.id;
+            return (
+              <button
+                key={w.id}
+                type="button"
+                onClick={() => setSelected(w)}
+                style={{
+                  padding: "22px 20px",
+                  borderRadius: 18,
+                  background: active ? "#1A1A1A" : "white",
+                  color: active ? "white" : "#1A1A1A",
+                  border: active
+                    ? "1.5px solid #1A1A1A"
+                    : "1px solid rgba(26,26,26,0.10)",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  boxShadow: active
+                    ? "0 20px 50px rgba(26,26,26,0.15)"
+                    : "0 2px 6px rgba(26,26,26,0.03)",
+                  transition: "transform .15s ease, box-shadow .15s ease",
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    fontWeight: 700,
+                    color: active ? "#E6C178" : "#C62828",
+                    marginBottom: 10,
+                  }}
+                >
+                  {w.tag}
+                </div>
+                <div
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 800,
+                    letterSpacing: "-0.015em",
+                    lineHeight: 1.05,
+                  }}
+                >
+                  {w.cityShort}
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: active ? "rgba(255,255,255,0.65)" : "#6B7280",
+                    marginTop: 4,
+                  }}
+                >
+                  {w.dateLong}
+                </div>
+                {active && (
+                  <div
+                    aria-hidden
+                    style={{
+                      position: "absolute",
+                      top: 14,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      borderRadius: 999,
+                      background: "#E6C178",
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
         <div
           style={{
@@ -819,8 +910,9 @@ export function WorkshopPricing() {
             <WorkshopReserveButton
               tier="workshop-early"
               priceLabel="₹999"
-              label="Grab Early Bird · ₹999"
+              label={`Grab Early Bird · ${selected.cityShort} · ₹999`}
               variant="filled"
+              workshop={selected}
             />
           </div>
 
@@ -869,8 +961,9 @@ export function WorkshopPricing() {
             <WorkshopReserveButton
               tier="workshop-regular"
               priceLabel="₹1,999"
-              label="Reserve Regular · ₹1,999"
+              label={`Reserve Regular · ${selected.cityShort} · ₹1,999`}
               variant="outline"
+              workshop={selected}
             />
           </div>
 
@@ -977,8 +1070,9 @@ export function WorkshopPricing() {
               <WorkshopReserveButton
                 tier="workshop-vip"
                 priceLabel="₹2,999"
-                label="Book VIP · ₹2,999"
+                label={`Book VIP · ${selected.cityShort} · ₹2,999`}
                 variant="filled"
+                workshop={selected}
               />
             </div>
           </div>
@@ -1021,24 +1115,25 @@ export function WorkshopLocation() {
             <circle cx="220" cy="150" r="28" fill="none" stroke="#C62828" strokeWidth="1" opacity="0.3" />
           </svg>
           <div style={{ position: "absolute", bottom: 22, left: 22 }}>
-            <p style={{ fontSize: 11, letterSpacing: "0.24em", color: "#7A9A7A", textTransform: "uppercase", margin: "0 0 6px", fontWeight: 700 }}>Venue</p>
-            <p style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>Hyatt Regency, Calicut</p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", margin: 0 }}>5 min from Calicut railway</p>
+            <p style={{ fontSize: 11, letterSpacing: "0.24em", color: "#7A9A7A", textTransform: "uppercase", margin: "0 0 6px", fontWeight: 700 }}>Kerala Tour</p>
+            <p style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>4 Sundays · 4 cities</p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", margin: 0 }}>Malappuram · Calicut · Kochi</p>
           </div>
         </div>
         <div>
           <Kicker tone="green-light">Where &amp; When</Kicker>
           <h2 style={{ fontSize: "clamp(44px, 5.5vw, 64px)", fontWeight: 800, letterSpacing: "-0.04em", margin: "16px 0 28px", lineHeight: 0.98 }}>
-            Calicut. May 31.
+            Kerala Tour.
             <br />
             <span style={{ color: "#EF4444" }}>10:00 AM sharp.</span>
           </h2>
           <div style={{ display: "grid", gap: 16, color: "rgba(255,255,255,0.72)", fontSize: 15, lineHeight: 1.7 }}>
-            <div><strong style={{ color: "white" }}>Full day:</strong> 10 AM – 4 PM · working session, not a conference</div>
-            <div><strong style={{ color: "white" }}>Bring:</strong> Your laptop. Charger. Notebook. A light lunch if you don&rsquo;t want to step out for a break.</div>
-            <div><strong style={{ color: "white" }}>Language:</strong> English, plain and clear</div>
-            <div><strong style={{ color: "white" }}>Seats:</strong> Hard-capped at 150 — no overflow</div>
-            <div><strong style={{ color: "white" }}>You leave with:</strong> One spot-the-difference book + its cover, ready to upload from home.</div>
+            <div><strong style={{ color: "white" }}>May 10 · Malappuram</strong> · launch event (home ground)</div>
+            <div><strong style={{ color: "white" }}>June 7 · Malappuram</strong> · second run</div>
+            <div><strong style={{ color: "white" }}>June 14 · Calicut</strong> · first expansion</div>
+            <div><strong style={{ color: "white" }}>June 21 · Kochi / Ernakulam</strong> · Kerala finale</div>
+            <div><strong style={{ color: "white" }}>Format:</strong> 10 AM – 4 PM · 150 seats per city · venue confirmed on WhatsApp after booking</div>
+            <div><strong style={{ color: "white" }}>Bring:</strong> Laptop, charger, notebook, a light lunch · Language: English</div>
           </div>
         </div>
       </div>

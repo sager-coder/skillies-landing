@@ -43,7 +43,7 @@ function TicketStub() {
             marginBottom: 8,
           }}
         >
-          Admit one · Calicut
+          Admit one · Kerala Tour
         </div>
         <div
           style={{
@@ -67,7 +67,7 @@ function TicketStub() {
             letterSpacing: "0.05em",
           }}
         >
-          Hyatt Regency · Doors 10:00 AM
+          4 Sundays · Doors 10:00 AM
         </div>
       </div>
       <div
@@ -114,7 +114,7 @@ function TicketStub() {
               letterSpacing: "-0.04em",
             }}
           >
-            31
+            10
           </div>
           <div
             style={{
@@ -189,14 +189,17 @@ function SeatMeter() {
 }
 
 const DETAILS: Array<[string, string, string]> = [
-  ["Date", "May 31, 2026", "Sunday"],
-  ["Hours", "10 AM – 4 PM", "Six hours"],
-  ["Venue", "Hyatt Regency", "Calicut"],
+  ["First date", "May 10, 2026", "Sunday · Malappuram"],
+  ["Hours", "10 AM – 4 PM", "Six hours · each city"],
+  ["Tour", "4 Sundays", "May – June 2026"],
   ["Language", "English taught", "Clear, no jargon"],
 ];
 
 export default function WorkshopHero() {
-  const target = new Date("2026-05-31T10:00:00+05:30").getTime();
+  // Countdown anchors to the launch workshop in Malappuram. Subsequent
+  // cities (Jun 7 Malappuram, Jun 14 Calicut, Jun 21 Kochi) are shown
+  // on the pricing section's city picker below.
+  const target = new Date("2026-05-10T10:00:00+05:30").getTime();
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   useEffect(() => {
     const calc = () => Math.max(0, Math.ceil((target - Date.now()) / 86400000));
@@ -304,7 +307,7 @@ export default function WorkshopHero() {
           Skillies.AI presents · Vol. 01
           <span style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }} />
           <span>
-            Calicut · {daysLeft ?? "—"} days out
+            Malappuram · {daysLeft ?? "—"} days out
           </span>
         </div>
 
@@ -366,7 +369,7 @@ export default function WorkshopHero() {
                 lineHeight: 1.6,
               }}
             >
-              A one-day, in-person workshop in Calicut. You walk in with a laptop and a blank slate. You walk out with your first book live on Amazon KDP.
+              A one-day, in-person workshop across four Kerala cities. You walk in with a laptop and a blank slate. You walk out with your first book live on Amazon KDP.
             </p>
 
             <div
@@ -377,8 +380,8 @@ export default function WorkshopHero() {
                 marginBottom: 28,
               }}
             >
-              <PrimaryButton href="#pay">
-                Reserve Your Seat · ₹999
+              <PrimaryButton href="#pricing">
+                Pick your city · ₹999
               </PrimaryButton>
               <SecondaryButton href="#agenda">
                 See the Day’s Agenda

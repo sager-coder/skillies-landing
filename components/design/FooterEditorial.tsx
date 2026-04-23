@@ -19,7 +19,7 @@ const COLUMNS: Col[] = [
   {
     kicker: "Events",
     items: [
-      ["Calicut workshop · May 31", "/workshop"],
+      ["Workshop · Kerala Tour · 4 Sundays", "/workshop"],
       ["Workshop agenda", "/workshop#agenda"],
       ["Workshop pricing", "/workshop#pricing"],
       ["Upcoming dates", "/#faq"],
@@ -174,7 +174,7 @@ export default function FooterEditorial() {
                 e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
               }}
             >
-              Or: attend the Calicut workshop →
+              Or: join the Kerala Tour workshop →
             </a>
           </div>
         </div>

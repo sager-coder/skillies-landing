@@ -24,9 +24,9 @@ const TIER_AMOUNTS_PAISE: Record<string, number> = {
   founding: 4_500_000,   // ₹45,000 — closed Batch 001 (historical, don't reuse)
   standard: 3_500_000,   // ₹35,000 — 50-day cohort (current public price)
   pro: 17_500_000,       // ₹1,75,000 — founding-price mentorship (WhatsApp-gated, usually sent manually)
-  "workshop-early": 99_900,    // ₹999 — Calicut workshop early bird (first 50)
-  "workshop-regular": 199_900, // ₹1,999 — Calicut workshop regular (next 75)
-  "workshop-vip": 299_900,     // ₹2,999 — Calicut workshop VIP (last 25: front row + signed book + post-event WhatsApp)
+  "workshop-early": 99_900,    // ₹999 — Kerala Tour workshop early bird (first 50 per city)
+  "workshop-regular": 199_900, // ₹1,999 — Kerala Tour workshop regular (next 75 per city)
+  "workshop-vip": 299_900,     // ₹2,999 — Kerala Tour workshop VIP (last 25 per city: front row + signed book + post-event WhatsApp)
 };
 const VALID_TIERS = Object.keys(TIER_AMOUNTS_PAISE);
 

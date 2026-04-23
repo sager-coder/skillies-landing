@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { DEFAULT_WORKSHOP, type Workshop } from "./workshops";
 
 type RazorpayHandlerResponse = {
   razorpay_payment_id: string;
@@ -29,21 +30,25 @@ async function loadRazorpayScript(): Promise<boolean> {
 }
 
 /**
- * WorkshopReserveButton — online checkout for the Calicut one-day event.
- * Unlike the course EnrollButton, this doesn't create a /learn enrollment —
- * the workshop is physical. The webhook acknowledges the payment, Razorpay
- * emails Ehsan the receipt, Ehsan confirms the seat on WhatsApp.
+ * WorkshopReserveButton — online checkout for the 4-city Kerala workshop
+ * tour. Takes a `workshop` (the specific Malappuram/Calicut/Kochi date) so
+ * the Razorpay order notes + printed ticket reflect exactly which seat was
+ * bought. This doesn't create a /learn enrollment — the workshop is
+ * physical, so the webhook just acknowledges payment and Ehsan (or the
+ * sales lead) confirms on WhatsApp.
  */
 export default function WorkshopReserveButton({
   tier = "workshop-early",
   priceLabel = "₹999",
   label = "Reserve seat · ₹999",
   variant = "filled",
+  workshop = DEFAULT_WORKSHOP,
 }: {
   tier?: "workshop-early" | "workshop-regular" | "workshop-vip";
   priceLabel?: string;
   label?: string;
   variant?: "filled" | "outline";
+  workshop?: Workshop;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -58,6 +63,7 @@ export default function WorkshopReserveButton({
     email: string;
     paymentId: string;
     priceLabel: string;
+    workshop: Workshop;
   } | null>(null);
   const nameRef = useRef<HTMLInputElement | null>(null);
 
@@ -111,7 +117,10 @@ export default function WorkshopReserveButton({
           phone,
           full_name: name,
           email,
-          course: "workshop-calicut-may31",
+          // Route the workshop id through the `course` field so Razorpay's
+          // order notes carry the city + date. That's what the admin + any
+          // future reporting query groups by.
+          course: workshop.id,
           tier,
           ...(isTestRun ? { amount: 100 } : {}),
         }),
@@ -137,7 +146,7 @@ export default function WorkshopReserveButton({
         amount: orderData.amount,
         currency: orderData.currency,
         name: "Skillies.AI",
-        description: "Calicut Workshop · May 31",
+        description: `${workshop.cityShort} Workshop · ${workshop.dateShort}`,
         image: "/favicon.ico",
         prefill: { name, contact: phone, email },
         theme: { color: "#C62828" },
@@ -151,6 +160,7 @@ export default function WorkshopReserveButton({
             email,
             paymentId: r.razorpay_payment_id,
             priceLabel,
+            workshop,
           });
           setBusy(false);
           setDone(true);
@@ -253,7 +263,7 @@ export default function WorkshopReserveButton({
                     marginBottom: 8,
                   }}
                 >
-                  Reserve · Calicut workshop
+                  Reserve · {workshop.cityShort} workshop
                 </div>
                 <h2
                   id="reserve-title"
@@ -266,7 +276,7 @@ export default function WorkshopReserveButton({
                     lineHeight: 1.1,
                   }}
                 >
-                  {priceLabel} · May 31
+                  {priceLabel} · {workshop.dateShort}
                 </h2>
                 <p
                   style={{
@@ -278,7 +288,7 @@ export default function WorkshopReserveButton({
                 >
                   Payment is processed by our partner <b>PageBoo</b> on
                   Razorpay — that&rsquo;s the name on your card / UPI receipt.
-                  Your seat is for <b>Skillies.AI · Calicut, May 31</b>.
+                  Your seat is for <b>Skillies.AI · {workshop.city}, {workshop.dateShort}</b>.
                 </p>
 
                 <label style={labelStyle}>Your name</label>
@@ -396,6 +406,7 @@ function Ticket({
     email: string;
     paymentId: string;
     priceLabel: string;
+    workshop: Workshop;
   };
   onClose: () => void;
 }) {
@@ -439,9 +450,9 @@ function Ticket({
           lineHeight: 1.55,
         }}
       >
-        {receipt.priceLabel} received. Here&rsquo;s your ticket — bring it
-        to the venue on May 31. A Razorpay receipt is also on its way to
-        your email.
+        {receipt.priceLabel} received. Here&rsquo;s your ticket — bring it to
+        the venue on {receipt.workshop.dateShort}. A Razorpay receipt is also
+        on its way to your email.
       </p>
 
       {/* Primary next-step: the cohort WhatsApp group, if configured */}
@@ -467,7 +478,7 @@ function Ticket({
             boxShadow: "0 10px 26px rgba(37,211,102,0.25)",
           }}
         >
-          <span>Join the WhatsApp group · May 31 attendees</span>
+          <span>Join the WhatsApp group · {receipt.workshop.dateShort} attendees</span>
           <span aria-hidden>↗</span>
         </a>
       )}
@@ -560,7 +571,7 @@ function Ticket({
         >
           The KDP Workshop{" "}
           <em style={{ fontStyle: "italic", color: "#C62828" }}>
-            · Calicut
+            · {receipt.workshop.cityShort}
           </em>
         </div>
         <div
@@ -570,7 +581,7 @@ function Ticket({
             marginBottom: 14,
           }}
         >
-          Saturday · 31 May 2026 · Calicut, Kerala
+          {receipt.workshop.dateLong} · {receipt.workshop.city}, Kerala
         </div>
 
         <div

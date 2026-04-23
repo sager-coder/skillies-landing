@@ -5,7 +5,7 @@ import { Grain } from "../design/Primitives";
 import WorkshopReserveButton from "./WorkshopReserveButton";
 
 /**
- * PaymentDetails — Razorpay-only checkout for the Calicut workshop.
+ * PaymentDetails — Razorpay-only checkout for the Kerala Tour workshop.
  * UPI-QR + WhatsApp-screenshot flow lived here until Razorpay went
  * live across both domains; now every reservation goes through the
  * modal and Razorpay emails the student a receipt.
@@ -131,7 +131,7 @@ export default function PaymentDetails() {
                 marginBottom: 10,
               }}
             >
-              Early bird · till May 10
+              Launch event · Sunday, May 10
             </div>
             <div
               style={{
@@ -145,7 +145,7 @@ export default function PaymentDetails() {
             >
               The KDP Workshop ·{" "}
               <em style={{ fontStyle: "italic", color: "#E6C178" }}>
-                Calicut, May 31
+                Kerala Tour · 4 Sundays
               </em>
             </div>
             <div
@@ -165,6 +165,9 @@ export default function PaymentDetails() {
             priceLabel="₹999"
             label="Reserve seat · ₹999"
           />
+          {/* This CTA defaults to the launch workshop (Malappuram May 10).
+              Users who want a different city can pick via the #pricing
+              section above, where the full city selector lives. */}
         </div>
 
         {/* Trust strip — small footnote on security + refund */}

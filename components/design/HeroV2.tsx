@@ -776,7 +776,7 @@ export default function HeroV2() {
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <PrimaryButton href="/workshop">Join the Calicut workshop · ₹999</PrimaryButton>
+              <PrimaryButton href="/workshop">Join the Kerala Tour · ₹999</PrimaryButton>
               <SecondaryButton href="#program">See the 50-day program</SecondaryButton>
             </div>
 

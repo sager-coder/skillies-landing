@@ -596,7 +596,7 @@ export default function ProgramEditorial() {
                 minWidth: 0,
               }}
             >
-              A limited number of founding-rate cohort seats open exclusively to May 31 Calicut attendees. Not advertised publicly.
+              A limited number of founding-rate cohort seats open exclusively to Kerala Tour workshop attendees (May–June 2026). Not advertised publicly.
             </div>
           </div>
 
@@ -797,7 +797,7 @@ export default function ProgramEditorial() {
           >
             Still deciding? Start with the{" "}
             <em style={{ fontStyle: "italic", color: "#E6C178" }}>
-              one-day Calicut workshop on May 31
+              Kerala Tour workshop · 4 Sundays, 4 cities
             </em>
             {" "}— six hours, one book built in the room, ₹999 early bird. The cleanest way to meet me before committing to the cohort.
           </div>

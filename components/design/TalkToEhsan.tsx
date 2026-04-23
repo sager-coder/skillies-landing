@@ -32,10 +32,10 @@ const PRESETS: Record<
     ctaLabel: "Message on WhatsApp",
   },
   workshop: {
-    heading: "Book the Calicut workshop.",
-    sub: "Scan the QR or tap the button. Tell me your name — I'll send the reservation form and payment details in the next reply.",
+    heading: "Book the Kerala Tour workshop.",
+    sub: "Malappuram May 10, Malappuram Jun 7, Calicut Jun 14, Kochi Jun 21. Scan the QR or tap the button — tell me your name and which city, I'll send the reservation details in the next reply.",
     message:
-      "Hi Ehsan, I want to reserve a seat at the Calicut workshop on May 31 (₹999 early bird). My name is ",
+      "Hi Ehsan, I want to reserve a seat at the workshop (₹999 early bird). My preferred city is ",
     ctaLabel: "Reserve · ₹999",
   },
   program: {
