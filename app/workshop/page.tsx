@@ -5,6 +5,7 @@ import {
   WorkshopAgenda,
   WorkshopNextStep,
   WorkshopPricing,
+  WorkshopTalkFirst,
   WorkshopLocation,
   WorkshopFAQ,
   StickyCTA,
@@ -29,6 +30,7 @@ export default function WorkshopPage() {
       <WorkshopAgenda />
       <WorkshopNextStep />
       <WorkshopPricing />
+      <WorkshopTalkFirst />
       <PaymentDetails />
       <WorkshopLocation />
       <WorkshopFAQ />

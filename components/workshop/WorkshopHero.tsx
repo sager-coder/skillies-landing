@@ -369,7 +369,7 @@ export default function WorkshopHero() {
                 lineHeight: 1.6,
               }}
             >
-              A one-day, in-person workshop across four Kerala cities. You walk in with a laptop and a blank slate. You walk out with your first book live on Amazon KDP.
+              A one-day, in-person workshop across Kerala — three Sundays in May. You walk in with a laptop and a blank slate. You walk out with your first book live on Amazon KDP.
             </p>
 
             <div

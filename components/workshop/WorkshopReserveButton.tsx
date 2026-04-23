@@ -13,7 +13,29 @@ type RazorpayWindow = Window & {
     open: () => void;
     on: (event: string, handler: (err: unknown) => void) => void;
   };
+  // Meta Pixel — the base script in MetaPixel.tsx creates window.fbq if
+  // NEXT_PUBLIC_META_PIXEL_ID is set. Absent-pixel case: fbq is undefined
+  // and we silently skip the events.
+  fbq?: (...args: unknown[]) => void;
 };
+
+// Pull UTM tags + referrer out of the current window location. Only used on
+// the client. Server ignores missing values gracefully.
+function readUtms(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const out: Record<string, string> = {};
+  try {
+    const p = new URL(window.location.href).searchParams;
+    for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+      const v = p.get(key);
+      if (v) out[key] = v;
+    }
+    if (document.referrer) out.referrer = document.referrer.slice(0, 128);
+  } catch {
+    /* malformed URL — fine, just no UTMs */
+  }
+  return out;
+}
 
 async function loadRazorpayScript(): Promise<boolean> {
   if (typeof window === "undefined") return false;
@@ -110,6 +132,24 @@ export default function WorkshopReserveButton({
       const isTestRun =
         typeof window !== "undefined" &&
         new URL(window.location.href).searchParams.get("test") === "1";
+      // Fire Meta Pixel InitiateCheckout — signal the moment the buyer
+      // commits to the reservation modal. Safe no-op if Pixel isn't wired.
+      const w = window as RazorpayWindow;
+      if (typeof w.fbq === "function") {
+        w.fbq("track", "InitiateCheckout", {
+          content_name: `${workshop.cityShort} Workshop · ${workshop.dateShort}`,
+          content_category: "workshop",
+          content_ids: [workshop.id],
+          currency: "INR",
+          value:
+            tier === "workshop-vip"
+              ? 2999
+              : tier === "workshop-regular"
+                ? 1999
+                : 999,
+        });
+      }
+
       const orderRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -122,6 +162,7 @@ export default function WorkshopReserveButton({
           // future reporting query groups by.
           course: workshop.id,
           tier,
+          ...readUtms(),
           ...(isTestRun ? { amount: 100 } : {}),
         }),
       });
@@ -137,7 +178,6 @@ export default function WorkshopReserveButton({
       }
       const loaded = await loadRazorpayScript();
       if (!loaded) throw new Error("Couldn't load Razorpay.");
-      const w = window as RazorpayWindow;
       if (!w.Razorpay) throw new Error("Razorpay failed to initialise.");
 
       const rzp = new w.Razorpay({
@@ -154,6 +194,24 @@ export default function WorkshopReserveButton({
           ondismiss: () => setBusy(false),
         },
         handler: (r: RazorpayHandlerResponse) => {
+          // Fire Meta Pixel Purchase — the conversion event Meta's ML
+          // optimises against. Without this, ad spend is blind.
+          if (typeof w.fbq === "function") {
+            const valueInr =
+              tier === "workshop-vip"
+                ? 2999
+                : tier === "workshop-regular"
+                  ? 1999
+                  : 999;
+            w.fbq("track", "Purchase", {
+              content_name: `${workshop.cityShort} Workshop · ${workshop.dateShort}`,
+              content_category: "workshop",
+              content_ids: [workshop.id],
+              currency: "INR",
+              value: valueInr,
+              order_id: r.razorpay_order_id,
+            });
+          }
           setReceipt({
             name,
             phone,

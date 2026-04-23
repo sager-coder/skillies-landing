@@ -456,9 +456,9 @@ export default function CoursesConstruction() {
                 lineHeight: 1.4,
               }}
             >
-              The 50-day KDP Mastery program is live for the six-student cohort
-              that came out of the Calicut workshop. Everything else is being
-              built — often drawn from that same cohort’s sessions.
+              The 50-day KDP Mastery cohort runs live with each founding batch
+              pulled from the Kerala Tour workshops. Everything else is being
+              built — often drawn from those cohort sessions.
             </p>
           </div>
         </div>

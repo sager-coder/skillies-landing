@@ -16,6 +16,14 @@ type Body = {
     | "workshop-regular"
     | "workshop-vip";
   amount?: number; // paise; allows a ₹1 test override without shipping new tier pricing
+  // UTM metadata passed from the client — used to attribute revenue back to
+  // specific Meta/Instagram ad sets or content variants.
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
+  referrer?: string;
 };
 
 // Source of truth for what each tier costs, in paise.
@@ -73,6 +81,17 @@ export async function POST(req: Request) {
 
   const razor = new Razorpay({ key_id: keyId, key_secret: keySecret });
 
+  // Razorpay's `notes` field accepts 256-char strings, max 15 keys. We
+  // forward the UTM set so later queries against Razorpay's order-history
+  // API can attribute each sale back to its ad source.
+  const utmNotes: Record<string, string> = {};
+  if (body.utm_source) utmNotes.utm_source = String(body.utm_source).slice(0, 128);
+  if (body.utm_medium) utmNotes.utm_medium = String(body.utm_medium).slice(0, 128);
+  if (body.utm_campaign) utmNotes.utm_campaign = String(body.utm_campaign).slice(0, 128);
+  if (body.utm_content) utmNotes.utm_content = String(body.utm_content).slice(0, 128);
+  if (body.utm_term) utmNotes.utm_term = String(body.utm_term).slice(0, 128);
+  if (body.referrer) utmNotes.referrer = String(body.referrer).slice(0, 128);
+
   try {
     const order = await razor.orders.create({
       amount,
@@ -85,6 +104,7 @@ export async function POST(req: Request) {
         full_name,
         email,
         source: "skillies.ai",
+        ...utmNotes,
       },
     });
     return NextResponse.json({

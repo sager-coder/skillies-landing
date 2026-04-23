@@ -34,6 +34,15 @@ const COLUMNS: Col[] = [
       ["FAQ", "/#faq"],
     ],
   },
+  {
+    kicker: "Legal",
+    items: [
+      ["Privacy Policy", "/privacy"],
+      ["Refund & Cancellation", "/refund"],
+      ["Terms of Service", "/terms"],
+      ["Contact · ehsan@skillies.ai", "mailto:ehsan@skillies.ai"],
+    ],
+  },
 ];
 
 const SOCIAL: Array<[string, string]> = [
@@ -188,13 +197,13 @@ export default function FooterEditorial() {
           }}
         />
 
-        {/* Link columns */}
+        {/* Link columns · brand + 4 link groups (Learn / Events / Company / Legal) */}
         <div
           className="skillies-footer-cols"
           style={{
             display: "grid",
-            gridTemplateColumns: "1.6fr 1fr 1fr 1fr",
-            gap: 48,
+            gridTemplateColumns: "1.4fr repeat(4, minmax(140px, 1fr))",
+            gap: 40,
             marginBottom: 64,
           }}
         >
