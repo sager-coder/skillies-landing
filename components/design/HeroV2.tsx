@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, Fragment } from "react";
 import { KickerPill, PrimaryButton, SecondaryButton, Grain } from "./Primitives";
-import CountUp from "../motion/CountUp";
 
 /**
  * Hero — founder-first, proof-first.
@@ -413,10 +412,10 @@ function FounderCard() {
               fontVariantNumeric: "tabular-nums",
             }}
           >
-            <CountUp value={116000} prefix="₹" duration={1.8} />
+            ₹1,16,000
           </div>
           <div style={{ fontSize: 12, color: "#6B7280" }}>
-            <CountUp value={63} duration={1.4} /> books · zero new publishes in 6 months
+            63 books · zero new publishes in 6 months
           </div>
         </div>
         <div
