@@ -2,6 +2,7 @@
 
 import React from "react";
 import KDPDashboardProof from "./KDPDashboardProof";
+import CountUp from "../motion/CountUp";
 
 /**
  * The Receipts — Ehsan's actual income ledger.
@@ -211,7 +212,7 @@ export default function ProofWall() {
                 fontWeight: 400,
               }}
             >
-              ₹1,16,000
+              <CountUp value={116000} prefix="₹" duration={2.0} />
             </em>{" "}
             last month.
             <br />
