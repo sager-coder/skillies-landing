@@ -145,15 +145,14 @@ function TicketStub() {
   );
 }
 
-// Three-tier seat capacity visualizer — shows the ₹999 / ₹1,999 / ₹2,999
-// split (50 / 75 / 25 of 150). No fake counts; the proportions are the
-// honest scarcity story. A dynamic per-tier "sold" badge can be layered
-// on top later once seat-count enforcement ships on the server.
+// Two-tier seat capacity visualizer — shows the ₹999 / ₹1,999 split
+// (50 / 100 of 150). No fake counts; the proportions are the honest
+// scarcity story. A dynamic per-tier "sold" badge can be layered on top
+// later once seat-count enforcement ships on the server.
 function SeatMeter() {
   const segments: Array<{ w: number; bg: string; label: string }> = [
     { w: 50 / 150, bg: "#C9A24E", label: "50 · ₹999" },
-    { w: 75 / 150, bg: "#C62828", label: "75 · ₹1,999" },
-    { w: 25 / 150, bg: "#1A1A1A", label: "25 · ₹2,999" },
+    { w: 100 / 150, bg: "#C62828", label: "100 · ₹1,999" },
   ];
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
@@ -180,9 +179,9 @@ function SeatMeter() {
         ))}
       </div>
       <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>
-        <span style={{ color: "#C9A24E", fontWeight: 700 }}>50 early</span>
-        <span> · 75 regular · </span>
-        <span style={{ color: "#1A1A1A", fontWeight: 700 }}>25 VIP</span>
+        <span style={{ color: "#C9A24E", fontWeight: 700 }}>50 early bird</span>
+        <span> · </span>
+        <span style={{ color: "#C62828", fontWeight: 700 }}>100 regular</span>
       </div>
     </div>
   );

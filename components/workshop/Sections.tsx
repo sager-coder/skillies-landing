@@ -743,12 +743,6 @@ const CORE_PERKS = [
   "The six-month playbook (path I followed in 2 years)",
   "Invitation to the 50-day cohort · refund-backed",
 ];
-const VIP_EXTRAS = [
-  "Front-row seat · premium view of every live build",
-  "Signed copy of a best-selling KDP book from Ehsan's catalog",
-  "Post-event WhatsApp group with Ehsan · 30 days direct access",
-  "Priority seat in the 50-day cohort",
-];
 
 export function WorkshopPricing() {
   // The workshop tour currently runs in 4 cities. Users pick one here;
@@ -767,7 +761,7 @@ export function WorkshopPricing() {
           </h2>
           <p style={{ fontSize: 15, color: "#6B7280", margin: "0 auto", maxWidth: 560, lineHeight: 1.6 }}>
             Same 6-hour workshop, three Sundays across Kerala. 150 seats per
-            city. Early Bird 50 · Regular 75 · VIP 25.
+            city. Early Bird 50 · Regular 100.
           </p>
         </div>
 
@@ -857,8 +851,12 @@ export function WorkshopPricing() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            // Two pricing tiers now (Early Bird + Regular). Max-width keeps
+            // the cards from stretching too wide on desktop.
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
             gap: 20,
+            maxWidth: 820,
+            margin: "0 auto",
           }}
         >
           {/* EARLY BIRD · ₹999 · gold-featured */}
@@ -941,9 +939,9 @@ export function WorkshopPricing() {
                 letterSpacing: "0.2em",
               }}
             >
-              NEXT 75
+              NEXT 100
             </div>
-            <Kicker tone="red">Regular · 75 seats</Kicker>
+            <Kicker tone="red">Regular · 100 seats</Kicker>
             <div style={{ fontSize: 52, fontWeight: 900, color: "#1A1A1A", letterSpacing: "-0.045em", margin: "20px 0 6px", lineHeight: 1 }}>₹1,999</div>
             <p style={{ fontSize: 13, color: "#6B7280", margin: "0 0 22px", lineHeight: 1.6 }}>
               Once Early Bird is gone. Same full day, same room.
@@ -965,116 +963,6 @@ export function WorkshopPricing() {
               variant="outline"
               workshop={selected}
             />
-          </div>
-
-          {/* VIP · ₹2,999 · dark premium */}
-          <div
-            style={{
-              padding: 32,
-              borderRadius: 26,
-              background: "linear-gradient(135deg, #1A1A1A 0%, #242424 100%)",
-              border: "1.5px solid rgba(230,193,120,0.35)",
-              position: "relative",
-              overflow: "hidden",
-              color: "white",
-              boxShadow: "0 30px 70px rgba(26,26,26,0.25)",
-            }}
-          >
-            <div
-              aria-hidden
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "radial-gradient(ellipse at 80% 10%, rgba(230,193,120,0.18), transparent 55%)",
-                pointerEvents: "none",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                background: "#E6C178",
-                color: "#2a1f08",
-                fontSize: 10,
-                fontWeight: 800,
-                padding: "6px 14px",
-                borderBottomLeftRadius: 16,
-                letterSpacing: "0.2em",
-                zIndex: 1,
-              }}
-            >
-              LAST 25 · VIP
-            </div>
-            <div style={{ position: "relative" }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  fontWeight: 700,
-                  color: "#E6C178",
-                  marginBottom: 4,
-                }}
-              >
-                VIP · 25 seats
-              </div>
-              <div style={{ fontSize: 52, fontWeight: 900, color: "white", letterSpacing: "-0.045em", margin: "20px 0 6px", lineHeight: 1 }}>₹2,999</div>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: "0 0 22px", lineHeight: 1.6 }}>
-                Everything in Regular, plus direct access to Ehsan before and
-                after the room.
-              </p>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "grid", gap: 10 }}>
-                {CORE_PERKS.map((x) => (
-                  <li key={x} style={{ display: "flex", gap: 10, fontSize: 14, color: "rgba(255,255,255,0.85)" }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
-                    {x}
-                  </li>
-                ))}
-              </ul>
-              <div
-                style={{
-                  padding: "14px 16px",
-                  borderRadius: 12,
-                  background: "rgba(230,193,120,0.08)",
-                  border: "1px dashed rgba(230,193,120,0.35)",
-                  marginBottom: 22,
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: "0.28em",
-                    textTransform: "uppercase",
-                    fontWeight: 700,
-                    color: "#E6C178",
-                    marginBottom: 8,
-                  }}
-                >
-                  VIP extras
-                </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
-                  {VIP_EXTRAS.map((x) => (
-                    <li key={x} style={{ display: "flex", gap: 10, fontSize: 13, color: "white" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E6C178" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                      {x}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <WorkshopReserveButton
-                tier="workshop-vip"
-                priceLabel="₹2,999"
-                label={`Book VIP · ${selected.cityShort} · ₹2,999`}
-                variant="filled"
-                workshop={selected}
-              />
-            </div>
           </div>
         </div>
       </div>
