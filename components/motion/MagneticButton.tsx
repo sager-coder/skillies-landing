@@ -11,22 +11,31 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
  *
  * Pointer-only — touch devices skip the effect entirely (no jittery
  * jump-on-tap). Respects reduced-motion.
+ *
+ * Props are limited to the ones CTAs actually need (onClick, type,
+ * disabled, aria-label). We deliberately *don't* spread arbitrary DOM
+ * button props because framer-motion redefines onDrag/onAnimation* to
+ * be gesture events, and a blanket spread trips the type checker.
  */
 export default function MagneticButton({
   children,
   strength = 14,
   className,
   style,
-  ...rest
+  onClick,
+  type = "button",
+  disabled,
+  ariaLabel,
 }: {
   children: React.ReactNode;
   strength?: number;
   className?: string;
   style?: React.CSSProperties;
-} & Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "children" | "className" | "style"
->) {
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  ariaLabel?: string;
+}) {
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -55,11 +64,14 @@ export default function MagneticButton({
   return (
     <motion.button
       ref={ref}
+      type={type}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      onClick={onClick}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       style={{ x: sx, y: sy, ...style }}
       className={className}
-      {...rest}
     >
       {children}
     </motion.button>
