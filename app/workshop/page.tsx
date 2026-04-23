@@ -15,9 +15,9 @@ import TopNav from "@/components/design/TopNav";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata = {
-  title: "The KDP Workshop · Kerala Tour · 4 Sundays · Skillies.AI",
+  title: "The KDP Workshop · Kerala Tour · 3 Sundays · Skillies.AI",
   description:
-    "A one-day, in-person workshop across Kerala. Malappuram May 10, Malappuram Jun 7, Calicut Jun 14, Kochi Jun 21. Walk in with a laptop; walk out with your first book live on Amazon KDP. ₹999 early bird.",
+    "A one-day, in-person workshop across Kerala. Malappuram May 10, Calicut May 17, Kochi May 31. Walk in with a laptop; walk out with your first book live on Amazon KDP. ₹999 early bird.",
 };
 
 export default function WorkshopPage() {

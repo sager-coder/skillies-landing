@@ -1,10 +1,15 @@
 /**
- * Kerala workshop tour — 4 Sundays · May → June 2026.
+ * Kerala workshop tour — 3 Sundays · May 2026.
+ *
+ * Schedule: May 10 Malappuram (launch) → May 17 Calicut → May 31 Kochi.
+ * May 24 is skipped because Bakrid / Eid-al-Adha falls that week
+ * (May 27), and that district (Malappuram especially) is 70%+ Muslim;
+ * running a paid workshop into Eid prep is a dead ad week.
  *
  * Source of truth for every workshop date/city/id on the site. Both the
- * marketing surfaces (Hero, Pricing section, Payment details) and the
- * Razorpay `course` field derive from these entries, so a new city is
- * a one-line edit here instead of a grep-and-replace job.
+ * marketing surfaces (Hero, Pricing, Payment details) and the Razorpay
+ * `course` field derive from these entries, so adding a city is a
+ * one-line edit here instead of a grep-and-replace job.
  */
 export type Workshop = {
   id: string;
@@ -29,33 +34,23 @@ export const WORKSHOPS: Workshop[] = [
     tag: "Launch · Malappuram",
   },
   {
-    id: "workshop-malappuram-jun7",
-    city: "Malappuram",
-    cityShort: "Malappuram",
-    dateLong: "Sunday · June 7, 2026",
-    dateShort: "June 7",
-    dayOfMonth: "07",
-    monthShort: "Jun",
-    tag: "Second run · Malappuram",
-  },
-  {
-    id: "workshop-calicut-jun14",
+    id: "workshop-calicut-may17",
     city: "Calicut",
     cityShort: "Calicut",
-    dateLong: "Sunday · June 14, 2026",
-    dateShort: "June 14",
-    dayOfMonth: "14",
-    monthShort: "Jun",
-    tag: "First expansion · Calicut",
+    dateLong: "Sunday · May 17, 2026",
+    dateShort: "May 17",
+    dayOfMonth: "17",
+    monthShort: "May",
+    tag: "Calicut expansion",
   },
   {
-    id: "workshop-kochi-jun21",
+    id: "workshop-kochi-may31",
     city: "Kochi · Ernakulam",
     cityShort: "Kochi",
-    dateLong: "Sunday · June 21, 2026",
-    dateShort: "June 21",
-    dayOfMonth: "21",
-    monthShort: "Jun",
+    dateLong: "Sunday · May 31, 2026",
+    dateShort: "May 31",
+    dayOfMonth: "31",
+    monthShort: "May",
     tag: "Kerala finale · Kochi",
   },
 ];

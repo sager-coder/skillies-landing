@@ -19,7 +19,7 @@ const COLUMNS: Col[] = [
   {
     kicker: "Events",
     items: [
-      ["Workshop · Kerala Tour · 4 Sundays", "/workshop"],
+      ["Workshop · Kerala Tour · 3 Sundays", "/workshop"],
       ["Workshop agenda", "/workshop#agenda"],
       ["Workshop pricing", "/workshop#pricing"],
       ["Upcoming dates", "/#faq"],

@@ -684,7 +684,7 @@ export function WorkshopAgenda() {
           <span style={{ width: 44, height: 1, background: "#C62828" }} />
           § The Itinerary
           <span style={{ flex: 1, height: 1, background: "rgba(26,26,26,0.08)" }} />
-          <span>4 Sundays · May → June 2026</span>
+          <span>3 Sundays · May 2026</span>
         </div>
 
         <h2
@@ -761,12 +761,12 @@ export function WorkshopPricing() {
     <section id="pricing" style={{ padding: "120px 24px", background: "#FAF5EB" }}>
       <div style={{ maxWidth: 1160, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <Kicker tone="gold">Kerala Tour · 4 Sundays</Kicker>
+          <Kicker tone="gold">Kerala Tour · 3 Sundays in May</Kicker>
           <h2 style={{ fontSize: "clamp(40px, 5vw, 56px)", fontWeight: 800, color: "#1A1A1A", margin: "16px 0 12px", letterSpacing: "-0.04em" }}>
             Pick your city.
           </h2>
           <p style={{ fontSize: 15, color: "#6B7280", margin: "0 auto", maxWidth: 560, lineHeight: 1.6 }}>
-            Same 6-hour workshop, four Sundays across Kerala. 150 seats per
+            Same 6-hour workshop, three Sundays across Kerala. 150 seats per
             city. Early Bird 50 · Regular 75 · VIP 25.
           </p>
         </div>
@@ -1116,7 +1116,7 @@ export function WorkshopLocation() {
           </svg>
           <div style={{ position: "absolute", bottom: 22, left: 22 }}>
             <p style={{ fontSize: 11, letterSpacing: "0.24em", color: "#7A9A7A", textTransform: "uppercase", margin: "0 0 6px", fontWeight: 700 }}>Kerala Tour</p>
-            <p style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>4 Sundays · 4 cities</p>
+            <p style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>3 Sundays · 3 cities</p>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", margin: 0 }}>Malappuram · Calicut · Kochi</p>
           </div>
         </div>
@@ -1129,9 +1129,9 @@ export function WorkshopLocation() {
           </h2>
           <div style={{ display: "grid", gap: 16, color: "rgba(255,255,255,0.72)", fontSize: 15, lineHeight: 1.7 }}>
             <div><strong style={{ color: "white" }}>May 10 · Malappuram</strong> · launch event (home ground)</div>
-            <div><strong style={{ color: "white" }}>June 7 · Malappuram</strong> · second run</div>
-            <div><strong style={{ color: "white" }}>June 14 · Calicut</strong> · first expansion</div>
-            <div><strong style={{ color: "white" }}>June 21 · Kochi / Ernakulam</strong> · Kerala finale</div>
+            <div><strong style={{ color: "white" }}>May 17 · Calicut</strong> · first expansion</div>
+            <div><strong style={{ color: "white" }}>May 31 · Kochi / Ernakulam</strong> · Kerala finale</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", fontStyle: "italic" }}>May 24 skipped · Bakrid weekend</div>
             <div><strong style={{ color: "white" }}>Format:</strong> 10 AM – 4 PM · 150 seats per city · venue confirmed on WhatsApp after booking</div>
             <div><strong style={{ color: "white" }}>Bring:</strong> Laptop, charger, notebook, a light lunch · Language: English</div>
           </div>

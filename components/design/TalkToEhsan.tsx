@@ -33,7 +33,7 @@ const PRESETS: Record<
   },
   workshop: {
     heading: "Book the Kerala Tour workshop.",
-    sub: "Malappuram May 10, Malappuram Jun 7, Calicut Jun 14, Kochi Jun 21. Scan the QR or tap the button — tell me your name and which city, I'll send the reservation details in the next reply.",
+    sub: "Malappuram May 10, Calicut May 17, Kochi May 31. Scan the QR or tap the button — tell me your name and which city, I'll send the reservation details in the next reply.",
     message:
       "Hi Ehsan, I want to reserve a seat at the workshop (₹999 early bird). My preferred city is ",
     ctaLabel: "Reserve · ₹999",

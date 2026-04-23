@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Skillies.AI — Human Brain + AI Skills = Real Income",
   description:
-    "A research-and-teach school for the age of AI. ₹8,71,982 earned from 63 books on Amazon KDP. Kerala Tour workshop (4 Sundays) ₹999 · 50-day cohort ₹35,000 · founding mentorship ₹1,75,000.",
+    "A research-and-teach school for the age of AI. ₹8,71,982 earned from 63 books on Amazon KDP. Kerala Tour workshop (3 Sundays in May) ₹999 · 50-day cohort ₹35,000 · founding mentorship ₹1,75,000.",
   keywords: [
     "AI skills",
     "Amazon KDP",

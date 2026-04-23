@@ -67,7 +67,7 @@ function TicketStub() {
             letterSpacing: "0.05em",
           }}
         >
-          4 Sundays · Doors 10:00 AM
+          3 Sundays · Doors 10:00 AM
         </div>
       </div>
       <div
@@ -191,7 +191,7 @@ function SeatMeter() {
 const DETAILS: Array<[string, string, string]> = [
   ["First date", "May 10, 2026", "Sunday · Malappuram"],
   ["Hours", "10 AM – 4 PM", "Six hours · each city"],
-  ["Tour", "4 Sundays", "May – June 2026"],
+  ["Tour", "3 Sundays", "May 10 · 17 · 31"],
   ["Language", "English taught", "Clear, no jargon"],
 ];
 

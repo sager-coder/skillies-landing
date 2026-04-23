@@ -145,7 +145,7 @@ export default function PaymentDetails() {
             >
               The KDP Workshop ·{" "}
               <em style={{ fontStyle: "italic", color: "#E6C178" }}>
-                Kerala Tour · 4 Sundays
+                Kerala Tour · 3 Sundays in May
               </em>
             </div>
             <div
