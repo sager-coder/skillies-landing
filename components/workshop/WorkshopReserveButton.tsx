@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { DEFAULT_WORKSHOP, type Workshop } from "./workshops";
 
 type RazorpayHandlerResponse = {
@@ -263,18 +264,48 @@ export default function WorkshopReserveButton({
           cursor: "pointer",
         };
 
+  // Magnetic hover — the outer reserve button gently drifts toward the
+  // cursor when you hover it. Inline here (rather than through the shared
+  // MagneticButton component) because this button also owns the modal-
+  // open side-effect and the branded `btnStyle`; mixing wrappers with
+  // existing styles + event state was getting noisy.
+  const ctaRef = useRef<HTMLButtonElement>(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const smx = useSpring(mx, { stiffness: 170, damping: 18, mass: 0.4 });
+  const smy = useSpring(my, { stiffness: 170, damping: 18, mass: 0.4 });
+  const onCtaMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = ctaRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const strength = 10; // 10px max drift — subtle
+    mx.set(((e.clientX - cx) / (rect.width / 2)) * strength);
+    my.set(((e.clientY - cy) / (rect.height / 2)) * strength);
+  };
+  const onCtaMouseLeave = () => {
+    mx.set(0);
+    my.set(0);
+  };
+
   return (
     <>
-      <button
+      <motion.button
+        ref={ctaRef}
         type="button"
         onClick={() => {
           reset();
           setOpen(true);
         }}
-        style={btnStyle}
+        onMouseMove={onCtaMouseMove}
+        onMouseLeave={onCtaMouseLeave}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        style={{ ...btnStyle, x: smx, y: smy }}
       >
         {label}
-      </button>
+      </motion.button>
 
       {open && (
         <div

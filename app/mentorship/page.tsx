@@ -2,6 +2,8 @@ import Link from "next/link";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import SpotlightCard from "@/components/motion/SpotlightCard";
+import FadeInUp from "@/components/motion/FadeInUp";
 
 export const metadata = {
   title: "Private Mentorship · 3 Founding Slots · Skillies.AI",
@@ -565,49 +567,53 @@ function WhatYouGet() {
           }}
         >
           {DELIVERABLES.map((d, i) => (
-            <div
-              key={d.title}
-              style={{
-                padding: "28px 26px",
-                borderRadius: 18,
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div
+            <FadeInUp key={d.title} delay={i * 0.08} distance={28}>
+              <SpotlightCard
+                borderRadius={18}
+                radius={320}
+                color="rgba(230,193,120,0.18)"
                 style={{
-                  fontSize: 11,
-                  letterSpacing: "0.28em",
-                  textTransform: "uppercase",
-                  fontWeight: 700,
-                  color: "#E6C178",
-                  marginBottom: 12,
+                  padding: "28px 26px",
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  height: "100%",
                 }}
               >
-                {String(i + 1).padStart(2, "0")} · {d.spec}
-              </div>
-              <h3
-                style={{
-                  fontSize: 22,
-                  fontWeight: 800,
-                  color: "white",
-                  margin: "0 0 10px",
-                  letterSpacing: "-0.015em",
-                }}
-              >
-                {d.title}
-              </h3>
-              <p
-                style={{
-                  fontSize: 14,
-                  color: "rgba(255,255,255,0.7)",
-                  lineHeight: 1.65,
-                  margin: 0,
-                }}
-              >
-                {d.desc}
-              </p>
-            </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    fontWeight: 700,
+                    color: "#E6C178",
+                    marginBottom: 12,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")} · {d.spec}
+                </div>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 800,
+                    color: "white",
+                    margin: "0 0 10px",
+                    letterSpacing: "-0.015em",
+                  }}
+                >
+                  {d.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "rgba(255,255,255,0.7)",
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  {d.desc}
+                </p>
+              </SpotlightCard>
+            </FadeInUp>
           ))}
         </div>
       </div>

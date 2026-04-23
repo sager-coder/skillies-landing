@@ -43,17 +43,17 @@ export default function CountUp({
   useEffect(() => {
     if (!inView) return;
 
-    // Respect reduced-motion — skip the tween, just set the final value.
+    // Respect reduced-motion — set duration to 0 instead of calling
+    // setState directly. This keeps a single code path (always through
+    // animate()'s onUpdate) and avoids the `react-hooks/set-state-in-effect`
+    // lint rule, while still producing the correct "jump to final value"
+    // behaviour for users who've opted out of animation.
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      setDisplay(value);
-      return;
-    }
 
     const controls = animate(from, value, {
-      duration,
+      duration: prefersReduced ? 0 : duration,
       ease: [0.16, 1, 0.3, 1], // easeOutExpo — punchy initial, gentle landing
       onUpdate: (v) => setDisplay(v),
     });

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Kicker, Wordmark, Grain } from "../design/Primitives";
 import WorkshopReserveButton from "./WorkshopReserveButton";
 import { WORKSHOPS, DEFAULT_WORKSHOP, type Workshop } from "./workshops";
+import SpotlightCard from "../motion/SpotlightCard";
 
 type AgendaItem = {
   t: string;
@@ -860,13 +861,14 @@ export function WorkshopPricing() {
           }}
         >
           {/* EARLY BIRD · ₹999 · gold-featured */}
-          <div
+          <SpotlightCard
+            borderRadius={26}
+            radius={420}
+            color="rgba(201,162,78,0.22)"
             style={{
               padding: 32,
-              borderRadius: 26,
               background: "white",
               border: "2px solid rgba(201,162,78,0.45)",
-              position: "relative",
               overflow: "hidden",
               boxShadow: "0 30px 70px rgba(201,162,78,0.12)",
             }}
@@ -912,16 +914,17 @@ export function WorkshopPricing() {
               variant="filled"
               workshop={selected}
             />
-          </div>
+          </SpotlightCard>
 
           {/* REGULAR · ₹1,999 */}
-          <div
+          <SpotlightCard
+            borderRadius={26}
+            radius={420}
+            color="rgba(198,40,40,0.14)"
             style={{
               padding: 32,
-              borderRadius: 26,
               background: "white",
               border: "1px solid #F0E8D8",
-              position: "relative",
               overflow: "hidden",
             }}
           >
@@ -963,7 +966,7 @@ export function WorkshopPricing() {
               variant="outline"
               workshop={selected}
             />
-          </div>
+          </SpotlightCard>
         </div>
       </div>
     </section>
