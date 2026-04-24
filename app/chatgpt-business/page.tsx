@@ -4,19 +4,19 @@ import FooterEditorial from "@/components/design/FooterEditorial";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata = {
-  title: "The Super Profile Playbook · Free Download · Skillies.AI",
+  title: "The ChatGPT Business Playbook · Free Download · Skillies.AI",
   description:
-    "How to evaluate enterprise AI tools — ChatGPT Business, Claude Max — for near-zero cost before committing. 7-page PDF guide from Skillies.AI. Free download.",
+    "How 5 people get ChatGPT Business for a month at near-zero cost. The exact domain → Google Workspace → ChatGPT Business flow. 7-page PDF from Skillies.AI. Free download.",
   openGraph: {
-    title: "The Super Profile Playbook · Free",
+    title: "The ChatGPT Business Playbook · Free",
     description:
-      "Evaluate ChatGPT Business + Claude Max for near-zero cost before committing. 7-page PDF from Skillies.AI.",
+      "How 5 people get ChatGPT Business for a month at near-zero cost. 7-page PDF from Skillies.AI.",
   },
 };
 
-const PDF_HREF = "/super-profile-playbook.pdf";
+const PDF_HREF = "/chatgpt-business-playbook.pdf";
 
-export default function SuperProfilePage() {
+export default function ChatGPTBusinessPage() {
   return (
     <main style={{ background: "#0F0F0F", color: "white" }}>
       <TopNav cta={{ href: PDF_HREF, label: "Download PDF" }} />
@@ -84,13 +84,13 @@ function Hero() {
               style={{
                 margin: 0,
                 fontWeight: 900,
-                fontSize: "clamp(48px, 6vw, 88px)",
+                fontSize: "clamp(44px, 5.5vw, 80px)",
                 letterSpacing: "-0.04em",
                 lineHeight: 0.95,
                 color: "white",
               }}
             >
-              The Super{" "}
+              The ChatGPT{" "}
               <em
                 style={{
                   fontFamily: "'Instrument Serif', Georgia, serif",
@@ -99,7 +99,7 @@ function Hero() {
                   color: "#E6C178",
                 }}
               >
-                Profile Playbook.
+                Business Playbook.
               </em>
             </h1>
 
@@ -112,10 +112,9 @@ function Hero() {
                 lineHeight: 1.65,
               }}
             >
-              How to evaluate enterprise AI tools — ChatGPT Business, Claude
-              Max — for near-zero cost before committing ₹17,000+/month. A
-              7-page guide with the exact domain → Workspace → ChatGPT flow,
-              plus the Claude developer path.
+              How 5 people get ChatGPT Business for a month — at near-zero
+              cost. A 7-page guide with the exact domain → Google Workspace →
+              ChatGPT Business flow, step by step.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -213,16 +212,16 @@ function Hero() {
               <div
                 style={{
                   fontWeight: 900,
-                  fontSize: 32,
+                  fontSize: 28,
                   color: "white",
                   letterSpacing: "-0.035em",
                   lineHeight: 1.0,
                   marginBottom: 12,
                 }}
               >
-                The Super
+                The ChatGPT
                 <br />
-                Profile Playbook.
+                Business Playbook.
               </div>
               <div
                 style={{
@@ -233,8 +232,8 @@ function Hero() {
                   lineHeight: 1.3,
                 }}
               >
-                Evaluate enterprise AI tools for near-zero cost before
-                committing.
+                How 5 people get ChatGPT Business for a month — at near-zero
+                cost.
               </div>
               <div
                 style={{
