@@ -11,6 +11,7 @@ const COLUMNS: Col[] = [
     items: [
       ["KDP Mastery · 50-day cohort", "/#program"],
       ["Private Mentorship · 3 seats", "/mentorship"],
+      ["Free · AI Avatar Playbook", "/playbook"],
       ["Course catalog", "/courses"],
       ["Live income dashboard", "/dashboard"],
       ["Sign in · Student portal", "/login"],
