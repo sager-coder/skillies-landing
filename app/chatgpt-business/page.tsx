@@ -68,7 +68,7 @@ function Hero() {
           <span
             style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)" }}
           />
-          <span>7 pages · PDF</span>
+          <span>4 pages · PDF</span>
         </div>
 
         <div
@@ -113,8 +113,7 @@ function Hero() {
               }}
             >
               How 5 people get ChatGPT Business for a month — at near-zero
-              cost. A 7-page guide with the exact domain → Google Workspace →
-              ChatGPT Business flow, step by step.
+              cost. Short, straight, simple. Four steps. Total cost ~₹250.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -166,7 +165,7 @@ function Hero() {
                 letterSpacing: "0.02em",
               }}
             >
-              Free · No email signup · ~180 KB · Print-friendly
+              Free · No email signup · 4 pages · Print-friendly
             </p>
           </div>
 
@@ -267,38 +266,23 @@ function Hero() {
 const INSIDE: Array<{ n: string; title: string; body: string }> = [
   {
     n: "01",
-    title: "Before we start — the ground rules",
-    body: "These are trials, not hacks. Three rules to follow before you start signing up.",
+    title: "Buy a cheap domain",
+    body: "Any registrar. .com or .co. About ₹99–₹300 for the first year.",
   },
   {
     n: "02",
-    title: "The big picture · two paths",
-    body: "Path A (ChatGPT Business via Workspace) + Path B (Claude Max developer path).",
+    title: "Get one Google Workspace email",
+    body: "One mailbox on your domain — you@yourdomain.com. 14-day trial.",
   },
   {
     n: "03",
-    title: "Step 01 · Buy a cheap domain",
-    body: "Hostinger · Namecheap · Porkbun · GoDaddy — which to pick + what to avoid.",
+    title: "Sign up for ChatGPT with that email",
+    body: "ChatGPT surfaces the Business trial option on business-domain emails. Click it.",
   },
   {
     n: "04",
-    title: "Step 02 · Start the Workspace trial",
-    body: "14 days · 5 users · free. The exact signup flow + domain verification.",
-  },
-  {
-    n: "05",
-    title: "Step 03 · Activate ChatGPT Business",
-    body: "Five seats on your new domain. Invite teammates. Full enterprise access.",
-  },
-  {
-    n: "06",
-    title: "Path B · Claude Max developer path",
-    body: "Anthropic's developer programs for OSS maintainers and researchers.",
-  },
-  {
-    n: "07",
-    title: "Six pro tips I wish someone told me",
-    body: "Cancellation discipline, card hygiene, domain reuse, value measurement.",
+    title: "Invite 4 teammates · any email",
+    body: "Gmail, Yahoo, anything. No domain or Workspace needed for them. 5 seats done.",
   },
 ];
 
@@ -335,7 +319,7 @@ function WhatsInside() {
             maxWidth: 720,
           }}
         >
-          Seven chapters,{" "}
+          Four steps,{" "}
           <em
             style={{
               fontFamily: "'Instrument Serif', Georgia, serif",
@@ -344,7 +328,7 @@ function WhatsInside() {
               color: "#C62828",
             }}
           >
-            no filler.
+            under 30 minutes.
           </em>
         </h2>
 
@@ -836,7 +820,7 @@ function FinalDownload() {
             maxWidth: 560,
           }}
         >
-          Seven pages. No email required. Print-friendly.
+          Four pages. No email required. Print-friendly.
         </p>
         <a
           href={PDF_HREF}
