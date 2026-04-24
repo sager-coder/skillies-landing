@@ -20,13 +20,15 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Skillies.AI — Human Brain + AI Skills = Real Income",
+  title: "Skillies.AI — AI Services for Businesses. AI Skills for Students.",
   description:
-    "A research-and-teach school for the age of AI. ₹8,71,982 earned from 63 books on Amazon KDP. Kerala Tour workshop (3 Sundays in May) ₹999 · 50-day cohort ₹35,000 · founding mentorship ₹1,75,000.",
+    "Skillies.AI does two things: builds AI systems for businesses that need to ship faster, and teaches AI skills to students who want to earn real money. Built in Malappuram, Kerala. Proof: ₹8,71,982 earned from 63 books on Amazon KDP. Kerala Tour ₹999 · 50-day cohort ₹35,000 · founding mentorship ₹1,75,000.",
   keywords: [
-    "AI skills",
+    "AI services India",
+    "AI for business",
+    "AI automation Kerala",
+    "AI skills training",
     "Amazon KDP",
-    "passive income",
     "AI publishing",
     "Skillies.AI",
     "KDP course India",
@@ -34,9 +36,9 @@ export const metadata: Metadata = {
     "Malappuram",
   ],
   openGraph: {
-    title: "Skillies.AI — Human Brain + AI Skills = Real Income",
+    title: "Skillies.AI — AI Services for Businesses. AI Skills for Students.",
     description:
-      "Earn while you sleep. ₹8,71,982 earned from 63 books using AI. Join the Kerala Tour workshop.",
+      "AI systems for businesses that need to move faster. AI skills for students who want to earn real money. Built in Kerala. ₹8,71,982 earned from 63 books on Amazon KDP.",
     siteName: "Skillies.AI",
     type: "website",
   },

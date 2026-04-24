@@ -7,7 +7,20 @@ type Col = { kicker: string; items: Array<[string, string]> };
 
 const COLUMNS: Col[] = [
   {
-    kicker: "Learn",
+    kicker: "AI Business Lab",
+    items: [
+      ["All services · Kerala", "/services"],
+      ["AI Business Audit · ₹4,999", "/services#front-desk"],
+      ["AI Front Desk · flagship", "/services#front-desk"],
+      ["WhatsApp Lead Assistant", "/services"],
+      ["AI Voice Receptionist", "/services"],
+      ["CRM + Follow-up Autopilot", "/services"],
+      ["Industry packs", "/services"],
+      ["Book the Audit", "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20want%20to%20book%20the%20Skillies%20AI%20Business%20Audit%20for%20my%20business.%20My%20business%20is%20"],
+    ],
+  },
+  {
+    kicker: "Learn · Teach",
     items: [
       ["KDP Mastery · 50-day cohort", "/#program"],
       ["Private Mentorship · 3 seats", "/mentorship"],
@@ -199,13 +212,13 @@ export default function FooterEditorial() {
           }}
         />
 
-        {/* Link columns · brand + 4 link groups (Learn / Events / Company / Legal) */}
+        {/* Link columns · brand + 5 link groups (Services / Learn / Events / Company / Legal) */}
         <div
           className="skillies-footer-cols"
           style={{
             display: "grid",
-            gridTemplateColumns: "1.4fr repeat(4, minmax(140px, 1fr))",
-            gap: 40,
+            gridTemplateColumns: "1.3fr repeat(5, minmax(120px, 1fr))",
+            gap: 32,
             marginBottom: 64,
           }}
         >
@@ -229,13 +242,12 @@ export default function FooterEditorial() {
                 maxWidth: 360,
               }}
             >
-              A research-and-teach school for the age of AI. We{" "}
-              <em style={{ color: "#E6C178", fontStyle: "italic" }}>research</em>{" "}
-              what pays in 2026,{" "}
-              <em style={{ color: "#E6C178", fontStyle: "italic" }}>teach</em>{" "}
-              it plainly, and{" "}
+              Skillies.AI does two things. We{" "}
               <em style={{ color: "#E6C178", fontStyle: "italic" }}>build</em>{" "}
-              tools for businesses that need them. Proof-backed. Built in Malappuram.
+              AI systems for businesses that need to move faster, and we{" "}
+              <em style={{ color: "#E6C178", fontStyle: "italic" }}>teach</em>{" "}
+              AI skills to students who want to earn real money. Everything{" "}
+              <em style={{ color: "#E6C178", fontStyle: "italic" }}>proof-backed</em>. Built in Malappuram.
             </p>
             <div
               style={{ display: "flex", flexDirection: "column", gap: 6 }}

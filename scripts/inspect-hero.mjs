@@ -14,7 +14,7 @@ await page.waitForTimeout(2500);
 const r = await page.evaluate(() => {
   let p = null;
   for (const el of document.querySelectorAll("p")) {
-    if ((el.textContent || "").includes("research-and-teach school")) {
+    if ((el.textContent || "").includes("Skillies.AI does two things")) {
       p = el;
       break;
     }

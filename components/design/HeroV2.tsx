@@ -772,13 +772,36 @@ export default function HeroV2() {
                 lineHeight: 1.65,
               }}
             >
-              Skillies.AI is a research-and-teach school for the age of AI. We find what actually pays in 2026 — not 2018’s playbook — and teach it to people who’ll use it. Last month, the books I published on Amazon KDP paid me ₹1,16,000 without me touching them in six. Proof, not hype.
+              Skillies.AI does two things. We build AI systems for businesses that need to move faster, and we teach AI skills to students who want to earn real money. Last month the books we published on Amazon KDP paid ₹1,16,000 without anyone touching them in six. One rule both sides: we only teach or ship what we’ve made money with.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <PrimaryButton href="/workshop">Join the Kerala Tour · ₹999</PrimaryButton>
               <SecondaryButton href="#program">See the 50-day program</SecondaryButton>
             </div>
+
+            <p
+              style={{
+                marginTop: 16,
+                fontSize: 13,
+                color: "#6B7280",
+                letterSpacing: "0.01em",
+              }}
+            >
+              Running a Kerala business?{" "}
+              <a
+                href="/services"
+                style={{
+                  color: "#C62828",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  borderBottom: "1px solid rgba(198,40,40,0.35)",
+                  paddingBottom: 1,
+                }}
+              >
+                Book an AI Business Audit · ₹4,999 →
+              </a>
+            </p>
 
             <IncomeTicker />
 

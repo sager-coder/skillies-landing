@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: "Is Skillies.AI just about KDP books?",
-    a: "No — KDP is where we start because it's proven. But Skillies.AI is a research-and-teach company. The whole reason I stopped publishing new books is to go deeper on what's next: AI-assisted digital marketing, Etsy printables, and agent-built software. Expect more courses through 2026 — all on skills that actually pay in the AI age, not theory.",
+    a: "No — KDP is one track, not the whole company. Skillies.AI does two things: teaches AI skills to students who want to earn real money, and builds AI systems for businesses that can't wait. KDP is the proof — 63 books, ₹1,16,000 last month, no one touching them — but the new tracks through 2026 cover AI-assisted marketing, Etsy printables, agent-built software, and done-for-you automation for local businesses. Everything is proof-backed.",
   },
   {
     q: "Why you? Why this school?",

@@ -512,9 +512,10 @@ export default function AboutEditorial() {
               >
                 I sat with one question: &ldquo;what do I actually want to do
                 with my time?&rdquo; The answer wasn’t &ldquo;publish more
-                books.&rdquo; It was: learn the next thing, teach it to people
-                who’ll actually use it, and build the tools we all need.
-                That’s Skillies.AI —{" "}
+                books.&rdquo; It was two things — teach AI skills to students
+                who&rsquo;ll use them, and build AI systems for businesses
+                that can&rsquo;t wait. That’s Skillies.AI — teach on one
+                side, build on the other, same rule both sides:{" "}
                 <em
                   style={{
                     fontFamily: "'Instrument Serif', serif",
@@ -522,7 +523,7 @@ export default function AboutEditorial() {
                     color: "#E6C178",
                   }}
                 >
-                  research, teach, serve.
+                  only ship what we’ve proved works.
                 </em>
               </p>
             </article>
@@ -818,7 +819,7 @@ export default function AboutEditorial() {
               >
                 Skillies.AI will{" "}
                 <em style={{ fontStyle: "italic", color: "#EF4444" }}>
-                  research, teach, and serve.
+                  teach, build, and prove.
                 </em>
               </h4>
               <p
@@ -829,10 +830,11 @@ export default function AboutEditorial() {
                   margin: "0 0 8px",
                 }}
               >
-                We find what actually works in 2026 — not 2018’s playbook.
-                We teach it straight. We build tools for the businesses that
-                can’t wait. No hype, no random skills, no &ldquo;secret
-                formulas.&rdquo; Only what’s proven to make money this year.
+                We teach AI skills to students who want to earn real money.
+                We build AI systems for the businesses that can&rsquo;t wait.
+                No hype, no random skills, no &ldquo;secret formulas.&rdquo;
+                Only what we&rsquo;ve proved makes money this year — on our
+                own books, and on our clients&rsquo; balance sheets.
               </p>
               <p
                 style={{
@@ -843,8 +845,9 @@ export default function AboutEditorial() {
                   margin: "16px 0 0",
                 }}
               >
-                One day we’ll be India’s most trusted AI skills school.
-                We’re 6 students in. We’re not in a hurry.
+                One day we’ll be India’s most trusted AI partner — for
+                students learning the skills, and businesses shipping the
+                systems. We’re 6 students in. We’re not in a hurry.
               </p>
             </div>
           </div>

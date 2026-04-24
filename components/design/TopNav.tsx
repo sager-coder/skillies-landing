@@ -6,11 +6,11 @@ import { Wordmark } from "./Primitives";
 type Link = { href: string; label: string };
 
 const LINKS: Link[] = [
+  { href: "/services", label: "Services" },
   { href: "/workshop", label: "Workshop" },
   { href: "/mentorship", label: "Mentorship" },
   { href: "/courses", label: "Courses" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/#program", label: "Program" },
 ];
 
 /* Note: workshop route also renders an in-page "#pay" anchor
