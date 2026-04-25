@@ -4,20 +4,20 @@ import FooterEditorial from "@/components/design/FooterEditorial";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata = {
-  title: "The Skillies Batch · 20 students · Malappuram",
+  title: "The Skillies Batch · 25 students · Malappuram",
   description:
-    "One batch. 20 seats. ₹50,000 upfront. The remainder paid only when you earn ₹3,00,000+ a month. In-person in Malappuram. By application only.",
+    "One batch. 25 seats. ₹50,000 upfront. The remainder paid only when you earn ₹3,00,000+ a month. In-person in Malappuram. By application only.",
   openGraph: {
-    title: "The Skillies Batch · 20 students · Malappuram",
+    title: "The Skillies Batch · 25 students · Malappuram",
     description:
-      "₹50,000 upfront. ₹4,50,000 paid only when you earn ₹3L+/month. In-person training in Malappuram. By application only — 20 seats.",
+      "₹50,000 upfront. ₹4,50,000 paid only when you earn ₹3L+/month. In-person training in Malappuram. By application only — 25 seats.",
   },
 };
 
 const WHATSAPP_APPLY =
   "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20apply%20for%20the%20Skillies%20Batch.%20My%20name%20is%20";
-const WHATSAPP_CONSULT =
-  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20book%20the%20%E2%82%B94%2C999%20consultation%20for%20the%20Skillies%20Batch.%20My%20name%20is%20";
+const WHATSAPP_WORKSHOP =
+  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20reserve%20an%20Early%20Bird%20%E2%82%B91%2C999%20seat%20for%20the%20May%2017%20Skillies%20Workshop%20in%20Malappuram.%20My%20name%20is%20";
 
 const DARK = "#0F0F0F";
 const CHARCOAL = "#1A1A1A";
@@ -30,7 +30,7 @@ const FOREST = "#3D5A3D";
 export default function ProgramPage() {
   return (
     <main style={{ background: DARK, color: "white" }}>
-      <TopNav cta={{ href: "/consultation", label: "Book consultation" }} />
+      <TopNav cta={{ href: "/workshop", label: "Reserve · ₹1,999" }} />
 
       <Hero />
       <Wedge />
@@ -83,7 +83,7 @@ function Hero() {
           <span
             style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)", minWidth: 30 }}
           />
-          <span>20 seats · Malappuram</span>
+          <span>25 seats · Malappuram</span>
         </div>
 
         <h1
@@ -122,7 +122,7 @@ function Hero() {
             lineHeight: 1.6,
           }}
         >
-          Twenty students. One concurrent batch. In-person in Malappuram. You
+          Twenty-five students. One concurrent batch. In-person in Malappuram. You
           pay ₹50,000 upfront — the remaining ₹4,50,000 is collected only
           after you start earning ₹3,00,000+ a month from your own
           publishing business.
@@ -144,7 +144,7 @@ function Hero() {
 
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <a
-            href="/consultation"
+            href="/workshop"
             style={{
               padding: "20px 36px",
               background: RED,
@@ -160,7 +160,7 @@ function Hero() {
               gap: 10,
             }}
           >
-            Book your consultation · ₹4,999
+            Reserve workshop seat · ₹1,999
             <svg
               width="18"
               height="18"
@@ -386,7 +386,7 @@ function Wedge() {
               }}
             >
               <li>₹50,000 upfront · ₹4,50,000 only when you earn ₹3L+/mo</li>
-              <li>20 students per batch · in-person Malappuram</li>
+              <li>25 students per batch · in-person Malappuram</li>
               <li>Live with Ehsan in the same room for 1 month</li>
               <li>If you don&rsquo;t hit ₹3L+/mo, you owe nothing more</li>
               <li>Alumni community for life · we keep helping</li>
@@ -742,8 +742,8 @@ function Model() {
               fontStyle: "italic",
             }}
           >
-            The Income Share Agreement is a separate contract reviewed during
-            your consultation and signed before enrolment. It includes
+            The Income Share Agreement is a separate contract reviewed
+            after the workshop selection and signed before enrolment. It includes
             hardship pause clauses, a 36-month maximum repayment window, and
             a hard cap at ₹4,50,000 ISA collection (₹5,00,000 total program
             fee, never more). Earnings are not guaranteed — but the ISA
@@ -776,26 +776,26 @@ function Selection() {
   const steps = [
     {
       n: "01",
-      title: "Apply",
-      body: "Send a WhatsApp message — name, current situation, why you want this. Takes 2 minutes. We reply within 48 hours with a yes/no on the consultation.",
-      out: "Free · 2 min",
+      title: "Reserve a workshop seat",
+      body: "Reserve a seat at the May 17 Skillies Workshop in Malappuram. ₹1,999 early bird (first 25) or ₹2,499 regular (next 45). 70 seats total, no refunds. WhatsApp Ehsan, get a Razorpay link, lock your seat.",
+      out: "₹1,999 · 70 seats",
     },
     {
       n: "02",
-      title: "Travel + Consultation",
-      body: "If selected, you travel to Malappuram for a 90-minute in-person consultation with Ehsan. ₹4,999 — credited toward enrolment if you join. We go deep on your situation, you see the full programme, you ask anything.",
-      out: "₹4,999 · in person",
+      title: "Show up · publish a book",
+      body: "10 AM to 5 PM in the room with Ehsan. Niche → book → cover → upload, all live, your real KDP book published before sunset. We watch how you work, how you ask, how you ship.",
+      out: "1 day · 1 book live",
     },
     {
       n: "03",
-      title: "48-hour pause",
-      body: "After the consultation, neither side commits on the spot. Two days to think. You decide. We decide. No pressure on either side — this is a 6-month commitment, not an impulse buy.",
-      out: "0 · 48 hours",
+      title: "Selection · same day",
+      body: "End of the day, Ehsan picks 25 of the 70 to be invited into the Batch. Selected attendees get a printed offer letter on the way out. Unselected attendees get the playbook PDF and the priority list for the next workshop.",
+      out: "25 of 70 selected",
     },
     {
       n: "04",
-      title: "Enrol",
-      body: "If we both say yes — you pay ₹50,000, sign the ISA contract (with time to read, with your lawyer if you want), and the batch start date is locked. Welcome to the 20.",
+      title: "Apply · enrol · sign",
+      body: "If selected: 3 days to fill the formal pre-form and do a 30-min one-on-one with Ehsan. If both sides confirm — ₹50,000 enrolment + ISA contract signed (with time to read it, with your lawyer if you want). Batch starts within 3-4 weeks.",
       out: "₹50,000 · contract signed",
     },
   ];
@@ -846,7 +846,7 @@ function Selection() {
             margin: "0 0 56px",
           }}
         >
-          We can&rsquo;t take everyone — there are only 20 seats per batch.
+          We can&rsquo;t take everyone — there are only 25 seats per batch.
           The selection process is honest about that. We&rsquo;d rather say
           &ldquo;not yet&rdquo; to a serious applicant than pull in 20 people
           who shouldn&rsquo;t be here.
@@ -1389,8 +1389,9 @@ function Earnings() {
             methodology, the in-person training, the alumni network, and
             the ISA structure that aligns our outcome with yours. If you
             don&rsquo;t hit ₹3L+/mo, the ISA never activates and you owe
-            nothing more — that&rsquo;s the only guarantee we make. Please
-            read the full ISA contract during your consultation.
+            nothing more — that&rsquo;s the only guarantee we make. We hand
+            you the full ISA contract 3 days before enrolment so you can
+            read it slowly.
           </p>
         </div>
       </div>
@@ -1417,10 +1418,10 @@ function Earnings() {
 function PricingLadder() {
   const rows = [
     {
-      label: "Consultation",
-      what: "90-min in-person sit-down with Ehsan, in Malappuram",
-      cost: "₹4,999",
-      note: "Credited toward enrolment if you join",
+      label: "Workshop · May 17",
+      what: "1-day in-person Selection Day in Malappuram · 70 seats",
+      cost: "₹1,999 – ₹2,499",
+      note: "Early Bird (first 25) ₹1,999 · Regular ₹2,499 · no refund",
     },
     {
       label: "Enrolment fee",
@@ -1826,7 +1827,7 @@ function FAQ() {
       a: "₹5L is the maximum you ever pay — and only if the programme works. ₹50,000 is what you actually risk upfront. Compare to a typical &ldquo;passive income course&rdquo; charging ₹2L upfront with no skin in the game — there, you lose ₹2L if it doesn&rsquo;t work. Here, you lose ₹50K. The cap is high because we&rsquo;re partners on the upside, not on the entry.",
     },
     {
-      q: "Why only 20 students? Can&rsquo;t you take more?",
+      q: "Why only 25 students? Can&rsquo;t you take more?",
       a: "20 is the most Ehsan can mentor in person, in one room, daily, for a full month. Above that, the in-person promise breaks. Skillies isn&rsquo;t scaling for revenue — it&rsquo;s scaling for outcomes. 20 graduates earning ₹3L+/mo each is a much louder marketing engine than 200 students earning ₹0.",
     },
     {
@@ -1835,19 +1836,19 @@ function FAQ() {
     },
     {
       q: "Where do I stay during the month in Malappuram?",
-      a: "Malappuram has plenty of affordable accommodation — single rooms from ₹6,000/month, decent PGs from ₹4,000. We help with logistics during your consultation. NRI / out-of-state students often share rooms. Plan ₹15,000–₹25,000 total for accommodation + food for the month.",
+      a: "Malappuram has plenty of affordable accommodation — single rooms from ₹6,000/month, decent PGs from ₹4,000. We help with logistics if you&rsquo;re selected. NRI / out-of-state students often share rooms. Plan ₹15,000–₹25,000 total for accommodation + food for the month.",
     },
     {
       q: "What if Amazon bans my account or KDP changes the rules?",
       a: "It happens. We teach defensive practices (no AI-generated content slop, niche compliance, multi-account hygiene). If your primary account gets a strike outside your control, alumni get free re-onboarding to a new account. KDP rules will keep changing — we update the playbook for every batch.",
     },
     {
-      q: "Can I drop out after the consultation?",
-      a: "The 48-hour cooling-off window after consultation is exactly for this. If you change your mind, no signature, no payment, no hard feelings. Once you&rsquo;ve paid the ₹50,000 and signed, the ISA contract has a 7-day cancellation clause — full refund of enrolment, contract voided, no questions.",
+      q: "Can I back out after being selected?",
+      a: "Yes. After selection at the workshop, you have 3 days to formally apply (pre-form + a 30-min one-on-one with Ehsan). If at any point either side wants to walk, no hard feelings. Once you&rsquo;ve paid the ₹50,000 enrolment fee and signed, the ISA contract has a 7-day cancellation clause — full refund of enrolment, contract voided, no questions.",
     },
     {
       q: "When does the next batch start?",
-      a: "Batch dates are confirmed during your consultation. We typically run 2 batches a year — one in Q2 (May–July), one in Q4 (Sep–Nov). Spots fill on a first-application-first-served basis once selection is approved. The application is still free; the consultation is the commitment point.",
+      a: "The first batch starts within 3-4 weeks of the May 17 workshop — exact date confirmed at selection. Future batches are typically 2/year — Q2 (May–July) and Q4 (Sep–Nov). The path in is always through a workshop · we don&rsquo;t take applications outside the workshop selection.",
     },
   ];
   return (
@@ -1994,8 +1995,8 @@ function FinalCTA() {
             margin: "0 0 16px",
           }}
         >
-          Send a 2-line message. We reply within 48 hours with whether you
-          should book a consultation.
+          Send a 2-line message. We reply within 48 hours with details on
+          the next workshop or any other questions.
         </p>
         <p
           style={{
@@ -2051,7 +2052,7 @@ function FinalCTA() {
             </svg>
           </a>
           <Link
-            href="/consultation"
+            href="/workshop"
             style={{
               padding: "22px 32px",
               background: "transparent",
@@ -2066,7 +2067,7 @@ function FinalCTA() {
               gap: 8,
             }}
           >
-            Or book the ₹4,999 consultation directly →
+            Reserve workshop seat · ₹1,999 →
           </Link>
         </div>
 

@@ -46,15 +46,17 @@ const nextConfig: NextConfig = {
     ];
   },
   /**
-   * Old offerings (workshop / mentorship / cheap cohort / online courses /
-   * student dashboard) were retired when Skillies pivoted to the single
-   * 20-student in-person Batch model. Redirect everyone to /program so
-   * inbound links from old ads, IG bio, etc. still land somewhere useful.
+   * Old offerings (cheap cohort / mentorship / online courses / student
+   * dashboard / consultation booking) were retired when Skillies pivoted
+   * to the funnel of: /workshop (selection day) → /program (the Batch).
+   *
+   * /workshop is alive again — it's the entry filter. /consultation
+   * is dead — replaced by the workshop.
    */
   async redirects() {
     return [
-      { source: "/workshop", destination: "/program", permanent: true },
-      { source: "/workshop/:path*", destination: "/program", permanent: true },
+      { source: "/consultation", destination: "/workshop", permanent: true },
+      { source: "/consultation/:path*", destination: "/workshop", permanent: true },
       { source: "/mentorship", destination: "/program", permanent: true },
       { source: "/mentorship/:path*", destination: "/program", permanent: true },
       { source: "/courses", destination: "/program", permanent: true },

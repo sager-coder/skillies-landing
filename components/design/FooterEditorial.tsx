@@ -22,9 +22,9 @@ const COLUMNS: Col[] = [
   {
     kicker: "The Batch",
     items: [
-      ["The Skillies Batch · 20 seats", "/program"],
-      ["Book consultation · ₹4,999", "/consultation"],
-      ["Apply on WhatsApp", "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20apply%20for%20the%20Skillies%20Batch.%20My%20name%20is%20"],
+      ["Workshop · May 17 · ₹1,999", "/workshop"],
+      ["The Skillies Batch · 25 seats", "/program"],
+      ["Reserve Early Bird on WhatsApp", "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20reserve%20an%20Early%20Bird%20%E2%82%B91%2C999%20seat%20for%20the%20May%2017%20Skillies%20Workshop%20in%20Malappuram.%20My%20name%20is%20"],
       ["Free · AI Avatar Playbook", "/playbook"],
       ["Free · ChatGPT Business Playbook", "/chatgpt-business"],
       ["Sign in · Alumni portal", "/login"],

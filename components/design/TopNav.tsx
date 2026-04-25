@@ -6,9 +6,9 @@ import { Wordmark } from "./Primitives";
 type Link = { href: string; label: string };
 
 const LINKS: Link[] = [
+  { href: "/workshop", label: "Workshop · May 17" },
   { href: "/program", label: "The Batch" },
   { href: "/services", label: "Services" },
-  { href: "/consultation", label: "Consultation" },
 ];
 
 /* Note: workshop route also renders an in-page "#pay" anchor
@@ -17,7 +17,7 @@ const LINKS: Link[] = [
    secondary path for people who scrolled past. */
 
 export default function TopNav({
-  cta = { href: "/consultation", label: "Book consultation" },
+  cta = { href: "/workshop", label: "Reserve · ₹1,999" },
 }: {
   cta?: { href: string; label: string };
 }) {
