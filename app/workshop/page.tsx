@@ -43,7 +43,15 @@ type IconName =
   | "ticket"
   | "books"
   | "star"
-  | "stamp";
+  | "stamp"
+  | "calendar"
+  | "pin"
+  | "road"
+  | "briefcase"
+  | "globe"
+  | "grid"
+  | "wallet"
+  | "language";
 
 function Icon({
   name,
@@ -148,6 +156,85 @@ function Icon({
         <svg {...baseProps} aria-hidden>
           <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" />
           <path d="M12 8l1.5 3 3 0.5-2.25 2 0.5 3.25L12 15l-2.75 1.75 0.5-3.25L7.5 11.5l3-0.5z" fill={color} />
+        </svg>
+      );
+    case "calendar":
+      return (
+        <svg {...baseProps} aria-hidden>
+          <rect x="3.5" y="5.5" width="17" height="15" rx="2" />
+          <path d="M3.5 10h17" />
+          <path d="M8 3.5v4M16 3.5v4" />
+          <circle cx="9" cy="14" r="0.8" fill={color} stroke="none" />
+          <circle cx="13" cy="14" r="0.8" fill={color} stroke="none" />
+          <circle cx="17" cy="14" r="0.8" fill={color} stroke="none" />
+        </svg>
+      );
+    case "pin":
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M12 21s7-7 7-12a7 7 0 0 0-14 0c0 5 7 12 7 12z" />
+          <circle cx="12" cy="9" r="2.5" />
+        </svg>
+      );
+    case "road":
+      // Stylised path / route with markers
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M5 21c2-3 0-6 2-9s5-3 5-6 0-3 2-3" />
+          <circle cx="5" cy="21" r="1.4" fill={color} stroke="none" />
+          <circle cx="14" cy="3" r="1.4" fill={color} stroke="none" />
+          <path d="M9 14l1 1M11 9l1 1" />
+        </svg>
+      );
+    case "briefcase":
+      return (
+        <svg {...baseProps} aria-hidden>
+          <rect x="3" y="7" width="18" height="13" rx="2" />
+          <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+          <path d="M3 13h18" />
+        </svg>
+      );
+    case "globe":
+      return (
+        <svg {...baseProps} aria-hidden>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18" />
+          <path d="M12 3a14 14 0 0 1 0 18" />
+          <path d="M12 3a14 14 0 0 0 0 18" />
+        </svg>
+      );
+    case "grid":
+      // 5x5 dot grid · for capacity / seat-count
+      return (
+        <svg {...baseProps} aria-hidden>
+          {Array.from({ length: 5 }).map((_, r) =>
+            Array.from({ length: 5 }).map((__, c) => (
+              <circle
+                key={`${r}-${c}`}
+                cx={5 + c * 3.5}
+                cy={5 + r * 3.5}
+                r="0.9"
+                fill={color}
+                stroke="none"
+              />
+            )),
+          )}
+        </svg>
+      );
+    case "wallet":
+      return (
+        <svg {...baseProps} aria-hidden>
+          <rect x="3" y="6" width="18" height="14" rx="2" />
+          <path d="M16 13h3" />
+          <path d="M3 9h18" />
+        </svg>
+      );
+    case "language":
+      // 'A' + character · multi-script symbol
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M3 17l4-12 4 12M4.5 13h5" />
+          <path d="M14 7h7M17.5 7v0c0 4-3 8-3 10 0 1 1 1 2 1h3" />
         </svg>
       );
   }
@@ -557,15 +644,34 @@ function Wedge() {
           }}
           className="skillies-workshop-wedge"
         >
-          <div>
+          {/* LEFT · what this isn't · with REJECTED rubber stamp */}
+          <div
+            style={{
+              position: "relative",
+              padding: "44px 36px 40px",
+              borderRadius: 16,
+              background:
+                "linear-gradient(135deg, rgba(156,163,175,0.06), rgba(156,163,175,0.02))",
+              border: "1px dashed rgba(156,163,175,0.32)",
+              overflow: "hidden",
+            }}
+          >
+            <RubberStamp
+              text="REJECTED"
+              subtext="Not what we sell"
+              color="#9CA3AF"
+              tilt={-7}
+              position={{ top: 12, right: -22 }}
+            />
             <p
               style={{
                 fontSize: 12,
                 letterSpacing: "0.3em",
                 textTransform: "uppercase",
-                color: "#9CA3AF",
+                color: "#6B7280",
                 fontWeight: 700,
-                margin: "0 0 16px",
+                margin: "0 0 20px",
+                position: "relative",
               }}
             >
               What this isn&rsquo;t
@@ -577,12 +683,13 @@ function Wedge() {
                 margin: 0,
                 display: "flex",
                 flexDirection: "column",
-                gap: 10,
+                gap: 12,
                 fontSize: 15.5,
                 color: "#9CA3AF",
                 lineHeight: 1.55,
                 textDecoration: "line-through",
                 textDecorationColor: "rgba(156,163,175,0.4)",
+                position: "relative",
               }}
             >
               <li>A complete &ldquo;learn KDP in one day&rdquo; course</li>
@@ -592,7 +699,20 @@ function Wedge() {
               <li>Repeated · just attend a future date if you miss</li>
             </ul>
           </div>
-          <div>
+
+          {/* RIGHT · what this is · with circular APPROVED seal */}
+          <div
+            style={{
+              position: "relative",
+              padding: "44px 36px 40px",
+              borderRadius: 16,
+              background:
+                "linear-gradient(135deg, rgba(198,40,40,0.05), rgba(230,193,120,0.05))",
+              border: "1px solid rgba(198,40,40,0.18)",
+              overflow: "hidden",
+            }}
+          >
+            <ApprovedSeal />
             <p
               style={{
                 fontSize: 12,
@@ -600,7 +720,8 @@ function Wedge() {
                 textTransform: "uppercase",
                 color: RED,
                 fontWeight: 700,
-                margin: "0 0 16px",
+                margin: "0 0 20px",
+                position: "relative",
               }}
             >
               What this is
@@ -612,10 +733,11 @@ function Wedge() {
                 margin: 0,
                 display: "flex",
                 flexDirection: "column",
-                gap: 10,
+                gap: 12,
                 fontSize: 15.5,
                 color: CHARCOAL,
                 lineHeight: 1.55,
+                position: "relative",
               }}
             >
               <li>An honest 6-hour day · live, in-person, in Malappuram</li>
@@ -888,7 +1010,7 @@ function Selection() {
             fontWeight: 400,
             letterSpacing: "-0.02em",
             lineHeight: 1.05,
-            margin: "0 0 32px",
+            margin: "0 0 56px",
             color: CHARCOAL,
           }}
         >
@@ -898,11 +1020,14 @@ function Selection() {
           </em>
         </h2>
 
+        <SeatMap />
+
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: 24,
+            marginTop: 48,
           }}
           className="skillies-selection-paths"
         >
@@ -1362,38 +1487,46 @@ function Pricing() {
 /* ═══════════════════════════════════════════════════════════════════════ */
 
 function Logistics() {
-  const items = [
+  const items: { t: string; b: string; icon: IconName }[] = [
     {
       t: "Date",
       b: "Sunday · May 17, 2026 · 10 AM – 5 PM (lunch included)",
+      icon: "calendar",
     },
     {
       t: "Venue",
       b: "Malappuram Expo · address shared on WhatsApp 48 hours before · easy parking · A/C hall",
+      icon: "pin",
     },
     {
       t: "Travel",
       b: "Malappuram is 1.5 hr from Calicut, 1 hr from Kondotty / Karipur airport, 3 hr from Kochi. Tirur railway station is 30 min away.",
+      icon: "road",
     },
     {
       t: "What to bring",
       b: "Laptop · PAN card (for KDP setup) · phone · notebook · ₹200 cash for parking / chai",
+      icon: "briefcase",
     },
     {
       t: "Lunch",
       b: "Included in your ticket · Kerala-style sadhya · vegetarian + non-veg options · let us know dietary needs when you reserve",
+      icon: "fork",
     },
     {
       t: "Language",
       b: "Workshop runs in Manglish — natural switching between English and Malayalam. Slides + materials in English.",
+      icon: "language",
     },
     {
       t: "Reservation flow",
       b: "Click Reserve · fill name, WhatsApp number, email · pay via Razorpay (UPI / cards / net-banking) · printable ticket on screen + email receipt. Done in under 2 minutes.",
+      icon: "wallet",
     },
     {
       t: "Capacity & cutoff",
       b: "70 seats · hard cap. Once full, registration closes. We don&rsquo;t squeeze in &ldquo;just one more&rdquo; — the room limit is real.",
+      icon: "grid",
     },
   ];
   return (
@@ -1435,42 +1568,96 @@ function Logistics() {
           className="skillies-workshop-logistics"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: 22,
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 18,
           }}
         >
-          {items.map((it) => (
-            <div
+          {items.map((it, i) => (
+            <article
               key={it.t}
               style={{
-                padding: "26px 28px",
-                borderRadius: 16,
-                background: "white",
+                position: "relative",
+                padding: "30px 26px 28px",
+                borderRadius: 14,
+                background:
+                  i % 2 === 0
+                    ? "linear-gradient(135deg, #FFFFFF 0%, #FAF5EB 100%)"
+                    : "linear-gradient(135deg, #FAF5EB 0%, #F4E8C8 100%)",
                 border: "1px solid rgba(26,26,26,0.08)",
+                boxShadow: "0 14px 30px rgba(0,0,0,0.04)",
+                overflow: "hidden",
+                transform: i % 3 === 0 ? "rotate(-0.4deg)" : "rotate(0.4deg)",
               }}
             >
+              {/* Ticket-stub bites · top + bottom of left edge */}
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: -7,
+                  top: 28,
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  background: CREAM,
+                  border: "1px solid rgba(26,26,26,0.08)",
+                }}
+              />
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: -7,
+                  bottom: 28,
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  background: CREAM,
+                  border: "1px solid rgba(26,26,26,0.08)",
+                }}
+              />
+
+              {/* Icon · top */}
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: "rgba(198,40,40,0.08)",
+                  border: "1px solid rgba(198,40,40,0.18)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: RED,
+                  marginBottom: 18,
+                }}
+              >
+                <Icon name={it.icon} size={22} strokeWidth={1.5} />
+              </div>
+
               <p
                 style={{
                   fontSize: 11,
-                  letterSpacing: "0.3em",
+                  letterSpacing: "0.32em",
                   textTransform: "uppercase",
                   color: RED,
                   fontWeight: 700,
-                  margin: "0 0 10px",
+                  margin: "0 0 8px",
+                  fontFamily: "Arial, sans-serif",
                 }}
               >
                 {it.t}
               </p>
               <p
                 style={{
-                  fontSize: 14.5,
+                  fontSize: 13.5,
                   color: "#4B5563",
-                  lineHeight: 1.7,
+                  lineHeight: 1.65,
                   margin: 0,
                 }}
                 dangerouslySetInnerHTML={{ __html: it.b }}
               />
-            </div>
+            </article>
           ))}
         </div>
       </div>
@@ -1478,7 +1665,12 @@ function Logistics() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            @media (max-width: 760px) {
+            @media (max-width: 1100px) {
+              .skillies-workshop-logistics {
+                grid-template-columns: repeat(2, 1fr) !important;
+              }
+            }
+            @media (max-width: 600px) {
               .skillies-workshop-logistics {
                 grid-template-columns: 1fr !important;
               }
@@ -1631,13 +1823,15 @@ function FinalCTA() {
   return (
     <section
       style={{
-        padding: "140px 24px",
+        padding: "140px 0 0",
         background: `radial-gradient(ellipse at 50% 50%, rgba(198,40,40,0.2), transparent 60%), ${CHARCOAL}`,
         color: "white",
         textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 820, margin: "0 auto" }}>
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: "0 24px" }}>
         <p
           style={{
             fontSize: 12,
@@ -1749,6 +1943,68 @@ function FinalCTA() {
           </span>
         </p>
       </div>
+
+      {/* MARQUEE BAND · scrolling wordmark closes the page */}
+      <div
+        style={{
+          marginTop: 100,
+          padding: "26px 0",
+          background:
+            "linear-gradient(180deg, transparent, rgba(230,193,120,0.04))",
+          borderTop: "1px dashed rgba(230,193,120,0.2)",
+          borderBottom: "1px dashed rgba(230,193,120,0.2)",
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
+        <div
+          className="skillies-marquee-track"
+          style={{
+            display: "flex",
+            gap: 56,
+            whiteSpace: "nowrap",
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontStyle: "italic",
+            fontSize: "clamp(28px, 4vw, 48px)",
+            color: GOLD_LIGHT,
+            opacity: 0.65,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 56 }}>
+              <span>Skillies</span>
+              <span style={{ fontFamily: "Arial, sans-serif", fontStyle: "normal", fontSize: "0.5em", letterSpacing: "0.32em", color: "rgba(230,193,120,0.5)" }}>·</span>
+              <span>Malappuram</span>
+              <span style={{ fontFamily: "Arial, sans-serif", fontStyle: "normal", fontSize: "0.5em", letterSpacing: "0.32em", color: "rgba(230,193,120,0.5)" }}>·</span>
+              <span>May 17</span>
+              <span style={{ fontFamily: "Arial, sans-serif", fontStyle: "normal", fontSize: "0.5em", letterSpacing: "0.32em", color: "rgba(230,193,120,0.5)" }}>·</span>
+              <span style={{ color: "#EF4444" }}>Be in the room</span>
+              <span style={{ fontFamily: "Arial, sans-serif", fontStyle: "normal", fontSize: "0.5em", letterSpacing: "0.32em", color: "rgba(230,193,120,0.5)" }}>·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .skillies-marquee-track {
+              animation: skillies-marquee 38s linear infinite;
+              will-change: transform;
+            }
+            @keyframes skillies-marquee {
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .skillies-marquee-track {
+                animation: none !important;
+              }
+            }
+          `,
+        }}
+      />
     </section>
   );
 }
@@ -3367,5 +3623,291 @@ function MotifPuzzle({ color }: { color: string }) {
       <path d="M50 40 L52 46 L58 46 L53 50 L55 56 L50 52 L45 56 L47 50 L42 46 L48 46 Z" fill={color} stroke="none" />
       <path d="M155 155 L157 161 L163 161 L158 165 L160 171 L155 167 L150 171 L152 165 L147 161 L153 161 Z" fill={color} stroke="none" />
     </svg>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* RUBBER STAMP · the rejected/approved diagonal mark on the Wedge        */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function RubberStamp({
+  text,
+  subtext,
+  color,
+  tilt = -8,
+  position,
+}: {
+  text: string;
+  subtext?: string;
+  color: string;
+  tilt?: number;
+  position: { top?: number | string; right?: number | string; bottom?: number | string; left?: number | string };
+}) {
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        ...position,
+        transform: `rotate(${tilt}deg)`,
+        pointerEvents: "none",
+        opacity: 0.25,
+        zIndex: 1,
+      }}
+    >
+      <div
+        style={{
+          padding: "10px 22px 12px",
+          border: `4px double ${color}`,
+          borderRadius: 6,
+          color,
+          fontFamily: "Arial, sans-serif",
+          fontWeight: 900,
+          textAlign: "center",
+          // distressed-edge effect via mix-blend
+          mixBlendMode: "multiply",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 32,
+            letterSpacing: "0.18em",
+            lineHeight: 1,
+          }}
+        >
+          {text}
+        </div>
+        {subtext && (
+          <div
+            style={{
+              fontSize: 9,
+              letterSpacing: "0.32em",
+              marginTop: 4,
+              opacity: 0.8,
+            }}
+          >
+            {subtext}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ApprovedSeal() {
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        top: 16,
+        right: 16,
+        width: 110,
+        height: 110,
+        borderRadius: "50%",
+        background:
+          "radial-gradient(circle at 30% 30%, #F5DC9A, #D4A65A 60%, #A37226)",
+        color: "#2a1f08",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        transform: "rotate(8deg)",
+        boxShadow:
+          "0 14px 30px rgba(0,0,0,0.18), inset 0 0 0 2px rgba(255,255,255,0.18), inset 0 0 0 4px rgba(122,72,16,0.5)",
+        textAlign: "center",
+        fontFamily: "Arial, sans-serif",
+        opacity: 0.92,
+        pointerEvents: "none",
+        zIndex: 1,
+      }}
+    >
+      <Icon name="stamp" size={20} color="#2a1f08" strokeWidth={1.4} />
+      <div
+        style={{
+          fontSize: 9,
+          letterSpacing: "0.32em",
+          textTransform: "uppercase",
+          fontWeight: 800,
+          marginTop: 4,
+        }}
+      >
+        Approved
+      </div>
+      <div
+        style={{
+          fontSize: 8,
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          fontWeight: 700,
+          opacity: 0.75,
+          marginTop: 2,
+        }}
+      >
+        May 17 · Skillies
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* SEAT MAP · 70 seat dots · 25 highlighted gold · the scarcity story    */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function SeatMap() {
+  // Pre-pick 25 random-feeling but stable indices for the "selected" seats.
+  // Using a hardcoded set so SSR and client agree on the same layout.
+  const SELECTED = new Set([
+    2, 5, 8, 11, 13, 16,
+    21, 24, 28, 32, 36,
+    41, 44, 48, 52, 57,
+    61, 65,
+    3, 19, 33, 47, 59, 64, 69,
+  ]);
+  const ROWS = 7;
+  const COLS = 10;
+  return (
+    <div
+      style={{
+        marginBottom: 40,
+        padding: "40px 36px 36px",
+        borderRadius: 22,
+        background:
+          "linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(250,245,235,0.6) 100%)",
+        border: "1px solid rgba(26,26,26,0.10)",
+        boxShadow: "0 30px 70px rgba(0,0,0,0.05)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Stage label · top */}
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: 22,
+        }}
+      >
+        <div
+          style={{
+            display: "inline-block",
+            padding: "6px 22px",
+            background: CHARCOAL,
+            color: "white",
+            fontSize: 10,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            borderRadius: 6,
+          }}
+        >
+          ▲ Stage · Ehsan
+        </div>
+      </div>
+
+      {/* Seat grid */}
+      <div
+        className="skillies-seat-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+          gap: 10,
+          maxWidth: 540,
+          margin: "0 auto 20px",
+        }}
+      >
+        {Array.from({ length: ROWS * COLS }).map((_, i) => {
+          const isSelected = SELECTED.has(i);
+          return (
+            <div
+              key={i}
+              style={{
+                aspectRatio: "1 / 1",
+                borderRadius: "50%",
+                background: isSelected
+                  ? "linear-gradient(135deg, #E6C178, #C9A24E)"
+                  : "transparent",
+                border: isSelected
+                  ? "1.5px solid #A37226"
+                  : "1.5px solid rgba(26,26,26,0.18)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: isSelected ? "#2a1f08" : "rgba(26,26,26,0.35)",
+                boxShadow: isSelected
+                  ? "0 4px 10px rgba(201,162,78,0.3), inset 0 0 0 1px rgba(255,255,255,0.4)"
+                  : "none",
+                position: "relative",
+              }}
+            >
+              {isSelected && (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 32,
+          fontSize: 12,
+          color: "#4B5563",
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <span
+            style={{
+              display: "inline-block",
+              width: 14,
+              height: 14,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #E6C178, #C9A24E)",
+              border: "1.5px solid #A37226",
+            }}
+          />
+          <span style={{ fontWeight: 600, color: CHARCOAL }}>
+            25 selected for the Batch
+          </span>
+        </div>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <span
+            style={{
+              display: "inline-block",
+              width: 14,
+              height: 14,
+              borderRadius: "50%",
+              background: "transparent",
+              border: "1.5px solid rgba(26,26,26,0.18)",
+            }}
+          />
+          <span>45 leave with the playbook</span>
+        </div>
+      </div>
+
+      <p
+        style={{
+          marginTop: 20,
+          fontSize: 13,
+          color: "#6B7280",
+          fontStyle: "italic",
+          fontFamily: "'Instrument Serif', serif",
+          textAlign: "center",
+          lineHeight: 1.6,
+          maxWidth: 560,
+          margin: "20px auto 0",
+        }}
+      >
+        This is what the room looks like at 4:30 PM on May 17. The gold seats
+        walk out with offer letters. The empty seats walk out with the
+        playbook + a real book live on Amazon.
+      </p>
+    </div>
   );
 }
