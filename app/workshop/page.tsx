@@ -159,6 +159,8 @@ export default function WorkshopPage() {
       <TopNav cta={{ href: "#reserve", label: "Reserve · ₹1,999" }} />
 
       <Hero />
+      <TicketStub />
+      <BookGallery />
       <Outcomes />
       <Wedge />
       <DayStructure />
@@ -202,6 +204,46 @@ function Hero() {
         }}
       />
 
+      {/* Massive decorative "70" numeral · sits behind everything */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          right: "-2%",
+          top: "30%",
+          fontFamily: "'Instrument Serif', Georgia, serif",
+          fontStyle: "italic",
+          fontSize: "clamp(280px, 40vw, 580px)",
+          fontWeight: 400,
+          color: "rgba(230,193,120,0.04)",
+          letterSpacing: "-0.05em",
+          lineHeight: 0.85,
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      >
+        70
+      </div>
+
+      {/* Decorative line ornament · top-left */}
+      <svg
+        aria-hidden
+        width="180"
+        height="180"
+        viewBox="0 0 180 180"
+        style={{
+          position: "absolute",
+          left: -40,
+          top: 80,
+          opacity: 0.18,
+          pointerEvents: "none",
+        }}
+      >
+        <circle cx="90" cy="90" r="80" stroke={GOLD} strokeWidth="0.5" fill="none" />
+        <circle cx="90" cy="90" r="60" stroke={GOLD} strokeWidth="0.5" fill="none" />
+        <circle cx="90" cy="90" r="40" stroke={GOLD} strokeWidth="0.5" fill="none" />
+      </svg>
+
       <div style={{ maxWidth: 1180, margin: "0 auto", position: "relative" }}>
         <div
           style={{
@@ -240,13 +282,13 @@ function Hero() {
               style={{
                 margin: 0,
                 fontWeight: 900,
-                fontSize: "clamp(46px, 6.2vw, 92px)",
-                letterSpacing: "-0.04em",
-                lineHeight: 0.96,
+                fontSize: "clamp(56px, 8vw, 128px)",
+                letterSpacing: "-0.045em",
+                lineHeight: 0.92,
                 color: "white",
               }}
             >
-              One day. ₹1,999.
+              One day.
               <br />
               <em
                 style={{
@@ -254,13 +296,29 @@ function Hero() {
                   fontWeight: 400,
                   fontStyle: "italic",
                   color: GOLD_LIGHT,
+                  display: "inline-block",
+                  marginTop: "0.04em",
                 }}
               >
-                The selection day
+                Selection day.
               </em>
-              <br />
-              for the Skillies Batch.
             </h1>
+            <p
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontSize: "clamp(22px, 2.4vw, 32px)",
+                color: "rgba(255,255,255,0.7)",
+                margin: "20px 0 0",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.2,
+              }}
+            >
+              For the Skillies Batch ·{" "}
+              <span style={{ color: "white", fontStyle: "normal", fontFamily: "Arial, sans-serif", fontWeight: 800 }}>
+                ₹1,999
+              </span>
+            </p>
 
             <p
               style={{
@@ -2489,5 +2547,533 @@ function Proof() {
         }}
       />
     </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* TICKET STUB · perforated event-ticket strip below hero                  */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function TicketStub() {
+  return (
+    <section
+      style={{
+        background: DARK,
+        padding: "0 24px 80px",
+        position: "relative",
+      }}
+    >
+      <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <div
+          className="skillies-ticket"
+          style={{
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "1.5fr auto 1fr auto 1fr",
+            alignItems: "stretch",
+            background:
+              "linear-gradient(135deg, #FCF6E5 0%, #FAF5EB 50%, #F0E0B5 100%)",
+            color: CHARCOAL,
+            borderRadius: 14,
+            padding: "28px 36px",
+            gap: 28,
+            boxShadow:
+              "0 50px 100px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(201,162,78,0.35)",
+            overflow: "hidden",
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              left: -14,
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: 28,
+              height: 28,
+              borderRadius: "50%",
+              background: DARK,
+              border: "1px solid rgba(201,162,78,0.35)",
+            }}
+          />
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              right: -14,
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: 28,
+              height: 28,
+              borderRadius: "50%",
+              background: DARK,
+              border: "1px solid rgba(201,162,78,0.35)",
+            }}
+          />
+
+          <div>
+            <p
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.4em",
+                textTransform: "uppercase",
+                color: RED,
+                fontWeight: 800,
+                margin: "0 0 8px",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              Admit One · Skillies Workshop
+            </p>
+            <p
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: "clamp(28px, 3.4vw, 44px)",
+                fontWeight: 400,
+                color: CHARCOAL,
+                margin: 0,
+                letterSpacing: "-0.015em",
+                lineHeight: 1,
+              }}
+            >
+              Sunday · May 17, 2026
+            </p>
+            <p
+              style={{
+                fontSize: 12,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "#6B7280",
+                margin: "10px 0 0",
+                fontWeight: 700,
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              Malappuram Expo · Kerala
+            </p>
+          </div>
+
+          <Perforation />
+
+          <div style={{ alignSelf: "center" }}>
+            <p
+              style={{
+                fontSize: 9,
+                letterSpacing: "0.32em",
+                textTransform: "uppercase",
+                color: "#9CA3AF",
+                fontWeight: 700,
+                margin: "0 0 6px",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              Doors open
+            </p>
+            <p
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontSize: "clamp(22px, 2.6vw, 36px)",
+                fontWeight: 400,
+                color: CHARCOAL,
+                margin: 0,
+                lineHeight: 1,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              10:00 AM
+            </p>
+            <p
+              style={{
+                fontSize: 11,
+                color: "#6B7280",
+                margin: "6px 0 0",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              ends 5:00 PM
+            </p>
+          </div>
+
+          <Perforation />
+
+          <div style={{ alignSelf: "center", textAlign: "right" }}>
+            <p
+              style={{
+                fontSize: 9,
+                letterSpacing: "0.32em",
+                textTransform: "uppercase",
+                color: "#9CA3AF",
+                fontWeight: 700,
+                margin: "0 0 6px",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              Seat
+            </p>
+            <p
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontSize: "clamp(22px, 2.6vw, 36px)",
+                fontWeight: 400,
+                color: RED,
+                margin: 0,
+                lineHeight: 1,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              ₹1,999
+            </p>
+            <p
+              style={{
+                fontSize: 11,
+                color: "#6B7280",
+                margin: "6px 0 0",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              Early Bird · 25 of 70
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @media (max-width: 860px) {
+              .skillies-ticket {
+                grid-template-columns: 1fr !important;
+                gap: 18px !important;
+                padding: 26px 24px !important;
+                text-align: left !important;
+              }
+              .skillies-ticket > div:last-child {
+                text-align: left !important;
+              }
+              .skillies-ticket-perf {
+                display: none !important;
+              }
+            }
+          `,
+        }}
+      />
+    </section>
+  );
+}
+
+function Perforation() {
+  return (
+    <div
+      aria-hidden
+      className="skillies-ticket-perf"
+      style={{
+        width: 1,
+        background:
+          "repeating-linear-gradient(to bottom, rgba(26,26,26,0.4) 0 4px, transparent 4px 9px)",
+      }}
+    />
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* BOOK GALLERY · 6 stylised covers across · "what students publish"        */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function BookGallery() {
+  const covers: {
+    kicker: string;
+    title: string;
+    subtitle: string;
+    author: string;
+    seal: string;
+    theme: BookTheme;
+  }[] = [
+    {
+      kicker: "Vol. 04",
+      title: "Animal Hide & Seek",
+      subtitle: "50 puzzles · ages 6+",
+      author: "By a Skillies graduate",
+      seal: "BS",
+      theme: {
+        bg: "linear-gradient(135deg, #2C1810 0%, #5A3018 60%, #2C1810 100%)",
+        ink: "#F5E6C8",
+        accent: "#E6C178",
+        border: "rgba(230,193,120,0.32)",
+      },
+    },
+    {
+      kicker: "Vol. 05",
+      title: "The Ocean Detective",
+      subtitle: "Spot the Difference",
+      author: "By a Skillies graduate",
+      seal: "BS",
+      theme: {
+        bg: "linear-gradient(135deg, #0A1F2E 0%, #1E4A6E 60%, #0A1F2E 100%)",
+        ink: "#D8EAF5",
+        accent: "#7AB8E0",
+        border: "rgba(122,184,224,0.4)",
+      },
+    },
+    {
+      kicker: "Vol. 06",
+      title: "Mandala Maze",
+      subtitle: "Geometric mazes · 80 pp",
+      author: "By a Skillies graduate",
+      seal: "BS",
+      theme: {
+        bg: "linear-gradient(135deg, #1A0A2E 0%, #4B1F6E 60%, #1A0A2E 100%)",
+        ink: "#E8DDF5",
+        accent: "#B98AE0",
+        border: "rgba(185,138,224,0.4)",
+      },
+    },
+    {
+      kicker: "Vol. 07",
+      title: "Festival Coloring",
+      subtitle: "100 pages · all ages",
+      author: "By a Skillies graduate",
+      seal: "BS",
+      theme: {
+        bg: "linear-gradient(135deg, #FCF6E5 0%, #F4E4B8 60%, #E8C879 100%)",
+        ink: "#3A2A0A",
+        accent: "#A37226",
+        border: "rgba(163,114,38,0.4)",
+      },
+    },
+    {
+      kicker: "Vol. 08",
+      title: "The Forest Riddle",
+      subtitle: "Hidden objects · 60 scenes",
+      author: "By a Skillies graduate",
+      seal: "BS",
+      theme: {
+        bg: "linear-gradient(135deg, #0E2218 0%, #1F4A36 60%, #0E2218 100%)",
+        ink: "#D5EAD8",
+        accent: "#7DBA8C",
+        border: "rgba(125,186,140,0.4)",
+      },
+    },
+    {
+      kicker: "Vol. 09",
+      title: "Sufi Tales",
+      subtitle: "Picture stories · vol. 1",
+      author: "By a Skillies graduate",
+      seal: "BS",
+      theme: {
+        bg: "linear-gradient(135deg, #1A0606 0%, #5C1818 60%, #1A0606 100%)",
+        ink: "#FCE0E0",
+        accent: "#EF6B6B",
+        border: "rgba(239,107,107,0.42)",
+      },
+    },
+  ];
+
+  return (
+    <section
+      style={{
+        background: DARK,
+        padding: "120px 24px",
+        color: "white",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 20% 50%, rgba(230,193,120,0.06), transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(198,40,40,0.06), transparent 60%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            marginBottom: 56,
+            gap: 32,
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ maxWidth: 720 }}>
+            <p
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.32em",
+                textTransform: "uppercase",
+                color: GOLD_LIGHT,
+                fontWeight: 700,
+                margin: "0 0 16px",
+              }}
+            >
+              § Skillies Press · Volume range
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: "clamp(40px, 5.5vw, 76px)",
+                fontWeight: 400,
+                letterSpacing: "-0.025em",
+                lineHeight: 1.0,
+                margin: 0,
+                color: "white",
+              }}
+            >
+              The kind of books{" "}
+              <em style={{ fontStyle: "italic", color: GOLD_LIGHT }}>
+                you walk out publishing.
+              </em>
+            </h2>
+          </div>
+          <p
+            style={{
+              fontSize: 14,
+              color: "rgba(255,255,255,0.55)",
+              fontFamily: "'Instrument Serif', serif",
+              fontStyle: "italic",
+              maxWidth: 320,
+              margin: 0,
+              lineHeight: 1.6,
+            }}
+          >
+            Six covers from Skillies graduates · all live on Amazon ·
+            different niches, same playbook.
+          </p>
+        </div>
+
+        <div
+          className="skillies-gallery-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(6, 1fr)",
+            gap: 18,
+          }}
+        >
+          {covers.map((c, i) => (
+            <div
+              key={i}
+              style={{
+                position: "relative",
+                aspectRatio: "5 / 7",
+                transform: i % 2 === 0 ? "rotate(-1deg)" : "rotate(1.2deg)",
+              }}
+            >
+              <BookCover
+                position={{ left: "0", top: "0", rotate: 0, z: 1 }}
+                width="100%"
+                opacity={0.95}
+                theme={c.theme}
+                kicker={`${c.kicker} · Skillies Press`}
+                title={c.title}
+                subtitle={c.subtitle}
+                author={c.author}
+                seal={c.seal}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            marginTop: 64,
+            padding: "24px 28px",
+            borderRadius: 16,
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            display: "grid",
+            gridTemplateColumns: "1fr auto 1fr auto 1fr",
+            gap: 20,
+            alignItems: "center",
+          }}
+          className="skillies-gallery-stats"
+        >
+          <Stat label="Books built same way" value="63" />
+          <Sep />
+          <Stat label="Royalties last month" value="₹1,16,000" />
+          <Sep />
+          <Stat label="Hours touched" value="~ 0" />
+        </div>
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @media (max-width: 1100px) {
+              .skillies-gallery-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+              }
+            }
+            @media (max-width: 640px) {
+              .skillies-gallery-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 14px !important;
+              }
+              .skillies-gallery-stats {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+                text-align: center !important;
+              }
+              .skillies-gallery-stats .skillies-stat-sep {
+                display: none !important;
+              }
+            }
+          `,
+        }}
+      />
+    </section>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.3em",
+          textTransform: "uppercase",
+          color: "rgba(255,255,255,0.45)",
+          fontWeight: 700,
+          margin: "0 0 6px",
+          fontFamily: "Arial, sans-serif",
+        }}
+      >
+        {label}
+      </p>
+      <p
+        style={{
+          fontFamily: "'Instrument Serif', Georgia, serif",
+          fontSize: 28,
+          fontWeight: 400,
+          color: GOLD_LIGHT,
+          margin: 0,
+          letterSpacing: "-0.015em",
+          lineHeight: 1,
+        }}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function Sep() {
+  return (
+    <div
+      aria-hidden
+      className="skillies-stat-sep"
+      style={{
+        width: 1,
+        height: 36,
+        background: "rgba(255,255,255,0.1)",
+      }}
+    />
   );
 }
