@@ -20,15 +20,14 @@ const COLUMNS: Col[] = [
     ],
   },
   {
-    kicker: "Learn · Teach",
+    kicker: "The Batch",
     items: [
-      ["KDP Mastery · 50-day cohort", "/#program"],
-      ["Private Mentorship · 3 seats", "/mentorship"],
+      ["The Skillies Batch · 20 seats", "/program"],
+      ["Book consultation · ₹4,999", "/consultation"],
+      ["Apply on WhatsApp", "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20apply%20for%20the%20Skillies%20Batch.%20My%20name%20is%20"],
       ["Free · AI Avatar Playbook", "/playbook"],
       ["Free · ChatGPT Business Playbook", "/chatgpt-business"],
-      ["Course catalog", "/courses"],
-      ["Live income dashboard", "/dashboard"],
-      ["Sign in · Student portal", "/login"],
+      ["Sign in · Alumni portal", "/login"],
     ],
   },
   {

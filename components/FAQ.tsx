@@ -18,8 +18,8 @@ const faqs = [
     a: "A minimum of 5 hours per day for the duration of the program. This is not a side hobby — it's a real business. The students who put in the hours are the ones who see real results.",
   },
   {
-    q: "Is the refund guarantee real?",
-    a: "Yes. If you finish the 50-day cohort, follow the exact Skillies.AI workflow, and keep publishing 2 hrs/day for 6 months — and your KDP royalties still haven't hit ₹35,000 (i.e. you haven't made back the cohort fee) — we refund your program fee minus whatever Amazon has already paid you. It's in the signed agreement.",
+    q: "Is the alignment real? What if I don't earn?",
+    a: "Yes. The Skillies Batch model means you pay ₹50,000 upfront — and the remaining ₹4,50,000 is collected only after your KDP earnings cross ₹3,00,000/month. If you don't hit that trigger, the ISA never activates, you owe nothing more, and you keep all training, materials, and alumni access. The structure is in the signed ISA contract, with a hard cap at ₹4,50,000 ISA collection (₹5,00,000 total programme fee, never more).",
   },
   {
     q: "What if Amazon bans my account?",
@@ -31,15 +31,15 @@ const faqs = [
   },
   {
     q: "Is Skillies.AI just about KDP books?",
-    a: "No — KDP is one track, not the whole company. Skillies.AI does two things: teaches AI skills to students who want to earn real money, and builds AI systems for businesses that can't wait. KDP is the proof — 63 books, ₹1,16,000 last month, no one touching them — but the new tracks through 2026 cover AI-assisted marketing, Etsy printables, agent-built software, and done-for-you automation for local businesses. Everything is proof-backed.",
+    a: "No — KDP is the entry. The Skillies Batch teaches the publishing business end-to-end — niche research, books, covers, KDP scaling, then later Etsy printables, AI-assisted marketing, agent-built software. Alumni get every future track first. We also have a separate AI services arm building AI systems for Kerala businesses (clinics, schools, real estate, retail, hospitality). KDP is the proof point: 63 books, ₹1,16,000 last month, automated.",
   },
   {
     q: "Why you? Why this school?",
     a: "I'm a working English teacher in Malappuram and a quiet researcher on the side. I've been testing AI income workflows since 2020 — uHRS (Microsoft), then KDP, now video and agents. I don't dress up numbers. I build the tools I teach with. If you want polished guru-branding, I'm the wrong school. If you want a teacher who still shows their working, I'm your guy.",
   },
   {
-    q: "What happens after the 50 days?",
-    a: "You keep publishing. The skills, the workflows, the AI prompts, the cover templates — yours forever. Your KDP account and royalty stream belong to you. You also get into the alumni WhatsApp group, so when the next course drops (video, Etsy, Meta ads), you hear about it first.",
+    q: "What happens after the in-person month?",
+    a: "You go home and start publishing daily for 2 months — that's the earning ramp. Weekly WhatsApp check-ins with Ehsan, monthly optional in-person catchups in Malappuram. Once your earnings cross ₹3L+/month, ISA activates. Lifetime alumni community access — when the next Skillies course drops (Etsy, Meta ads, agents), alumni get first access.",
   },
 ];
 

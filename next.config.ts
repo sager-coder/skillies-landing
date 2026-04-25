@@ -45,6 +45,26 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  /**
+   * Old offerings (workshop / mentorship / cheap cohort / online courses /
+   * student dashboard) were retired when Skillies pivoted to the single
+   * 20-student in-person Batch model. Redirect everyone to /program so
+   * inbound links from old ads, IG bio, etc. still land somewhere useful.
+   */
+  async redirects() {
+    return [
+      { source: "/workshop", destination: "/program", permanent: true },
+      { source: "/workshop/:path*", destination: "/program", permanent: true },
+      { source: "/mentorship", destination: "/program", permanent: true },
+      { source: "/mentorship/:path*", destination: "/program", permanent: true },
+      { source: "/courses", destination: "/program", permanent: true },
+      { source: "/courses/:path*", destination: "/program", permanent: true },
+      { source: "/dashboard", destination: "/program", permanent: true },
+      { source: "/dashboard/:path*", destination: "/program", permanent: true },
+      { source: "/learn", destination: "/program", permanent: true },
+      { source: "/learn/:path*", destination: "/program", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

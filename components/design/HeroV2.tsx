@@ -772,12 +772,12 @@ export default function HeroV2() {
                 lineHeight: 1.65,
               }}
             >
-              Skillies.AI does two things. We build AI systems for businesses that need to move faster, and we teach AI skills to students who want to earn real money. Last month the books we published on Amazon KDP paid ₹1,16,000 without anyone touching them in six. One rule both sides: we only teach or ship what we’ve made money with.
+              Skillies does two things. We run one batch a year — 20 students, in-person Malappuram — where you pay ₹50,000 upfront and the rest only when you earn ₹3L+/mo. And we install AI systems for Kerala businesses that need to move faster. The books we published on Amazon KDP paid ₹1,16,000 last month without anyone touching them in six. We only teach or ship what we&rsquo;ve made money with.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <PrimaryButton href="/workshop">Join the Kerala Tour · ₹999</PrimaryButton>
-              <SecondaryButton href="#program">See the 50-day program</SecondaryButton>
+              <PrimaryButton href="/program">Apply for the Batch · 20 seats</PrimaryButton>
+              <SecondaryButton href="/consultation">Book consultation · ₹4,999</SecondaryButton>
             </div>
 
             <p
