@@ -34,8 +34,10 @@ export default function WorkshopPage() {
       <TopNav cta={{ href: "#reserve", label: "Reserve · ₹1,999" }} />
 
       <Hero />
+      <Outcomes />
       <Wedge />
       <DayStructure />
+      <Proof />
       <Selection />
       <Pricing />
       <Logistics />
@@ -62,7 +64,20 @@ function Hero() {
         overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 1120, margin: "0 auto", position: "relative" }}>
+      {/* Subtle grain · adds texture without dominating */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.04,
+          mixBlendMode: "overlay",
+          pointerEvents: "none",
+          backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' seed='13'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")`,
+        }}
+      />
+
+      <div style={{ maxWidth: 1180, margin: "0 auto", position: "relative" }}>
         <div
           style={{
             display: "flex",
@@ -85,119 +100,134 @@ function Hero() {
           <span>Sun · May 17 · Malappuram Expo · 70 seats</span>
         </div>
 
-        <h1
+        <div
+          className="skillies-hero-grid"
           style={{
-            margin: 0,
-            fontWeight: 900,
-            fontSize: "clamp(46px, 6.2vw, 92px)",
-            letterSpacing: "-0.04em",
-            lineHeight: 0.96,
-            color: "white",
-            maxWidth: 1000,
+            display: "grid",
+            gridTemplateColumns: "1.25fr 1fr",
+            gap: 56,
+            alignItems: "center",
           }}
         >
-          One day. ₹1,999.
-          <br />
-          <em
-            style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: GOLD_LIGHT,
-            }}
-          >
-            The selection day
-          </em>
-          <br />
-          for the Skillies Batch.
-        </h1>
-
-        <p
-          style={{
-            fontSize: 20,
-            color: "rgba(255,255,255,0.75)",
-            maxWidth: 760,
-            margin: "32px 0 22px",
-            lineHeight: 1.6,
-          }}
-        >
-          70 people. Six hours. Live with Ehsan in one room. You publish a
-          real KDP book before the day ends — and at sunset, 25 of you walk
-          out invited to apply for the Skillies Batch (₹50,000 + ISA).
-        </p>
-
-        <p
-          style={{
-            fontFamily: "'Instrument Serif', Georgia, serif",
-            fontStyle: "italic",
-            fontSize: 22,
-            color: GOLD_LIGHT,
-            margin: "0 0 40px",
-            lineHeight: 1.4,
-            maxWidth: 760,
-          }}
-        >
-          Even the 45 we don&rsquo;t pick walk out with a published book and
-          the playbook. Nobody loses their day.
-        </p>
-
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <a
-            href="#reserve"
-            style={{
-              padding: "20px 36px",
-              background: RED,
-              color: "white",
-              textDecoration: "none",
-              borderRadius: 999,
-              fontSize: 17,
-              fontWeight: 700,
-              letterSpacing: "0.02em",
-              boxShadow: "0 20px 44px rgba(198,40,40,0.34)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            Reserve Early Bird · ₹1,999
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {/* LEFT · headline + copy */}
+          <div>
+            <h1
+              style={{
+                margin: 0,
+                fontWeight: 900,
+                fontSize: "clamp(46px, 6.2vw, 92px)",
+                letterSpacing: "-0.04em",
+                lineHeight: 0.96,
+                color: "white",
+              }}
             >
-              <path d="M17 8l4 4-4 4M3 12h18" />
-            </svg>
-          </a>
-          <Link
-            href="/program"
-            style={{
-              padding: "20px 28px",
-              background: "transparent",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: 999,
-              fontSize: 15,
-              fontWeight: 600,
-              border: "1.5px solid rgba(255,255,255,0.22)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            See what the Batch actually is →
-          </Link>
+              One day. ₹1,999.
+              <br />
+              <em
+                style={{
+                  fontFamily: "'Instrument Serif', Georgia, serif",
+                  fontWeight: 400,
+                  fontStyle: "italic",
+                  color: GOLD_LIGHT,
+                }}
+              >
+                The selection day
+              </em>
+              <br />
+              for the Skillies Batch.
+            </h1>
+
+            <p
+              style={{
+                fontSize: 19,
+                color: "rgba(255,255,255,0.75)",
+                margin: "32px 0 22px",
+                lineHeight: 1.6,
+                maxWidth: 580,
+              }}
+            >
+              70 people. Six hours. Live with Ehsan in one room. You build a
+              real KDP book + cover before the day ends — and at sunset, 25 of you
+              walk out invited to apply for the Skillies Batch (₹50,000 + ISA).
+            </p>
+
+            <p
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontSize: 22,
+                color: GOLD_LIGHT,
+                margin: "0 0 40px",
+                lineHeight: 1.4,
+                maxWidth: 580,
+              }}
+            >
+              Even the 45 we don&rsquo;t pick walk out with a published book and
+              the playbook. Nobody loses their day.
+            </p>
+
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <a
+                href="#reserve"
+                style={{
+                  padding: "20px 36px",
+                  background: RED,
+                  color: "white",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                  fontSize: 17,
+                  fontWeight: 700,
+                  letterSpacing: "0.02em",
+                  boxShadow: "0 20px 44px rgba(198,40,40,0.34)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                Reserve Early Bird · ₹1,999
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M17 8l4 4-4 4M3 12h18" />
+                </svg>
+              </a>
+              <Link
+                href="/program"
+                style={{
+                  padding: "20px 28px",
+                  background: "transparent",
+                  color: "white",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                  fontSize: 15,
+                  fontWeight: 600,
+                  border: "1.5px solid rgba(255,255,255,0.22)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                See the Batch →
+              </Link>
+            </div>
+          </div>
+
+          {/* RIGHT · stylised book stack visual */}
+          <BookStackVisual />
         </div>
 
         {/* Numbers row */}
         <div
           style={{
-            marginTop: 64,
-            padding: "24px 28px",
+            marginTop: 80,
+            padding: "26px 30px",
             borderRadius: 18,
             background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.08)",
@@ -253,6 +283,12 @@ function Hero() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
+            @media (max-width: 960px) {
+              .skillies-hero-grid {
+                grid-template-columns: 1fr !important;
+                gap: 48px !important;
+              }
+            }
             @media (max-width: 860px) {
               .skillies-workshop-numbers {
                 grid-template-columns: 1fr 1fr !important;
@@ -433,33 +469,39 @@ function DayStructure() {
   const blocks = [
     {
       time: "10:00 – 11:30",
-      title: "Niche · The first hour",
-      body: "We open Amazon together. You see live which niches actually pay in 2026 and which are saturated. By the end of 90 minutes you&rsquo;ve picked a niche with proven demand for your first book.",
+      icon: "📖",
+      title: "Build the book · Part 1",
+      body: "We open Claude together. You see exactly the prompts Ehsan uses to generate spot-the-difference scenes for a real KDP book. By 11:30 the interior is taking shape on your laptop.",
     },
     {
       time: "11:30 – 13:00",
-      title: "Book + Cover · Build it in the room",
-      body: "Claude generates the spot-the-difference scenes. Canva lays them out. You curate. We&rsquo;re reviewing each others&rsquo; books in real time. By 1 PM you have a ready-to-upload paperback.",
+      icon: "🎨",
+      title: "Build the book · Part 2",
+      body: "Canva for layout. We arrange the scenes, fix margins, set page count, and you walk into lunch with a print-ready paperback interior on your screen.",
     },
     {
       time: "13:00 – 14:00",
+      icon: "🍴",
       title: "Lunch · Included",
       body: "Skillies hosts. Food, conversation, you start meeting the others in the room. Some of these people will be in the Batch with you.",
     },
     {
       time: "14:00 – 15:30",
-      title: "KDP · Upload + Publish",
-      body: "PAN setup, royalty preferences, pricing, keywords, categories — live screen-share with Ehsan. Before 3:30 PM, your book is uploaded and queued for Amazon&rsquo;s review.",
+      icon: "🖼️",
+      title: "Cover · Designed in the room",
+      body: "AI image prompts for the front cover. Canva for typography and back cover. We work cover by cover, table by table — Ehsan reviewing yours alongside the others until each one looks Amazon-thumbnail-good.",
     },
     {
       time: "15:30 – 16:30",
+      icon: "💬",
       title: "Q&A · Open table",
-      body: "Bring every question you&rsquo;ve been holding. Ehsan answers everything: niches that work in 2026, scaling from 1 to 100 books, account safety, taxes, multi-region publishing, the Batch model in detail.",
+      body: "Bring every question you&rsquo;ve been holding. Ehsan answers everything live: scaling from 1 book to 100, account safety, royalties, multi-region publishing, what the Batch actually looks like.",
     },
     {
       time: "16:30 – 17:00",
+      icon: "🎟️",
       title: "Selection · The 25",
-      body: "Closed door. Ehsan reviews who&rsquo;s in the room and selects up to 25 people he wants to take into the Batch. Selected attendees get a printed offer letter on the way out. Unselected attendees get the alumni playbook PDF and an email when the next workshop is announced.",
+      body: "Closed-door review. Ehsan picks up to 25 people for the Batch based on the work he saw, the questions you asked, and the fit he felt. Selected attendees get a printed offer letter on the way out. Unselected attendees get the playbook PDF and the priority list for the next workshop.",
     },
   ];
   return (
@@ -523,39 +565,69 @@ function DayStructure() {
             <article
               key={i}
               style={{
-                padding: "26px 0",
+                padding: "32px 0",
                 borderTop: "1px solid rgba(255,255,255,0.08)",
                 borderBottom:
                   i === blocks.length - 1
                     ? "1px solid rgba(255,255,255,0.08)"
                     : "none",
                 display: "grid",
-                gridTemplateColumns: "180px 1fr",
-                gap: 32,
+                gridTemplateColumns: "70px 200px 1fr",
+                gap: 28,
                 alignItems: "start",
               }}
               className="skillies-day-row"
             >
-              <p
+              <div
                 style={{
-                  fontFamily: "'Instrument Serif', Georgia, serif",
-                  fontStyle: "italic",
-                  fontSize: 22,
-                  color: GOLD_LIGHT,
-                  margin: 0,
-                  letterSpacing: "-0.01em",
-                  lineHeight: 1.1,
+                  width: 56,
+                  height: 56,
+                  borderRadius: 14,
+                  background: "rgba(230,193,120,0.08)",
+                  border: "1px solid rgba(230,193,120,0.22)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 26,
+                  flexShrink: 0,
                 }}
               >
-                {b.time}
-              </p>
+                <span aria-hidden>{b.icon}</span>
+              </div>
+              <div>
+                <p
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    color: "rgba(255,255,255,0.45)",
+                    fontWeight: 700,
+                    margin: "0 0 6px",
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")} of 06
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontStyle: "italic",
+                    fontSize: 22,
+                    color: GOLD_LIGHT,
+                    margin: 0,
+                    letterSpacing: "-0.01em",
+                    lineHeight: 1.1,
+                  }}
+                >
+                  {b.time}
+                </p>
+              </div>
               <div>
                 <h3
                   style={{
-                    fontSize: 21,
+                    fontSize: 22,
                     fontWeight: 700,
                     color: "white",
-                    margin: "0 0 8px",
+                    margin: "0 0 10px",
                     letterSpacing: "-0.015em",
                   }}
                 >
@@ -579,10 +651,18 @@ function DayStructure() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            @media (max-width: 760px) {
+            @media (max-width: 860px) {
               .skillies-day-row {
-                grid-template-columns: 1fr !important;
-                gap: 8px !important;
+                grid-template-columns: auto 1fr !important;
+                gap: 18px !important;
+                align-items: center !important;
+              }
+              .skillies-day-row > div:nth-child(2) {
+                grid-column: 2 !important;
+              }
+              .skillies-day-row > div:nth-child(3) {
+                grid-column: 1 / -1 !important;
+                margin-top: 4px !important;
               }
             }
           `,
@@ -1486,6 +1566,651 @@ function FinalCTA() {
           </span>
         </p>
       </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* BOOK STACK · hero side visual                                            */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function BookStackVisual() {
+  // Three stylised book covers stacked at slight angles, suggesting
+  // "the books you'll publish." Pure CSS / SVG · no external assets.
+  return (
+    <div
+      className="skillies-book-stack"
+      style={{
+        position: "relative",
+        width: "100%",
+        aspectRatio: "1 / 1",
+        maxWidth: 460,
+        marginLeft: "auto",
+      }}
+      aria-hidden
+    >
+      {/* Glow behind */}
+      <div
+        style={{
+          position: "absolute",
+          inset: "10%",
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(230,193,120,0.35), transparent 60%)",
+          filter: "blur(40px)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Back cover · subtle, tilted left */}
+      <BookCover
+        style={{
+          position: "absolute",
+          left: "8%",
+          top: "12%",
+          width: "55%",
+          aspectRatio: "5 / 7",
+          transform: "rotate(-9deg)",
+          opacity: 0.75,
+          background:
+            "linear-gradient(135deg, #2A1F08 0%, #5A3F1A 100%)",
+          borderColor: "rgba(230,193,120,0.4)",
+        }}
+        title="Book 02"
+        sub="₹ earning"
+        accent={GOLD}
+      />
+
+      {/* Middle cover · slight right tilt */}
+      <BookCover
+        style={{
+          position: "absolute",
+          right: "10%",
+          top: "8%",
+          width: "55%",
+          aspectRatio: "5 / 7",
+          transform: "rotate(7deg)",
+          opacity: 0.85,
+          background:
+            "linear-gradient(135deg, #1A0606 0%, #5C1818 100%)",
+          borderColor: "rgba(239,107,107,0.5)",
+        }}
+        title="Book 03"
+        sub="On Amazon"
+        accent="#EF6B6B"
+      />
+
+      {/* Front cover · the hero · this is "your book" */}
+      <BookCover
+        style={{
+          position: "absolute",
+          left: "22%",
+          top: "22%",
+          width: "60%",
+          aspectRatio: "5 / 7",
+          transform: "rotate(-2deg)",
+          background: "linear-gradient(135deg, #FAF5EB 0%, #F0E8D8 100%)",
+          color: "#1A1A1A",
+          borderColor: "rgba(26,26,26,0.18)",
+          boxShadow:
+            "0 50px 100px rgba(0,0,0,0.55), 0 0 0 1px rgba(230,193,120,0.25)",
+        }}
+        title="Your Book 01"
+        sub="Published · May 17, 2026"
+        accent={RED}
+        flagship
+      />
+
+      {/* Sticker · "live royalties" */}
+      <div
+        style={{
+          position: "absolute",
+          right: "6%",
+          bottom: "12%",
+          padding: "10px 14px",
+          background: GOLD_LIGHT,
+          color: "#2a1f08",
+          borderRadius: 999,
+          fontSize: 11,
+          fontWeight: 800,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          transform: "rotate(8deg)",
+          boxShadow: "0 12px 28px rgba(230,193,120,0.3)",
+        }}
+      >
+        ★ Live royalties
+      </div>
+    </div>
+  );
+}
+
+function BookCover({
+  style,
+  title,
+  sub,
+  accent,
+  flagship = false,
+}: {
+  style: React.CSSProperties;
+  title: string;
+  sub: string;
+  accent: string;
+  flagship?: boolean;
+}) {
+  const fg = flagship ? "#1A1A1A" : "rgba(255,255,255,0.85)";
+  const subFg = flagship ? "rgba(26,26,26,0.55)" : "rgba(255,255,255,0.55)";
+  return (
+    <div
+      style={{
+        ...style,
+        borderRadius: 8,
+        border: `1px solid ${style.borderColor || "rgba(255,255,255,0.15)"}`,
+        padding: "14px 16px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        boxShadow: flagship
+          ? style.boxShadow
+          : "0 24px 48px rgba(0,0,0,0.4)",
+      }}
+    >
+      {/* Top accent strip */}
+      <div
+        style={{
+          height: 3,
+          width: "32%",
+          background: accent,
+          borderRadius: 999,
+          marginBottom: 8,
+        }}
+      />
+      <div style={{ flex: 1 }}>
+        <p
+          style={{
+            fontSize: 9,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: subFg,
+            fontWeight: 700,
+            margin: "0 0 6px",
+          }}
+        >
+          Skillies · KDP
+        </p>
+        <p
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontSize: flagship ? 22 : 16,
+            fontStyle: "italic",
+            fontWeight: 400,
+            color: fg,
+            margin: 0,
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+          }}
+        >
+          {title}
+        </p>
+      </div>
+      <div>
+        <div
+          style={{
+            height: 1,
+            background: flagship ? "rgba(26,26,26,0.15)" : "rgba(255,255,255,0.12)",
+            marginBottom: 8,
+          }}
+        />
+        <p
+          style={{
+            fontSize: 9,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: accent,
+            fontWeight: 700,
+            margin: 0,
+          }}
+        >
+          {sub}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* OUTCOMES · what you walk out with                                        */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function Outcomes() {
+  const items = [
+    {
+      n: "01",
+      icon: "📕",
+      title: "A real published book",
+      body: "Built in the room with your hands. Live on Amazon KDP under your name. Earning royalties from day one. Yours forever — even if you don&rsquo;t get the Batch offer.",
+      accent: GOLD,
+    },
+    {
+      n: "02",
+      icon: "🎟️",
+      title: "A shot at the Batch",
+      body: "25 of 70 attendees walk out invited to apply for the Skillies Batch · ₹50,000 + ISA · 1 month intensive in Malappuram. The path Ehsan picks for the people he&rsquo;ll partner with for 6 months.",
+      accent: RED,
+    },
+    {
+      n: "03",
+      icon: "📚",
+      title: "The full Skillies playbook",
+      body: "The exact book + cover system Ehsan uses to earn ₹1,16,000/month from 63 books. PDF, prompts, Canva templates, KDP setup walkthrough. Yours to keep, regardless of selection.",
+      accent: "#7A9A7A",
+    },
+  ];
+  return (
+    <section
+      style={{
+        padding: "120px 24px",
+        background: CREAM,
+        color: CHARCOAL,
+      }}
+    >
+      <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <p
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: RED,
+            fontWeight: 700,
+            margin: "0 0 16px",
+            textAlign: "center",
+          }}
+        >
+          § By 5 PM on May 17 · you walk out with
+        </p>
+        <h2
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontSize: "clamp(40px, 5.5vw, 68px)",
+            fontWeight: 400,
+            letterSpacing: "-0.025em",
+            lineHeight: 1.05,
+            margin: "0 auto 56px",
+            color: CHARCOAL,
+            textAlign: "center",
+            maxWidth: 880,
+          }}
+        >
+          Three things every attendee leaves with.{" "}
+          <em style={{ fontStyle: "italic", color: RED }}>
+            Two are the prize.
+          </em>{" "}
+          One is the door.
+        </h2>
+
+        <div
+          className="skillies-outcomes-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 22,
+          }}
+        >
+          {items.map((it) => (
+            <article
+              key={it.n}
+              style={{
+                position: "relative",
+                padding: "32px 30px 36px",
+                borderRadius: 22,
+                background: "white",
+                border: "1px solid rgba(26,26,26,0.08)",
+                boxShadow: "0 28px 56px rgba(0,0,0,0.04)",
+                overflow: "hidden",
+              }}
+            >
+              {/* Top accent bar */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 4,
+                  background: it.accent,
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 22,
+                }}
+              >
+                <div
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 14,
+                    background: "rgba(26,26,26,0.04)",
+                    border: "1px solid rgba(26,26,26,0.08)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 28,
+                  }}
+                >
+                  <span aria-hidden>{it.icon}</span>
+                </div>
+                <span
+                  style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontStyle: "italic",
+                    fontSize: 36,
+                    color: it.accent,
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {it.n}
+                </span>
+              </div>
+              <h3
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: CHARCOAL,
+                  letterSpacing: "-0.015em",
+                  margin: "0 0 12px",
+                  lineHeight: 1.2,
+                }}
+              >
+                {it.title}
+              </h3>
+              <p
+                style={{
+                  fontSize: 15,
+                  color: "#4B5563",
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+                dangerouslySetInnerHTML={{ __html: it.body }}
+              />
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @media (max-width: 880px) {
+              .skillies-outcomes-grid {
+                grid-template-columns: 1fr !important;
+              }
+            }
+          `,
+        }}
+      />
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* PROOF · Ehsan's own KDP receipt                                          */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function Proof() {
+  return (
+    <section
+      style={{
+        padding: "120px 24px",
+        background: CREAM,
+        color: CHARCOAL,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Decorative accent */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 80% 20%, rgba(201,162,78,0.12), transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(198,40,40,0.06), transparent 50%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative" }}>
+        <div
+          className="skillies-proof-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 0.85fr",
+            gap: 56,
+            alignItems: "center",
+          }}
+        >
+          {/* LEFT · the quote */}
+          <div>
+            <p
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.32em",
+                textTransform: "uppercase",
+                color: RED,
+                fontWeight: 700,
+                margin: "0 0 18px",
+              }}
+            >
+              § Why I built this · Ehsan
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: "clamp(34px, 4.6vw, 60px)",
+                fontWeight: 400,
+                letterSpacing: "-0.02em",
+                lineHeight: 1.1,
+                margin: "0 0 24px",
+                color: CHARCOAL,
+              }}
+            >
+              &ldquo;I&rsquo;ve published 63 books on Amazon. They paid me{" "}
+              <em style={{ fontStyle: "italic", color: RED }}>
+                ₹1,16,000 last month — without me touching them.
+              </em>{" "}
+              I&rsquo;m teaching the same exact method.&rdquo;
+            </h2>
+            <p
+              style={{
+                fontSize: 16,
+                color: "#4B5563",
+                lineHeight: 1.7,
+                margin: "0 0 8px",
+              }}
+            >
+              Two years of research. 63 books published. ₹8,71,982 earned to
+              date. Same prompts, same Canva templates, same cover system —
+              compressed into one Sunday in Malappuram.
+            </p>
+            <p
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontStyle: "italic",
+                fontSize: 16,
+                color: GOLD,
+                margin: 0,
+                lineHeight: 1.6,
+              }}
+            >
+              You&rsquo;ll leave with one book live on Amazon. The ones we
+              pick for the Batch leave with the path to all 63.
+            </p>
+          </div>
+
+          {/* RIGHT · receipt-style card */}
+          <div
+            style={{
+              position: "relative",
+              padding: "30px 32px 32px",
+              borderRadius: 22,
+              background: "white",
+              border: "1.5px dashed rgba(201,162,78,0.45)",
+              boxShadow: "0 30px 60px rgba(0,0,0,0.06)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 18,
+                paddingBottom: 16,
+                borderBottom: "1px dashed rgba(26,26,26,0.15)",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 10,
+                  letterSpacing: "0.28em",
+                  textTransform: "uppercase",
+                  color: "#9CA3AF",
+                  fontWeight: 700,
+                  margin: 0,
+                }}
+              >
+                Last month · KDP receipt
+              </p>
+              <p
+                style={{
+                  fontSize: 10,
+                  letterSpacing: "0.18em",
+                  fontWeight: 700,
+                  color: "#9CA3AF",
+                  fontFamily: "ui-monospace, Menlo, monospace",
+                  margin: 0,
+                }}
+              >
+                MAR · 2026
+              </p>
+            </div>
+            <p
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontWeight: 400,
+                fontSize: 64,
+                letterSpacing: "-0.03em",
+                lineHeight: 1,
+                color: CHARCOAL,
+                margin: "0 0 8px",
+              }}
+            >
+              ₹1,16,000
+            </p>
+            <p
+              style={{
+                fontSize: 14,
+                color: "#6B7280",
+                margin: "0 0 22px",
+                lineHeight: 1.55,
+              }}
+            >
+              63 books · zero new publishes in 6 months · all royalties
+              automated · Indian bank account · INR direct deposit
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 12,
+                paddingTop: 18,
+                borderTop: "1px dashed rgba(26,26,26,0.15)",
+              }}
+            >
+              <div>
+                <p
+                  style={{
+                    fontSize: 9,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    color: "#9CA3AF",
+                    fontWeight: 700,
+                    margin: "0 0 4px",
+                  }}
+                >
+                  Total earned
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontSize: 22,
+                    color: CHARCOAL,
+                    margin: 0,
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  ₹8,71,982
+                </p>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <p
+                  style={{
+                    fontSize: 9,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    color: "#9CA3AF",
+                    fontWeight: 700,
+                    margin: "0 0 4px",
+                  }}
+                >
+                  Hours worked
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontSize: 22,
+                    color: "#3D5A3D",
+                    margin: 0,
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  ~ 0
+                </p>
+              </div>
+            </div>
+
+            <p
+              style={{
+                marginTop: 20,
+                fontSize: 11,
+                color: "#9CA3AF",
+                fontStyle: "italic",
+                fontFamily: "'Instrument Serif', serif",
+                lineHeight: 1.5,
+              }}
+            >
+              Verifiable. We open the dashboard live in the room.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @media (max-width: 880px) {
+              .skillies-proof-grid {
+                grid-template-columns: 1fr !important;
+                gap: 36px !important;
+              }
+            }
+          `,
+        }}
+      />
     </section>
   );
 }
