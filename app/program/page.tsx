@@ -6,11 +6,11 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 export const metadata = {
   title: "The Skillies Batch · 25 students · Malappuram",
   description:
-    "One batch. 25 seats. ₹50,000 upfront. The remainder paid only when you earn ₹3,00,000+ a month. In-person in Malappuram. By application only.",
+    "One batch. 25 seats. ₹50,000 upfront. The remainder paid only when you earn ₹1,00,000+ a month. In-person in Malappuram. By application only.",
   openGraph: {
     title: "The Skillies Batch · 25 students · Malappuram",
     description:
-      "₹50,000 upfront. ₹4,50,000 paid only when you earn ₹3L+/month. In-person training in Malappuram. By application only — 25 seats.",
+      "₹50,000 upfront. ₹4,50,000 paid only when you earn ₹1L+/month. In-person training in Malappuram. By application only — 25 seats.",
   },
 };
 
@@ -124,7 +124,7 @@ function Hero() {
         >
           Twenty-five students. One concurrent batch. In-person in Malappuram. You
           pay ₹50,000 upfront — the remaining ₹4,50,000 is collected only
-          after you start earning ₹3,00,000+ a month from your own
+          after you start earning ₹1,00,000+ a month from your own
           publishing business.
         </p>
 
@@ -211,7 +211,7 @@ function Hero() {
           {[
             { n: "20", l: "students per batch · ever" },
             { n: "₹50K", l: "to start · all you owe upfront" },
-            { n: "₹3L+/mo", l: "earnings before ISA begins" },
+            { n: "₹1L+/mo", l: "earnings before ISA begins" },
             { n: "1+2", l: "months learning + earning ramp" },
           ].map((t, i) => (
             <div
@@ -385,10 +385,10 @@ function Wedge() {
                 lineHeight: 1.55,
               }}
             >
-              <li>₹50,000 upfront · ₹4,50,000 only when you earn ₹3L+/mo</li>
+              <li>₹50,000 upfront · ₹4,50,000 only when you earn ₹1L+/mo</li>
               <li>25 students per batch · in-person Malappuram</li>
               <li>Live with Ehsan in the same room for 1 month</li>
-              <li>If you don&rsquo;t hit ₹3L+/mo, you owe nothing more</li>
+              <li>If you don&rsquo;t hit ₹1L+/mo, you owe nothing more</li>
               <li>Alumni community for life · we keep helping</li>
             </ul>
           </div>
@@ -491,7 +491,7 @@ function Model() {
           }}
         >
           You pay ₹50,000 to enrol. After your training, you start publishing.
-          Once your monthly KDP earnings cross ₹3,00,000 for the first time,
+          Once your monthly KDP earnings cross ₹1,00,000 for the first time,
           the Income Share Agreement (ISA) activates — you pay back the
           remaining ₹4,50,000 in monthly instalments out of your earnings.
           Total cap: ₹5,00,000 ever. Nothing more.
@@ -622,7 +622,7 @@ function Model() {
                 lineHeight: 1.05,
               }}
             >
-              ₹3,00,000/mo
+              ₹1,00,000/mo
             </p>
             <p
               style={{
@@ -633,7 +633,7 @@ function Model() {
               }}
             >
               The ISA only activates after your monthly KDP royalties cross
-              ₹3,00,000. Until then you pay nothing more.
+              ₹1,00,000. Until then you pay nothing more.
             </p>
             <p
               style={{
@@ -1024,7 +1024,7 @@ function Curriculum() {
     {
       tag: "Months 2–3 · Async + check-ins",
       title: "The earning ramp",
-      body: "You&rsquo;re back home, publishing on your own. Daily target: 2 books shipped. Weekly check-ins on WhatsApp. Monthly in-person catchup in Malappuram (optional). The goal: 30–50 books live by end of month 3, royalties compounding, your earnings climbing toward the ₹3L+/mo trigger.",
+      body: "You&rsquo;re back home, publishing on your own. Daily target: 2 books shipped. Weekly check-ins on WhatsApp. Monthly in-person catchup in Malappuram (optional). The goal: 30–50 books live by end of month 3, royalties compounding, your earnings climbing toward the ₹1L+/mo trigger.",
       bullets: [
         "Daily WhatsApp reviews of your books before publish",
         "Niche pivots based on real Amazon performance data",
@@ -1037,7 +1037,7 @@ function Curriculum() {
     {
       tag: "Months 4–12+ · Alumni",
       title: "The compounding phase",
-      body: "Your earnings ramp to and past ₹3L+/mo. ISA payments begin. You stay in the alumni community for life — newer batches see you, you see them, the network compounds. Every new course Skillies launches (Etsy, Meta ads, agents, video), alumni get first access.",
+      body: "Your earnings ramp to and past ₹1L+/mo. ISA payments begin. You stay in the alumni community for life — newer batches see you, you see them, the network compounds. Every new course Skillies launches (Etsy, Meta ads, agents, video), alumni get first access.",
       bullets: [
         "Lifetime alumni community access (current and future batches)",
         "First access to every new Skillies course",
@@ -1346,7 +1346,7 @@ function Earnings() {
                 lineHeight: 1.1,
               }}
             >
-              ₹3,00,000+/mo
+              ₹1,00,000+/mo
             </p>
             <p
               style={{
@@ -1388,7 +1388,7 @@ function Earnings() {
             We don&rsquo;t promise specific earnings. We promise the
             methodology, the in-person training, the alumni network, and
             the ISA structure that aligns our outcome with yours. If you
-            don&rsquo;t hit ₹3L+/mo, the ISA never activates and you owe
+            don&rsquo;t hit ₹1L+/mo, the ISA never activates and you owe
             nothing more — that&rsquo;s the only guarantee we make. We hand
             you the full ISA contract 3 days before enrolment so you can
             read it slowly.
@@ -1430,7 +1430,7 @@ function PricingLadder() {
       note: "Paid at sign-up · Razorpay / UPI / NEFT",
     },
     {
-      label: "ISA · only after ₹3L+/mo earnings",
+      label: "ISA · only after ₹1L+/mo earnings",
       what: "Monthly instalments out of your earnings, capped at ₹4,50,000",
       cost: "₹4,50,000 max",
       note: "Pauses if earnings drop · 36-month max window",
@@ -1811,11 +1811,11 @@ function Fit() {
 function FAQ() {
   const faqs = [
     {
-      q: "What if I don&rsquo;t hit ₹3,00,000/month?",
+      q: "What if I don&rsquo;t hit ₹1,00,000/month?",
       a: "Then the ISA never activates. You&rsquo;ve paid the ₹50,000 enrolment fee — that&rsquo;s it, ever. No collection, no debt, no chasing. You keep all training materials, alumni access, and the books you&rsquo;ve published. We absorbed the loss because we backed you. That&rsquo;s the deal.",
     },
     {
-      q: "How is the ₹3,00,000 verified?",
+      q: "How is the ₹1,00,000 verified?",
       a: "Bank statements + KDP royalty reports, audited monthly once you&rsquo;re close to or above the trigger. The ISA contract makes this explicit — Skillies can request statements at any time, you&rsquo;re obligated to share. We don&rsquo;t pull your dashboard automatically; we trust you and audit when needed.",
     },
     {
@@ -1828,7 +1828,7 @@ function FAQ() {
     },
     {
       q: "Why only 25 students? Can&rsquo;t you take more?",
-      a: "20 is the most Ehsan can mentor in person, in one room, daily, for a full month. Above that, the in-person promise breaks. Skillies isn&rsquo;t scaling for revenue — it&rsquo;s scaling for outcomes. 20 graduates earning ₹3L+/mo each is a much louder marketing engine than 200 students earning ₹0.",
+      a: "20 is the most Ehsan can mentor in person, in one room, daily, for a full month. Above that, the in-person promise breaks. Skillies isn&rsquo;t scaling for revenue — it&rsquo;s scaling for outcomes. 20 graduates earning ₹1L+/mo each is a much louder marketing engine than 200 students earning ₹0.",
     },
     {
       q: "Why only Malappuram? Can I do this online?",

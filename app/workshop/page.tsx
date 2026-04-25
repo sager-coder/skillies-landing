@@ -28,6 +28,131 @@ const RED = "#C62828";
 const GOLD = "#C9A24E";
 const GOLD_LIGHT = "#E6C178";
 
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* PREMIUM ICON SET · custom inline SVG · no third-party dependency        */
+/* Each icon: 24x24 viewBox · 1.5px stroke · stroke-currentColor           */
+/* Replace ALL emoji on the page with these for a sharper editorial look.  */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+type IconName =
+  | "book"
+  | "layout"
+  | "fork"
+  | "frame"
+  | "chat"
+  | "ticket"
+  | "books"
+  | "star"
+  | "stamp";
+
+function Icon({
+  name,
+  size = 24,
+  color = "currentColor",
+  strokeWidth = 1.5,
+}: {
+  name: IconName;
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+}) {
+  const baseProps = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: color,
+    strokeWidth,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  switch (name) {
+    case "book":
+      // Open book · two pages
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M3 4.5h7a3 3 0 0 1 3 3v13.5" />
+          <path d="M21 4.5h-7a3 3 0 0 0-3 3v13.5" />
+          <path d="M3 4.5v14a1.5 1.5 0 0 0 1.5 1.5H10" />
+          <path d="M21 4.5v14a1.5 1.5 0 0 1-1.5 1.5H14" />
+        </svg>
+      );
+    case "layout":
+      // Two-column layout grid
+      return (
+        <svg {...baseProps} aria-hidden>
+          <rect x="3.5" y="3.5" width="7" height="17" rx="1.5" />
+          <rect x="13.5" y="3.5" width="7" height="9" rx="1.5" />
+          <rect x="13.5" y="14.5" width="7" height="6" rx="1.5" />
+        </svg>
+      );
+    case "fork":
+      // Fork + knife crossed
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M7 3v8a2 2 0 0 0 2 2v8" />
+          <path d="M9 3v8" />
+          <path d="M11 3v8" />
+          <path d="M16.5 3c-1.5 1.5-2 4-2 6.5 0 1.5 1 2.5 2 2.5v9" />
+        </svg>
+      );
+    case "frame":
+      // Picture frame with inner image marks (mountains)
+      return (
+        <svg {...baseProps} aria-hidden>
+          <rect x="3.5" y="3.5" width="17" height="17" rx="2" />
+          <circle cx="8.5" cy="9" r="1.5" />
+          <path d="M3.5 17l5-5 4 4 5-5 3 3" />
+        </svg>
+      );
+    case "chat":
+      // Speech bubble
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M21 12a8 8 0 0 1-12.5 6.6L3.5 20l1.4-5A8 8 0 1 1 21 12z" />
+          <circle cx="9" cy="12" r="0.6" fill={color} stroke="none" />
+          <circle cx="12" cy="12" r="0.6" fill={color} stroke="none" />
+          <circle cx="15" cy="12" r="0.6" fill={color} stroke="none" />
+        </svg>
+      );
+    case "ticket":
+      // Admission ticket with center perforation
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M3 9a2 2 0 0 0 0 4v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0 0-4V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z" />
+          <path d="M13 5v3" />
+          <path d="M13 11v3" />
+          <path d="M13 17v3" />
+        </svg>
+      );
+    case "books":
+      // Stack of three books
+      return (
+        <svg {...baseProps} aria-hidden>
+          <rect x="3.5" y="6.5" width="4" height="14" rx="1" />
+          <rect x="9" y="3.5" width="4" height="17" rx="1" />
+          <path d="M14.5 8l4-1 2 12.5-4 1z" />
+          <path d="M5.5 10h0M11 7h0M16 11l3-0.7" stroke={color} />
+        </svg>
+      );
+    case "star":
+      // 4-point compass star · sharper than the standard 5-point
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill={color} />
+        </svg>
+      );
+    case "stamp":
+      // Hexagonal seal/stamp with star center
+      return (
+        <svg {...baseProps} aria-hidden>
+          <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" />
+          <path d="M12 8l1.5 3 3 0.5-2.25 2 0.5 3.25L12 15l-2.75 1.75 0.5-3.25L7.5 11.5l3-0.5z" fill={color} />
+        </svg>
+      );
+  }
+}
+
 export default function WorkshopPage() {
   return (
     <main style={{ background: DARK, color: "white" }}>
@@ -466,40 +591,40 @@ function Wedge() {
 /* ═══════════════════════════════════════════════════════════════════════ */
 
 function DayStructure() {
-  const blocks = [
+  const blocks: { time: string; icon: IconName; title: string; body: string }[] = [
     {
       time: "10:00 – 11:30",
-      icon: "📖",
+      icon: "book",
       title: "Build the book · Part 1",
       body: "We open Claude together. You see exactly the prompts Ehsan uses to generate spot-the-difference scenes for a real KDP book. By 11:30 the interior is taking shape on your laptop.",
     },
     {
       time: "11:30 – 13:00",
-      icon: "🎨",
+      icon: "layout",
       title: "Build the book · Part 2",
       body: "Canva for layout. We arrange the scenes, fix margins, set page count, and you walk into lunch with a print-ready paperback interior on your screen.",
     },
     {
       time: "13:00 – 14:00",
-      icon: "🍴",
+      icon: "fork",
       title: "Lunch · Included",
       body: "Skillies hosts. Food, conversation, you start meeting the others in the room. Some of these people will be in the Batch with you.",
     },
     {
       time: "14:00 – 15:30",
-      icon: "🖼️",
+      icon: "frame",
       title: "Cover · Designed in the room",
       body: "AI image prompts for the front cover. Canva for typography and back cover. We work cover by cover, table by table — Ehsan reviewing yours alongside the others until each one looks Amazon-thumbnail-good.",
     },
     {
       time: "15:30 – 16:30",
-      icon: "💬",
+      icon: "chat",
       title: "Q&A · Open table",
       body: "Bring every question you&rsquo;ve been holding. Ehsan answers everything live: scaling from 1 book to 100, account safety, royalties, multi-region publishing, what the Batch actually looks like.",
     },
     {
       time: "16:30 – 17:00",
-      icon: "🎟️",
+      icon: "ticket",
       title: "Selection · The 25",
       body: "Closed-door review. Ehsan picks up to 25 people for the Batch based on the work he saw, the questions you asked, and the fit he felt. Selected attendees get a printed offer letter on the way out. Unselected attendees get the playbook PDF and the priority list for the next workshop.",
     },
@@ -588,11 +713,11 @@ function DayStructure() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 26,
                   flexShrink: 0,
+                  color: GOLD_LIGHT,
                 }}
               >
-                <span aria-hidden>{b.icon}</span>
+                <Icon name={b.icon} size={26} strokeWidth={1.4} />
               </div>
               <div>
                 <p
@@ -840,7 +965,7 @@ function Selection() {
           Selection isn&rsquo;t about &ldquo;best&rdquo; vs &ldquo;not good enough.&rdquo;
           It&rsquo;s about who&rsquo;s ready to dedicate one focused month to
           this, who&rsquo;s a fit for the room dynamic, and who Ehsan
-          believes he can take past ₹3L+/mo within the year. Some
+          believes he can take past ₹1L+/mo within the year. Some
           excellent humans don&rsquo;t make sense for this Batch — that&rsquo;s OK.
         </p>
       </div>
@@ -1602,177 +1727,329 @@ function BookStackVisual() {
         }}
       />
 
-      {/* Back cover · subtle, tilted left */}
+      {/* Back-most cover · gold-spine edition */}
       <BookCover
-        style={{
-          position: "absolute",
-          left: "8%",
-          top: "12%",
-          width: "55%",
-          aspectRatio: "5 / 7",
-          transform: "rotate(-9deg)",
-          opacity: 0.75,
-          background:
-            "linear-gradient(135deg, #2A1F08 0%, #5A3F1A 100%)",
-          borderColor: "rgba(230,193,120,0.4)",
+        position={{ left: "5%", top: "10%", rotate: -9, z: 1 }}
+        width="56%"
+        opacity={0.78}
+        theme={{
+          bg: "linear-gradient(135deg, #2A1F08 0%, #5A3F1A 60%, #3D2C12 100%)",
+          ink: "#F0E0B5",
+          accent: GOLD_LIGHT,
+          border: "rgba(230,193,120,0.32)",
         }}
-        title="Book 02"
-        sub="₹ earning"
-        accent={GOLD}
+        kicker="Vol. 02 · Skillies Press"
+        title="Coastal Animal Encounters"
+        subtitle="Spot the Difference · 50 puzzles"
+        author="A Skillies Production"
+        seal="No. 42"
       />
 
-      {/* Middle cover · slight right tilt */}
+      {/* Middle cover · red edition */}
       <BookCover
-        style={{
-          position: "absolute",
-          right: "10%",
-          top: "8%",
-          width: "55%",
-          aspectRatio: "5 / 7",
-          transform: "rotate(7deg)",
-          opacity: 0.85,
-          background:
-            "linear-gradient(135deg, #1A0606 0%, #5C1818 100%)",
-          borderColor: "rgba(239,107,107,0.5)",
+        position={{ right: "8%", top: "7%", rotate: 8, z: 2 }}
+        width="56%"
+        opacity={0.88}
+        theme={{
+          bg: "linear-gradient(135deg, #1A0606 0%, #5C1818 60%, #2C0A0A 100%)",
+          ink: "#FCE0E0",
+          accent: "#EF6B6B",
+          border: "rgba(239,107,107,0.42)",
         }}
-        title="Book 03"
-        sub="On Amazon"
-        accent="#EF6B6B"
+        kicker="Vol. 03 · Skillies Press"
+        title="The Forest Detective"
+        subtitle="Hidden Animals · Easy + Hard"
+        author="A Skillies Production"
+        seal="No. 51"
       />
 
-      {/* Front cover · the hero · this is "your book" */}
+      {/* Flagship · cream cover · "Your Book 01" */}
       <BookCover
-        style={{
-          position: "absolute",
-          left: "22%",
-          top: "22%",
-          width: "60%",
-          aspectRatio: "5 / 7",
-          transform: "rotate(-2deg)",
-          background: "linear-gradient(135deg, #FAF5EB 0%, #F0E8D8 100%)",
-          color: "#1A1A1A",
-          borderColor: "rgba(26,26,26,0.18)",
-          boxShadow:
-            "0 50px 100px rgba(0,0,0,0.55), 0 0 0 1px rgba(230,193,120,0.25)",
+        position={{ left: "20%", top: "20%", rotate: -2, z: 3 }}
+        width="62%"
+        opacity={1}
+        theme={{
+          bg:
+            "linear-gradient(135deg, #FCF6E5 0%, #FAF5EB 50%, #EDE2C7 100%)",
+          ink: "#1A1A1A",
+          accent: RED,
+          border: "rgba(26,26,26,0.16)",
         }}
-        title="Your Book 01"
-        sub="Published · May 17, 2026"
-        accent={RED}
+        kicker="Vol. 01 · Skillies Press"
+        title="Your Book"
+        subtitle="Published live · May 17, 2026"
+        author="By you · printed under your name"
+        seal="No. 01"
         flagship
       />
 
-      {/* Sticker · "live royalties" */}
+      {/* Premium seal · circular embossed-feel stamp */}
       <div
         style={{
           position: "absolute",
-          right: "6%",
-          bottom: "12%",
-          padding: "10px 14px",
-          background: GOLD_LIGHT,
+          right: "0%",
+          bottom: "8%",
+          width: 116,
+          height: 116,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle at 30% 30%, #F5DC9A, #D4A65A 60%, #A37226)",
           color: "#2a1f08",
-          borderRadius: 999,
-          fontSize: 11,
-          fontWeight: 800,
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          transform: "rotate(8deg)",
-          boxShadow: "0 12px 28px rgba(230,193,120,0.3)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          transform: "rotate(-12deg)",
+          boxShadow:
+            "0 14px 36px rgba(0,0,0,0.45), inset 0 0 0 2px rgba(255,255,255,0.18), inset 0 0 0 4px rgba(122,72,16,0.5)",
+          textAlign: "center",
+          fontFamily: "'Instrument Serif', Georgia, serif",
         }}
       >
-        ★ Live royalties
-      </div>
-    </div>
-  );
-}
-
-function BookCover({
-  style,
-  title,
-  sub,
-  accent,
-  flagship = false,
-}: {
-  style: React.CSSProperties;
-  title: string;
-  sub: string;
-  accent: string;
-  flagship?: boolean;
-}) {
-  const fg = flagship ? "#1A1A1A" : "rgba(255,255,255,0.85)";
-  const subFg = flagship ? "rgba(26,26,26,0.55)" : "rgba(255,255,255,0.55)";
-  return (
-    <div
-      style={{
-        ...style,
-        borderRadius: 8,
-        border: `1px solid ${style.borderColor || "rgba(255,255,255,0.15)"}`,
-        padding: "14px 16px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        boxShadow: flagship
-          ? style.boxShadow
-          : "0 24px 48px rgba(0,0,0,0.4)",
-      }}
-    >
-      {/* Top accent strip */}
-      <div
-        style={{
-          height: 3,
-          width: "32%",
-          background: accent,
-          borderRadius: 999,
-          marginBottom: 8,
-        }}
-      />
-      <div style={{ flex: 1 }}>
+        <Icon name="stamp" size={22} color="#2a1f08" strokeWidth={1.4} />
         <p
           style={{
             fontSize: 9,
             letterSpacing: "0.32em",
             textTransform: "uppercase",
-            color: subFg,
-            fontWeight: 700,
-            margin: "0 0 6px",
+            fontWeight: 800,
+            margin: "4px 0 0",
+            fontFamily: "Arial, sans-serif",
           }}
         >
-          Skillies · KDP
+          Live
         </p>
-        <p
-          style={{
-            fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: flagship ? 22 : 16,
-            fontStyle: "italic",
-            fontWeight: 400,
-            color: fg,
-            margin: 0,
-            letterSpacing: "-0.01em",
-            lineHeight: 1.15,
-          }}
-        >
-          {title}
-        </p>
-      </div>
-      <div>
-        <div
-          style={{
-            height: 1,
-            background: flagship ? "rgba(26,26,26,0.15)" : "rgba(255,255,255,0.12)",
-            marginBottom: 8,
-          }}
-        />
         <p
           style={{
             fontSize: 9,
-            letterSpacing: "0.22em",
+            letterSpacing: "0.32em",
             textTransform: "uppercase",
-            color: accent,
-            fontWeight: 700,
+            fontWeight: 800,
             margin: 0,
+            fontFamily: "Arial, sans-serif",
           }}
         >
-          {sub}
+          Royalties
         </p>
+      </div>
+    </div>
+  );
+}
+
+type BookPosition = {
+  left?: string;
+  right?: string;
+  top: string;
+  rotate: number;
+  z: number;
+};
+
+type BookTheme = {
+  bg: string;
+  ink: string;
+  accent: string;
+  border: string;
+};
+
+/**
+ * Premium book-cover element. Three of these stacked at angles compose
+ * the hero visual on /workshop. Each cover renders like a real KDP
+ * paperback — with kicker, display-serif title, ornament, byline, and
+ * edition seal — instead of a placeholder card.
+ */
+function BookCover({
+  position,
+  width,
+  opacity = 1,
+  theme,
+  kicker,
+  title,
+  subtitle,
+  author,
+  seal,
+  flagship = false,
+}: {
+  position: BookPosition;
+  width: string;
+  opacity?: number;
+  theme: BookTheme;
+  kicker: string;
+  title: string;
+  subtitle: string;
+  author: string;
+  seal: string;
+  flagship?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: position.left,
+        right: position.right,
+        top: position.top,
+        width,
+        aspectRatio: "5 / 7",
+        transform: `rotate(${position.rotate}deg)`,
+        zIndex: position.z,
+        opacity,
+        borderRadius: 6,
+        background: theme.bg,
+        color: theme.ink,
+        border: `1px solid ${theme.border}`,
+        padding: "20px 22px",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: flagship
+          ? "0 60px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(230,193,120,0.18)"
+          : "0 32px 60px rgba(0,0,0,0.5)",
+        overflow: "hidden",
+      }}
+    >
+      {/* Inner double-line frame · classic book-cover ornament */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: "10px",
+          border: `1px solid ${flagship ? "rgba(26,26,26,0.14)" : "rgba(255,255,255,0.12)"}`,
+          borderRadius: 3,
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: "13px",
+          border: `1px solid ${flagship ? "rgba(26,26,26,0.08)" : "rgba(255,255,255,0.06)"}`,
+          borderRadius: 2,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Top kicker · imprint */}
+      <p
+        style={{
+          fontSize: 9,
+          letterSpacing: "0.32em",
+          textTransform: "uppercase",
+          color: theme.accent,
+          fontWeight: 700,
+          margin: "8px 0 0",
+          position: "relative",
+          fontFamily: "Arial, sans-serif",
+        }}
+      >
+        {kicker}
+      </p>
+
+      {/* Body · title + subtitle */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}>
+        {/* Decorative ornament · fleur-style center motif */}
+        <div
+          aria-hidden
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            margin: "0 0 14px",
+            opacity: flagship ? 0.7 : 0.55,
+          }}
+        >
+          <span
+            style={{
+              flex: 1,
+              height: 1,
+              background: theme.accent,
+              maxWidth: 32,
+              opacity: 0.5,
+            }}
+          />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.accent} strokeWidth="1.4" strokeLinecap="round">
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3" />
+          </svg>
+          <span
+            style={{
+              flex: 1,
+              height: 1,
+              background: theme.accent,
+              maxWidth: 32,
+              opacity: 0.5,
+            }}
+          />
+        </div>
+
+        <h3
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontSize: flagship ? 26 : 19,
+            fontWeight: 400,
+            color: theme.ink,
+            margin: "0 0 10px",
+            letterSpacing: "-0.015em",
+            lineHeight: 1.05,
+            textAlign: "center",
+          }}
+        >
+          {title}
+        </h3>
+        <p
+          style={{
+            fontSize: flagship ? 11 : 9,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            color: flagship ? "rgba(26,26,26,0.55)" : "rgba(255,255,255,0.55)",
+            fontWeight: 600,
+            margin: 0,
+            textAlign: "center",
+            lineHeight: 1.4,
+            fontFamily: "Arial, sans-serif",
+          }}
+        >
+          {subtitle}
+        </p>
+      </div>
+
+      {/* Bottom · byline + seal */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingTop: 10,
+          borderTop: `1px solid ${flagship ? "rgba(26,26,26,0.12)" : "rgba(255,255,255,0.10)"}`,
+          position: "relative",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "'Instrument Serif', serif",
+            fontStyle: "italic",
+            fontSize: flagship ? 11 : 9,
+            color: theme.ink,
+            opacity: 0.7,
+            margin: 0,
+            lineHeight: 1.3,
+          }}
+        >
+          {author}
+        </p>
+        <span
+          style={{
+            fontSize: 8,
+            letterSpacing: "0.22em",
+            color: theme.accent,
+            fontWeight: 800,
+            fontFamily: "ui-monospace, Menlo, monospace",
+            padding: "3px 7px",
+            border: `1px solid ${theme.accent}`,
+            borderRadius: 999,
+            opacity: flagship ? 0.95 : 0.75,
+          }}
+        >
+          {seal}
+        </span>
       </div>
     </div>
   );
@@ -1783,24 +2060,24 @@ function BookCover({
 /* ═══════════════════════════════════════════════════════════════════════ */
 
 function Outcomes() {
-  const items = [
+  const items: { n: string; icon: IconName; title: string; body: string; accent: string }[] = [
     {
       n: "01",
-      icon: "📕",
+      icon: "book",
       title: "A real published book",
       body: "Built in the room with your hands. Live on Amazon KDP under your name. Earning royalties from day one. Yours forever — even if you don&rsquo;t get the Batch offer.",
       accent: GOLD,
     },
     {
       n: "02",
-      icon: "🎟️",
+      icon: "ticket",
       title: "A shot at the Batch",
       body: "25 of 70 attendees walk out invited to apply for the Skillies Batch · ₹50,000 + ISA · 1 month intensive in Malappuram. The path Ehsan picks for the people he&rsquo;ll partner with for 6 months.",
       accent: RED,
     },
     {
       n: "03",
-      icon: "📚",
+      icon: "books",
       title: "The full Skillies playbook",
       body: "The exact book + cover system Ehsan uses to earn ₹1,16,000/month from 63 books. PDF, prompts, Canva templates, KDP setup walkthrough. Yours to keep, regardless of selection.",
       accent: "#7A9A7A",
@@ -1898,10 +2175,10 @@ function Outcomes() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 28,
+                    color: it.accent,
                   }}
                 >
-                  <span aria-hidden>{it.icon}</span>
+                  <Icon name={it.icon} size={26} strokeWidth={1.5} />
                 </div>
                 <span
                   style={{

@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: "Is the alignment real? What if I don't earn?",
-    a: "Yes. The Skillies Batch model means you pay ₹50,000 upfront — and the remaining ₹4,50,000 is collected only after your KDP earnings cross ₹3,00,000/month. If you don't hit that trigger, the ISA never activates, you owe nothing more, and you keep all training, materials, and alumni access. The structure is in the signed ISA contract, with a hard cap at ₹4,50,000 ISA collection (₹5,00,000 total programme fee, never more).",
+    a: "Yes. The Skillies Batch model means you pay ₹50,000 upfront — and the remaining ₹4,50,000 is collected only after your KDP earnings cross ₹1,00,000/month. If you don't hit that trigger, the ISA never activates, you owe nothing more, and you keep all training, materials, and alumni access. The structure is in the signed ISA contract, with a hard cap at ₹4,50,000 ISA collection (₹5,00,000 total programme fee, never more).",
   },
   {
     q: "What if Amazon bans my account?",
@@ -39,7 +39,7 @@ const faqs = [
   },
   {
     q: "What happens after the in-person month?",
-    a: "You go home and start publishing daily for 2 months — that's the earning ramp. Weekly WhatsApp check-ins with Ehsan, monthly optional in-person catchups in Malappuram. Once your earnings cross ₹3L+/month, ISA activates. Lifetime alumni community access — when the next Skillies course drops (Etsy, Meta ads, agents), alumni get first access.",
+    a: "You go home and start publishing daily for 2 months — that's the earning ramp. Weekly WhatsApp check-ins with Ehsan, monthly optional in-person catchups in Malappuram. Once your earnings cross ₹1L+/month, ISA activates. Lifetime alumni community access — when the next Skillies course drops (Etsy, Meta ads, agents), alumni get first access.",
   },
 ];
 

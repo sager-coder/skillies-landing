@@ -772,7 +772,7 @@ export default function HeroV2() {
                 lineHeight: 1.65,
               }}
             >
-              Skillies does two things. We run one batch — 25 students, in-person Malappuram — where you pay ₹50,000 upfront and the rest only when you earn ₹3L+/mo. The way in is the May 17 workshop in Malappuram (₹1,999 · 70 seats · we pick 25 for the Batch by sunset). We also install AI systems for Kerala businesses that need to move faster. The books we published on Amazon KDP paid ₹1,16,000 last month without anyone touching them in six. We only teach or ship what we&rsquo;ve made money with.
+              Skillies does two things. We run one batch — 25 students, in-person Malappuram — where you pay ₹50,000 upfront and the rest only when you earn ₹1L+/mo. The way in is the May 17 workshop in Malappuram (₹1,999 · 70 seats · we pick 25 for the Batch by sunset). We also install AI systems for Kerala businesses that need to move faster. The books we published on Amazon KDP paid ₹1,16,000 last month without anyone touching them in six. We only teach or ship what we&rsquo;ve made money with.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>

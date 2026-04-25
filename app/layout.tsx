@@ -22,7 +22,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Skillies.AI — AI Services for Businesses. AI Skills for Students.",
   description:
-    "One batch. 20 students. ₹50,000 to start. The rest only when you earn ₹3L+/mo. Plus AI services for Kerala businesses. Built in Malappuram. Proof: ₹8,71,982 earned from 63 books on Amazon KDP using the same methodology.",
+    "One batch. 20 students. ₹50,000 to start. The rest only when you earn ₹1L+/mo. Plus AI services for Kerala businesses. Built in Malappuram. Proof: ₹8,71,982 earned from 63 books on Amazon KDP using the same methodology.",
   keywords: [
     "AI services India",
     "AI for business",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Skillies.AI — The Batch · 20 students · Malappuram",
     description:
-      "One batch. ₹50,000 to start. The rest only when you earn ₹3L+/mo. Plus AI services for Kerala businesses. Built in Malappuram.",
+      "One batch. ₹50,000 to start. The rest only when you earn ₹1L+/mo. Plus AI services for Kerala businesses. Built in Malappuram.",
     siteName: "Skillies.AI",
     type: "website",
   },
