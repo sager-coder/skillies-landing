@@ -1801,6 +1801,7 @@ function BookStackVisual() {
         subtitle="Spot the Difference · 50 puzzles"
         author="A Skillies Production"
         seal="No. 42"
+        motif={<MotifWaves color={GOLD_LIGHT} />}
       />
 
       {/* Middle cover · red edition */}
@@ -1819,6 +1820,7 @@ function BookStackVisual() {
         subtitle="Hidden Animals · Easy + Hard"
         author="A Skillies Production"
         seal="No. 51"
+        motif={<MotifTree color="#EF6B6B" />}
       />
 
       {/* Flagship · cream cover · "Your Book 01" */}
@@ -1839,6 +1841,7 @@ function BookStackVisual() {
         author="By you · printed under your name"
         seal="No. 01"
         flagship
+        motif={<MotifCompass color={RED} />}
       />
 
       {/* Premium seal · circular embossed-feel stamp */}
@@ -1912,8 +1915,9 @@ type BookTheme = {
 /**
  * Premium book-cover element. Three of these stacked at angles compose
  * the hero visual on /workshop. Each cover renders like a real KDP
- * paperback — with kicker, display-serif title, ornament, byline, and
- * edition seal — instead of a placeholder card.
+ * paperback — with kicker, display-serif title, ornament, byline, edition
+ * seal, AND a motif illustration printed behind the title (the actual
+ * cover art, not just text on a coloured rectangle).
  */
 function BookCover({
   position,
@@ -1926,6 +1930,7 @@ function BookCover({
   author,
   seal,
   flagship = false,
+  motif,
 }: {
   position: BookPosition;
   width: string;
@@ -1937,6 +1942,7 @@ function BookCover({
   author: string;
   seal: string;
   flagship?: boolean;
+  motif?: React.ReactNode;
 }) {
   return (
     <div
@@ -1963,6 +1969,37 @@ function BookCover({
         overflow: "hidden",
       }}
     >
+      {/* Subtle paper grain · adds tactility to every cover */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: flagship ? 0.05 : 0.08,
+          mixBlendMode: flagship ? "multiply" : "overlay",
+          pointerEvents: "none",
+          backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' seed='13'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")`,
+        }}
+      />
+
+      {/* The MOTIF · the actual cover art, watermarked behind everything */}
+      {motif && (
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: "12%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+            opacity: flagship ? 0.18 : 0.32,
+          }}
+        >
+          {motif}
+        </div>
+      )}
+
       {/* Inner double-line frame · classic book-cover ornament */}
       <div
         aria-hidden
@@ -1984,6 +2021,9 @@ function BookCover({
           pointerEvents: "none",
         }}
       />
+
+      {/* Corner flourishes · 4 small decorative marks at inner corners */}
+      <CornerFlourishes accent={theme.accent} flagship={flagship} />
 
       {/* Top kicker · imprint */}
       <p
@@ -2789,6 +2829,7 @@ function BookGallery() {
     author: string;
     seal: string;
     theme: BookTheme;
+    motif: React.ReactNode;
   }[] = [
     {
       kicker: "Vol. 04",
@@ -2802,6 +2843,7 @@ function BookGallery() {
         accent: "#E6C178",
         border: "rgba(230,193,120,0.32)",
       },
+      motif: <MotifAnimal color="#E6C178" />,
     },
     {
       kicker: "Vol. 05",
@@ -2815,6 +2857,7 @@ function BookGallery() {
         accent: "#7AB8E0",
         border: "rgba(122,184,224,0.4)",
       },
+      motif: <MotifWaves color="#7AB8E0" />,
     },
     {
       kicker: "Vol. 06",
@@ -2828,6 +2871,7 @@ function BookGallery() {
         accent: "#B98AE0",
         border: "rgba(185,138,224,0.4)",
       },
+      motif: <MotifMandala color="#B98AE0" />,
     },
     {
       kicker: "Vol. 07",
@@ -2841,6 +2885,7 @@ function BookGallery() {
         accent: "#A37226",
         border: "rgba(163,114,38,0.4)",
       },
+      motif: <MotifFlower color="#A37226" />,
     },
     {
       kicker: "Vol. 08",
@@ -2854,6 +2899,7 @@ function BookGallery() {
         accent: "#7DBA8C",
         border: "rgba(125,186,140,0.4)",
       },
+      motif: <MotifHidden color="#7DBA8C" />,
     },
     {
       kicker: "Vol. 09",
@@ -2867,6 +2913,7 @@ function BookGallery() {
         accent: "#EF6B6B",
         border: "rgba(239,107,107,0.42)",
       },
+      motif: <MotifMoon color="#EF6B6B" />,
     },
   ];
 
@@ -2975,6 +3022,7 @@ function BookGallery() {
                 subtitle={c.subtitle}
                 author={c.author}
                 seal={c.seal}
+                motif={c.motif}
               />
             </div>
           ))}
@@ -3075,5 +3123,249 @@ function Sep() {
         background: "rgba(255,255,255,0.1)",
       }}
     />
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* COVER MOTIFS · the actual artwork behind every BookCover title         */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function CornerFlourishes({
+  accent,
+  flagship,
+}: {
+  accent: string;
+  flagship: boolean;
+}) {
+  const tint = flagship ? accent : accent;
+  const opacity = flagship ? 0.55 : 0.7;
+  return (
+    <>
+      {[
+        { top: 18, left: 18, rot: 0 },
+        { top: 18, right: 18, rot: 90 },
+        { bottom: 18, right: 18, rot: 180 },
+        { bottom: 18, left: 18, rot: 270 },
+      ].map((p, i) => (
+        <div
+          key={i}
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: p.top,
+            left: p.left,
+            right: p.right,
+            bottom: p.bottom,
+            transform: `rotate(${p.rot}deg)`,
+            pointerEvents: "none",
+            opacity,
+            color: tint,
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round">
+            <path d="M0 1h6M1 0v6" />
+            <circle cx="3" cy="3" r="0.8" fill="currentColor" stroke="none" />
+          </svg>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/* Each motif is a 200x200 SVG centred behind the title at low opacity. */
+/* They use stroke="currentColor" so the parent's text colour drives them. */
+
+function MotifCompass({ color }: { color: string }) {
+  // 8-point compass star · used for the flagship "Your Book" cover
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="0.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="100" cy="100" r="78" />
+      <circle cx="100" cy="100" r="60" strokeDasharray="2 4" />
+      <circle cx="100" cy="100" r="42" />
+      {Array.from({ length: 16 }).map((_, i) => {
+        const angle = (i * Math.PI * 2) / 16;
+        const x1 = 100 + Math.cos(angle) * 42;
+        const y1 = 100 + Math.sin(angle) * 42;
+        const x2 = 100 + Math.cos(angle) * 60;
+        const y2 = 100 + Math.sin(angle) * 60;
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />;
+      })}
+      <path d="M100 22 L106 100 L100 178 L94 100 Z" fill={color} fillOpacity="0.4" stroke="none" />
+      <path d="M22 100 L100 94 L178 100 L100 106 Z" fill={color} fillOpacity="0.4" stroke="none" />
+      <circle cx="100" cy="100" r="6" fill={color} stroke="none" />
+    </svg>
+  );
+}
+
+function MotifWaves({ color }: { color: string }) {
+  // Stylised ocean waves · for "Coastal" / "The Ocean Detective"
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 80 Q40 60, 70 80 T130 80 T190 80" />
+      <path d="M10 100 Q40 80, 70 100 T130 100 T190 100" />
+      <path d="M10 120 Q40 100, 70 120 T130 120 T190 120" />
+      <path d="M10 140 Q40 120, 70 140 T130 140 T190 140" />
+      {/* Fish silhouette */}
+      <path d="M70 165 Q90 155, 110 165 Q120 170, 110 175 Q90 185, 70 175 Q60 170, 70 165 Z M110 168 L120 162 L120 178 Z" fill={color} fillOpacity="0.5" stroke="none" />
+      {/* Sun arc */}
+      <path d="M60 50 A20 20 0 0 1 100 50" />
+      <line x1="80" y1="20" x2="80" y2="32" />
+      <line x1="60" y1="40" x2="68" y2="44" />
+      <line x1="100" y1="40" x2="92" y2="44" />
+    </svg>
+  );
+}
+
+function MotifTree({ color }: { color: string }) {
+  // Tree silhouette with hidden eyes · for "Forest" books
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      {/* Tree canopy · circles stacked */}
+      <circle cx="100" cy="80" r="50" fill={color} fillOpacity="0.15" />
+      <circle cx="75" cy="75" r="32" fill={color} fillOpacity="0.2" stroke="none" />
+      <circle cx="125" cy="78" r="36" fill={color} fillOpacity="0.2" stroke="none" />
+      <circle cx="100" cy="60" r="28" fill={color} fillOpacity="0.25" stroke="none" />
+      {/* Trunk */}
+      <path d="M95 130 L95 170 L105 170 L105 130 Z" fill={color} fillOpacity="0.6" stroke="none" />
+      {/* Branches */}
+      <path d="M100 120 L80 100 M100 120 L120 105 M100 110 L100 90" />
+      {/* Hidden eyes */}
+      <circle cx="80" cy="78" r="2" fill={color} stroke="none" />
+      <circle cx="120" cy="82" r="2" fill={color} stroke="none" />
+      <circle cx="100" cy="65" r="2" fill={color} stroke="none" />
+      {/* Ground */}
+      <line x1="40" y1="170" x2="160" y2="170" />
+    </svg>
+  );
+}
+
+function MotifMandala({ color }: { color: string }) {
+  // Concentric mandala · for "Mandala Maze"
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="100" cy="100" r="80" />
+      <circle cx="100" cy="100" r="65" />
+      <circle cx="100" cy="100" r="48" />
+      <circle cx="100" cy="100" r="30" />
+      <circle cx="100" cy="100" r="12" fill={color} fillOpacity="0.4" stroke="none" />
+      {Array.from({ length: 12 }).map((_, i) => {
+        const angle = (i * Math.PI * 2) / 12;
+        const x1 = 100 + Math.cos(angle) * 30;
+        const y1 = 100 + Math.sin(angle) * 30;
+        const x2 = 100 + Math.cos(angle) * 80;
+        const y2 = 100 + Math.sin(angle) * 80;
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />;
+      })}
+      {Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i * Math.PI * 2) / 8 + Math.PI / 8;
+        const cx = 100 + Math.cos(angle) * 65;
+        const cy = 100 + Math.sin(angle) * 65;
+        return <circle key={i} cx={cx} cy={cy} r="6" />;
+      })}
+    </svg>
+  );
+}
+
+function MotifAnimal({ color }: { color: string }) {
+  // Hidden creatures peeking · for "Animal Hide & Seek"
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round">
+      {/* Bunny */}
+      <ellipse cx="60" cy="120" rx="22" ry="18" fill={color} fillOpacity="0.18" />
+      <ellipse cx="50" cy="95" rx="5" ry="12" fill={color} fillOpacity="0.18" />
+      <ellipse cx="70" cy="95" rx="5" ry="12" fill={color} fillOpacity="0.18" />
+      <circle cx="55" cy="115" r="2" fill={color} stroke="none" />
+      <circle cx="65" cy="115" r="2" fill={color} stroke="none" />
+      <path d="M58 122 Q60 124, 62 122" />
+      {/* Owl */}
+      <ellipse cx="140" cy="115" rx="22" ry="26" fill={color} fillOpacity="0.18" />
+      <circle cx="132" cy="108" r="6" />
+      <circle cx="148" cy="108" r="6" />
+      <circle cx="132" cy="108" r="2" fill={color} stroke="none" />
+      <circle cx="148" cy="108" r="2" fill={color} stroke="none" />
+      <path d="M138 118 L140 124 L142 118 Z" fill={color} stroke="none" />
+      <path d="M122 96 L130 102 M158 96 L150 102" />
+      {/* Stars */}
+      <circle cx="105" cy="50" r="1.5" fill={color} stroke="none" />
+      <circle cx="35" cy="55" r="1.5" fill={color} stroke="none" />
+      <circle cx="170" cy="55" r="1.5" fill={color} stroke="none" />
+      <circle cx="100" cy="170" r="1.5" fill={color} stroke="none" />
+    </svg>
+  );
+}
+
+function MotifFlower({ color }: { color: string }) {
+  // Festival lamp / diya with flame · for "Festival Coloring"
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round">
+      {/* Diya bowl */}
+      <path d="M50 130 Q100 160, 150 130 L140 145 Q100 170, 60 145 Z" fill={color} fillOpacity="0.35" />
+      <path d="M50 130 Q100 160, 150 130" />
+      {/* Flame */}
+      <path d="M100 100 Q90 90, 95 75 Q100 65, 100 60 Q100 65, 105 75 Q110 90, 100 100 Z" fill={color} fillOpacity="0.5" stroke="none" />
+      <path d="M100 100 Q90 90, 95 75 Q100 65, 100 60 Q100 65, 105 75 Q110 90, 100 100 Z" />
+      {/* Decorative petals around */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        const angle = (i * Math.PI * 2) / 12 - Math.PI / 2;
+        const x = 100 + Math.cos(angle) * 60;
+        const y = 130 + Math.sin(angle) * 30;
+        return <circle key={i} cx={x} cy={y} r="2" fill={color} stroke="none" opacity="0.6" />;
+      })}
+      {/* Light rays */}
+      <path d="M100 50 L100 35 M85 55 L75 45 M115 55 L125 45 M75 70 L62 70 M125 70 L138 70" opacity="0.6" />
+    </svg>
+  );
+}
+
+function MotifMoon({ color }: { color: string }) {
+  // Crescent moon + whirling stars · for "Sufi Tales"
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      {/* Crescent */}
+      <path d="M125 60 A50 50 0 1 0 125 160 A40 40 0 1 1 125 60 Z" fill={color} fillOpacity="0.35" stroke="none" />
+      <path d="M125 60 A50 50 0 1 0 125 160 A40 40 0 1 1 125 60 Z" />
+      {/* Whirling spiral */}
+      <path d="M70 100 Q70 80, 90 80 Q100 80, 100 90 Q100 96, 94 96 Q90 96, 90 92" />
+      {/* Stars */}
+      <path d="M40 50 L42 56 L48 56 L43 60 L45 66 L40 62 L35 66 L37 60 L32 56 L38 56 Z" fill={color} stroke="none" />
+      <path d="M50 150 L52 156 L58 156 L53 160 L55 166 L50 162 L45 166 L47 160 L42 156 L48 156 Z" fill={color} stroke="none" />
+      <circle cx="170" cy="160" r="2" fill={color} stroke="none" />
+      <circle cx="30" cy="100" r="1.5" fill={color} stroke="none" />
+      <circle cx="180" cy="80" r="1.5" fill={color} stroke="none" />
+    </svg>
+  );
+}
+
+function MotifHidden({ color }: { color: string }) {
+  // Magnifying glass over abstract scene · for "Detective" / "Riddle" books
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round">
+      {/* Background scene · trees / shapes */}
+      <path d="M30 160 L50 130 L70 160 Z M65 160 L85 110 L105 160 Z M100 160 L120 140 L140 160 Z M135 160 L155 120 L175 160 Z" fill={color} fillOpacity="0.18" stroke="none" />
+      <line x1="20" y1="160" x2="180" y2="160" />
+      {/* Magnifying glass */}
+      <circle cx="115" cy="80" r="32" fill={color} fillOpacity="0.08" />
+      <circle cx="115" cy="80" r="32" />
+      <line x1="138" y1="103" x2="160" y2="125" strokeWidth="3" />
+      {/* Animal in glass · paw print */}
+      <circle cx="110" cy="80" r="3" fill={color} stroke="none" />
+      <circle cx="119" cy="78" r="2" fill={color} stroke="none" />
+      <circle cx="112" cy="86" r="2" fill={color} stroke="none" />
+      <circle cx="118" cy="86" r="2" fill={color} stroke="none" />
+      <ellipse cx="115" cy="92" rx="5" ry="3" fill={color} stroke="none" />
+    </svg>
+  );
+}
+
+function MotifPuzzle({ color }: { color: string }) {
+  // Puzzle piece pattern · for "Hide & Seek" / generic puzzle book
+  return (
+    <svg width="100%" viewBox="0 0 200 200" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M60 60 H100 a8 8 0 0 1 0 16 a8 8 0 0 0 0 16 H100 V120 a8 8 0 0 1 -16 0 a8 8 0 0 0 -16 0 H60 V60 Z" fill={color} fillOpacity="0.2" />
+      <path d="M100 60 H140 V100 a8 8 0 0 1 -16 0 a8 8 0 0 0 -16 0 V140 H100 a8 8 0 0 0 0 -16 a8 8 0 0 1 0 -16 V60 Z" fill={color} fillOpacity="0.3" />
+      {/* Sparkles */}
+      <path d="M50 40 L52 46 L58 46 L53 50 L55 56 L50 52 L45 56 L47 50 L42 46 L48 46 Z" fill={color} stroke="none" />
+      <path d="M155 155 L157 161 L163 161 L158 165 L160 171 L155 167 L150 171 L152 165 L147 161 L153 161 Z" fill={color} stroke="none" />
+    </svg>
   );
 }
