@@ -1,15 +1,12 @@
 /**
- * Kerala workshop tour — 3 Sundays · May 2026.
+ * Skillies Workshop · single in-person selection day.
  *
- * Schedule: May 10 Malappuram (launch) → May 17 Calicut → May 31 Kochi.
- * May 24 is skipped because Bakrid / Eid-al-Adha falls that week
- * (May 27), and that district (Malappuram especially) is 70%+ Muslim;
- * running a paid workshop into Eid prep is a dead ad week.
+ * The workshop is the funnel entry into the 25-student Skillies Batch.
+ * One event at a time, Malappuram only. 70 seats: ₹1,999 first 25
+ * (Early Bird) and ₹2,499 next 45 (Regular). No refunds.
  *
- * Source of truth for every workshop date/city/id on the site. Both the
- * marketing surfaces (Hero, Pricing, Payment details) and the Razorpay
- * `course` field derive from these entries, so adding a city is a
- * one-line edit here instead of a grep-and-replace job.
+ * Add a future workshop by appending to this array; the picker on the
+ * page will surface it. For now, May 17, 2026 is the only one open.
  */
 export type Workshop = {
   id: string;
@@ -24,34 +21,14 @@ export type Workshop = {
 
 export const WORKSHOPS: Workshop[] = [
   {
-    id: "workshop-malappuram-may10",
+    id: "workshop-malappuram-may17-2026",
     city: "Malappuram",
     cityShort: "Malappuram",
-    dateLong: "Sunday · May 10, 2026",
-    dateShort: "May 10",
-    dayOfMonth: "10",
-    monthShort: "May",
-    tag: "Launch · Malappuram",
-  },
-  {
-    id: "workshop-calicut-may17",
-    city: "Calicut",
-    cityShort: "Calicut",
     dateLong: "Sunday · May 17, 2026",
     dateShort: "May 17",
     dayOfMonth: "17",
     monthShort: "May",
-    tag: "Calicut expansion",
-  },
-  {
-    id: "workshop-kochi-may31",
-    city: "Kochi · Ernakulam",
-    cityShort: "Kochi",
-    dateLong: "Sunday · May 31, 2026",
-    dateShort: "May 31",
-    dayOfMonth: "31",
-    monthShort: "May",
-    tag: "Kerala finale · Kochi",
+    tag: "Batch Selection · Malappuram Expo",
   },
 ];
 

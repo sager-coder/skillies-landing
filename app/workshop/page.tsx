@@ -2,6 +2,8 @@ import Link from "next/link";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import WorkshopReserveButton from "@/components/workshop/WorkshopReserveButton";
+import { DEFAULT_WORKSHOP } from "@/components/workshop/workshops";
 
 export const metadata = {
   title: "The Skillies Workshop · May 17 · Malappuram · 70 seats",
@@ -14,10 +16,10 @@ export const metadata = {
   },
 };
 
-const WHATSAPP_RESERVE_EARLY =
-  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20reserve%20an%20Early%20Bird%20%E2%82%B91%2C999%20seat%20for%20the%20May%2017%20Skillies%20Workshop%20in%20Malappuram.%20My%20name%20is%20";
-const WHATSAPP_RESERVE_REGULAR =
-  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20reserve%20a%20Regular%20%E2%82%B92%2C499%20seat%20for%20the%20May%2017%20Skillies%20Workshop%20in%20Malappuram.%20My%20name%20is%20";
+// Razorpay reservation lives inside <WorkshopReserveButton>. WhatsApp
+// fallback is still available via the floating button on every page —
+// useful for users who hit a payment issue or want to ask a question
+// before paying.
 
 const DARK = "#0F0F0F";
 const CHARCOAL = "#1A1A1A";
@@ -566,9 +568,8 @@ function DayStructure() {
                     lineHeight: 1.7,
                     margin: 0,
                   }}
-                >
-                  {b.body}
-                </p>
+                  dangerouslySetInnerHTML={{ __html: b.body }}
+                />
               </div>
             </article>
           ))}
@@ -928,26 +929,27 @@ function Pricing() {
               First 25 seats. Same workshop, same room, same selection
               pool — at ₹500 less.
             </p>
-            <a
-              href={WHATSAPP_RESERVE_EARLY}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WorkshopReserveButton
+              tier="workshop-early"
+              priceLabel="₹1,999"
+              label="Grab Early Bird · ₹1,999"
+              workshop={DEFAULT_WORKSHOP}
               style={{
                 display: "block",
+                width: "100%",
                 padding: "16px 24px",
                 background: GOLD_LIGHT,
                 color: "#2a1f08",
                 textAlign: "center",
-                textDecoration: "none",
+                border: "none",
                 borderRadius: 999,
                 fontSize: 15,
                 fontWeight: 800,
                 letterSpacing: "0.02em",
                 boxShadow: "0 16px 36px rgba(230,193,120,0.22)",
+                cursor: "pointer",
               }}
-            >
-              Grab Early Bird · ₹1,999
-            </a>
+            />
           </article>
 
           {/* REGULAR */}
@@ -1013,26 +1015,26 @@ function Pricing() {
               Once Early Bird sells out. Same room, same day, same
               selection. No difference except the price.
             </p>
-            <a
-              href={WHATSAPP_RESERVE_REGULAR}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WorkshopReserveButton
+              tier="workshop-regular"
+              priceLabel="₹2,499"
+              label="Reserve Regular · ₹2,499"
+              workshop={DEFAULT_WORKSHOP}
               style={{
                 display: "block",
+                width: "100%",
                 padding: "16px 24px",
                 background: "transparent",
                 color: "white",
                 textAlign: "center",
-                textDecoration: "none",
                 borderRadius: 999,
                 fontSize: 15,
                 fontWeight: 700,
                 letterSpacing: "0.02em",
                 border: "1.5px solid rgba(255,255,255,0.3)",
+                cursor: "pointer",
               }}
-            >
-              Reserve Regular · ₹2,499
-            </a>
+            />
           </article>
         </div>
 
@@ -1124,7 +1126,7 @@ function Logistics() {
     },
     {
       t: "Reservation flow",
-      b: "WhatsApp Ehsan with your name and tier (Early Bird ₹1,999 or Regular ₹2,499). He sends a Razorpay link. Pay → seat is yours · receipt in your inbox.",
+      b: "Click Reserve · fill name, WhatsApp number, email · pay via Razorpay (UPI / cards / net-banking) · printable ticket on screen + email receipt. Done in under 2 minutes.",
     },
     {
       t: "Capacity & cutoff",
@@ -1431,59 +1433,40 @@ function FinalCTA() {
             justifyContent: "center",
           }}
         >
-          <a
-            href={WHATSAPP_RESERVE_EARLY}
-            target="_blank"
-            rel="noopener noreferrer"
+          <WorkshopReserveButton
+            tier="workshop-early"
+            priceLabel="₹1,999"
+            label="Reserve Early Bird · ₹1,999 →"
+            workshop={DEFAULT_WORKSHOP}
             style={{
               padding: "20px 32px",
               background: RED,
               color: "white",
-              textDecoration: "none",
+              border: "none",
               borderRadius: 999,
               fontSize: 17,
               fontWeight: 700,
               letterSpacing: "0.02em",
               boxShadow: "0 20px 50px rgba(198,40,40,0.4)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 10,
+              cursor: "pointer",
             }}
-          >
-            Reserve Early Bird · ₹1,999
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M17 8l4 4-4 4M3 12h18" />
-            </svg>
-          </a>
-          <a
-            href={WHATSAPP_RESERVE_REGULAR}
-            target="_blank"
-            rel="noopener noreferrer"
+          />
+          <WorkshopReserveButton
+            tier="workshop-regular"
+            priceLabel="₹2,499"
+            label="Reserve Regular · ₹2,499"
+            workshop={DEFAULT_WORKSHOP}
             style={{
               padding: "20px 28px",
               background: "transparent",
               color: "white",
-              textDecoration: "none",
               borderRadius: 999,
               fontSize: 15,
               fontWeight: 600,
               border: "1.5px solid rgba(255,255,255,0.22)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
+              cursor: "pointer",
             }}
-          >
-            Reserve Regular · ₹2,499
-          </a>
+          />
         </div>
 
         <p

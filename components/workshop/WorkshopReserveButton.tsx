@@ -61,16 +61,23 @@ async function loadRazorpayScript(): Promise<boolean> {
  */
 export default function WorkshopReserveButton({
   tier = "workshop-early",
-  priceLabel = "₹999",
-  label = "Reserve seat · ₹999",
+  priceLabel = "₹1,999",
+  label = "Reserve seat · ₹1,999",
   variant = "filled",
   workshop = DEFAULT_WORKSHOP,
+  style: styleOverride,
+  className,
 }: {
   tier?: "workshop-early" | "workshop-regular" | "workshop-vip";
   priceLabel?: string;
   label?: string;
   variant?: "filled" | "outline";
   workshop?: Workshop;
+  /** Optional CSS-in-JS overrides for the trigger button — lets a parent
+   *  page (like /workshop) style the button to match its own card design
+   *  while still using the shared modal + Razorpay flow underneath. */
+  style?: React.CSSProperties;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -141,12 +148,7 @@ export default function WorkshopReserveButton({
           content_category: "workshop",
           content_ids: [workshop.id],
           currency: "INR",
-          value:
-            tier === "workshop-vip"
-              ? 2999
-              : tier === "workshop-regular"
-                ? 1999
-                : 999,
+          value: tier === "workshop-regular" ? 2499 : 1999,
         });
       }
 
@@ -198,11 +200,7 @@ export default function WorkshopReserveButton({
           // optimises against. Without this, ad spend is blind.
           if (typeof w.fbq === "function") {
             const valueInr =
-              tier === "workshop-vip"
-                ? 2999
-                : tier === "workshop-regular"
-                  ? 1999
-                  : 999;
+              tier === "workshop-regular" ? 2499 : 1999;
             w.fbq("track", "Purchase", {
               content_name: `${workshop.cityShort} Workshop · ${workshop.dateShort}`,
               content_category: "workshop",
@@ -271,7 +269,8 @@ export default function WorkshopReserveButton({
           reset();
           setOpen(true);
         }}
-        style={btnStyle}
+        style={{ ...btnStyle, ...styleOverride }}
+        className={className}
       >
         {label}
       </button>

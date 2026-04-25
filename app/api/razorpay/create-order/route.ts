@@ -14,7 +14,8 @@ type Body = {
     | "pro"
     | "workshop-early"
     | "workshop-regular"
-    | "workshop-vip";
+    | "workshop-vip"
+    | "batch-enrolment";
   amount?: number; // paise; allows a ₹1 test override without shipping new tier pricing
   // UTM metadata passed from the client — used to attribute revenue back to
   // specific Meta/Instagram ad sets or content variants.
@@ -30,11 +31,14 @@ type Body = {
 // Kept server-side so the client can't request a discount by tampering with the payload.
 const TIER_AMOUNTS_PAISE: Record<string, number> = {
   founding: 4_500_000,   // ₹45,000 — closed Batch 001 (historical, don't reuse)
-  standard: 3_500_000,   // ₹35,000 — 50-day cohort (current public price)
-  pro: 17_500_000,       // ₹1,75,000 — founding-price mentorship (WhatsApp-gated, usually sent manually)
-  "workshop-early": 99_900,    // ₹999 — Kerala Tour workshop early bird (first 50 per city)
-  "workshop-regular": 199_900, // ₹1,999 — Kerala Tour workshop regular (next 75 per city)
-  "workshop-vip": 299_900,     // ₹2,999 — Kerala Tour workshop VIP (last 25 per city: front row + signed book + post-event WhatsApp)
+  standard: 3_500_000,   // ₹35,000 — retired 50-day cohort (kept for legacy webhooks)
+  pro: 17_500_000,       // ₹1,75,000 — retired founding mentorship
+  // Skillies Workshop (May 17 Malappuram · selection day for the Batch).
+  "workshop-early": 199_900,   // ₹1,999 — Early Bird (first 25 of 70 seats)
+  "workshop-regular": 249_900, // ₹2,499 — Regular (next 45 of 70 seats)
+  "workshop-vip": 249_900,     // ₹2,499 — alias kept so legacy URLs / pixel values don't 400
+  // Skillies Batch · upfront enrolment (after workshop selection).
+  "batch-enrolment": 5_000_000, // ₹50,000 — upfront fee, ISA contract signed alongside
 };
 const VALID_TIERS = Object.keys(TIER_AMOUNTS_PAISE);
 
