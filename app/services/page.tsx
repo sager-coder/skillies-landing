@@ -16,30 +16,34 @@ export const metadata = {
   },
 };
 
-// CTA hrefs
-const WHATSAPP_AUDIT =
-  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20want%20to%20book%20the%20Skillies%20AI%20Business%20Audit%20for%20my%20business.%20My%20business%20is%20";
+// CTA hrefs — every general "talk to us" button on this page goes through
+// the AI front desk on WhatsApp. The system itself qualifies + scopes + books.
+const WHATSAPP_GENERIC =
+  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20Skillies%20AI%20services%20for%20my%20business.%20My%20business%20is%20";
+// System-specific deep links keep their pre-filled context for in-section CTAs.
 const WHATSAPP_FRONTDESK =
   "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20the%20Skillies%20AI%20Front%20Desk.%20My%20business%20is%20";
 const WHATSAPP_CONTENT =
   "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20the%20Skillies%20AI%20Content%20Engine.%20My%20business%20is%20";
-const WHATSAPP_GENERIC =
-  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20Skillies%20AI%20services%20for%20my%20business.%20My%20business%20is%20";
 
-// Brand palette
+// Display-friendly version of the bot's number — shown in the TalkToTheBot
+// section so visitors can dial / paste it without touching the wa.me URL.
+const BOT_NUMBER_DISPLAY = "+91 80899 41131";
+
+// Brand palette · DARK / CHARCOAL / CREAM / RED / GOLD / GOLD_LIGHT
+// (FOREST #3D5A3D and MUTED #6B7280 are also brand colors but used as literals
+// inside the Compliance / Wedge sections — no constant needed.)
 const DARK = "#0F0F0F";
 const CHARCOAL = "#1A1A1A";
 const CREAM = "#FAF5EB";
 const RED = "#C62828";
 const GOLD = "#C9A24E";
 const GOLD_LIGHT = "#E6C178";
-const FOREST = "#3D5A3D";
-const MUTED = "#6B7280";
 
 export default function ServicesPage() {
   return (
     <main style={{ background: DARK, color: "white" }}>
-      <TopNav cta={{ href: WHATSAPP_AUDIT, label: "Book the Audit" }} />
+      <TopNav cta={{ href: WHATSAPP_GENERIC, label: "Talk to the bot" }} />
 
       <Hero />
       <Wedge />
@@ -48,7 +52,7 @@ export default function ServicesPage() {
       <Proof />
       <WhySkillies />
       <Compliance />
-      <Pricing />
+      <TalkToTheBot />
       <FAQ />
       <FinalCTA />
 
@@ -150,7 +154,7 @@ function Hero() {
 
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <a
-            href={WHATSAPP_AUDIT}
+            href={WHATSAPP_GENERIC}
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -168,7 +172,7 @@ function Hero() {
               gap: 10,
             }}
           >
-            Book your AI Business Audit · ₹4,999
+            Talk to our AI front desk
             <svg
               width="18"
               height="18"
@@ -682,7 +686,7 @@ function FrontDesk() {
                   textTransform: "uppercase",
                   color: "#EF6B6B",
                   fontWeight: 700,
-                  margin: "0 0 8px",
+                  margin: "0 0 12px",
                 }}
               >
                 Investment
@@ -690,24 +694,28 @@ function FrontDesk() {
               <p
                 style={{
                   fontFamily: "'Instrument Serif', Georgia, serif",
-                  fontSize: 44,
+                  fontSize: 28,
                   fontWeight: 400,
                   color: "white",
-                  margin: "0 0 4px",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.05,
+                  margin: "0 0 12px",
+                  letterSpacing: "-0.015em",
+                  lineHeight: 1.15,
+                  fontStyle: "italic",
                 }}
               >
-                ₹75,000 setup
+                Priced to your volume.
               </p>
               <p
                 style={{
-                  fontSize: 15,
-                  color: "rgba(255,255,255,0.7)",
-                  margin: "0 0 14px",
+                  fontSize: 14.5,
+                  color: "rgba(255,255,255,0.78)",
+                  lineHeight: 1.6,
+                  margin: "0 0 12px",
                 }}
               >
-                + ₹15,000/month support (cancel any month)
+                Setup + monthly maintenance scale with your conversation volume
+                and content output. Message the AI front desk — it&rsquo;ll
+                scope your business and quote you on the spot.
               </p>
               <p
                 style={{
@@ -1745,404 +1753,256 @@ function Compliance() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════ */
-/* PRICING LADDER                                                          */
+/* TALK TO THE BOT · the WhatsApp number is the next step                  */
 /* ═══════════════════════════════════════════════════════════════════════ */
 
-function Pricing() {
-  type Tier = {
-    name: string;
-    note: string;
-    setup: string;
-    monthly: string;
-    monthlyLabel: string;
-    blurb: string;
-    inside: string[];
-    accent: string;
-    featured: boolean;
-  };
-  const tiers: Tier[] = [
-    {
-      name: "Base Pack",
-      note: "Two systems · low-mid volume",
-      setup: "₹70,000",
-      monthly: "₹25,000",
-      monthlyLabel: "/ month",
-      blurb:
-        "Front Desk + Content Engine, fully installed. The floor — the only number we put a sticker on.",
-      inside: [
-        "AI Front Desk · WhatsApp, calls, follow-ups, daily owner report",
-        "AI Content Engine · 3 reels per day, in your voice",
-        "Setup, training, and 30-day pilot included",
-        "Cancel maintenance any month, no penalty",
-      ],
-      accent: GOLD_LIGHT,
-      featured: true,
-    },
-    {
-      name: "Growth",
-      note: "Two systems · scaling volume",
-      setup: "Custom quote",
-      monthly: "Custom quote",
-      monthlyLabel: "",
-      blurb:
-        "Same two systems — priced for higher conversation volume on the Front Desk and bigger content output (more languages, more clips, paid-ad-ready).",
-      inside: [
-        "Higher WhatsApp / call concurrency",
-        "Multi-language content (Malayalam + English + Manglish)",
-        "Ad-ready clip cuts + thumbnails",
-        "Weekly reporting cadence",
-      ],
-      accent: GOLD,
-      featured: false,
-    },
-    {
-      name: "Operator",
-      note: "Multi-location · multi-founder",
-      setup: "Custom quote",
-      monthly: "Custom quote",
-      monthlyLabel: "",
-      blurb:
-        "For groups running multiple branches or multiple founders on the Content Engine. Embedded support and a dedicated operator on our side.",
-      inside: [
-        "Multiple locations / multiple WhatsApp lines",
-        "Multiple founder voice models",
-        "Dedicated Skillies operator",
-        "Quarterly business review",
-      ],
-      accent: RED,
-      featured: false,
-    },
+function TalkToTheBot() {
+  const reassurances = [
+    "Replies in seconds · Manglish, Malayalam, English",
+    "Books a call with Ehsan only if you&rsquo;re a fit · no time wasted",
+    "Same DPDP-compliant system you&rsquo;ll get installed",
   ];
   return (
     <section
       style={{
-        padding: "120px 24px",
-        background: DARK,
+        padding: "140px 24px",
+        background: CHARCOAL,
         color: "white",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 1160, margin: "0 auto" }}>
-        <p
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse at 18% 22%, rgba(230,193,120,0.18), transparent 55%), radial-gradient(ellipse at 82% 80%, rgba(198,40,40,0.14), transparent 55%)`,
+          pointerEvents: "none",
+        }}
+      />
+      <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative" }}>
+        <div
           style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            marginBottom: 28,
             fontSize: 11,
+            color: "rgba(255,255,255,0.55)",
             letterSpacing: "0.32em",
             textTransform: "uppercase",
-            color: GOLD_LIGHT,
             fontWeight: 700,
-            margin: "0 0 16px",
+            flexWrap: "wrap",
           }}
         >
-          § Pricing · two systems, one base pack
-        </p>
-        <h2
-          style={{
-            fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: "clamp(40px, 5.5vw, 72px)",
-            fontWeight: 400,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.05,
-            margin: "0 0 22px",
-            maxWidth: 900,
-          }}
-        >
-          One floor.{" "}
-          <em style={{ fontStyle: "italic", color: GOLD_LIGHT }}>
-            Scales with the work.
-          </em>
-        </h2>
-        <p
-          style={{
-            fontSize: 18,
-            color: "rgba(255,255,255,0.62)",
-            maxWidth: 760,
-            lineHeight: 1.65,
-            margin: "0 0 56px",
-          }}
-        >
-          The Base Pack is{" "}
-          <strong style={{ color: "white" }}>₹70,000 setup</strong> +{" "}
-          <strong style={{ color: "white" }}>₹25,000 / month</strong> — both
-          systems, fully installed and maintained. The monthly is a floor.
-          As your conversation volume on the Front Desk and your content
-          volume on the Engine grow, maintenance scales up. We&rsquo;ll
-          quote that exactly when we know your numbers.
-        </p>
-
-        <div
-          className="skillies-pricing-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 20,
-          }}
-        >
-          {tiers.map((t) => (
-            <article
-              key={t.name}
-              style={{
-                padding: "34px 30px 32px",
-                borderRadius: 22,
-                background: t.featured
-                  ? "rgba(230,193,120,0.06)"
-                  : "rgba(255,255,255,0.03)",
-                border: t.featured
-                  ? "1px solid rgba(230,193,120,0.35)"
-                  : "1px solid rgba(255,255,255,0.08)",
-                position: "relative",
-                boxShadow: t.featured
-                  ? "0 30px 60px rgba(0,0,0,0.35)"
-                  : "0 18px 40px rgba(0,0,0,0.18)",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 3,
-                  background: t.accent,
-                  borderTopLeftRadius: 22,
-                  borderTopRightRadius: 22,
-                }}
-              />
-              {t.featured && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: -12,
-                    right: 22,
-                    fontSize: 10,
-                    letterSpacing: "0.3em",
-                    textTransform: "uppercase",
-                    color: DARK,
-                    background: GOLD_LIGHT,
-                    padding: "5px 12px",
-                    borderRadius: 999,
-                    fontWeight: 800,
-                  }}
-                >
-                  Start here
-                </span>
-              )}
-              <p
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  color: t.accent,
-                  fontWeight: 700,
-                  margin: "0 0 10px",
-                }}
-              >
-                {t.note}
-              </p>
-              <h3
-                style={{
-                  fontSize: 26,
-                  fontWeight: 700,
-                  letterSpacing: "-0.01em",
-                  color: "white",
-                  margin: "0 0 18px",
-                }}
-              >
-                {t.name}
-              </h3>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                  marginBottom: 18,
-                }}
-              >
-                <div>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      letterSpacing: "0.28em",
-                      textTransform: "uppercase",
-                      color: "rgba(255,255,255,0.5)",
-                      fontWeight: 700,
-                      marginRight: 10,
-                    }}
-                  >
-                    Setup
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Instrument Serif', Georgia, serif",
-                      fontSize: 26,
-                      fontWeight: 400,
-                      color: "white",
-                      letterSpacing: "-0.015em",
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {t.setup}
-                  </span>
-                </div>
-                <div>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      letterSpacing: "0.28em",
-                      textTransform: "uppercase",
-                      color: "rgba(255,255,255,0.5)",
-                      fontWeight: 700,
-                      marginRight: 10,
-                    }}
-                  >
-                    Maintenance
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Instrument Serif', Georgia, serif",
-                      fontSize: 26,
-                      fontWeight: 400,
-                      color: "white",
-                      letterSpacing: "-0.015em",
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {t.monthly}
-                  </span>
-                  {t.monthlyLabel && (
-                    <span
-                      style={{
-                        fontSize: 14,
-                        color: "rgba(255,255,255,0.55)",
-                        marginLeft: 4,
-                      }}
-                    >
-                      {t.monthlyLabel}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <p
-                style={{
-                  fontSize: 14.5,
-                  color: "rgba(255,255,255,0.7)",
-                  lineHeight: 1.6,
-                  margin: "0 0 18px",
-                  fontStyle: "italic",
-                  fontFamily: "'Instrument Serif', serif",
-                }}
-              >
-                {t.blurb}
-              </p>
-
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: "0 0 24px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                  flex: 1,
-                }}
-              >
-                {t.inside.map((item, i) => (
-                  <li
-                    key={i}
-                    style={{
-                      fontSize: 13.5,
-                      color: "rgba(255,255,255,0.78)",
-                      lineHeight: 1.55,
-                      paddingLeft: 18,
-                      position: "relative",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: 9,
-                        width: 8,
-                        height: 1,
-                        background: t.accent,
-                      }}
-                    />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href={WHATSAPP_GENERIC}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  padding: "16px 22px",
-                  background: t.featured ? RED : "transparent",
-                  color: "white",
-                  textDecoration: "none",
-                  borderRadius: 999,
-                  fontSize: 14.5,
-                  fontWeight: 700,
-                  letterSpacing: "0.02em",
-                  border: t.featured
-                    ? "none"
-                    : "1.5px solid rgba(255,255,255,0.22)",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  textAlign: "center",
-                  boxShadow: t.featured
-                    ? "0 16px 36px rgba(198,40,40,0.32)"
-                    : "none",
-                }}
-              >
-                {t.featured ? "Start with the Base Pack" : "Get a custom quote"}
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M17 8l4 4-4 4M3 12h18" />
-                </svg>
-              </a>
-            </article>
-          ))}
+          <span style={{ width: 44, height: 1, background: GOLD_LIGHT }} />
+          <span>§ Talk to our AI front desk · the same one we install for clients</span>
+          <span
+            style={{
+              flex: 1,
+              height: 1,
+              background: "rgba(255,255,255,0.1)",
+              minWidth: 30,
+            }}
+          />
         </div>
 
+        <h2
+          style={{
+            margin: 0,
+            fontWeight: 900,
+            fontSize: "clamp(44px, 5.8vw, 84px)",
+            letterSpacing: "-0.035em",
+            lineHeight: 0.98,
+            color: "white",
+            maxWidth: 920,
+          }}
+        >
+          Pricing? Scope? Timing?{" "}
+          <em
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontWeight: 400,
+              fontStyle: "italic",
+              color: GOLD_LIGHT,
+            }}
+          >
+            Ask the bot.
+          </em>
+        </h2>
+
+        <p
+          style={{
+            marginTop: 28,
+            fontSize: 19,
+            lineHeight: 1.65,
+            color: "rgba(255,255,255,0.72)",
+            maxWidth: 780,
+          }}
+        >
+          The fastest way to know if Skillies fits your business is to chat
+          with the system we&rsquo;d install. It already qualifies, scopes, and
+          books calls. Pricing depends on your conversation volume + content
+          output — the bot will tell you what your business will likely need.
+        </p>
+
+        {/* Hero CTA card · gold-bordered, the visual gravity of a price */}
+        <div
+          style={{
+            marginTop: 56,
+            padding: "44px 44px 40px",
+            borderRadius: 24,
+            background:
+              "linear-gradient(135deg, rgba(230,193,120,0.08), rgba(230,193,120,0.02))",
+            border: "1.5px solid rgba(230,193,120,0.4)",
+            boxShadow: "0 40px 80px rgba(0,0,0,0.4)",
+            position: "relative",
+          }}
+          className="skillies-bot-card"
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 4,
+              background: GOLD_LIGHT,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+            }}
+          />
+
+          <p
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              color: GOLD_LIGHT,
+              fontWeight: 700,
+              margin: "0 0 14px",
+            }}
+          >
+            WhatsApp · live now · replies in seconds
+          </p>
+
+          <p
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: "clamp(40px, 5.4vw, 64px)",
+              fontWeight: 400,
+              fontStyle: "italic",
+              color: "white",
+              margin: "0 0 24px",
+              letterSpacing: "-0.02em",
+              lineHeight: 1.05,
+            }}
+          >
+            {BOT_NUMBER_DISPLAY}
+          </p>
+
+          <a
+            href={WHATSAPP_GENERIC}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: "20px 36px",
+              background: RED,
+              color: "white",
+              textDecoration: "none",
+              borderRadius: 999,
+              fontSize: 17,
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+              boxShadow: "0 20px 50px rgba(198,40,40,0.4)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            Open chat on WhatsApp
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M17 8l4 4-4 4M3 12h18" />
+            </svg>
+          </a>
+
+          {/* Reassurance bullets · icon-free, just typography */}
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              margin: "36px 0 0",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 18,
+            }}
+            className="skillies-bot-bullets"
+          >
+            {reassurances.map((r, i) => (
+              <li
+                key={i}
+                style={{
+                  fontSize: 13.5,
+                  color: "rgba(255,255,255,0.72)",
+                  lineHeight: 1.55,
+                  paddingLeft: 18,
+                  position: "relative",
+                  borderLeft: "1px solid rgba(230,193,120,0.3)",
+                }}
+                dangerouslySetInnerHTML={{ __html: r }}
+              />
+            ))}
+          </ul>
+        </div>
+
+        {/* Lower line */}
         <p
           style={{
             marginTop: 32,
-            fontSize: 13,
-            color: "rgba(255,255,255,0.5)",
+            fontSize: 14,
+            color: "rgba(255,255,255,0.55)",
             fontStyle: "italic",
             fontFamily: "'Instrument Serif', serif",
-            maxWidth: 800,
             lineHeight: 1.6,
+            maxWidth: 720,
           }}
         >
-          Every number above excludes direct WhatsApp Business API fees,
-          third-party tool subscriptions (Twilio, OpenAI, content-tooling
-          credits, etc.), and GST. Those pass through at cost on your
-          monthly invoice.
+          Boardroom alternative · save{" "}
+          <span style={{ color: GOLD_LIGHT, fontStyle: "normal" }}>
+            {BOT_NUMBER_DISPLAY}
+          </span>{" "}
+          and message us when you&rsquo;re ready. The bot reads context from
+          your first message — give it your business name and the problem
+          you&rsquo;re trying to solve.
         </p>
       </div>
 
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            @media (max-width: 960px) {
-              .skillies-pricing-grid {
+            @media (max-width: 760px) {
+              .skillies-bot-card {
+                padding: 32px 26px 30px !important;
+              }
+              .skillies-bot-bullets {
                 grid-template-columns: 1fr !important;
-                gap: 18px !important;
+                gap: 14px !important;
+              }
+              .skillies-bot-bullets li {
+                border-left: none !important;
+                border-top: 1px solid rgba(230,193,120,0.3) !important;
+                padding-left: 0 !important;
+                padding-top: 14px !important;
               }
             }
           `,
@@ -2180,11 +2040,11 @@ function FAQ() {
     },
     {
       q: "What&rsquo;s the refund or pause policy?",
-      a: "The Base Pack ships with a 30-day pilot. If after 30 days the systems aren&rsquo;t earning their keep for your business, you can pause maintenance without penalty — no questions, no contract trap. The ₹70K setup is non-refundable once the install is live, but you keep what we built.",
+      a: "Every install ships with a 30-day pilot. If the systems aren&rsquo;t earning their keep for your business, you can pause maintenance without penalty — no questions, no contract trap. The setup fee is non-refundable once the install is live, but you keep what we built. Specifics depend on your scope — the AI front desk will walk you through exact terms before you commit.",
     },
     {
       q: "Do I have to do both systems? Can I take only the Front Desk?",
-      a: "The Base Pack is priced as the two together because that&rsquo;s the unfair combination — answers in front, content out back. If you only want one, we&rsquo;ll quote it standalone, but the per-system economics are different. Talk to us about what fits.",
+      a: "The two together is the unfair combination — answers in front, content out back. If you only want one, we&rsquo;ll quote it standalone, but the per-system economics are different. Easiest path: message the AI front desk and tell it which system you&rsquo;re interested in. It&rsquo;ll ask three questions and quote you on the spot.",
     },
     {
       q: "What if my staff can&rsquo;t use new technology?",
@@ -2315,7 +2175,7 @@ function FinalCTA() {
             margin: "0 0 20px",
           }}
         >
-          § Start here
+          § One door in
         </p>
         <h2
           style={{
@@ -2327,9 +2187,9 @@ function FinalCTA() {
             margin: "0 0 28px",
           }}
         >
-          Start with the{" "}
+          Skillies isn&rsquo;t an agency.{" "}
           <em style={{ fontStyle: "italic", color: "#EF4444" }}>
-            Audit.
+            It&rsquo;s a system.
           </em>
         </h2>
         <p
@@ -2337,27 +2197,15 @@ function FinalCTA() {
             fontSize: 19,
             color: "rgba(255,255,255,0.72)",
             lineHeight: 1.6,
-            margin: "0 0 16px",
-          }}
-        >
-          ₹4,999. No contracts. We sit with you for 90 minutes, study your
-          business, and hand you a 30-day AI implementation roadmap.
-        </p>
-        <p
-          style={{
-            fontSize: 16,
-            color: "rgba(255,255,255,0.55)",
-            fontStyle: "italic",
-            fontFamily: "'Instrument Serif', serif",
             margin: "0 0 40px",
-            lineHeight: 1.5,
           }}
         >
-          If you hire us for the Front Desk after the audit, the ₹4,999 is
-          credited against your install fee.
+          The next step is to talk to the AI front desk on WhatsApp. It will
+          scope your business, quote you, and book the install call with Ehsan
+          if you&rsquo;re a fit. Same system we install for clients.
         </p>
         <a
-          href={WHATSAPP_AUDIT}
+          href={WHATSAPP_GENERIC}
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -2375,7 +2223,7 @@ function FinalCTA() {
             gap: 10,
           }}
         >
-          Book your AI Business Audit on WhatsApp
+          Open chat on WhatsApp · {BOT_NUMBER_DISPLAY}
           <svg
             width="18"
             height="18"
@@ -2389,29 +2237,6 @@ function FinalCTA() {
             <path d="M17 8l4 4-4 4M3 12h18" />
           </svg>
         </a>
-        <p
-          style={{
-            marginTop: 28,
-            fontSize: 14,
-            color: "rgba(255,255,255,0.55)",
-            letterSpacing: "0.05em",
-          }}
-        >
-          Prefer to talk first?{" "}
-          <a
-            href={WHATSAPP_GENERIC}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: GOLD_LIGHT,
-              textDecoration: "underline",
-              textUnderlineOffset: 3,
-            }}
-          >
-            Send a message on WhatsApp
-          </a>{" "}
-          — no commitment.
-        </p>
         <p
           style={{
             marginTop: 48,
