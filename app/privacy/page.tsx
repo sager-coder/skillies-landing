@@ -102,6 +102,56 @@ export default function PrivacyPage() {
               product you'd find relevant — with an unsubscribe link.</Li>
           </Ul>
 
+          <H2>WhatsApp Business Cloud API · what to know</H2>
+          <p>
+            Skillies.AI operates a WhatsApp Business Cloud API line on{" "}
+            <strong>+91 80899 41131</strong>. Messages you send to this number
+            are processed by Meta&rsquo;s WhatsApp Business platform and stored
+            on our servers (Supabase, hosted in Mumbai region) so we can reply,
+            answer questions, and follow up on workshops, the Skillies Batch,
+            or AI services for businesses.
+          </p>
+          <Ul>
+            <Li>
+              <strong>What we store:</strong> your WhatsApp display name, phone
+              number, the messages you send us, and the messages we send you.
+              Plus a tag for whether you&rsquo;re asking about the workshop,
+              the Batch, or business AI services.
+            </Li>
+            <Li>
+              <strong>Consent on first message:</strong> the very first time
+              you message +91 80899 41131, our system replies with a consent
+              prompt. You must reply <strong>YES</strong> for us to keep
+              storing your messages. Reply <strong>STOP</strong> at any time and we
+              wipe the entire conversation.
+            </Li>
+            <Li>
+              <strong>AI assistance:</strong> some replies you receive are
+              drafted by an AI agent (Claude Haiku via OpenRouter). Anything
+              the AI can&rsquo;t answer with confidence is escalated to a
+              human (Ehsan or a Skillies operator) within minutes during
+              business hours.
+            </Li>
+            <Li>
+              <strong>What we never do over WhatsApp:</strong> diagnose
+              medical conditions, give legal/tax/visa/immigration advice,
+              promise specific earnings, store payment-card numbers, or
+              share your phone number with third parties (other than Razorpay
+              when you click a payment link).
+            </Li>
+            <Li>
+              <strong>Retention:</strong> WhatsApp conversation data is kept
+              for 24 months after your last message, then automatically
+              deleted unless you&rsquo;re an active customer.
+            </Li>
+            <Li>
+              <strong>Templates:</strong> after 24 hours of silence on your
+              end, Meta only allows us to send pre-approved &ldquo;utility&rdquo;
+              templates (booking confirmations, payment reminders, workshop
+              details). We do not send marketing broadcasts via WhatsApp.
+            </Li>
+          </Ul>
+
           <H2>Your rights under DPDP Act 2023</H2>
           <Ul>
             <Li><strong>Access</strong> — ask us what data we hold about you.</Li>

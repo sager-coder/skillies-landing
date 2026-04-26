@@ -52,6 +52,7 @@ const COLUMNS: Col[] = [
     kicker: "Legal",
     items: [
       ["Privacy Policy", "/privacy"],
+      ["User Data Deletion", "/data-deletion"],
       ["Refund & Cancellation", "/refund"],
       ["Terms of Service", "/terms"],
       ["Contact · ehsan@skillies.ai", "mailto:ehsan@skillies.ai"],
