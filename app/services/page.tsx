@@ -69,21 +69,23 @@ export default function ServicesPage() {
 function Hero() {
   return (
     <section
+      className="skillies-services-hero"
       style={{
         position: "relative",
-        padding: "140px 24px 100px",
+        padding: "160px 24px 100px",
         background: `radial-gradient(ellipse at 12% 22%, rgba(198,40,40,0.18), transparent 55%), radial-gradient(ellipse at 88% 78%, rgba(230,193,120,0.16), transparent 55%), ${DARK}`,
         overflow: "hidden",
       }}
     >
       <div style={{ maxWidth: 1120, margin: "0 auto", position: "relative" }}>
         <div
+          className="skillies-services-eyebrow"
           style={{
             display: "flex",
             alignItems: "center",
             gap: 14,
             marginBottom: 36,
-            fontSize: 11,
+            fontSize: 10,
             color: "rgba(255,255,255,0.5)",
             letterSpacing: "0.32em",
             textTransform: "uppercase",
@@ -92,7 +94,7 @@ function Hero() {
           }}
         >
           <span style={{ width: 44, height: 1, background: GOLD_LIGHT }} />
-          <span>§ Skillies AI Business Lab</span>
+          <span style={{ fontSize: 11 }}>§ Skillies AI Business Lab</span>
           <span
             style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)", minWidth: 30 }}
           />
@@ -144,7 +146,7 @@ function Hero() {
             fontStyle: "italic",
             fontSize: 24,
             color: GOLD_LIGHT,
-            margin: "0 0 44px",
+            margin: "0 0 56px",
             lineHeight: 1.35,
             maxWidth: 760,
           }}
@@ -267,6 +269,9 @@ function Hero() {
         dangerouslySetInnerHTML={{
           __html: `
             @media (max-width: 860px) {
+              .skillies-services-hero {
+                padding: 80px 20px 80px !important;
+              }
               .skillies-services-trust {
                 grid-template-columns: 1fr 1fr !important;
                 gap: 14px !important;
@@ -290,10 +295,12 @@ function Hero() {
 function Wedge() {
   return (
     <section
+      className="skillies-services-wedge"
       style={{
         padding: "120px 24px",
         background: CREAM,
         color: CHARCOAL,
+        borderTop: `1px solid rgba(201,162,78,0.18)`,
       }}
     >
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
@@ -471,6 +478,7 @@ function FrontDesk() {
         color: "white",
         position: "relative",
         overflow: "hidden",
+        borderTop: `1px solid rgba(201,162,78,0.18)`,
       }}
     >
       <div
@@ -840,6 +848,7 @@ function ContentEngine() {
         color: CHARCOAL,
         position: "relative",
         overflow: "hidden",
+        borderTop: `1px solid rgba(201,162,78,0.22)`,
       }}
     >
       <div
@@ -1246,6 +1255,8 @@ function Proof() {
               fontWeight: 400,
               fontStyle: "italic",
               color: GOLD,
+              letterSpacing: "-0.01em",
+              whiteSpace: "nowrap",
             }}
           >
             other end.
@@ -1411,6 +1422,7 @@ function WhySkillies() {
         padding: "120px 24px",
         background: DARK,
         color: "white",
+        borderTop: `1px solid rgba(201,162,78,0.18)`,
       }}
     >
       <div style={{ maxWidth: 1160, margin: "0 auto" }}>
@@ -1460,8 +1472,8 @@ function WhySkillies() {
           className="skillies-reasons-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: 18,
+            gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+            gap: 22,
           }}
         >
           {reasons.map((r) => (
@@ -1565,6 +1577,7 @@ function Compliance() {
         padding: "120px 24px",
         background: CREAM,
         color: CHARCOAL,
+        borderTop: `1px solid rgba(201,162,78,0.22)`,
       }}
     >
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
@@ -1770,6 +1783,7 @@ function TalkToTheBot() {
         color: "white",
         position: "relative",
         overflow: "hidden",
+        borderTop: `1px solid rgba(201,162,78,0.18)`,
       }}
     >
       <div
@@ -2061,6 +2075,7 @@ function FAQ() {
         padding: "120px 24px",
         background: CREAM,
         color: CHARCOAL,
+        borderTop: `1px solid rgba(201,162,78,0.22)`,
       }}
     >
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -2093,41 +2108,64 @@ function FAQ() {
           </em>
         </h2>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div className="skillies-faq-list" style={{ display: "flex", flexDirection: "column" }}>
           {faqs.map((f, i) => (
             <details
               key={i}
+              className="skillies-faq-row"
               style={{
-                padding: "22px 4px",
-                borderTop: "1px solid rgba(26,26,26,0.1)",
+                padding: "26px 4px",
+                borderTop: `1px solid rgba(201,162,78,0.28)`,
                 borderBottom:
                   i === faqs.length - 1
-                    ? "1px solid rgba(26,26,26,0.1)"
+                    ? `1px solid rgba(201,162,78,0.28)`
                     : "none",
+                transition: "background 180ms ease",
               }}
             >
               <summary
                 style={{
                   listStyle: "none",
                   cursor: "pointer",
-                  fontSize: 19,
-                  fontWeight: 600,
-                  color: CHARCOAL,
-                  letterSpacing: "-0.01em",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 16,
+                  display: "grid",
+                  gridTemplateColumns: "auto 1fr auto",
+                  alignItems: "baseline",
+                  gap: 22,
                 }}
               >
-                <span dangerouslySetInnerHTML={{ __html: f.q }} />
+                <span
+                  className="skillies-faq-num"
+                  style={{
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontStyle: "italic",
+                    fontWeight: 400,
+                    fontSize: 22,
+                    color: GOLD,
+                    letterSpacing: "0.01em",
+                    minWidth: 32,
+                    lineHeight: 1,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <span
                   style={{
-                    fontSize: 22,
+                    fontSize: 19,
+                    fontWeight: 600,
+                    color: CHARCOAL,
+                    letterSpacing: "-0.01em",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: f.q }}
+                />
+                <span
+                  className="skillies-faq-mark"
+                  style={{
+                    fontSize: 26,
                     fontWeight: 300,
                     color: RED,
                     lineHeight: 1,
                     flexShrink: 0,
+                    transition: "transform 220ms ease",
                   }}
                 >
                   +
@@ -2135,7 +2173,8 @@ function FAQ() {
               </summary>
               <p
                 style={{
-                  marginTop: 14,
+                  marginTop: 16,
+                  marginLeft: 54,
                   fontSize: 15,
                   color: "#4B5563",
                   lineHeight: 1.7,
@@ -2146,6 +2185,21 @@ function FAQ() {
           ))}
         </div>
       </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .skillies-faq-row:hover { background: rgba(26,26,26,0.025); }
+            .skillies-faq-row[open] .skillies-faq-mark { transform: rotate(45deg); }
+            .skillies-faq-row[open] .skillies-faq-num { color: ${RED}; }
+            @media (max-width: 640px) {
+              .skillies-faq-row summary { grid-template-columns: auto 1fr auto; gap: 14px !important; }
+              .skillies-faq-row summary > span:nth-child(2) { font-size: 17px !important; }
+              .skillies-faq-row p { margin-left: 38px !important; }
+            }
+          `,
+        }}
+      />
     </section>
   );
 }
@@ -2158,10 +2212,11 @@ function FinalCTA() {
   return (
     <section
       style={{
-        padding: "140px 24px",
+        padding: "160px 24px",
         background: `radial-gradient(ellipse at 50% 50%, rgba(198,40,40,0.2), transparent 60%), ${CHARCOAL}`,
         color: "white",
         textAlign: "center",
+        borderTop: `1px solid rgba(201,162,78,0.18)`,
       }}
     >
       <div style={{ maxWidth: 820, margin: "0 auto" }}>
@@ -2237,9 +2292,19 @@ function FinalCTA() {
             <path d="M17 8l4 4-4 4M3 12h18" />
           </svg>
         </a>
+        {/* gold ornament under the CTA */}
+        <div
+          aria-hidden
+          style={{
+            margin: "44px auto 0",
+            width: 72,
+            height: 1,
+            background: `linear-gradient(to right, transparent, ${GOLD_LIGHT}, transparent)`,
+          }}
+        />
         <p
           style={{
-            marginTop: 48,
+            marginTop: 28,
             fontSize: 14,
             color: "rgba(255,255,255,0.45)",
             fontStyle: "italic",
