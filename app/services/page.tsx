@@ -21,6 +21,8 @@ const WHATSAPP_AUDIT =
   "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20want%20to%20book%20the%20Skillies%20AI%20Business%20Audit%20for%20my%20business.%20My%20business%20is%20";
 const WHATSAPP_FRONTDESK =
   "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20the%20Skillies%20AI%20Front%20Desk.%20My%20business%20is%20";
+const WHATSAPP_CONTENT =
+  "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20the%20Skillies%20AI%20Content%20Engine.%20My%20business%20is%20";
 const WHATSAPP_GENERIC =
   "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27m%20interested%20in%20Skillies%20AI%20services%20for%20my%20business.%20My%20business%20is%20";
 
@@ -42,9 +44,7 @@ export default function ServicesPage() {
       <Hero />
       <Wedge />
       <FrontDesk />
-      <SevenServices />
-      <IndustryPacks />
-      <NinetyDayPlan />
+      <ContentEngine />
       <WhySkillies />
       <Compliance />
       <Pricing />
@@ -105,7 +105,7 @@ function Hero() {
             maxWidth: 1000,
           }}
         >
-          Practical AI systems for{" "}
+          Two systems. One operator. Built for{" "}
           <em
             style={{
               fontFamily: "'Instrument Serif', Georgia, serif",
@@ -114,7 +114,7 @@ function Hero() {
               color: GOLD_LIGHT,
             }}
           >
-            Kerala businesses.
+            Kerala.
           </em>
         </h1>
 
@@ -127,10 +127,10 @@ function Hero() {
             lineHeight: 1.6,
           }}
         >
-          Your leads don&rsquo;t disappear. Your WhatsApp replies are fast. Your
-          calls get answered. Your follow-ups happen on time. Your staff has
-          systems. And you get a clean daily report of what actually happened
-          in your business today.
+          A Front Desk that answers every WhatsApp message, every call, every
+          enquiry — Malayalam and English, all day, every day. And a Content
+          Engine that ships three reels a day under your name, in your voice,
+          without burning you out.
         </p>
 
         <p
@@ -197,7 +197,7 @@ function Hero() {
               gap: 8,
             }}
           >
-            See the AI Front Desk →
+            See the two systems →
           </Link>
         </div>
 
@@ -779,108 +779,71 @@ function FrontDesk() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════ */
-/* 7 CORE SERVICES                                                         */
+/* AI CONTENT ENGINE — System 02                                           */
 /* ═══════════════════════════════════════════════════════════════════════ */
 
-type Svc = {
-  n: string;
-  name: string;
-  kind: string;
-  owner: string;
-  bestFor: string;
-  price: string;
-  accent: string;
-};
-
-const SERVICES: Svc[] = [
-  {
-    n: "01",
-    name: "AI Business Audit",
-    kind: "Start here",
-    owner:
-      "We study your business end-to-end, find where leads are leaking, where time is wasted, where staff is stuck, and hand you a 30-day AI implementation roadmap.",
-    bestFor: "Every business · the trust-builder before any big install",
-    price: "₹4,999 quick · ₹14,999 detailed",
-    accent: RED,
-  },
-  {
-    n: "02",
-    name: "WhatsApp AI Lead Assistant",
-    kind: "Flagship standalone",
-    owner:
-      "Your WhatsApp stops being chaos. It answers FAQs, qualifies leads, sends packages, books appointments, chases follow-ups, and puts everything into your CRM automatically.",
-    bestFor:
-      "Clinics · salons · coaching centres · real estate · resorts · retail · service businesses",
-    price: "₹30,000 – ₹90,000 setup · ₹7,500 – ₹25,000/mo",
-    accent: GOLD,
-  },
-  {
-    n: "03",
-    name: "AI Voice Receptionist",
-    kind: "Premium",
-    owner:
-      "Missed calls become zero. The AI answers in Malayalam or English, explains timings and services, collects details, books appointments, and escalates urgent cases to a human.",
-    bestFor:
-      "Clinics · hospitals · ayurveda centres · car service · schools · real estate · travel",
-    price: "₹50,000 – ₹2,00,000 setup · ₹15,000 – ₹75,000/mo",
-    accent: GOLD_LIGHT,
-  },
-  {
-    n: "04",
-    name: "AI CRM + Follow-Up Autopilot",
-    kind: "Revenue defender",
-    owner:
-      "Every lead — from Instagram, ads, WhatsApp, calls, website — gets captured, assigned, reminded, and followed up automatically. You see conversions, drop-offs, and ROI in one dashboard.",
-    bestFor:
-      "Real estate · builders · interior designers · education institutes · B2B services · high-ticket retail",
-    price: "₹50,000 – ₹2,50,000 setup · ₹10,000 – ₹50,000/mo",
-    accent: FOREST,
-  },
-  {
-    n: "05",
-    name: "AI Local Growth Engine",
-    kind: "Visibility + trust",
-    owner:
-      "Google Business Profile tuned, review requests automated, local search pages published, WhatsApp lead capture live, and a monthly performance report that&rsquo;s actually readable.",
-    bestFor:
-      "Restaurants · clinics · salons · boutiques · gyms · homestays · event businesses",
-    price: "₹20,000 – ₹75,000 setup · ₹10,000 – ₹50,000/mo",
-    accent: RED,
-  },
-  {
-    n: "06",
-    name: "AI Content Engine",
-    kind: "Malayalam · Manglish · English",
-    owner:
-      "Not &ldquo;ChatGPT English captions.&rdquo; Real Malayalam hooks. Manglish tones. Gulf Malayali voice. Malabar voice. Kochi youth voice. Festival campaigns. Reels scripts. WhatsApp broadcasts. All approved before publishing.",
-    bestFor:
-      "Restaurants · coaches · teachers · clinics · ayurveda · boutiques · jewellery · creators",
-    price: "₹15,000 – ₹60,000/mo (no setup)",
-    accent: GOLD,
-  },
-  {
-    n: "07",
-    name: "Appointment + Reminder + Payment Automation",
-    kind: "Operations",
-    owner:
-      "Customers book themselves. Calendars sync. Reminders go out. Payment links send. No-shows get followed up. Post-service, a review request lands on WhatsApp. All of it, automatic.",
-    bestFor:
-      "Clinics · salons · spas · ayurveda · tuition · consultants · fitness · photographers",
-    price: "₹20,000 – ₹80,000 setup · ₹5,000 – ₹25,000/mo",
-    accent: GOLD_LIGHT,
-  },
-];
-
-function SevenServices() {
+function ContentEngine() {
+  const features = [
+    {
+      n: "01",
+      title: "Voice in, video out",
+      body:
+        "Record a 3–5 minute voice note in Manglish, Malayalam, or English. Stop thinking about lighting, scripts, edits, captions, hooks. We do the rest.",
+    },
+    {
+      n: "02",
+      title: "Trained on your style",
+      body:
+        "We build an AI model on your face, voice, mannerisms. Every video sounds like you on a good day — never like a stock template.",
+    },
+    {
+      n: "03",
+      title: "3 reels per day, automated",
+      body:
+        "Monday morning to Sunday night. No skipped weeks. Hooks, captions, motion, music — all in your brand grammar.",
+    },
+    {
+      n: "04",
+      title: "Founder-led, written-content option",
+      body:
+        "Prefer English-only? Send written points. We turn them into a fully-edited video with motion, b-roll, captions.",
+    },
+    {
+      n: "05",
+      title: "Consistency without burnout",
+      body:
+        "The reason most founders&rsquo; content dies in week 3 isn&rsquo;t ideas. It&rsquo;s the production cost of every reel. We remove that cost.",
+    },
+  ];
+  const bestFor = [
+    "Founders · operators · solo experts who want to be the brand",
+    "Coaches · creators · educators · consultants",
+    "Clinics · salons · resorts with a face-of-brand owner",
+    "Real estate · NRI desks · hospitality founders",
+    "MSME owners building a personal-brand moat",
+  ];
   return (
     <section
+      id="content-engine"
       style={{
         padding: "120px 24px",
         background: CREAM,
         color: CHARCOAL,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 1160, margin: "0 auto" }}>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 15% 90%, rgba(198,40,40,0.07), transparent 55%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div style={{ maxWidth: 1120, margin: "0 auto", position: "relative" }}>
         <p
           style={{
             fontSize: 11,
@@ -888,415 +851,169 @@ function SevenServices() {
             textTransform: "uppercase",
             color: RED,
             fontWeight: 700,
-            margin: "0 0 16px",
+            margin: "0 0 18px",
           }}
         >
-          § What&rsquo;s inside the Front Desk
+          § System 02 · AI Content Engine
         </p>
         <h2
           style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: "clamp(40px, 5.5vw, 72px)",
+            fontSize: "clamp(42px, 5.8vw, 80px)",
             fontWeight: 400,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.05,
-            margin: "0 0 22px",
+            letterSpacing: "-0.025em",
+            lineHeight: 1.02,
+            margin: "0 0 24px",
+            maxWidth: 960,
             color: CHARCOAL,
-            maxWidth: 900,
           }}
         >
-          Seven systems we install.{" "}
-          <em style={{ fontStyle: "italic", color: RED }}>
-            Pick one, pick all.
-          </em>
+          <strong style={{ fontFamily: "inherit", fontWeight: 700 }}>
+            You speak.
+          </strong>{" "}
+          <em style={{ fontStyle: "italic", color: GOLD }}>We ship.</em>
         </h2>
         <p
           style={{
-            fontSize: 18,
+            fontSize: 19,
             color: "#4B5563",
-            maxWidth: 720,
+            maxWidth: 800,
             lineHeight: 1.65,
-            margin: "0 0 56px",
+            margin: "0 0 64px",
           }}
         >
-          Start with the Audit — that&rsquo;s the trust-builder. Then we
-          install whatever the audit says matters most for your business.
-          Most clients start with two or three and scale from there.
+          Founders shouldn&rsquo;t have to direct, edit, and post. The Content
+          Engine does that. You just record voice notes — or write the script
+          if your audience prefers English — and three finished videos go
+          live every day under your name.
         </p>
 
         <div
-          className="skillies-services-list"
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 18,
+            display: "grid",
+            gridTemplateColumns: "1.2fr 1fr",
+            gap: 40,
           }}
+          className="skillies-content-grid"
         >
-          {SERVICES.map((s) => (
-            <article
-              key={s.n}
+          {/* LEFT — feature cards */}
+          <div
+            style={{
+              padding: "38px 36px",
+              borderRadius: 24,
+              background: "white",
+              border: "1px solid rgba(26,26,26,0.08)",
+              boxShadow: "0 30px 60px rgba(0,0,0,0.06)",
+              position: "relative",
+            }}
+          >
+            <div
               style={{
-                padding: "32px 32px 32px 40px",
-                borderRadius: 20,
-                background: "white",
-                border: "1px solid rgba(26,26,26,0.08)",
-                boxShadow: "0 20px 48px rgba(0,0,0,0.03)",
-                position: "relative",
-                overflow: "hidden",
-                display: "grid",
-                gridTemplateColumns: "1fr 0.6fr",
-                gap: 32,
-                alignItems: "start",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 4,
+                background: GOLD,
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
               }}
-              className="skillies-service-card"
+            />
+            <p
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: GOLD,
+                fontWeight: 700,
+                margin: "0 0 22px",
+              }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: 5,
-                  height: "100%",
-                  background: s.accent,
-                }}
-              />
-              <div>
-                <div
+              How it works · 5 moving parts, 0 effort from you
+            </p>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: 22,
+              }}
+            >
+              {features.map((f) => (
+                <li
+                  key={f.n}
                   style={{
                     display: "flex",
-                    alignItems: "baseline",
-                    gap: 16,
-                    marginBottom: 10,
-                    flexWrap: "wrap",
+                    alignItems: "flex-start",
+                    gap: 18,
                   }}
                 >
                   <span
                     style={{
+                      flexShrink: 0,
                       fontFamily: "'Instrument Serif', Georgia, serif",
-                      fontSize: 28,
                       fontStyle: "italic",
-                      color: s.accent,
+                      fontSize: 28,
+                      color: GOLD,
+                      width: 38,
+                      lineHeight: 1,
+                      paddingTop: 2,
                       letterSpacing: "-0.02em",
                     }}
                   >
-                    {s.n}
+                    {f.n}
                   </span>
-                  <h3
-                    style={{
-                      fontSize: 24,
-                      fontWeight: 700,
-                      color: CHARCOAL,
-                      letterSpacing: "-0.01em",
-                      margin: 0,
-                    }}
-                  >
-                    {s.name}
-                  </h3>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      letterSpacing: "0.24em",
-                      textTransform: "uppercase",
-                      color: s.accent,
-                      fontWeight: 700,
-                      padding: "5px 12px",
-                      borderRadius: 999,
-                      background: `${s.accent}15`,
-                    }}
-                  >
-                    {s.kind}
-                  </span>
-                </div>
-                <p
-                  style={{
-                    fontSize: 15.5,
-                    color: "#374151",
-                    lineHeight: 1.65,
-                    margin: "0 0 14px",
-                  }}
-                  dangerouslySetInnerHTML={{ __html: s.owner }}
-                />
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: "#6B7280",
-                    lineHeight: 1.55,
-                    margin: 0,
-                  }}
-                >
-                  <span style={{ fontWeight: 700, color: s.accent }}>
-                    Best for ·
-                  </span>{" "}
-                  {s.bestFor}
-                </p>
-              </div>
-              <div
-                style={{
-                  padding: "20px 22px",
-                  borderRadius: 14,
-                  background: "#FAF5EB",
-                  border: "1px dashed rgba(26,26,26,0.14)",
-                  alignSelf: "center",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: "0.28em",
-                    textTransform: "uppercase",
-                    color: "#9CA3AF",
-                    fontWeight: 700,
-                    margin: "0 0 8px",
-                  }}
-                >
-                  Investment
-                </p>
-                <p
-                  style={{
-                    fontSize: 15,
-                    fontWeight: 700,
-                    color: CHARCOAL,
-                    lineHeight: 1.45,
-                    margin: 0,
-                  }}
-                >
-                  {s.price}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
+                  <div>
+                    <h3
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 700,
+                        color: CHARCOAL,
+                        margin: "0 0 6px",
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {f.title}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: 14.5,
+                        color: "#4B5563",
+                        lineHeight: 1.6,
+                        margin: 0,
+                      }}
+                      dangerouslySetInnerHTML={{ __html: f.body }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @media (max-width: 860px) {
-              .skillies-service-card {
-                grid-template-columns: 1fr !important;
-                gap: 20px !important;
-                padding: 28px 24px 28px 32px !important;
-              }
-            }
-          `,
-        }}
-      />
-    </section>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════════ */
-/* INDUSTRY PACKS                                                          */
-/* ═══════════════════════════════════════════════════════════════════════ */
-
-type Pack = {
-  name: string;
-  tagline: string;
-  inside: string[];
-  accent: string;
-};
-
-const PACKS: Pack[] = [
-  {
-    name: "Clinic AI Pack",
-    tagline: "Dental · aesthetics · ayurveda · diagnostics · specialty clinics",
-    inside: [
-      "AI receptionist + WhatsApp appointment bot",
-      "Patient enquiry forms · treatment FAQs",
-      "Lab report notification workflow",
-      "Review request + missed-call recovery",
-      "Daily front-desk report to the owner",
-    ],
-    accent: RED,
-  },
-  {
-    name: "Tourism AI Concierge",
-    tagline: "Hotels · homestays · resorts · houseboats · tour operators",
-    inside: [
-      "Guest FAQ bot · multilingual replies",
-      "Room/package enquiry + itinerary generator",
-      "Airport pickup + booking follow-up",
-      "Review request · upsell messages",
-      "Daily booking-enquiry report",
-    ],
-    accent: GOLD,
-  },
-  {
-    name: "Education Institute AI Pack",
-    tagline: "Tuition · coaching · study-abroad · schools · skill institutes",
-    inside: [
-      "Admission enquiry + course recommendation bot",
-      "Fee reminder automation",
-      "Parent FAQ + announcement broadcasts",
-      "Teacher lesson-plan + worksheet assistant",
-      "Admissions CRM with full lead lifecycle",
-    ],
-    accent: GOLD_LIGHT,
-  },
-  {
-    name: "Real Estate AI Pack",
-    tagline: "Brokers · builders · interior designers · NRI buyer desks",
-    inside: [
-      "Property enquiry + budget/location qualifier",
-      "Site-visit booking · WhatsApp brochure sender",
-      "AI-written property descriptions",
-      "NRI buyer follow-up across time zones",
-      "Lead scoring + owner dashboard",
-    ],
-    accent: FOREST,
-  },
-  {
-    name: "Retail + Restaurant AI Pack",
-    tagline: "Restaurants · cafés · bakeries · boutiques · jewellery · electronics",
-    inside: [
-      "Menu / catalog WhatsApp bot",
-      "Offer broadcast + festival campaigns",
-      "Product FAQ + order enquiry flow",
-      "Instagram content engine",
-      "Customer reactivation messages",
-    ],
-    accent: RED,
-  },
-  {
-    name: "Ayurveda + Wellness AI Pack",
-    tagline: "Ayurveda hospitals · wellness resorts · yoga retreats · spas",
-    inside: [
-      "Treatment package explainer · multilingual",
-      "Guest intake forms · stay & package follow-up",
-      "Doctor consultation booking",
-      "Pre-arrival checklist + review request",
-      "Trust-building content engine",
-    ],
-    accent: GOLD,
-  },
-  {
-    name: "MSME + Manufacturing AI Pack",
-    tagline: "Food processing · textiles · furniture · exporters · traditional industries",
-    inside: [
-      "Product catalog + quotation generator",
-      "Distributor enquiry + B2B email assistant",
-      "Export enquiry response",
-      "Invoice / PO extraction",
-      "Sales dashboard for the owner",
-    ],
-    accent: GOLD_LIGHT,
-  },
-  {
-    name: "NRI Business Desk",
-    tagline: "Kerala businesses that serve the diaspora — Gulf, UK, US, Canada",
-    inside: [
-      "NRI enquiry handling across time zones",
-      "Document checklist automation",
-      "Family-business reporting",
-      "Malayalam ↔ English communication",
-      "Secure follow-up (no legal/tax/visa advice)",
-    ],
-    accent: FOREST,
-  },
-];
-
-function IndustryPacks() {
-  return (
-    <section
-      style={{
-        padding: "120px 24px",
-        background: DARK,
-        color: "white",
-      }}
-    >
-      <div style={{ maxWidth: 1160, margin: "0 auto" }}>
-        <p
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            color: GOLD_LIGHT,
-            fontWeight: 700,
-            margin: "0 0 16px",
-          }}
-        >
-          § Industry packs
-        </p>
-        <h2
-          style={{
-            fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: "clamp(40px, 5.5vw, 72px)",
-            fontWeight: 400,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.05,
-            margin: "0 0 22px",
-            maxWidth: 900,
-          }}
-        >
-          Pre-built for the{" "}
-          <em style={{ fontStyle: "italic", color: GOLD_LIGHT }}>
-            sectors that matter in Kerala.
-          </em>
-        </h2>
-        <p
-          style={{
-            fontSize: 18,
-            color: "rgba(255,255,255,0.62)",
-            maxWidth: 720,
-            lineHeight: 1.65,
-            margin: "0 0 56px",
-          }}
-        >
-          Each pack is the Front Desk, but tuned for your industry&rsquo;s
-          actual workflow — the questions your customers ask, the language
-          they use, the compliance you need, the follow-up rhythm that
-          converts.
-        </p>
-
-        <div
-          className="skillies-packs-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: 20,
-          }}
-        >
-          {PACKS.map((p) => (
-            <article
-              key={p.name}
+          {/* RIGHT — best for + the wedge + CTA */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            <div
               style={{
-                padding: "30px 28px 32px",
-                borderRadius: 18,
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                position: "relative",
+                padding: "28px 30px",
+                borderRadius: 20,
+                background: "rgba(26,26,26,0.04)",
+                border: "1px solid rgba(26,26,26,0.1)",
               }}
             >
-              <div
-                style={{
-                  width: 34,
-                  height: 2,
-                  background: p.accent,
-                  marginBottom: 18,
-                }}
-              />
-              <h3
-                style={{
-                  fontSize: 22,
-                  fontWeight: 700,
-                  letterSpacing: "-0.01em",
-                  color: "white",
-                  margin: "0 0 6px",
-                }}
-              >
-                {p.name}
-              </h3>
               <p
                 style={{
-                  fontSize: 13,
-                  color: "rgba(255,255,255,0.55)",
-                  lineHeight: 1.5,
-                  margin: "0 0 18px",
-                  fontStyle: "italic",
-                  fontFamily: "'Instrument Serif', serif",
+                  fontSize: 11,
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  color: "#6B7280",
+                  fontWeight: 700,
+                  margin: "0 0 14px",
                 }}
               >
-                {p.tagline}
+                Best for
               </p>
               <ul
                 style={{
@@ -1308,14 +1025,14 @@ function IndustryPacks() {
                   gap: 8,
                 }}
               >
-                {p.inside.map((i, j) => (
+                {bestFor.map((b, i) => (
                   <li
-                    key={j}
+                    key={i}
                     style={{
                       fontSize: 14,
-                      color: "rgba(255,255,255,0.78)",
-                      lineHeight: 1.55,
-                      paddingLeft: 18,
+                      color: "#374151",
+                      lineHeight: 1.5,
+                      paddingLeft: 16,
                       position: "relative",
                     }}
                   >
@@ -1326,213 +1043,111 @@ function IndustryPacks() {
                         top: 9,
                         width: 8,
                         height: 1,
-                        background: p.accent,
+                        background: GOLD,
                       }}
                     />
-                    {i}
+                    {b}
                   </li>
                 ))}
               </ul>
-            </article>
-          ))}
-        </div>
+            </div>
 
-        <p
-          style={{
-            marginTop: 40,
-            fontSize: 14,
-            color: "rgba(255,255,255,0.5)",
-            fontStyle: "italic",
-            fontFamily: "'Instrument Serif', serif",
-            textAlign: "center",
-          }}
-        >
-          Also available · Professional Office pack (CA · legal · consultants)
-          and Staff SOP + Internal Knowledge Bot. Ask on the call.
-        </p>
-      </div>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @media (max-width: 860px) {
-              .skillies-packs-grid {
-                grid-template-columns: 1fr !important;
-              }
-            }
-          `,
-        }}
-      />
-    </section>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════════ */
-/* 90-DAY PLAN                                                             */
-/* ═══════════════════════════════════════════════════════════════════════ */
-
-function NinetyDayPlan() {
-  const phases = [
-    {
-      span: "Days 1–15",
-      title: "The Audit",
-      body: "We sit with you (in person or Loom) for 90 minutes. We study how leads come in, how calls are handled, where drops happen, what staff actually do all day. You get a written roadmap and a recommendation — maybe small, maybe big.",
-      out: "Written 30-day roadmap",
-    },
-    {
-      span: "Days 16–45",
-      title: "The Install",
-      body: "We build your AI Front Desk (or whichever pieces you approved). We connect it to your existing WhatsApp, your CRM or Google Sheet, your calendar, your staff. We train your team — in Malayalam if that&rsquo;s how your team talks.",
-      out: "Live Front Desk + trained staff",
-    },
-    {
-      span: "Days 46–90",
-      title: "The Proof",
-      body: "We run the system alongside you. We refine with real data. At day 90 we sit again with hard numbers — leads recovered, hours saved, reviews collected, revenue moved — and decide what to scale next.",
-      out: "Before / after receipts",
-    },
-  ];
-  return (
-    <section
-      style={{
-        padding: "120px 24px",
-        background: CREAM,
-        color: CHARCOAL,
-      }}
-    >
-      <div style={{ maxWidth: 1120, margin: "0 auto" }}>
-        <p
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            color: RED,
-            fontWeight: 700,
-            margin: "0 0 16px",
-          }}
-        >
-          § How it works
-        </p>
-        <h2
-          style={{
-            fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: "clamp(40px, 5.5vw, 72px)",
-            fontWeight: 400,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.05,
-            margin: "0 0 22px",
-            color: CHARCOAL,
-            maxWidth: 900,
-          }}
-        >
-          90 days from first call{" "}
-          <em style={{ fontStyle: "italic", color: RED }}>
-            to written proof.
-          </em>
-        </h2>
-        <p
-          style={{
-            fontSize: 18,
-            color: "#4B5563",
-            maxWidth: 720,
-            lineHeight: 1.65,
-            margin: "0 0 56px",
-          }}
-        >
-          No 6-week discovery. No SOW theatre. Three phases, predictable
-          dates, and at day 90 we hand you receipts — not slides.
-        </p>
-
-        <div
-          className="skillies-plan-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 24,
-          }}
-        >
-          {phases.map((p, i) => (
             <div
-              key={i}
               style={{
-                padding: "30px 28px 32px",
-                borderRadius: 18,
-                background: "white",
-                border: "1px solid rgba(26,26,26,0.08)",
-                boxShadow: "0 18px 44px rgba(0,0,0,0.03)",
-                position: "relative",
+                padding: "28px 30px",
+                borderRadius: 20,
+                background: `linear-gradient(135deg, rgba(198,40,40,0.08), rgba(198,40,40,0.02))`,
+                border: "1px solid rgba(198,40,40,0.22)",
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 28,
-                  right: 28,
-                  height: 3,
-                  background: GOLD,
-                  borderRadius: 999,
-                }}
-              />
               <p
                 style={{
                   fontSize: 11,
                   letterSpacing: "0.3em",
                   textTransform: "uppercase",
-                  color: GOLD,
-                  fontWeight: 700,
-                  margin: "14px 0 8px",
-                }}
-              >
-                {p.span}
-              </p>
-              <h3
-                style={{
-                  fontFamily: "'Instrument Serif', Georgia, serif",
-                  fontSize: 32,
-                  fontWeight: 400,
-                  letterSpacing: "-0.015em",
-                  color: CHARCOAL,
-                  margin: "0 0 14px",
-                  lineHeight: 1.1,
-                }}
-              >
-                {p.title}
-              </h3>
-              <p
-                style={{
-                  fontSize: 14.5,
-                  color: "#4B5563",
-                  lineHeight: 1.65,
-                  margin: "0 0 18px",
-                }}
-                dangerouslySetInnerHTML={{ __html: p.body }}
-              />
-              <p
-                style={{
-                  fontSize: 12,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
                   color: RED,
                   fontWeight: 700,
-                  margin: 0,
-                  paddingTop: 14,
-                  borderTop: "1px dashed rgba(26,26,26,0.14)",
+                  margin: "0 0 8px",
                 }}
               >
-                Deliverable · {p.out}
+                The unfair part
+              </p>
+              <p
+                style={{
+                  fontFamily: "'Instrument Serif', Georgia, serif",
+                  fontSize: 26,
+                  fontWeight: 400,
+                  color: CHARCOAL,
+                  margin: "0 0 10px",
+                  letterSpacing: "-0.015em",
+                  lineHeight: 1.2,
+                }}
+              >
+                <em style={{ fontStyle: "italic" }}>
+                  90 reels a month — without you ever opening a timeline.
+                </em>
+              </p>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "#4B5563",
+                  fontStyle: "italic",
+                  fontFamily: "'Instrument Serif', serif",
+                  lineHeight: 1.55,
+                  margin: 0,
+                }}
+              >
+                Your face, your voice, your business. Every day, on
+                auto-pilot.
               </p>
             </div>
-          ))}
+
+            <a
+              href={WHATSAPP_CONTENT}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: "20px 28px",
+                background: RED,
+                color: "white",
+                textDecoration: "none",
+                borderRadius: 999,
+                fontSize: 16,
+                fontWeight: 700,
+                letterSpacing: "0.02em",
+                boxShadow: "0 20px 44px rgba(198,40,40,0.32)",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+                textAlign: "center",
+              }}
+            >
+              Start the Content Engine conversation
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 8l4 4-4 4M3 12h18" />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
 
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            @media (max-width: 860px) {
-              .skillies-plan-grid {
+            @media (max-width: 960px) {
+              .skillies-content-grid {
                 grid-template-columns: 1fr !important;
+                gap: 28px !important;
               }
             }
           `,
@@ -1926,16 +1541,69 @@ function Compliance() {
 /* ═══════════════════════════════════════════════════════════════════════ */
 
 function Pricing() {
-  const rows = [
-    { pkg: "AI Business Audit", who: "Every business · the entry point", setup: "₹4,999 – ₹14,999", mo: "—" },
-    { pkg: "Starter Automation", who: "Small shop / service business", setup: "₹25,000 – ₹50,000", mo: "₹5,000 – ₹12,000" },
-    { pkg: "WhatsApp Lead Assistant", who: "Local lead-driven business", setup: "₹30,000 – ₹90,000", mo: "₹7,500 – ₹25,000" },
-    { pkg: "AI Content Engine", who: "Creator · local brand · hospitality", setup: "none / ₹15,000", mo: "₹15,000 – ₹60,000" },
-    { pkg: "CRM + Follow-Up Autopilot", who: "High-ticket · multi-channel", setup: "₹50,000 – ₹2,50,000", mo: "₹10,000 – ₹50,000" },
-    { pkg: "AI Voice Receptionist", who: "Clinic · resort · school · real estate", setup: "₹50,000 – ₹2,00,000", mo: "₹15,000 – ₹75,000" },
-    { pkg: "Industry AI Pack", who: "Clinic · tourism · education · retail", setup: "₹75,000 – ₹4,00,000", mo: "₹20,000 – ₹1,00,000" },
-    { pkg: "AI Front Desk (flagship)", who: "Complete bundle · fastest wins", setup: "₹75,000", mo: "₹15,000" },
-    { pkg: "AI Transformation Retainer", who: "Larger institutions · embedded", setup: "₹2,00,000+", mo: "₹75,000 – ₹3,00,000+" },
+  type Tier = {
+    name: string;
+    note: string;
+    setup: string;
+    monthly: string;
+    monthlyLabel: string;
+    blurb: string;
+    inside: string[];
+    accent: string;
+    featured: boolean;
+  };
+  const tiers: Tier[] = [
+    {
+      name: "Base Pack",
+      note: "Two systems · low-mid volume",
+      setup: "₹70,000",
+      monthly: "₹25,000",
+      monthlyLabel: "/ month",
+      blurb:
+        "Front Desk + Content Engine, fully installed. The floor — the only number we put a sticker on.",
+      inside: [
+        "AI Front Desk · WhatsApp, calls, follow-ups, daily owner report",
+        "AI Content Engine · 3 reels per day, in your voice",
+        "Setup, training, and 30-day pilot included",
+        "Cancel maintenance any month, no penalty",
+      ],
+      accent: GOLD_LIGHT,
+      featured: true,
+    },
+    {
+      name: "Growth",
+      note: "Two systems · scaling volume",
+      setup: "Custom quote",
+      monthly: "Custom quote",
+      monthlyLabel: "",
+      blurb:
+        "Same two systems — priced for higher conversation volume on the Front Desk and bigger content output (more languages, more clips, paid-ad-ready).",
+      inside: [
+        "Higher WhatsApp / call concurrency",
+        "Multi-language content (Malayalam + English + Manglish)",
+        "Ad-ready clip cuts + thumbnails",
+        "Weekly reporting cadence",
+      ],
+      accent: GOLD,
+      featured: false,
+    },
+    {
+      name: "Operator",
+      note: "Multi-location · multi-founder",
+      setup: "Custom quote",
+      monthly: "Custom quote",
+      monthlyLabel: "",
+      blurb:
+        "For groups running multiple branches or multiple founders on the Content Engine. Embedded support and a dedicated operator on our side.",
+      inside: [
+        "Multiple locations / multiple WhatsApp lines",
+        "Multiple founder voice models",
+        "Dedicated Skillies operator",
+        "Quarterly business review",
+      ],
+      accent: RED,
+      featured: false,
+    },
   ];
   return (
     <section
@@ -1956,7 +1624,7 @@ function Pricing() {
             margin: "0 0 16px",
           }}
         >
-          § Pricing ladder · indicative
+          § Pricing · two systems, one base pack
         </p>
         <h2
           style={{
@@ -1969,141 +1637,304 @@ function Pricing() {
             maxWidth: 900,
           }}
         >
-          Transparent floors.{" "}
+          One floor.{" "}
           <em style={{ fontStyle: "italic", color: GOLD_LIGHT }}>
-            Exact scope on the audit.
+            Scales with the work.
           </em>
         </h2>
         <p
           style={{
             fontSize: 18,
             color: "rgba(255,255,255,0.62)",
-            maxWidth: 720,
+            maxWidth: 760,
             lineHeight: 1.65,
             margin: "0 0 56px",
           }}
         >
-          You won&rsquo;t hear &ldquo;it depends&rdquo; from us. Here&rsquo;s
-          the real ladder Kerala businesses pay on. The exact number for
-          your business lands on your one-page scope, within 48 hours of the
-          audit call.
+          The Base Pack is{" "}
+          <strong style={{ color: "white" }}>₹70,000 setup</strong> +{" "}
+          <strong style={{ color: "white" }}>₹25,000 / month</strong> — both
+          systems, fully installed and maintained. The monthly is a floor.
+          As your conversation volume on the Front Desk and your content
+          volume on the Engine grow, maintenance scales up. We&rsquo;ll
+          quote that exactly when we know your numbers.
         </p>
 
         <div
+          className="skillies-pricing-grid"
           style={{
-            borderRadius: 18,
-            overflow: "hidden",
-            border: "1px solid rgba(255,255,255,0.08)",
-            background: "rgba(255,255,255,0.02)",
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 20,
           }}
         >
-          {/* header */}
-          <div
-            className="skillies-price-header skillies-price-row"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1.4fr 1.6fr 1fr 1fr",
-              padding: "18px 24px",
-              background: "rgba(255,255,255,0.04)",
-              borderBottom: "1px solid rgba(255,255,255,0.08)",
-              fontSize: 11,
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.55)",
-              fontWeight: 700,
-            }}
-          >
-            <div>Package</div>
-            <div>Best for</div>
-            <div>Setup</div>
-            <div>Monthly</div>
-          </div>
-          {rows.map((r, i) => (
-            <div
-              key={r.pkg}
-              className="skillies-price-row"
+          {tiers.map((t) => (
+            <article
+              key={t.name}
               style={{
-                display: "grid",
-                gridTemplateColumns: "1.4fr 1.6fr 1fr 1fr",
-                padding: "20px 24px",
-                borderBottom:
-                  i === rows.length - 1
-                    ? "none"
-                    : "1px solid rgba(255,255,255,0.06)",
-                alignItems: "center",
-                background:
-                  r.pkg === "AI Front Desk (flagship)"
-                    ? "rgba(230,193,120,0.06)"
-                    : "transparent",
+                padding: "34px 30px 32px",
+                borderRadius: 22,
+                background: t.featured
+                  ? "rgba(230,193,120,0.06)"
+                  : "rgba(255,255,255,0.03)",
+                border: t.featured
+                  ? "1px solid rgba(230,193,120,0.35)"
+                  : "1px solid rgba(255,255,255,0.08)",
+                position: "relative",
+                boxShadow: t.featured
+                  ? "0 30px 60px rgba(0,0,0,0.35)"
+                  : "0 18px 40px rgba(0,0,0,0.18)",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <div
                 style={{
-                  fontSize: 15,
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 3,
+                  background: t.accent,
+                  borderTopLeftRadius: 22,
+                  borderTopRightRadius: 22,
+                }}
+              />
+              {t.featured && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: -12,
+                    right: 22,
+                    fontSize: 10,
+                    letterSpacing: "0.3em",
+                    textTransform: "uppercase",
+                    color: DARK,
+                    background: GOLD_LIGHT,
+                    padding: "5px 12px",
+                    borderRadius: 999,
+                    fontWeight: 800,
+                  }}
+                >
+                  Start here
+                </span>
+              )}
+              <p
+                style={{
+                  fontSize: 11,
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  color: t.accent,
                   fontWeight: 700,
-                  color:
-                    r.pkg === "AI Front Desk (flagship)" ? GOLD_LIGHT : "white",
+                  margin: "0 0 10px",
                 }}
               >
-                {r.pkg}
-              </div>
-              <div
+                {t.note}
+              </p>
+              <h3
                 style={{
-                  fontSize: 13.5,
-                  color: "rgba(255,255,255,0.65)",
-                  lineHeight: 1.5,
-                }}
-              >
-                {r.who}
-              </div>
-              <div
-                style={{
-                  fontFamily: "'Instrument Serif', Georgia, serif",
-                  fontSize: 17,
-                  color: "white",
+                  fontSize: 26,
+                  fontWeight: 700,
                   letterSpacing: "-0.01em",
+                  color: "white",
+                  margin: "0 0 18px",
                 }}
               >
-                {r.setup}
-              </div>
+                {t.name}
+              </h3>
+
               <div
                 style={{
-                  fontFamily: "'Instrument Serif', Georgia, serif",
-                  fontSize: 17,
-                  color: "white",
-                  letterSpacing: "-0.01em",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
+                  marginBottom: 18,
                 }}
               >
-                {r.mo}
+                <div>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      letterSpacing: "0.28em",
+                      textTransform: "uppercase",
+                      color: "rgba(255,255,255,0.5)",
+                      fontWeight: 700,
+                      marginRight: 10,
+                    }}
+                  >
+                    Setup
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Instrument Serif', Georgia, serif",
+                      fontSize: 26,
+                      fontWeight: 400,
+                      color: "white",
+                      letterSpacing: "-0.015em",
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {t.setup}
+                  </span>
+                </div>
+                <div>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      letterSpacing: "0.28em",
+                      textTransform: "uppercase",
+                      color: "rgba(255,255,255,0.5)",
+                      fontWeight: 700,
+                      marginRight: 10,
+                    }}
+                  >
+                    Maintenance
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Instrument Serif', Georgia, serif",
+                      fontSize: 26,
+                      fontWeight: 400,
+                      color: "white",
+                      letterSpacing: "-0.015em",
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {t.monthly}
+                  </span>
+                  {t.monthlyLabel && (
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: "rgba(255,255,255,0.55)",
+                        marginLeft: 4,
+                      }}
+                    >
+                      {t.monthlyLabel}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+
+              <p
+                style={{
+                  fontSize: 14.5,
+                  color: "rgba(255,255,255,0.7)",
+                  lineHeight: 1.6,
+                  margin: "0 0 18px",
+                  fontStyle: "italic",
+                  fontFamily: "'Instrument Serif', serif",
+                }}
+              >
+                {t.blurb}
+              </p>
+
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  margin: "0 0 24px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  flex: 1,
+                }}
+              >
+                {t.inside.map((item, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      fontSize: 13.5,
+                      color: "rgba(255,255,255,0.78)",
+                      lineHeight: 1.55,
+                      paddingLeft: 18,
+                      position: "relative",
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 9,
+                        width: 8,
+                        height: 1,
+                        background: t.accent,
+                      }}
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href={WHATSAPP_GENERIC}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  padding: "16px 22px",
+                  background: t.featured ? RED : "transparent",
+                  color: "white",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                  fontSize: 14.5,
+                  fontWeight: 700,
+                  letterSpacing: "0.02em",
+                  border: t.featured
+                    ? "none"
+                    : "1.5px solid rgba(255,255,255,0.22)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  textAlign: "center",
+                  boxShadow: t.featured
+                    ? "0 16px 36px rgba(198,40,40,0.32)"
+                    : "none",
+                }}
+              >
+                {t.featured ? "Start with the Base Pack" : "Get a custom quote"}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M17 8l4 4-4 4M3 12h18" />
+                </svg>
+              </a>
+            </article>
           ))}
         </div>
 
         <p
           style={{
-            marginTop: 24,
+            marginTop: 32,
             fontSize: 13,
             color: "rgba(255,255,255,0.5)",
             fontStyle: "italic",
             fontFamily: "'Instrument Serif', serif",
+            maxWidth: 800,
+            lineHeight: 1.6,
           }}
         >
           Every number above excludes direct WhatsApp Business API fees,
-          third-party tool subscriptions (Twilio, OpenAI, etc.), and GST.
-          Those pass through at cost on your monthly invoice.
+          third-party tool subscriptions (Twilio, OpenAI, content-tooling
+          credits, etc.), and GST. Those pass through at cost on your
+          monthly invoice.
         </p>
       </div>
 
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            @media (max-width: 860px) {
-              .skillies-price-header { display: none !important; }
-              .skillies-price-row {
+            @media (max-width: 960px) {
+              .skillies-pricing-grid {
                 grid-template-columns: 1fr !important;
-                gap: 6px !important;
-                padding: 20px 20px !important;
+                gap: 18px !important;
               }
             }
           `,
@@ -2137,19 +1968,23 @@ function FAQ() {
     },
     {
       q: "How fast will I see results?",
-      a: "The Audit gives you clarity in 14 days. The Install runs days 16–45. By day 45 you&rsquo;re already seeing missed leads recovered and reply times drop. By day 90 we sit with you and read the numbers — hours saved, leads recovered, reviews collected, revenue moved.",
+      a: "Setup runs in the first 30 days — your Front Desk goes live, your voice model trains, the first reels start shipping. From day 30 onwards both systems run daily. You&rsquo;ll see missed leads recovered, reply times drop, and three reels going live every day under your name.",
+    },
+    {
+      q: "What&rsquo;s the refund or pause policy?",
+      a: "The Base Pack ships with a 30-day pilot. If after 30 days the systems aren&rsquo;t earning their keep for your business, you can pause maintenance without penalty — no questions, no contract trap. The ₹70K setup is non-refundable once the install is live, but you keep what we built.",
+    },
+    {
+      q: "Do I have to do both systems? Can I take only the Front Desk?",
+      a: "The Base Pack is priced as the two together because that&rsquo;s the unfair combination — answers in front, content out back. If you only want one, we&rsquo;ll quote it standalone, but the per-system economics are different. Talk to us about what fits.",
     },
     {
       q: "What if my staff can&rsquo;t use new technology?",
-      a: "That&rsquo;s a great fit for us — not a problem. Our Staff SOP Bot answers your team&rsquo;s repeat questions in Malayalam. We train on-site. Most Skillies systems show the owner / staff exactly one dashboard and one daily WhatsApp message. Your team doesn&rsquo;t need to &ldquo;learn AI.&rdquo; They just read the message.",
+      a: "That&rsquo;s a great fit for us — not a problem. We train on-site. Most Skillies systems show the owner / staff exactly one dashboard and one daily WhatsApp message. Your team doesn&rsquo;t need to &ldquo;learn AI.&rdquo; They just read the message.",
     },
     {
       q: "What don&rsquo;t you do?",
       a: "We don&rsquo;t build medical-diagnosis bots, legal-advice bots, tax / visa / immigration bots, or &ldquo;ask me anything&rdquo; customer chatbots. We don&rsquo;t do bulk WhatsApp spam. We don&rsquo;t scrape other platforms for data. We don&rsquo;t train custom Malayalam LLMs from scratch — we use what&rsquo;s already great and layer your business logic on top.",
-    },
-    {
-      q: "Why should I start with the Audit and not a full install?",
-      a: "Because the Audit is the truth test. It tells you whether AI is worth installing in your business yet, and if so, which piece first. Most clients find they don&rsquo;t need the full Front Desk — they need 2 or 3 of the 7 services. The Audit saves you from buying things you don&rsquo;t need.",
     },
   ];
   return (
