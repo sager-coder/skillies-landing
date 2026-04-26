@@ -45,6 +45,7 @@ export default function ServicesPage() {
       <Wedge />
       <FrontDesk />
       <ContentEngine />
+      <Proof />
       <WhySkillies />
       <Compliance />
       <Pricing />
@@ -1153,6 +1154,213 @@ function ContentEngine() {
           `,
         }}
       />
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* PROOF · two real reels produced by the systems above                    */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function Proof() {
+  const reels = [
+    {
+      src: "/proof/skillies-cinematic.mp4",
+      poster: "/proof/skillies-cinematic-poster.jpg",
+      label: "01 · CINEMATIC BRAND REEL",
+      title: "Founder voice in. Cinematic reel out.",
+      body: "Footage, music, motion, captions, brand grammar · all stitched by the Content Engine. The founder recorded a script. The system delivered this on the same day.",
+    },
+    {
+      src: "/proof/meta-update-reel.mp4",
+      poster: "/proof/meta-update-reel-poster.jpg",
+      label: "02 · META UPDATE REEL",
+      title: "Same-day news brief · ready to post.",
+      body: "Topical, edited, on-brand. The kind of reel a founder would have to skip on a busy week · except now it ships every time, on the same day.",
+    },
+  ];
+
+  return (
+    <section
+      style={{
+        position: "relative",
+        padding: "120px 24px",
+        background: CREAM,
+        color: CHARCOAL,
+        borderTop: `1px solid rgba(0,0,0,0.06)`,
+      }}
+    >
+      <div style={{ maxWidth: 1180, margin: "0 auto", position: "relative" }}>
+        {/* Eyebrow rule */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            marginBottom: 28,
+            fontSize: 11,
+            color: "rgba(26,26,26,0.5)",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ width: 44, height: 1, background: GOLD }} />
+          <span>§ Proof · live outputs</span>
+          <span
+            style={{
+              flex: 1,
+              height: 1,
+              background: "rgba(0,0,0,0.08)",
+              minWidth: 30,
+            }}
+          />
+          <span>Both 9:16 · 60-second cuts</span>
+        </div>
+
+        {/* Title */}
+        <h2
+          style={{
+            margin: 0,
+            fontWeight: 900,
+            fontSize: "clamp(40px, 5.4vw, 76px)",
+            letterSpacing: "-0.035em",
+            lineHeight: 0.98,
+            color: CHARCOAL,
+            maxWidth: 920,
+          }}
+        >
+          What ships out the{" "}
+          <em
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontWeight: 400,
+              fontStyle: "italic",
+              color: GOLD,
+            }}
+          >
+            other end.
+          </em>
+        </h2>
+
+        <p
+          style={{
+            marginTop: 24,
+            fontSize: 19,
+            lineHeight: 1.55,
+            color: "rgba(26,26,26,0.7)",
+            maxWidth: 720,
+          }}
+        >
+          Two real reels produced by the Skillies stack · no actor, no editor,
+          no reshoots. Tap to play with sound.
+        </p>
+
+        {/* Reel grid · two portrait cards */}
+        <div
+          style={{
+            marginTop: 64,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 36,
+            alignItems: "start",
+          }}
+        >
+          {reels.map((r) => (
+            <article
+              key={r.src}
+              style={{
+                position: "relative",
+                background: CHARCOAL,
+                borderRadius: 18,
+                overflow: "hidden",
+                boxShadow:
+                  "0 1px 2px rgba(0,0,0,0.08), 0 24px 60px -20px rgba(0,0,0,0.35)",
+              }}
+            >
+              {/* portrait video frame · 9:16 */}
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  aspectRatio: "9 / 16",
+                  background: "#000",
+                }}
+              >
+                <video
+                  src={r.src}
+                  poster={r.poster}
+                  controls
+                  preload="none"
+                  playsInline
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    background: "#000",
+                  }}
+                />
+              </div>
+
+              {/* caption block */}
+              <div style={{ padding: "22px 22px 26px" }}>
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: GOLD_LIGHT,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    fontWeight: 700,
+                  }}
+                >
+                  {r.label}
+                </div>
+                <h3
+                  style={{
+                    margin: "10px 0 10px",
+                    fontFamily: "'Instrument Serif', Georgia, serif",
+                    fontWeight: 400,
+                    fontStyle: "italic",
+                    fontSize: 26,
+                    lineHeight: 1.15,
+                    color: CREAM,
+                    letterSpacing: "-0.005em",
+                  }}
+                >
+                  {r.title}
+                </h3>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 14.5,
+                    lineHeight: 1.55,
+                    color: "rgba(250,245,235,0.72)",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: r.body }}
+                />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Tag line */}
+        <p
+          style={{
+            marginTop: 44,
+            fontSize: 13,
+            color: "rgba(26,26,26,0.55)",
+            fontStyle: "italic",
+            maxWidth: 720,
+          }}
+        >
+          Both reels were produced for skillies.ai itself · the AI Business Lab
+          runs the same stack we install for clients. Founder records voice,
+          system ships finished reel.
+        </p>
+      </div>
     </section>
   );
 }
