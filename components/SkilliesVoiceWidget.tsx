@@ -3,6 +3,13 @@
 import Script from "next/script";
 import { useEffect } from "react";
 
+// The synchronous attachShadow patch that hides the `_poweredBy_*`
+// watermark element runs from app/layout.tsx · placed in <head> so it
+// executes before the widget script can create its shadow root. See
+// ELEVENLABS_WATERMARK_BLOCKER there. This component only handles the
+// async text-replacement fallback below, in case the CSS hide ever
+// stops matching (e.g. ElevenLabs renames `_poweredBy_*` classes).
+
 /**
  * SkilliesVoiceWidget — embeds the ElevenLabs Agents conversational-voice
  * widget on every page of skillies.ai. Visitor clicks the floating button →

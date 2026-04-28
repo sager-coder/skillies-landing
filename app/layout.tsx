@@ -45,6 +45,32 @@ export const metadata: Metadata = {
   },
 };
 
+// Inline script that runs SYNCHRONOUSLY in the document <head>, before any
+// other JS, before React hydrates, before the ElevenLabs widget script
+// loads. Patches Element.prototype.attachShadow so that the moment the
+// widget creates its shadow root, we inject CSS that hides the
+// `_poweredBy_*` watermark element. Because this happens BEFORE the widget
+// paints anything to screen, there's no flash of "Powered by ElevenLabs
+// Agents" — it's never rendered visibly at all.
+//
+// Idempotent · safe across HMR + double-mount.
+const ELEVENLABS_WATERMARK_BLOCKER = `(function(){
+  if (window.__skilliesShadowPatched) return;
+  window.__skilliesShadowPatched = true;
+  var orig = Element.prototype.attachShadow;
+  Element.prototype.attachShadow = function(){
+    var root = orig.apply(this, arguments);
+    try {
+      if (this.tagName && this.tagName.toLowerCase() === 'elevenlabs-convai') {
+        var s = document.createElement('style');
+        s.textContent = '[class*="_poweredBy_"]{display:none !important}';
+        root.appendChild(s);
+      }
+    } catch (e) {}
+    return root;
+  };
+})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -52,6 +78,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
+      <head>
+        <script
+          // Must execute before the ElevenLabs widget script attaches its
+          // shadow root. Placed in <head> so it runs before <body> mounts.
+          dangerouslySetInnerHTML={{ __html: ELEVENLABS_WATERMARK_BLOCKER }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <MetaPixel />
         {children}
