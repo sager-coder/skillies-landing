@@ -34,7 +34,13 @@ import { useEffect } from "react";
  * preview can point at different agents if we ever want a staging variant.
  */
 
-const FALLBACK_AGENT_ID = "agent_6001kq868kj1f6vbeekyttgy5bf6";
+// Migrated to English-mode on eleven_turbo_v2 · 28 Apr 2026 (after the
+// Malayalam Convai pipeline hit a quality ceiling on v3_conversational
+// and the newer v2_5 family is platform-blocked for ml language). The
+// old Malayalam agent (agent_6001kq868kj1f6vbeekyttgy5bf6) is kept in
+// the workspace as a fallback. To roll back, swap this constant +
+// redeploy.
+const FALLBACK_AGENT_ID = "agent_4301kqagd3g1e0p8hev9y4yasfpy";
 
 // The ElevenLabs widget ships as a custom element. TypeScript needs to
 // know it's a valid intrinsic element so we can render it in JSX without
