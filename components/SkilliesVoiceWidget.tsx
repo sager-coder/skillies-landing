@@ -47,31 +47,36 @@ export default function SkilliesVoiceWidget() {
   const agentId =
     process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID ?? FALLBACK_AGENT_ID;
 
-  // Hide the "Powered by ElevenLabs Agents" watermark inside the widget's
-  // shadow DOM. Removing it via the proper config (`disable_banner: true`)
-  // is gated on the ElevenLabs Business plan; this is the workaround at
-  // our Pro tier. Walks every text node in the widget's open shadow root,
-  // hides the ancestor element that contains the branding text. Re-runs
-  // on shadow-DOM mutations because the widget renders async.
+  // Replace the "Powered by ElevenLabs Agents" watermark with Skillies
+  // branding. Setting `disable_banner: true` via the ElevenLabs API is
+  // gated on the Business plan; we're on Pro. Workaround: walk into the
+  // widget's open shadow DOM, find the text node containing the branding,
+  // swap it for "Skillies.AI" so the footer stays visually balanced rather
+  // than collapsing into empty space. Re-runs on shadow-DOM mutations
+  // because the widget renders async and may re-paint the footer.
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    const REPLACEMENT_TEXT = "Skillies.AI";
 
     const containsBranding = (text: string) => {
       const t = text.toLowerCase();
       return t.includes("powered by") || t.includes("elevenlabs");
     };
 
-    const hideBanner = (root: ParentNode | ShadowRoot): boolean => {
-      // Walk every text node descendant. When we find branding text, hide
-      // the smallest reasonable ancestor (footer/banner/contentinfo/link).
+    const replaceBanner = (root: ParentNode | ShadowRoot): boolean => {
+      // Walk every text node descendant. When we find branding text, find
+      // the smallest reasonable ancestor (footer/banner/contentinfo/link),
+      // strip its existing children, and write the Skillies wordmark in
+      // their place. Inherit whatever font/colour the widget had so the
+      // swap feels native.
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      let hidden = false;
+      let replaced = false;
       let node: Node | null;
       while ((node = walker.nextNode())) {
         const value = node.nodeValue ?? "";
         if (!containsBranding(value)) continue;
         let el: HTMLElement | null = node.parentElement;
-        // Walk up to the strongest container · footer/banner/link/contentinfo
         let target: HTMLElement | null = el;
         while (el && el !== root) {
           const role = el.getAttribute("role");
@@ -87,36 +92,43 @@ export default function SkilliesVoiceWidget() {
           }
           el = el.parentElement;
         }
-        if (target) {
-          target.style.display = "none";
-          hidden = true;
+        if (target && target.textContent !== REPLACEMENT_TEXT) {
+          target.textContent = REPLACEMENT_TEXT;
+          // If it's a link, kill the click destination (we don't want it
+          // sending visitors to elevenlabs.io anymore).
+          if (target.tagName === "A") {
+            (target as HTMLAnchorElement).removeAttribute("href");
+            target.style.cursor = "default";
+            target.style.pointerEvents = "none";
+          }
+          replaced = true;
         }
       }
-      return hidden;
+      return replaced;
     };
 
-    const tryHide = (): boolean => {
+    const tryReplace = (): boolean => {
       const widget = document.querySelector(
         "elevenlabs-convai",
       ) as HTMLElement & { shadowRoot?: ShadowRoot | null };
       if (!widget?.shadowRoot) return false;
-      return hideBanner(widget.shadowRoot);
+      return replaceBanner(widget.shadowRoot);
     };
 
     // Try immediately · the widget script may already be loaded.
-    if (tryHide()) return;
+    if (tryReplace()) return;
 
     // Otherwise watch the document until the widget mounts. Once it does,
-    // also watch INSIDE the shadow DOM for re-renders.
+    // also watch INSIDE the shadow DOM for re-renders that re-add the
+    // original branding.
     const docObserver = new MutationObserver(() => {
       const widget = document.querySelector("elevenlabs-convai") as
         | (HTMLElement & { shadowRoot?: ShadowRoot | null })
         | null;
       if (!widget?.shadowRoot) return;
-      tryHide();
-      // Wire a deeper observer on the shadow root for subsequent re-renders.
+      tryReplace();
       const shadowObserver = new MutationObserver(() => {
-        if (widget.shadowRoot) hideBanner(widget.shadowRoot);
+        if (widget.shadowRoot) replaceBanner(widget.shadowRoot);
       });
       shadowObserver.observe(widget.shadowRoot, {
         childList: true,
