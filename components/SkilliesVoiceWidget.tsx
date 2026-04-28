@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { useEffect } from "react";
 
 /**
  * SkilliesVoiceWidget — embeds the ElevenLabs Agents conversational-voice
@@ -45,6 +46,88 @@ declare module "react" {
 export default function SkilliesVoiceWidget() {
   const agentId =
     process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID ?? FALLBACK_AGENT_ID;
+
+  // Hide the "Powered by ElevenLabs Agents" watermark inside the widget's
+  // shadow DOM. Removing it via the proper config (`disable_banner: true`)
+  // is gated on the ElevenLabs Business plan; this is the workaround at
+  // our Pro tier. Walks every text node in the widget's open shadow root,
+  // hides the ancestor element that contains the branding text. Re-runs
+  // on shadow-DOM mutations because the widget renders async.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const containsBranding = (text: string) => {
+      const t = text.toLowerCase();
+      return t.includes("powered by") || t.includes("elevenlabs");
+    };
+
+    const hideBanner = (root: ParentNode | ShadowRoot): boolean => {
+      // Walk every text node descendant. When we find branding text, hide
+      // the smallest reasonable ancestor (footer/banner/contentinfo/link).
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let hidden = false;
+      let node: Node | null;
+      while ((node = walker.nextNode())) {
+        const value = node.nodeValue ?? "";
+        if (!containsBranding(value)) continue;
+        let el: HTMLElement | null = node.parentElement;
+        // Walk up to the strongest container · footer/banner/link/contentinfo
+        let target: HTMLElement | null = el;
+        while (el && el !== root) {
+          const role = el.getAttribute("role");
+          const tag = el.tagName;
+          if (
+            role === "contentinfo" ||
+            tag === "FOOTER" ||
+            tag === "A" ||
+            (el.className && /banner|powered|footer/i.test(el.className))
+          ) {
+            target = el;
+            break;
+          }
+          el = el.parentElement;
+        }
+        if (target) {
+          target.style.display = "none";
+          hidden = true;
+        }
+      }
+      return hidden;
+    };
+
+    const tryHide = (): boolean => {
+      const widget = document.querySelector(
+        "elevenlabs-convai",
+      ) as HTMLElement & { shadowRoot?: ShadowRoot | null };
+      if (!widget?.shadowRoot) return false;
+      return hideBanner(widget.shadowRoot);
+    };
+
+    // Try immediately · the widget script may already be loaded.
+    if (tryHide()) return;
+
+    // Otherwise watch the document until the widget mounts. Once it does,
+    // also watch INSIDE the shadow DOM for re-renders.
+    const docObserver = new MutationObserver(() => {
+      const widget = document.querySelector("elevenlabs-convai") as
+        | (HTMLElement & { shadowRoot?: ShadowRoot | null })
+        | null;
+      if (!widget?.shadowRoot) return;
+      tryHide();
+      // Wire a deeper observer on the shadow root for subsequent re-renders.
+      const shadowObserver = new MutationObserver(() => {
+        if (widget.shadowRoot) hideBanner(widget.shadowRoot);
+      });
+      shadowObserver.observe(widget.shadowRoot, {
+        childList: true,
+        subtree: true,
+      });
+      docObserver.disconnect();
+    });
+    docObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => docObserver.disconnect();
+  }, []);
 
   if (!agentId) return null;
 
