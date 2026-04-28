@@ -48,13 +48,19 @@ export const metadata: Metadata = {
 // Inline script that runs SYNCHRONOUSLY in the document <head>, before any
 // other JS, before React hydrates, before the ElevenLabs widget script
 // loads. Patches Element.prototype.attachShadow so that the moment the
-// widget creates its shadow root, we inject CSS that hides the
-// `_poweredBy_*` watermark element. Because this happens BEFORE the widget
-// paints anything to screen, there's no flash of "Powered by ElevenLabs
-// Agents" — it's never rendered visibly at all.
+// widget creates its shadow root, we inject Skillies-branded CSS:
+//
+//   1. Hide the `_poweredBy_*` ElevenLabs watermark (no flash, never paints).
+//   2. Match the avatar's image-element background to the Skillies logo red
+//      so there's no white flash before the PNG loads.
+//   3. Wrap the avatar in a circular soft-red ambient glow + hover lift.
+//   4. Refine the widget card's drop shadow into a layered, branded look.
+//
+// All selectors are class-name-prefix-based (`[class*="_box_"]` etc.) so we
+// stay resilient when ElevenLabs rebuilds and rotates the CSS-module hashes.
 //
 // Idempotent · safe across HMR + double-mount.
-const ELEVENLABS_WATERMARK_BLOCKER = `(function(){
+const SKILLIES_WIDGET_STYLES = `(function(){
   if (window.__skilliesShadowPatched) return;
   window.__skilliesShadowPatched = true;
   var orig = Element.prototype.attachShadow;
@@ -63,7 +69,13 @@ const ELEVENLABS_WATERMARK_BLOCKER = `(function(){
     try {
       if (this.tagName && this.tagName.toLowerCase() === 'elevenlabs-convai') {
         var s = document.createElement('style');
-        s.textContent = '[class*="_poweredBy_"]{display:none !important}';
+        s.textContent = [
+          '[class*="_poweredBy_"]{display:none !important}',
+          '[class*="_avatarImage_"]{background-color:#B81C2E !important}',
+          '[class*="_avatar_"]:not([class*="_avatarBackground_"]):not([class*="_avatarImage_"]){border-radius:50% !important;box-shadow:0 0 0 2px rgba(196,30,58,.14),0 0 24px rgba(196,30,58,.32),0 4px 14px rgba(31,58,46,.08) !important;transition:box-shadow 320ms cubic-bezier(.4,0,.2,1),transform 320ms cubic-bezier(.4,0,.2,1) !important}',
+          '[class*="_avatar_"]:not([class*="_avatarBackground_"]):not([class*="_avatarImage_"]):hover{box-shadow:0 0 0 3px rgba(196,30,58,.22),0 0 32px rgba(196,30,58,.44),0 6px 18px rgba(31,58,46,.10) !important;transform:translateY(-1px) !important}',
+          '[class*="_box_"]{box-shadow:0 6px 28px rgba(31,58,46,.10),0 1px 3px rgba(31,58,46,.05),0 0 0 1px rgba(31,58,46,.06) !important}'
+        ].join('');
         root.appendChild(s);
       }
     } catch (e) {}
@@ -82,7 +94,7 @@ export default function RootLayout({
         <script
           // Must execute before the ElevenLabs widget script attaches its
           // shadow root. Placed in <head> so it runs before <body> mounts.
-          dangerouslySetInnerHTML={{ __html: ELEVENLABS_WATERMARK_BLOCKER }}
+          dangerouslySetInnerHTML={{ __html: SKILLIES_WIDGET_STYLES }}
         />
       </head>
       <body className="min-h-full flex flex-col">

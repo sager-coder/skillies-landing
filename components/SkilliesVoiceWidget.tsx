@@ -4,11 +4,13 @@ import Script from "next/script";
 import { useEffect } from "react";
 
 // The synchronous attachShadow patch that hides the `_poweredBy_*`
-// watermark element runs from app/layout.tsx · placed in <head> so it
-// executes before the widget script can create its shadow root. See
-// ELEVENLABS_WATERMARK_BLOCKER there. This component only handles the
-// async text-replacement fallback below, in case the CSS hide ever
-// stops matching (e.g. ElevenLabs renames `_poweredBy_*` classes).
+// watermark + injects Skillies brand styling (red ambient glow around the
+// avatar, refined widget shadow, no-flash logo background) runs from
+// app/layout.tsx · placed in <head> so it executes before the widget
+// script can create its shadow root. See SKILLIES_WIDGET_STYLES there.
+// This component only handles the async text-replacement fallback below,
+// in case the CSS hide ever stops matching (e.g. ElevenLabs renames
+// `_poweredBy_*` classes).
 
 /**
  * SkilliesVoiceWidget — embeds the ElevenLabs Agents conversational-voice
