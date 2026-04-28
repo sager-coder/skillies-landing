@@ -10,9 +10,10 @@ import type { NextConfig } from "next";
  * - X-Content-Type-Options nosniff: browsers don't guess MIME types.
  * - Referrer-Policy: send origin only to cross-site navigations, full referrer
  *   within our own domain. Don't leak query strings to third-party analytics.
- * - Permissions-Policy: kill browser APIs we don't use (camera, mic, geo, USB,
- *   payment, etc.) so a supply-chain attack on a dependency can't silently ask
- *   for them.
+ * - Permissions-Policy: kill browser APIs we don't use (camera, geo, USB,
+ *   etc.) so a supply-chain attack on a dependency can't silently ask for
+ *   them. Microphone is `(self)` — required by the on-page ElevenLabs voice
+ *   widget; no third-party origin gets it. Payment is `(self)` for Razorpay.
  * - X-DNS-Prefetch-Control on: tiny perf win.
  *
  * Deliberately NOT adding a strict CSP right now — our inline-style-heavy
@@ -31,7 +32,7 @@ const SECURITY_HEADERS = [
   {
     key: "Permissions-Policy",
     value:
-      "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(self), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
+      "camera=(), microphone=(self), geolocation=(), interest-cohort=(), payment=(self), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
   },
   { key: "X-DNS-Prefetch-Control", value: "on" },
 ];
