@@ -53,8 +53,11 @@ export const metadata: Metadata = {
 //   1. Hide the `_poweredBy_*` ElevenLabs watermark (no flash, never paints).
 //   2. Match the avatar's image-element background to the Skillies logo red
 //      so there's no white flash before the PNG loads.
-//   3. Wrap the avatar in a circular soft-red ambient glow + hover lift.
-//   4. Refine the widget card's drop shadow into a layered, branded look.
+//   3. Subtle static red ring + hover lift on the avatar.
+//   4. A pulsing red ring (Tailwind animate-ping style) around the avatar
+//      using ::after with transparent fill + colored border so it never
+//      obscures the logo as it expands and fades.
+//   5. Refine the widget card's drop shadow into a layered, branded look.
 //
 // All selectors are class-name-prefix-based (`[class*="_box_"]` etc.) so we
 // stay resilient when ElevenLabs rebuilds and rotates the CSS-module hashes.
@@ -72,8 +75,10 @@ const SKILLIES_WIDGET_STYLES = `(function(){
         s.textContent = [
           '[class*="_poweredBy_"]{display:none !important}',
           '[class*="_avatarImage_"]{background-color:#B81C2E !important}',
-          '[class*="_avatar_"]:not([class*="_avatarBackground_"]):not([class*="_avatarImage_"]){border-radius:50% !important;box-shadow:0 0 0 2px rgba(196,30,58,.14),0 0 24px rgba(196,30,58,.32),0 4px 14px rgba(31,58,46,.08) !important;transition:box-shadow 320ms cubic-bezier(.4,0,.2,1),transform 320ms cubic-bezier(.4,0,.2,1) !important}',
-          '[class*="_avatar_"]:not([class*="_avatarBackground_"]):not([class*="_avatarImage_"]):hover{box-shadow:0 0 0 3px rgba(196,30,58,.22),0 0 32px rgba(196,30,58,.44),0 6px 18px rgba(31,58,46,.10) !important;transform:translateY(-1px) !important}',
+          '[class*="_avatar_"]:not([class*="_avatarBackground_"]):not([class*="_avatarImage_"]){position:relative !important;border-radius:50% !important;box-shadow:0 0 0 1.5px rgba(196,30,58,.12),0 4px 14px rgba(31,58,46,.08) !important;transition:transform 280ms cubic-bezier(.4,0,.2,1) !important}',
+          '[class*="_avatar_"]:not([class*="_avatarBackground_"]):not([class*="_avatarImage_"]):hover{transform:translateY(-1px) !important}',
+          '[class*="_avatar_"]:not([class*="_avatarBackground_"]):not([class*="_avatarImage_"])::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(196,30,58,.6);background:transparent;box-sizing:border-box;animation:skillies-pulse 2s cubic-bezier(0,0,.2,1) infinite;pointer-events:none}',
+          '@keyframes skillies-pulse{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.7);opacity:0}}',
           '[class*="_box_"]{box-shadow:0 6px 28px rgba(31,58,46,.10),0 1px 3px rgba(31,58,46,.05),0 0 0 1px rgba(31,58,46,.06) !important}'
         ].join('');
         root.appendChild(s);
