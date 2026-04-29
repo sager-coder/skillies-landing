@@ -34,13 +34,18 @@ import { useEffect } from "react";
  * preview can point at different agents if we ever want a staging variant.
  */
 
-// Migrated to English-mode on eleven_turbo_v2 · 28 Apr 2026 (after the
-// Malayalam Convai pipeline hit a quality ceiling on v3_conversational
-// and the newer v2_5 family is platform-blocked for ml language). The
-// old Malayalam agent (agent_6001kq868kj1f6vbeekyttgy5bf6) is kept in
+// Reverted to Malayalam-mode on `eleven_v3_conversational` · 29 Apr 2026.
+// ElevenLabs support confirmed `eleven_v3` (expressive TTS) is permanently
+// unavailable for Convai/Agents on any tier; `eleven_v3_conversational`
+// IS the supported Malayalam path through the Convai API. Quality has
+// "known v3 limitations" per ElevenLabs, but Malayalam delivery is the
+// brand moat — better to ship the best Malayalam Convai can offer today
+// than fall back to English on a Kerala-first product.
+//
+// The English-mode agent (agent_4301kqagd3g1e0p8hev9y4yasfpy) is kept in
 // the workspace as a fallback. To roll back, swap this constant +
 // redeploy.
-const FALLBACK_AGENT_ID = "agent_4301kqagd3g1e0p8hev9y4yasfpy";
+const FALLBACK_AGENT_ID = "agent_6001kq868kj1f6vbeekyttgy5bf6";
 
 // The ElevenLabs widget ships as a custom element. TypeScript needs to
 // know it's a valid intrinsic element so we can render it in JSX without
