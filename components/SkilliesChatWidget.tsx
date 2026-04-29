@@ -117,7 +117,6 @@ function ChatWidgetUI() {
   >(async () => "error: not yet initialised");
 
   sendPaymentLinkRef.current = async (raw: Record<string, unknown>) => {
-    console.log("[skillies-chat] send_payment_link INVOKED with", raw);
     const params = (raw ?? {}) as SendPaymentLinkParams;
 
     if (!params.tier || !VALID_TIERS.includes(params.tier)) {
@@ -144,7 +143,6 @@ function ChatWidgetUI() {
         }),
       });
       const data = await res.json();
-      console.log("[skillies-chat] payment-link API response", res.status, data);
       if (!res.ok) {
         appendMessage({
           role: "system",
@@ -195,18 +193,13 @@ function ChatWidgetUI() {
   // muted-but-still-publishing mic track.
   const conversation = useConversation({
     clientTools,
-    onConnect: () => {
-      console.log("[skillies-chat] connected. clientTools registered:", Object.keys(clientTools));
-    },
     onDisconnect: () => {
       setSessionStarted(false);
     },
     onError: (msg) => {
-      console.warn("[skillies-chat] error:", msg);
       appendMessage({ role: "system", text: `Connection error: ${msg}` });
     },
     onMessage: ({ message, role }) => {
-      console.log("[skillies-chat] message", role, JSON.stringify(message)?.slice(0, 200));
       if (!message) return;
       if (role === "user") {
         // Skip echo of locally-rendered user-typed messages.
@@ -218,18 +211,14 @@ function ChatWidgetUI() {
         if (!open) setUnread((u) => u + 1);
       }
     },
+    // If the agent ever calls a tool name we don't have registered, surface
+    // it in the chat — this caught the dead `send_razorpay_link` webhook
+    // during initial wiring and is cheap to keep.
     onUnhandledClientToolCall: (call) => {
-      console.warn("[skillies-chat] UNHANDLED client tool call:", call);
       appendMessage({
         role: "system",
         text: `Agent tried to call unregistered tool: ${call?.tool_name}`,
       });
-    },
-    onAgentToolRequest: (req) => {
-      console.log("[skillies-chat] agent_tool_request:", req);
-    },
-    onAgentToolResponse: (resp) => {
-      console.log("[skillies-chat] agent_tool_response:", resp);
     },
   });
 
