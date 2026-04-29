@@ -57,24 +57,31 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  if (!full_name) {
-    return NextResponse.json({ error: "full_name is required." }, { status: 400 });
-  }
-  if (!phone || phone.replace(/\D/g, "").length < 10) {
-    return NextResponse.json({ error: "A valid phone is required." }, { status: 400 });
-  }
 
   const amount = TIER_AMOUNTS_PAISE[tier];
   const description = TIER_LABELS[tier];
 
   const razor = new Razorpay({ key_id: keyId, key_secret: keySecret });
 
-  // Razorpay requires E.164-ish phone. Accept whatever the agent passes
-  // and normalise: digits-only, prefix +91 if it looks like a 10-digit
-  // Indian mobile. Anything else, send as-is and let Razorpay reject.
-  const digits = phone.replace(/\D/g, "");
-  const contact =
-    digits.length === 10 ? `+91${digits}` : phone.startsWith("+") ? phone : `+${digits}`;
+  // Razorpay's payment-link API requires a customer name + contact to
+  // CREATE the link, but the visitor who actually pays fills in their
+  // own details on the Razorpay-hosted page — the customer field on the
+  // link is just a label. Default to the Skillies brand contact when
+  // the agent hasn't collected the visitor's info, so the link can be
+  // sent instantly with no friction. The Razorpay payment-capture
+  // webhook records the real payer's contact at payment time.
+  const SKILLIES_DEFAULT_CONTACT = "+918089941131";
+  const SKILLIES_DEFAULT_NAME = "Skillies Visitor";
+  const customerName = full_name || SKILLIES_DEFAULT_NAME;
+
+  let contact: string;
+  if (phone) {
+    const digits = phone.replace(/\D/g, "");
+    contact =
+      digits.length === 10 ? `+91${digits}` : phone.startsWith("+") ? phone : `+${digits}`;
+  } else {
+    contact = SKILLIES_DEFAULT_CONTACT;
+  }
 
   try {
     // Razorpay expires links in 24h by default if `expire_by` is set; we
@@ -85,7 +92,7 @@ export async function POST(req: Request) {
       accept_partial: false,
       description,
       customer: {
-        name: full_name,
+        name: customerName,
         contact,
         ...(email ? { email } : {}),
       },

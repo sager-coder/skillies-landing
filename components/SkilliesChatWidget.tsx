@@ -1,19 +1,22 @@
 "use client";
 
 /**
- * SkilliesChatWidget — Skillies-branded text chat for skillies.ai. Replaces
- * the prior <elevenlabs-convai> embed. Visitor sees a floating brand button
- * bottom-right; clicking it opens a panel with a scrollable transcript and
- * a text input that talks to the ElevenLabs Agent over websocket.
+ * SkilliesChatWidget — Skillies-branded chat + optional voice for
+ * skillies.ai. Replaces the prior <elevenlabs-convai> embed.
  *
- * The agent can invoke a `send_payment_link` client tool — when it does we
- * hit /api/razorpay/payment-link and render a "Pay ₹X · Razorpay" card
- * inline in the chat.
+ * Two session modes that swap on demand (a single connection only ever runs
+ * one mode at a time, because the SDK can't switch transports mid-session):
+ *   - "text" (default) — websocket + overrides.conversation.textOnly. No
+ *     mic, no audio, no permission prompt. The mode the visitor lands in
+ *     when they open the panel.
+ *   - "voice" — WebRTC with mic, full audio playback. Activated by clicking
+ *     the mic button. Switching modes ends the current session and starts
+ *     a fresh one in the new mode.
  *
- * Text-only · no microphone, no audio playback, no permission prompt. Voice
- * mode was removed after live testing showed the LiveKit/WebRTC path
- * retried unstably and the muted-but-still-publishing mic produced phantom
- * "..." user bubbles via ASR. Re-add voice as a separate session type.
+ * The agent can invoke `send_payment_link` regardless of mode — when it
+ * does we hit /api/razorpay/payment-link and render a branded
+ * "Pay ₹X · Razorpay" card inline in the chat. Name/phone are optional;
+ * the visitor enters them on Razorpay's hosted page when they pay.
  */
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,13 +79,16 @@ function ChatWidgetUI() {
     {
       id: "intro",
       role: "agent",
-      text: "Hi, I'm the Skillies assistant. Ask me about the Workshop, the Batch, or how enrolment works — and I can send you a Razorpay payment link right here when you're ready.",
+      text: "Hi, I'm the Skillies assistant. Ask me about the Workshop, the Batch, or how enrolment works — and I can send you a Razorpay payment link right here when you're ready. Tap the mic if you'd rather talk.",
       ts: Date.now(),
     },
   ]);
   const [pendingLink, setPendingLink] = useState(false);
   const [draft, setDraft] = useState("");
-  const [sessionStarted, setSessionStarted] = useState(false);
+  // The session-mode the user has chosen. `null` = no session yet. Switching
+  // requires ending the current session and starting a fresh one because the
+  // SDK can't change transport (websocket vs WebRTC) mid-conversation.
+  const [activeMode, setActiveMode] = useState<"text" | "voice" | null>(null);
   const [unread, setUnread] = useState(0);
 
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -122,13 +128,10 @@ function ChatWidgetUI() {
     if (!params.tier || !VALID_TIERS.includes(params.tier)) {
       return `error: invalid tier. Must be one of ${VALID_TIERS.join(", ")}`;
     }
-    if (!params.full_name?.trim()) {
-      return "error: missing full_name. Ask the user for their name first.";
-    }
-    if (!params.phone?.trim()) {
-      return "error: missing phone. Ask the user for their phone number first.";
-    }
 
+    // Name + phone are optional — the visitor enters them on Razorpay's
+    // hosted page when they actually pay. Server fills the create-link
+    // payload with placeholders if missing.
     setPendingLink(true);
     try {
       const res = await fetch("/api/razorpay/payment-link", {
@@ -136,8 +139,8 @@ function ChatWidgetUI() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tier: params.tier,
-          full_name: params.full_name.trim(),
-          phone: params.phone.trim(),
+          full_name: params.full_name?.trim() || undefined,
+          phone: params.phone?.trim() || undefined,
           email: params.email?.trim() || undefined,
           source: "voice-chat",
         }),
@@ -194,7 +197,7 @@ function ChatWidgetUI() {
   const conversation = useConversation({
     clientTools,
     onDisconnect: () => {
-      setSessionStarted(false);
+      setActiveMode(null);
     },
     onError: (msg) => {
       appendMessage({ role: "system", text: `Connection error: ${msg}` });
@@ -249,24 +252,49 @@ function ChatWidgetUI() {
   }, [open]);
 
   // === Session lifecycle ===================================================
-  // Text-only over websocket — no mic, no LiveKit. The override.textOnly
-  // flag tells the SDK to skip the WebRTC handshake entirely. No mic
-  // permission prompt, no audio playback, no ASR phantom messages.
-  const ensureSession = useCallback(() => {
-    if (sessionStarted) return;
-    setSessionStarted(true);
-    try {
-      conversation.startSession({
-        agentId,
-        connectionType: "websocket",
-        overrides: { conversation: { textOnly: true } },
-      });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "failed to start session";
-      appendMessage({ role: "system", text: `Couldn't start: ${msg}` });
-      setSessionStarted(false);
-    }
-  }, [agentId, appendMessage, conversation, sessionStarted]);
+  // Session is started lazily — on first user action — in the requested
+  // mode. To switch modes (text↔voice) we end the existing session and
+  // start a new one with the right transport because the SDK can't change
+  // connectionType on an open conversation.
+  const startSessionInMode = useCallback(
+    (mode: "text" | "voice") => {
+      try {
+        if (mode === "text") {
+          conversation.startSession({
+            agentId,
+            connectionType: "websocket",
+            overrides: { conversation: { textOnly: true } },
+          });
+        } else {
+          conversation.startSession({
+            agentId,
+            connectionType: "webrtc",
+          });
+        }
+        setActiveMode(mode);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "failed to start session";
+        appendMessage({ role: "system", text: `Couldn't start: ${msg}` });
+        setActiveMode(null);
+      }
+    },
+    [agentId, appendMessage, conversation],
+  );
+
+  const ensureSession = useCallback(
+    (mode: "text" | "voice") => {
+      if (activeMode === mode) return;
+      if (activeMode !== null) {
+        try {
+          conversation.endSession();
+        } catch {
+          /* noop */
+        }
+      }
+      startSessionInMode(mode);
+    },
+    [activeMode, conversation, startSessionInMode],
+  );
 
   const handleSend = useCallback(() => {
     const text = draft.trim();
@@ -274,9 +302,10 @@ function ChatWidgetUI() {
     setDraft("");
     appendMessage({ role: "user", text });
 
-    // If the connection is already live, send immediately. Otherwise
-    // queue the message and let the status-change effect flush it.
-    if (conversation.status === "connected") {
+    // If the text connection is already live, send immediately. Otherwise
+    // queue the message and let the status-change effect flush it once
+    // the session reaches "connected".
+    if (activeMode === "text" && conversation.status === "connected") {
       try {
         conversation.sendUserMessage(text);
         return;
@@ -287,8 +316,33 @@ function ChatWidgetUI() {
       }
     }
     pendingSendsRef.current.push(text);
-    ensureSession();
-  }, [appendMessage, conversation, draft, ensureSession]);
+    ensureSession("text");
+  }, [activeMode, appendMessage, conversation, draft, ensureSession]);
+
+  const toggleVoice = useCallback(async () => {
+    if (activeMode === "voice") {
+      // End the call → drop back to text mode so typing still works.
+      try {
+        conversation.endSession();
+      } catch {
+        /* noop */
+      }
+      setActiveMode(null);
+      return;
+    }
+    // Request mic up front so the permission prompt is tied to this user
+    // gesture (browsers block mid-flow getUserMedia calls).
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      appendMessage({
+        role: "system",
+        text: "Mic permission was denied. You can still chat by typing.",
+      });
+      return;
+    }
+    ensureSession("voice");
+  }, [activeMode, appendMessage, conversation, ensureSession]);
 
   const closePanel = useCallback(() => {
     setOpen(false);
@@ -299,7 +353,7 @@ function ChatWidgetUI() {
   // fresh handshake.
   useEffect(() => {
     return () => {
-      if (sessionStarted) {
+      if (activeMode !== null) {
         try {
           conversation.endSession();
         } catch {
@@ -311,6 +365,7 @@ function ChatWidgetUI() {
   }, []);
 
   const status = conversation.status;
+  const isAgentSpeaking = activeMode === "voice" && conversation.isSpeaking;
 
   // === UI =================================================================
   return (
@@ -398,6 +453,15 @@ function ChatWidgetUI() {
                 }}
               >
                 <span className="text-base font-bold tracking-tight" style={{ color: "#FAF5EB" }}>S</span>
+                {isAgentSpeaking && (
+                  <span
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      border: "2px solid #C9A24E",
+                      animation: "skillies-launcher-ping 1.4s cubic-bezier(0,0,.2,1) infinite",
+                    }}
+                  />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold leading-tight">Skillies Assistant</div>
@@ -405,7 +469,13 @@ function ChatWidgetUI() {
                   className="text-[11px] mt-0.5"
                   style={{ color: "rgba(250,245,235,.7)" }}
                 >
-                  {status === "connected"
+                  {activeMode === "voice"
+                    ? status === "connected"
+                      ? isAgentSpeaking
+                        ? "Speaking…"
+                        : "Listening…"
+                      : "Connecting voice…"
+                    : status === "connected"
                     ? "Online"
                     : status === "connecting"
                     ? "Connecting…"
@@ -456,6 +526,23 @@ function ChatWidgetUI() {
                 background: "#FFFFFF",
               }}
             >
+              <button
+                type="button"
+                onClick={toggleVoice}
+                aria-pressed={activeMode === "voice"}
+                aria-label={activeMode === "voice" ? "End voice call" : "Start voice call"}
+                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                style={{
+                  background: activeMode === "voice" ? "#C62828" : "#F5E6E6",
+                  color: activeMode === "voice" ? "#FAF5EB" : "#C62828",
+                  boxShadow:
+                    activeMode === "voice"
+                      ? "0 4px 12px rgba(196,30,58,.32),inset 0 1px 0 rgba(255,255,255,.12)"
+                      : "0 1px 2px rgba(31,58,46,.05)",
+                }}
+              >
+                <MicIcon active={activeMode === "voice"} />
+              </button>
               <textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
@@ -657,6 +744,17 @@ function SendIcon() {
   return (
     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12l14-7-7 14-2-5-5-2Z" />
+    </svg>
+  );
+}
+
+function MicIcon({ active }: { active: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <path d="M12 19v3" />
+      {!active && <path d="M3 3l18 18" />}
     </svg>
   );
 }
