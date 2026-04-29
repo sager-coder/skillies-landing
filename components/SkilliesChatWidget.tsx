@@ -96,11 +96,17 @@ function ChatWidgetUI() {
     ]);
   }, []);
 
+  // Pending text messages typed before the WebRTC connection is open. The
+  // SDK throws "No active conversation" if sendUserMessage runs before
+  // status === "connected", so we queue and flush via an effect below.
+  const pendingSendsRef = useRef<string[]>([]);
+
   // === ElevenLabs conversation =============================================
+  // `micMuted` is reactive — the SDK reads it on every render and applies
+  // the mute state once the LiveKit room is up, avoiding the race where
+  // `setMuted()` ran before the connection existed.
   const conversation = useConversation({
-    onConnect: () => {
-      appendMessage({ role: "system", text: "Voice connected." });
-    },
+    micMuted: !voiceMode,
     onDisconnect: () => {
       setVoiceMode(false);
       setSessionStarted(false);
@@ -127,6 +133,21 @@ function ChatWidgetUI() {
       }
     },
   });
+
+  // Flush queued user messages once the connection comes up.
+  useEffect(() => {
+    if (conversation.status !== "connected") return;
+    if (pendingSendsRef.current.length === 0) return;
+    const queue = pendingSendsRef.current.splice(0);
+    for (const text of queue) {
+      try {
+        conversation.sendUserMessage(text);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "send failed";
+        appendMessage({ role: "system", text: `Couldn't send: ${msg}` });
+      }
+    }
+  }, [appendMessage, conversation, conversation.status]);
 
   // === Client tool · agent calls this to send a Razorpay payment link =====
   useConversationClientTool(
@@ -206,49 +227,50 @@ function ChatWidgetUI() {
   }, [open]);
 
   // === Session lifecycle ===================================================
-  // Single shared WebRTC session for both text and voice. Mic stays muted
-  // until the visitor explicitly clicks the mic button — `setMuted(true)`
-  // suppresses upstream audio but the LiveKit room is already established
-  // so unmuting later is instant. The browser's mic-permission prompt
-  // fires on first session start regardless of mute state; this is the
-  // same UX the previous <elevenlabs-convai> embed shipped, so visitors
-  // already expect it.
-  const ensureSession = useCallback(async () => {
+  // Single shared WebRTC session for both text and voice. The mic mute
+  // state is driven by `micMuted` on useConversation (reactive prop) so
+  // the SDK applies it once the connection is live — manually calling
+  // setMuted() before the LiveKit room exists throws "No active
+  // conversation". The browser's mic-permission prompt fires on first
+  // session start regardless of mute state.
+  const ensureSession = useCallback(() => {
     if (sessionStarted) return;
+    setSessionStarted(true);
     try {
-      await conversation.startSession({ agentId, connectionType: "webrtc" });
-      conversation.setMuted(true);
-      setSessionStarted(true);
+      conversation.startSession({ agentId, connectionType: "webrtc" });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "failed to start session";
       appendMessage({ role: "system", text: `Couldn't start: ${msg}` });
+      setSessionStarted(false);
     }
   }, [agentId, appendMessage, conversation, sessionStarted]);
 
-  const handleSend = useCallback(async () => {
+  const handleSend = useCallback(() => {
     const text = draft.trim();
     if (!text) return;
     setDraft("");
     appendMessage({ role: "user", text });
-    await ensureSession();
-    try {
-      conversation.sendUserMessage(text);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "send failed";
-      appendMessage({ role: "system", text: `Couldn't send: ${msg}` });
+
+    // If the connection is already live, send immediately. Otherwise
+    // queue the message and let the status-change effect flush it.
+    if (conversation.status === "connected") {
+      try {
+        conversation.sendUserMessage(text);
+        return;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "send failed";
+        appendMessage({ role: "system", text: `Couldn't send: ${msg}` });
+        return;
+      }
     }
+    pendingSendsRef.current.push(text);
+    ensureSession();
   }, [appendMessage, conversation, draft, ensureSession]);
 
-  const toggleVoice = useCallback(async () => {
-    await ensureSession();
-    if (voiceMode) {
-      conversation.setMuted(true);
-      setVoiceMode(false);
-    } else {
-      conversation.setMuted(false);
-      setVoiceMode(true);
-    }
-  }, [conversation, ensureSession, voiceMode]);
+  const toggleVoice = useCallback(() => {
+    setVoiceMode((v) => !v);
+    ensureSession();
+  }, [ensureSession]);
 
   const closePanel = useCallback(() => {
     setOpen(false);
