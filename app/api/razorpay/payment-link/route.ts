@@ -13,12 +13,17 @@ const TIER_AMOUNTS_PAISE: Record<string, number> = {
   "batch-enrolment": 5_000_000, // ₹50,000 — Batch upfront
   "test": 100,                  // ₹1 — used for end-to-end testing only
 };
+// `description` shows on the Razorpay-hosted payment page as the line
+// item. Razorpay's merchant header on that page is account-level (currently
+// the merchant is registered as "Pageboo"). Until that's renamed in the
+// Razorpay dashboard, prefix every description with "SKILLIES.AI" so the
+// visitor isn't confused about who they're paying.
 const TIER_LABELS: Record<string, string> = {
-  "workshop-early": "Skillies Workshop · Early Bird",
-  "workshop-regular": "Skillies Workshop · Regular",
-  "workshop-vip": "Skillies Workshop · VIP",
-  "batch-enrolment": "Skillies Batch · Upfront Enrolment",
-  "test": "Skillies test charge",
+  "workshop-early": "SKILLIES.AI · Workshop Early Bird (May 17, Malappuram)",
+  "workshop-regular": "SKILLIES.AI · Workshop Regular (May 17, Malappuram)",
+  "workshop-vip": "SKILLIES.AI · Workshop VIP (May 17, Malappuram)",
+  "batch-enrolment": "SKILLIES.AI · Batch Upfront Enrolment",
+  "test": "SKILLIES.AI · test charge",
 };
 
 type Body = {
