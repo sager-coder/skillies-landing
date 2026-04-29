@@ -20,9 +20,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ConversationProvider,
   useConversation,
-  useConversationClientTool,
 } from "@elevenlabs/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const FALLBACK_AGENT_ID = "agent_4301kqagd3g1e0p8hev9y4yasfpy";
 
@@ -96,14 +95,103 @@ function ChatWidgetUI() {
   // status === "connected", so we queue and flush via an effect below.
   const pendingSendsRef = useRef<string[]>([]);
 
+  // The client-tool handler closes over `appendMessage` and `open`. We hold
+  // the latest closure in a ref so the tool function passed to
+  // `useConversation` can be stable (the SDK reads `clientTools` once at
+  // session-start; if the function identity changes mid-session the tool
+  // call would route to a stale closure).
+  type SendPaymentLinkParams = {
+    tier?: string;
+    full_name?: string;
+    phone?: string;
+    email?: string;
+  };
+  const sendPaymentLinkRef = useRef<
+    (raw: Record<string, unknown>) => Promise<string>
+  >(async () => "error: not yet initialised");
+
+  sendPaymentLinkRef.current = async (raw: Record<string, unknown>) => {
+    console.log("[skillies-chat] send_payment_link INVOKED with", raw);
+    const params = (raw ?? {}) as SendPaymentLinkParams;
+
+    if (!params.tier || !VALID_TIERS.includes(params.tier)) {
+      return `error: invalid tier. Must be one of ${VALID_TIERS.join(", ")}`;
+    }
+    if (!params.full_name?.trim()) {
+      return "error: missing full_name. Ask the user for their name first.";
+    }
+    if (!params.phone?.trim()) {
+      return "error: missing phone. Ask the user for their phone number first.";
+    }
+
+    setPendingLink(true);
+    try {
+      const res = await fetch("/api/razorpay/payment-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: params.tier,
+          full_name: params.full_name.trim(),
+          phone: params.phone.trim(),
+          email: params.email?.trim() || undefined,
+          source: "voice-chat",
+        }),
+      });
+      const data = await res.json();
+      console.log("[skillies-chat] payment-link API response", res.status, data);
+      if (!res.ok) {
+        appendMessage({
+          role: "system",
+          text: `Couldn't generate payment link: ${data?.error ?? "unknown error"}`,
+        });
+        return `error: ${data?.error ?? "failed to create link"}`;
+      }
+      appendMessage({
+        role: "agent",
+        paymentLink: {
+          tier: data.tier,
+          description: TIER_LABELS[data.tier] ?? data.description,
+          amount_inr: data.amount_inr,
+          short_url: data.short_url,
+        },
+      });
+      if (!open) setUnread((u) => u + 1);
+      return `payment_link_sent: ${data.short_url}`;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "network error";
+      appendMessage({
+        role: "system",
+        text: `Couldn't generate payment link: ${msg}`,
+      });
+      return `error: ${msg}`;
+    } finally {
+      setPendingLink(false);
+    }
+  };
+
+  // Pass clientTools directly to useConversation as a stable object — this
+  // is the path the SDK reads at session-start (verified in
+  // node_modules/@elevenlabs/client/dist/BaseConversation.js:154 — it
+  // checks `this.options.clientTools[tool_name]` for matches).
+  const clientTools = useMemo(
+    () => ({
+      send_payment_link: (params: Record<string, unknown>) =>
+        sendPaymentLinkRef.current(params),
+    }),
+    [],
+  );
+
   // === ElevenLabs conversation =============================================
   // Text-only mode (overrides.conversation.textOnly) — runs on websocket,
   // skips the LiveKit/WebRTC path entirely. That eliminates two prior
   // bugs: (a) the v1 RTC retry loop the LiveKit client kept hitting, and
   // (b) phantom "..." user bubbles that the ASR was emitting from the
-  // muted-but-still-publishing mic track. Voice mode can be added back
-  // later as a separate session type.
+  // muted-but-still-publishing mic track.
   const conversation = useConversation({
+    clientTools,
+    onConnect: () => {
+      console.log("[skillies-chat] connected. clientTools registered:", Object.keys(clientTools));
+    },
     onDisconnect: () => {
       setSessionStarted(false);
     },
@@ -112,6 +200,7 @@ function ChatWidgetUI() {
       appendMessage({ role: "system", text: `Connection error: ${msg}` });
     },
     onMessage: ({ message, role }) => {
+      console.log("[skillies-chat] message", role, JSON.stringify(message)?.slice(0, 200));
       if (!message) return;
       if (role === "user") {
         // Skip echo of locally-rendered user-typed messages.
@@ -122,6 +211,19 @@ function ChatWidgetUI() {
         appendMessage({ role: "agent", text: message });
         if (!open) setUnread((u) => u + 1);
       }
+    },
+    onUnhandledClientToolCall: (call) => {
+      console.warn("[skillies-chat] UNHANDLED client tool call:", call);
+      appendMessage({
+        role: "system",
+        text: `Agent tried to call unregistered tool: ${call?.tool_name}`,
+      });
+    },
+    onAgentToolRequest: (req) => {
+      console.log("[skillies-chat] agent_tool_request:", req);
+    },
+    onAgentToolResponse: (resp) => {
+      console.log("[skillies-chat] agent_tool_response:", resp);
     },
   });
 
@@ -139,74 +241,6 @@ function ChatWidgetUI() {
       }
     }
   }, [appendMessage, conversation, conversation.status]);
-
-  // === Client tool · agent calls this to send a Razorpay payment link =====
-  useConversationClientTool(
-    "send_payment_link",
-    async (raw: Record<string, unknown>) => {
-      const params = (raw ?? {}) as {
-        tier?: string;
-        full_name?: string;
-        phone?: string;
-        email?: string;
-      };
-
-      if (!params.tier || !VALID_TIERS.includes(params.tier)) {
-        return `error: invalid tier. Must be one of ${VALID_TIERS.join(", ")}`;
-      }
-      if (!params.full_name?.trim()) {
-        return "error: missing full_name. Ask the user for their name first.";
-      }
-      if (!params.phone?.trim()) {
-        return "error: missing phone. Ask the user for their phone number first.";
-      }
-
-      console.log("[skillies-chat] send_payment_link invoked", params);
-      setPendingLink(true);
-      try {
-        const res = await fetch("/api/razorpay/payment-link", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            tier: params.tier,
-            full_name: params.full_name.trim(),
-            phone: params.phone.trim(),
-            email: params.email?.trim() || undefined,
-            source: "voice-chat",
-          }),
-        });
-        const data = await res.json();
-        console.log("[skillies-chat] payment-link response", res.status, data);
-        if (!res.ok) {
-          appendMessage({
-            role: "system",
-            text: `Couldn't generate payment link: ${data?.error ?? "unknown error"}`,
-          });
-          return `error: ${data?.error ?? "failed to create link"}`;
-        }
-        appendMessage({
-          role: "agent",
-          paymentLink: {
-            tier: data.tier,
-            description: TIER_LABELS[data.tier] ?? data.description,
-            amount_inr: data.amount_inr,
-            short_url: data.short_url,
-          },
-        });
-        if (!open) setUnread((u) => u + 1);
-        return `payment_link_sent: ${data.short_url}`;
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "network error";
-        appendMessage({
-          role: "system",
-          text: `Couldn't generate payment link: ${msg}`,
-        });
-        return `error: ${msg}`;
-      } finally {
-        setPendingLink(false);
-      }
-    },
-  );
 
   // === Auto-scroll on new messages ========================================
   useEffect(() => {
