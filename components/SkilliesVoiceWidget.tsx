@@ -44,7 +44,8 @@ import { useEffect } from "react";
 //
 // The English-mode agent (agent_4301kqagd3g1e0p8hev9y4yasfpy) is kept in
 // the workspace as a fallback. To roll back, swap this constant +
-// redeploy.
+// redeploy. Easier path: set NEXT_PUBLIC_ELEVENLABS_AGENT_ID in Vercel
+// env to override without redeploying source code.
 const FALLBACK_AGENT_ID = "agent_6001kq868kj1f6vbeekyttgy5bf6";
 
 // The ElevenLabs widget ships as a custom element. TypeScript needs to
