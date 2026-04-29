@@ -259,16 +259,23 @@ function ChatWidgetUI() {
   const startSessionInMode = useCallback(
     (mode: "text" | "voice") => {
       try {
+        // The agent reads `{{channel}}` from dynamicVariables and switches
+        // its OUTPUT STYLE accordingly — text mode strips voice-only tags
+        // ([pause], [warm]) and uses digits/₹ symbols instead of spelled
+        // numbers; voice mode keeps the voice-first rules.
+        const dynamicVariables = { channel: mode };
         if (mode === "text") {
           conversation.startSession({
             agentId,
             connectionType: "websocket",
             overrides: { conversation: { textOnly: true } },
+            dynamicVariables,
           });
         } else {
           conversation.startSession({
             agentId,
             connectionType: "webrtc",
+            dynamicVariables,
           });
         }
         setActiveMode(mode);
