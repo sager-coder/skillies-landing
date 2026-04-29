@@ -1,23 +1,19 @@
 "use client";
 
 /**
- * SkilliesChatWidget — full chat + voice interface for skillies.ai. Replaces
- * the prior <elevenlabs-convai> embed widget. Visitor sees a floating brand
- * button bottom-right; clicking it opens a Skillies-branded panel with a
- * scrollable transcript, a text input, and a mic toggle that joins the
- * ElevenLabs Agents WebRTC session for real-time voice.
+ * SkilliesChatWidget — Skillies-branded text chat for skillies.ai. Replaces
+ * the prior <elevenlabs-convai> embed. Visitor sees a floating brand button
+ * bottom-right; clicking it opens a panel with a scrollable transcript and
+ * a text input that talks to the ElevenLabs Agent over websocket.
  *
  * The agent can invoke a `send_payment_link` client tool — when it does we
- * hit /api/razorpay/payment-link, then render a "Pay ₹X · Razorpay" card
- * inline in the chat. The matching tool MUST also be registered on the
- * agent in the ElevenLabs dashboard (see SkilliesChatWidget.AGENT.md next
- * to this file).
+ * hit /api/razorpay/payment-link and render a "Pay ₹X · Razorpay" card
+ * inline in the chat.
  *
- * Mic + audio playback only initialise after the visitor clicks the mic
- * button — the panel can be opened and the visitor can chat purely in text
- * without ever granting microphone permission. This matters because some
- * pages of the site never need voice and we don't want a permission prompt
- * on first paint.
+ * Text-only · no microphone, no audio playback, no permission prompt. Voice
+ * mode was removed after live testing showed the LiveKit/WebRTC path
+ * retried unstably and the muted-but-still-publishing mic produced phantom
+ * "..." user bubbles via ASR. Re-add voice as a separate session type.
  */
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -82,7 +78,6 @@ function ChatWidgetUI() {
   const [pendingLink, setPendingLink] = useState(false);
   const [draft, setDraft] = useState("");
   const [sessionStarted, setSessionStarted] = useState(false);
-  const [voiceMode, setVoiceMode] = useState(false);
   const [unread, setUnread] = useState(0);
 
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -96,34 +91,30 @@ function ChatWidgetUI() {
     ]);
   }, []);
 
-  // Pending text messages typed before the WebRTC connection is open. The
-  // SDK throws "No active conversation" if sendUserMessage runs before
+  // Pending text messages typed before the websocket is open. The SDK
+  // throws "No active conversation" if sendUserMessage runs before
   // status === "connected", so we queue and flush via an effect below.
   const pendingSendsRef = useRef<string[]>([]);
 
   // === ElevenLabs conversation =============================================
-  // `micMuted` is reactive — the SDK reads it on every render and applies
-  // the mute state once the LiveKit room is up, avoiding the race where
-  // `setMuted()` ran before the connection existed.
+  // Text-only mode (overrides.conversation.textOnly) — runs on websocket,
+  // skips the LiveKit/WebRTC path entirely. That eliminates two prior
+  // bugs: (a) the v1 RTC retry loop the LiveKit client kept hitting, and
+  // (b) phantom "..." user bubbles that the ASR was emitting from the
+  // muted-but-still-publishing mic track. Voice mode can be added back
+  // later as a separate session type.
   const conversation = useConversation({
-    micMuted: !voiceMode,
     onDisconnect: () => {
-      setVoiceMode(false);
       setSessionStarted(false);
     },
     onError: (msg) => {
-      appendMessage({ role: "system", text: `Voice error: ${msg}` });
+      console.warn("[skillies-chat] error:", msg);
+      appendMessage({ role: "system", text: `Connection error: ${msg}` });
     },
     onMessage: ({ message, role }) => {
       if (!message) return;
-      // The SDK fires onMessage for both sides of the conversation. The
-      // user side is already echoed locally when they type, so only render
-      // the role we didn't originate. For voice (transcribed user speech)
-      // we DO want to render their message, since we don't have a local
-      // copy of it.
       if (role === "user") {
-        // Skip user echo if the last message was the same text (typed-input
-        // path already appended). Otherwise render the transcript.
+        // Skip echo of locally-rendered user-typed messages.
         const last = messagesRef.current[messagesRef.current.length - 1];
         if (last?.role === "user" && last.text === message) return;
         appendMessage({ role: "user", text: message });
@@ -170,6 +161,7 @@ function ChatWidgetUI() {
         return "error: missing phone. Ask the user for their phone number first.";
       }
 
+      console.log("[skillies-chat] send_payment_link invoked", params);
       setPendingLink(true);
       try {
         const res = await fetch("/api/razorpay/payment-link", {
@@ -184,6 +176,7 @@ function ChatWidgetUI() {
           }),
         });
         const data = await res.json();
+        console.log("[skillies-chat] payment-link response", res.status, data);
         if (!res.ok) {
           appendMessage({
             role: "system",
@@ -227,17 +220,18 @@ function ChatWidgetUI() {
   }, [open]);
 
   // === Session lifecycle ===================================================
-  // Single shared WebRTC session for both text and voice. The mic mute
-  // state is driven by `micMuted` on useConversation (reactive prop) so
-  // the SDK applies it once the connection is live — manually calling
-  // setMuted() before the LiveKit room exists throws "No active
-  // conversation". The browser's mic-permission prompt fires on first
-  // session start regardless of mute state.
+  // Text-only over websocket — no mic, no LiveKit. The override.textOnly
+  // flag tells the SDK to skip the WebRTC handshake entirely. No mic
+  // permission prompt, no audio playback, no ASR phantom messages.
   const ensureSession = useCallback(() => {
     if (sessionStarted) return;
     setSessionStarted(true);
     try {
-      conversation.startSession({ agentId, connectionType: "webrtc" });
+      conversation.startSession({
+        agentId,
+        connectionType: "websocket",
+        overrides: { conversation: { textOnly: true } },
+      });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "failed to start session";
       appendMessage({ role: "system", text: `Couldn't start: ${msg}` });
@@ -267,18 +261,13 @@ function ChatWidgetUI() {
     ensureSession();
   }, [appendMessage, conversation, draft, ensureSession]);
 
-  const toggleVoice = useCallback(() => {
-    setVoiceMode((v) => !v);
-    ensureSession();
-  }, [ensureSession]);
-
   const closePanel = useCallback(() => {
     setOpen(false);
   }, []);
 
-  // End the voice session when the component unmounts (route change). We
-  // don't end on close-panel because the visitor may want to reopen and
-  // keep talking without a fresh handshake.
+  // End the session on unmount (route change). We don't end on close-panel
+  // because the visitor may reopen and want to keep chatting without a
+  // fresh handshake.
   useEffect(() => {
     return () => {
       if (sessionStarted) {
@@ -293,7 +282,6 @@ function ChatWidgetUI() {
   }, []);
 
   const status = conversation.status;
-  const isAgentSpeaking = voiceMode && conversation.isSpeaking;
 
   // === UI =================================================================
   return (
@@ -381,16 +369,6 @@ function ChatWidgetUI() {
                 }}
               >
                 <span className="text-base font-bold tracking-tight" style={{ color: "#FAF5EB" }}>S</span>
-                {isAgentSpeaking && (
-                  <span
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      border: "2px solid #C9A24E",
-                      animation:
-                        "skillies-launcher-ping 1.4s cubic-bezier(0,0,.2,1) infinite",
-                    }}
-                  />
-                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold leading-tight">Skillies Assistant</div>
@@ -399,11 +377,7 @@ function ChatWidgetUI() {
                   style={{ color: "rgba(250,245,235,.7)" }}
                 >
                   {status === "connected"
-                    ? voiceMode
-                      ? isAgentSpeaking
-                        ? "Speaking…"
-                        : "Listening…"
-                      : "Online · text mode"
+                    ? "Online"
                     : status === "connecting"
                     ? "Connecting…"
                     : "Ready when you are"}
@@ -453,22 +427,6 @@ function ChatWidgetUI() {
                 background: "#FFFFFF",
               }}
             >
-              <button
-                type="button"
-                onClick={toggleVoice}
-                aria-pressed={voiceMode}
-                aria-label={voiceMode ? "Mute microphone" : "Talk to agent"}
-                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-                style={{
-                  background: voiceMode ? "#C62828" : "#F5E6E6",
-                  color: voiceMode ? "#FAF5EB" : "#C62828",
-                  boxShadow: voiceMode
-                    ? "0 4px 12px rgba(196,30,58,.32),inset 0 1px 0 rgba(255,255,255,.12)"
-                    : "0 1px 2px rgba(31,58,46,.05)",
-                }}
-              >
-                <MicIcon muted={!voiceMode} />
-              </button>
               <textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
@@ -674,14 +632,4 @@ function SendIcon() {
   );
 }
 
-function MicIcon({ muted }: { muted: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-      <path d="M12 19v3" />
-      {muted && <path d="M3 3l18 18" />}
-    </svg>
-  );
-}
 
