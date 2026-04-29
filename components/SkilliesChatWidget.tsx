@@ -23,7 +23,14 @@ import {
 } from "@elevenlabs/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const FALLBACK_AGENT_ID = "agent_4301kqagd3g1e0p8hev9y4yasfpy";
+// Pinned to the English Voice Agent (turbo v2) which has the
+// `send_payment_link` client tool wired up. The previous Vercel env var
+// `NEXT_PUBLIC_ELEVENLABS_AGENT_ID` pointed to the older Malayalam-mode
+// "skillies website voice chat" agent (agent_6001…) which still
+// referenced a dead webhook payment tool — left visitors with fabricated
+// Razorpay URLs. Hardcoding here so the build is the source of truth;
+// to switch agents, edit this constant and redeploy.
+const AGENT_ID = "agent_4301kqagd3g1e0p8hev9y4yasfpy";
 
 type PaymentLinkCard = {
   tier: string;
@@ -62,8 +69,7 @@ export default function SkilliesChatWidget() {
 // === Inner UI · uses useConversation + client tools =======================
 
 function ChatWidgetUI() {
-  const agentId =
-    process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID ?? FALLBACK_AGENT_ID;
+  const agentId = AGENT_ID;
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
