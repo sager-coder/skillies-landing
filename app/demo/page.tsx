@@ -165,7 +165,7 @@ export default function DemoPage() {
           </p>
 
           {/* The actual ElevenLabs web component embed */}
-          <DemoConvaiWidget agentId="agent_1901kqjc2kyge5vvft4x8qc2b26q" />
+          <DemoConvaiWidget agentId="agent_6601kqjcwbrbew8t6ye78jq9g0g3" />
 
           <p
             style={{
