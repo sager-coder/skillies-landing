@@ -27,6 +27,7 @@ declare module "react" {
       "elevenlabs-convai": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement> & {
           "agent-id": string;
+          "dynamic-variables"?: string;
           variant?: string;
           "avatar-image-url"?: string;
         },

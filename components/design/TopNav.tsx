@@ -9,6 +9,7 @@ const LINKS: Link[] = [
   { href: "/workshop", label: "Workshop · May 17" },
   { href: "/program", label: "The Batch" },
   { href: "/services", label: "Services" },
+  { href: "/services/ai-sales-agent", label: "AI Sales Agent" },
 ];
 
 /* Note: workshop route also renders an in-page "#pay" anchor
