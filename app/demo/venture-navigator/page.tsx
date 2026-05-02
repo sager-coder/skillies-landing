@@ -70,21 +70,22 @@ export default async function VentureNavigatorDemoPage() {
           position: "sticky",
           top: 0,
           zIndex: 50,
-          background: "rgba(250,245,235,0.85)",
+          background: "rgba(250,245,235,0.92)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: `1px solid ${ACCENT}14`,
         }}
       >
         <div
+          className="vn-topbar"
           style={{
             maxWidth: 1140,
             margin: "0 auto",
-            padding: "14px 24px",
+            padding: "12px 18px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 16,
+            gap: 12,
           }}
         >
           <Link
@@ -94,20 +95,22 @@ export default async function VentureNavigatorDemoPage() {
               color: INK,
               fontWeight: 800,
               letterSpacing: "0.01em",
-              fontSize: 18,
+              fontSize: 17,
+              flexShrink: 0,
             }}
           >
             SKILLIES<span style={{ color: RED }}>.AI</span>
           </Link>
           <span
+            className="vn-topbar-tag"
             style={{
               fontSize: 11,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
               color: MUTED,
               fontWeight: 600,
+              whiteSpace: "nowrap",
             }}
-            className="vn-topbar-tag"
           >
             Private demo · For Vivek M V
           </span>
@@ -115,6 +118,7 @@ export default async function VentureNavigatorDemoPage() {
             href="https://wa.me/918714318352?text=Vivek%20—%20saw%20the%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
             target="_blank"
             rel="noopener noreferrer"
+            className="vn-topbar-cta"
             style={{
               background: ACCENT,
               color: "white",
@@ -126,11 +130,23 @@ export default async function VentureNavigatorDemoPage() {
               letterSpacing: "0.02em",
               whiteSpace: "nowrap",
               boxShadow: "0 4px 12px rgba(15,118,110,0.20)",
+              flexShrink: 0,
             }}
           >
             Book the call →
           </a>
         </div>
+        <style>{`
+          /* The middle "private demo" badge is decorative; on narrow
+             screens the logo + CTA need the room. Below 720px the badge
+             hides entirely (the hero says the same thing 60px below it),
+             so logo + CTA stay on one line at any width. */
+          @media (max-width: 720px) {
+            .vn-topbar-tag { display: none !important; }
+            .vn-topbar { padding: 10px 14px !important; gap: 8px !important; }
+            .vn-topbar-cta { padding: 7px 14px !important; font-size: 12px !important; }
+          }
+        `}</style>
       </header>
 
       {/* ───────────────────── HERO ───────────────────── */}
@@ -925,13 +941,20 @@ function CompetitorTable() {
           font-weight: 700;
         }
 
-        /* ===== DESKTOP TABLE (≥ 760px) ============================== */
+        /* ===== MOBILE LAYOUT (< 760px) ===============================
+           For each capability we show:
+             1. Capability label (top)
+             2. A prominent Skillies "win" pill (full width, teal)
+             3. A single compact strip with the three other vendors
+                rendered as small dim pills · the user instantly sees
+                "Skillies has it · others don't" without scanning a 2x2 grid.
+        */
         .vn-comp-thead {
           display: none;
         }
         .vn-comp-row {
           display: block;
-          padding: 14px 16px;
+          padding: 16px 16px 14px;
           border-top: 1px solid ${ACCENT}1a;
           background: #FAF5EB;
         }
@@ -939,41 +962,61 @@ function CompetitorTable() {
           font-size: 14px;
           font-weight: 600;
           color: ${INK};
-          margin-bottom: 10px;
-          line-height: 1.4;
+          margin-bottom: 12px;
+          line-height: 1.35;
         }
         .vn-comp-cells {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 8px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
         }
         .vn-comp-cell {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          gap: 10px;
-          padding: 8px 12px;
-          border-radius: 10px;
-          background: #FFFFFF;
-          border: 1px solid ${ACCENT}1a;
-          font-size: 13px;
+          gap: 8px;
         }
+        /* Skillies pill · prominent, full-width, teal-tinted. The "winner". */
         .vn-comp-cell--skillies {
-          background: linear-gradient(135deg, rgba(15,118,110,0.10) 0%, rgba(15,118,110,0.05) 100%);
-          border-color: ${ACCENT}55;
+          flex: 1 0 100%;
+          padding: 10px 14px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(15,118,110,0.12) 0%, rgba(15,118,110,0.06) 100%);
+          border: 1.5px solid ${ACCENT}66;
+          justify-content: space-between;
         }
-        .vn-comp-cell-vendor {
+        .vn-comp-cell--skillies .vn-comp-cell-vendor {
           font-size: 11px;
-          color: ${MUTED};
-          letter-spacing: 0.06em;
+          color: ${ACCENT};
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          font-weight: 800;
+        }
+        .vn-comp-cell--skillies .vn-comp-cell-value {
+          font-size: 14px;
+          font-weight: 700;
+          color: ${ACCENT};
+        }
+        /* Others · inline compact strip (one row, three pills). */
+        .vn-comp-cell:not(.vn-comp-cell--skillies) {
+          flex: 1 1 calc((100% - 12px) / 3);
+          min-width: 0;
+          padding: 8px 10px;
+          border-radius: 10px;
+          background: white;
+          border: 1px solid rgba(0,0,0,0.06);
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
+        }
+        .vn-comp-cell:not(.vn-comp-cell--skillies) .vn-comp-cell-vendor {
+          font-size: 9px;
+          color: #9CA3AF;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
           font-weight: 700;
         }
-        .vn-comp-cell--skillies .vn-comp-cell-vendor {
-          color: ${ACCENT};
-        }
-        .vn-comp-cell-value {
-          font-size: 14px;
+        .vn-comp-cell:not(.vn-comp-cell--skillies) .vn-comp-cell-value {
+          font-size: 13px;
           font-weight: 600;
           color: ${INK};
         }
@@ -981,25 +1024,34 @@ function CompetitorTable() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 24px;
-          height: 24px;
+          width: 22px;
+          height: 22px;
           border-radius: 999px;
           background: ${ACCENT};
           color: white;
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 700;
+        }
+        .vn-comp-cell:not(.vn-comp-cell--skillies) .vn-comp-check {
+          width: 18px;
+          height: 18px;
+          font-size: 11px;
+          background: #D1D5DB;
         }
         .vn-comp-no {
-          color: #C7C4BD;
+          color: #D1D5DB;
           font-weight: 700;
-          font-size: 18px;
+          font-size: 16px;
+          line-height: 1;
         }
         .vn-comp-text {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 600;
           color: ${INK};
+          line-height: 1.2;
         }
         .vn-comp-cell--skillies .vn-comp-text {
+          font-size: 14px;
           color: ${ACCENT};
         }
         .vn-comp-foot {
