@@ -51,6 +51,7 @@ export default function AISalesAgentPage() {
       />
 
       <Hero />
+      <NotAWhatsAppToolBand />
       <DemoBand />
       <PullQuoteOne />
       <Verticals />
@@ -89,6 +90,7 @@ export default function AISalesAgentPage() {
 function Hero() {
   const accents = [
     "5 South Indian + Hindi · native script",
+    "₹40 per call · ₹25K/mo inbound",
     "DPDP & TRAI compliant by design",
     "Live in 14 working days",
     "Built in Malappuram",
@@ -307,6 +309,277 @@ function Hero() {
           </li>
         </ul>
       </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* NOT-A-WHATSAPP-TOOL DISAMBIGUATION BAND                                 */
+/* Catches prospects arriving with WhatsApp-tool mental model              */
+/* (AiSensy / WATI / WhatChimp etc.) and reframes the category before      */
+/* they anchor on ₹1-3K/mo messaging-tool prices.                          */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+function NotAWhatsAppToolBand() {
+  const rows: Array<[string, string, string]> = [
+    [
+      "What it is",
+      "WhatsApp dashboard you operate yourself",
+      "AI agent that talks to your customers, in their voice",
+    ],
+    [
+      "Who does the work",
+      "Your team logs in, types replies, sends broadcasts",
+      "Skillies builds it, deploys it, tunes it. You read the report.",
+    ],
+    [
+      "Voice / phone calls",
+      "❌ Text only",
+      "✅ Voice + text · 5 language-locked agents",
+    ],
+    [
+      "Multilingual",
+      "Translation in inbox; templates only",
+      "Real conversations in Malayalam, Tamil, Kannada, Hindi, English",
+    ],
+    [
+      "Outbound to old leads",
+      "❌ Bulk broadcast (most go to spam)",
+      "✅ Calls every old lead in their language, qualifies, routes",
+    ],
+    [
+      "Setup",
+      "Self-serve, sign up in minutes",
+      "Managed deploy, 14 working days · DLT registered for you",
+    ],
+    [
+      "Pricing model",
+      "₹1-5K/month dashboard + you pay Meta per message",
+      "₹40/call (campaigns) or ₹25K/mo (inbound retainer)",
+    ],
+    [
+      "What you're buying",
+      "A tool",
+      "An outcome",
+    ],
+  ];
+
+  return (
+    <section
+      style={{
+        padding: "100px 24px",
+        background: CREAM,
+        color: CHARCOAL,
+        borderTop: `1px solid rgba(201,162,78,0.22)`,
+        borderBottom: `1px solid rgba(201,162,78,0.22)`,
+      }}
+    >
+      <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <p
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: RED,
+            fontWeight: 700,
+            margin: "0 0 18px",
+          }}
+        >
+          § Different category
+        </p>
+        <h2
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontStyle: "italic",
+            fontSize: "clamp(38px, 5.6vw, 64px)",
+            fontWeight: 400,
+            margin: "0 0 22px",
+            letterSpacing: "-0.025em",
+            lineHeight: 1.05,
+            maxWidth: 920,
+          }}
+        >
+          Skillies isn&rsquo;t a WhatsApp tool. It&rsquo;s an{" "}
+          <span style={{ color: GOLD }}>AI agent</span> that uses WhatsApp.
+        </h2>
+        <p
+          style={{
+            fontSize: 18,
+            color: MUTED,
+            margin: "0 0 48px",
+            maxWidth: 760,
+            lineHeight: 1.6,
+          }}
+        >
+          If you&rsquo;ve been comparing AiSensy, WATI, Interakt, WhatChimp,
+          DoubleTick — those are messaging dashboards. ₹1-3K/month, you
+          operate them, you write the messages. Skillies is something different:
+          a voice + chat AI that talks to your customers itself, in five Indian
+          languages, with no team logging in.
+        </p>
+
+        {/* Comparison table — visual emphasis */}
+        <div
+          style={{
+            background: "#FFFFFF",
+            border: "1px solid rgba(26,26,26,0.10)",
+            borderRadius: 16,
+            overflow: "hidden",
+            boxShadow: "0 12px 40px rgba(15,15,15,0.06)",
+          }}
+        >
+          {/* Header */}
+          <div
+            className="cmp-row cmp-header"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1.1fr 1.4fr 1.6fr",
+              gap: 0,
+              borderBottom: `2px solid ${GOLD}`,
+            }}
+          >
+            <div
+              style={{
+                padding: "20px 28px",
+                fontSize: 11,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: MUTED,
+                background: "rgba(26,26,26,0.03)",
+              }}
+            >
+              Dimension
+            </div>
+            <div
+              style={{
+                padding: "20px 24px",
+                fontSize: 14,
+                fontWeight: 700,
+                color: CHARCOAL,
+                borderLeft: "1px solid rgba(26,26,26,0.08)",
+              }}
+            >
+              WhatsApp messaging tools
+              <br />
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: MUTED,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                AiSensy · WATI · WhatChimp · Interakt
+              </span>
+            </div>
+            <div
+              style={{
+                padding: "20px 24px",
+                fontSize: 14,
+                fontWeight: 700,
+                color: GOLD,
+                borderLeft: "1px solid rgba(26,26,26,0.08)",
+                background: "rgba(201,162,78,0.06)",
+              }}
+            >
+              Skillies AI Sales Agent
+              <br />
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: MUTED,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                Voice + chat · managed · India-native
+              </span>
+            </div>
+          </div>
+
+          {/* Rows */}
+          {rows.map(([dim, them, us], i) => (
+            <div
+              key={dim}
+              className="cmp-row"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.1fr 1.4fr 1.6fr",
+                gap: 0,
+                borderTop: i === 0 ? "none" : "1px solid rgba(26,26,26,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  padding: "18px 28px",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: CHARCOAL,
+                  background: "rgba(26,26,26,0.025)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {dim}
+              </div>
+              <div
+                style={{
+                  padding: "18px 24px",
+                  fontSize: 14,
+                  color: MUTED,
+                  borderLeft: "1px solid rgba(26,26,26,0.08)",
+                  lineHeight: 1.5,
+                }}
+              >
+                {them}
+              </div>
+              <div
+                style={{
+                  padding: "18px 24px",
+                  fontSize: 14,
+                  color: CHARCOAL,
+                  borderLeft: "1px solid rgba(26,26,26,0.08)",
+                  background: "rgba(201,162,78,0.04)",
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                }}
+              >
+                {us}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p
+          style={{
+            fontSize: 13,
+            color: MUTED,
+            margin: "32px auto 0",
+            textAlign: "center",
+            maxWidth: 720,
+            lineHeight: 1.6,
+            fontStyle: "italic",
+          }}
+        >
+          If you only need to broadcast WhatsApp coupons or run template
+          messages, those tools are the right fit. Skillies is for businesses
+          that want an AI agent <strong>making the call</strong> — not just
+          sending the message.
+        </p>
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `@media (max-width: 760px) {
+            .cmp-row { grid-template-columns: 1fr !important; }
+            .cmp-row > div {
+              border-left: none !important;
+              border-top: 1px solid rgba(26,26,26,0.08) !important;
+            }
+            .cmp-header > div { padding: 14px 20px !important; }
+          }`,
+        }}
+      />
     </section>
   );
 }
