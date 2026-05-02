@@ -1,25 +1,22 @@
 "use client";
 
 /**
- * VentureNavigatorChat — Skillies-styled inline chat for Vivek's demo.
+ * DemoBrandedChat — shared inline chat used on every prospect-specific
+ * demo route under /demo/<slug>. Same UI everywhere; brand identity (the
+ * avatar initials, the header label, and the footer line) is passed as
+ * props so adding a new prospect doesn't fork this whole component.
  *
  * Mirrors the production SkilliesChatWidget design (dark-green header,
- * red user bubbles, cream agent bubbles, mic + image-upload + text input)
- * but rendered inline on the demo page, not as a floating launcher.
+ * red user bubbles, cream agent bubbles, mic + image-upload + text input).
  *
  * Modes:
  *   - text  (default · websocket + textOnly:true · no mic permission)
- *   - voice (mic via WebRTC · uses Ehsan's IVC voice clone, set on the
- *            agent itself, so it sounds like the founder)
+ *   - voice (mic via WebRTC · uses the agent's configured voice)
  *
- * Image upload:
- *   The user can attach an image (e.g. a deck slide, screenshot of their
- *   metrics) via uploadFile() → sendMultimodalMessage({fileId, text}).
- *   Works in both text and voice modes.
- *
- * Auto-starts the session on mount in text mode so the visitor sees the
- * agent's first_message immediately. Switching to voice ends the current
- * websocket session and opens a fresh WebRTC one.
+ * Image upload via uploadFile() → sendMultimodalMessage({fileId, text})
+ * works in both modes. Auto-starts the session in text mode on mount so
+ * the visitor sees the agent's first_message immediately. Switching to
+ * voice ends the websocket session and opens a fresh WebRTC one.
  */
 
 import {
@@ -42,15 +39,25 @@ type ChatMessage = {
   ts: number;
 };
 
-export default function VentureNavigatorChat({ agentId }: { agentId: string }) {
+export type DemoBrandedChatProps = {
+  agentId: string;
+  /** 2–3 character monogram in the header avatar, e.g. "VN", "AG". */
+  avatar: string;
+  /** Header label, e.g. "Venture Navigator · Founder Screener". */
+  label: string;
+  /** Footer line shown below the input bar. */
+  footer: string;
+};
+
+export default function DemoBrandedChat(props: DemoBrandedChatProps) {
   return (
     <ConversationProvider>
-      <ChatUI agentId={agentId} />
+      <ChatUI {...props} />
     </ConversationProvider>
   );
 }
 
-function ChatUI({ agentId }: { agentId: string }) {
+function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [activeMode, setActiveMode] = useState<"text" | "voice" | null>(null);
@@ -354,7 +361,7 @@ function ChatUI({ agentId }: { agentId: string }) {
             letterSpacing: "0.04em",
           }}
         >
-          VN
+          {avatar}
           {isAgentSpeaking ? (
             <span
               style={{
@@ -363,14 +370,14 @@ function ChatUI({ agentId }: { agentId: string }) {
                 borderRadius: "50%",
                 border: "2px solid #C9A24E",
                 animation:
-                  "vn-pulse 1.4s cubic-bezier(0,0,.2,1) infinite",
+                  "demo-chat-pulse 1.4s cubic-bezier(0,0,.2,1) infinite",
               }}
             />
           ) : null}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.2 }}>
-            Venture Navigator · Founder Screener
+            {label}
           </div>
           <div
             style={{
@@ -551,11 +558,11 @@ function ChatUI({ agentId }: { agentId: string }) {
           background: "#FAF5EB",
         }}
       >
-        Powered by Skillies.AI · For Vivek M V
+        {footer}
       </div>
 
       <style>{`
-        @keyframes vn-pulse {
+        @keyframes demo-chat-pulse {
           0%   { transform: scale(1);   opacity: .65; }
           100% { transform: scale(1.7); opacity: 0; }
         }

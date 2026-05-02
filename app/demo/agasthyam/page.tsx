@@ -3,17 +3,20 @@ import Link from "next/link";
 
 import FooterEditorial from "@/components/design/FooterEditorial";
 import DemoBrandedChat from "../_components/DemoBrandedChat";
-import PasswordGate from "./PasswordGate";
+import PasswordGate from "../venture-navigator/PasswordGate";
 import { cookieNameFor, verifyToken } from "@/lib/demo-auth";
 
-// Private demo URL for Vivek M V (@venture_navigator) · Kerala startup
-// accelerator. Configured for founder-applicant screening, not B2C sales.
-// Agent: agent_9401kqkyg1g3ejcsdke3x602jw2s · spun up 2 May 2026.
+// Private demo URL for Agasthyam Kalaripayattu (Gurukkal Dr. S. Mahesh,
+// Thiruvananthapuram). 130-year lineage · 6 offline centres · IKS-recognised.
+// Configured for program-inquiry triage (classes / residentials / TTC /
+// therapy / corporate / online).
 //
-// Access · password-gated via DEMO_VENTURE_NAVIGATOR_PASSWORD env var.
-// Cookie set after correct entry, valid 7 days, scoped to this slug.
+// Agent: agent_7301kqmeqyppewjtf6fqx8xf2yg8 · spun up 2 May 2026.
+//
+// Access · password-gated via DEMO_AGASTHYAM_PASSWORD env var.
+// Cookie set after correct entry, valid 7 days, scoped to slug "agasthyam".
 
-const SLUG = "venture-navigator";
+const SLUG = "agasthyam";
 
 export const dynamic = "force-dynamic";
 
@@ -31,9 +34,9 @@ const RED = "#C62828";
 const DARK = "#1F3A2E";
 const GOLD = "#C9A24E";
 
-const VENTURE_NAVIGATOR_AGENT_ID = "agent_9401kqkyg1g3ejcsdke3x602jw2s";
+const AGASTHYAM_AGENT_ID = "agent_7301kqmeqyppewjtf6fqx8xf2yg8";
 
-export default async function VentureNavigatorDemoPage() {
+export default async function AgasthyamDemoPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get(cookieNameFor(SLUG))?.value;
   if (!verifyToken(SLUG, token)) {
@@ -45,10 +48,6 @@ export default async function VentureNavigatorDemoPage() {
       className="vn-demo-page"
       style={{ background: CREAM, minHeight: "100vh", color: INK }}
     >
-      {/* Aggressive global-widget hide: SkilliesChatWidget renders a
-          motion.button with aria-label="Open Skillies chat" and the panel
-          has aria-label="Skillies chat". Both are fixed-positioned siblings
-          of <main>. Hiding by aria-label catches them deterministically. */}
       <style>{`
         body > button[aria-label="Open Skillies chat"],
         body > div[aria-label="Skillies chat"],
@@ -56,8 +55,6 @@ export default async function VentureNavigatorDemoPage() {
         body > #skillies-chat-root {
           display: none !important;
         }
-        /* Belt-and-suspenders: any fixed-positioned launcher that renders
-           outside our main · scoped tightly so we don't nuke unrelated UI. */
         .vn-demo-page ~ button[class*="fixed"],
         .vn-demo-page ~ div[class*="fixed"] {
           display: none !important;
@@ -112,10 +109,10 @@ export default async function VentureNavigatorDemoPage() {
               whiteSpace: "nowrap",
             }}
           >
-            Private demo · For Vivek M V
+            Private demo · For Gurukkal Dr. Mahesh
           </span>
           <a
-            href="https://wa.me/918714318352?text=Vivek%20—%20saw%20the%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
+            href="https://wa.me/918714318352?text=Gurukkal%20%E2%80%94%20saw%20the%20Agasthyam%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
             target="_blank"
             rel="noopener noreferrer"
             className="vn-topbar-cta"
@@ -137,10 +134,6 @@ export default async function VentureNavigatorDemoPage() {
           </a>
         </div>
         <style>{`
-          /* The middle "private demo" badge is decorative; on narrow
-             screens the logo + CTA need the room. Below 720px the badge
-             hides entirely (the hero says the same thing 60px below it),
-             so logo + CTA stay on one line at any width. */
           @media (max-width: 720px) {
             .vn-topbar-tag { display: none !important; }
             .vn-topbar { padding: 10px 14px !important; gap: 8px !important; }
@@ -183,7 +176,7 @@ export default async function VentureNavigatorDemoPage() {
                 margin: "0 0 18px",
               }}
             >
-              Private Demo · For Vivek M V
+              Private Demo · For Gurukkal Dr. S. Mahesh
             </p>
             <h1
               style={{
@@ -195,7 +188,7 @@ export default async function VentureNavigatorDemoPage() {
                 letterSpacing: "-0.015em",
               }}
             >
-              130 founders apply daily.{" "}
+              Six centres. One number.{" "}
               <em
                 style={{
                   fontStyle: "italic",
@@ -203,7 +196,7 @@ export default async function VentureNavigatorDemoPage() {
                   fontWeight: 400,
                 }}
               >
-                One screens them all.
+                Every inquiry, met.
               </em>
             </h1>
             <p
@@ -215,10 +208,11 @@ export default async function VentureNavigatorDemoPage() {
                 maxWidth: 540,
               }}
             >
-              Built for Venture Navigator. Captures{" "}
-              <strong style={{ color: INK }}>idea, traction, team, ask, runway, location</strong>{" "}
-              from every applicant in three minutes — English or Malayalam, with
-              images, while you sleep.
+              Built for Agasthyam Kalaripayattu's intake flow. Receives every
+              caller — local, Indian, international — captures their{" "}
+              <strong style={{ color: INK }}>programme, dates, experience, and any health detail</strong>{" "}
+              respectfully, in English or Malayalam, then routes the right
+              inquiry to the right person on the team.
             </p>
 
             {/* Quick-stat strip */}
@@ -231,9 +225,9 @@ export default async function VentureNavigatorDemoPage() {
                 maxWidth: 540,
               }}
             >
-              <Stat n="~130" sub="founder applications/day · self-reported" />
-              <Stat n="<60s" sub="hot lead → your phone" />
-              <Stat n="5" sub="Indian languages, native script" />
+              <Stat n="130 yrs" sub="lineage · since 1896 · Thekkan Sampradayam" />
+              <Stat n="6+" sub="centres · TVM · plus global online" />
+              <Stat n="9" sub="countries · 5,000+ international students" />
             </div>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -272,7 +266,7 @@ export default async function VentureNavigatorDemoPage() {
             </div>
           </div>
 
-          {/* Hero visual: a stylized "before vs after" */}
+          {/* Hero visual */}
           <div
             style={{
               background: "white",
@@ -299,12 +293,12 @@ export default async function VentureNavigatorDemoPage() {
               label="Before"
               tone="bad"
               lines={[
-                "👋 hi",
-                "Sir, please review my pitch",
-                "Sir, when can we discuss?",
-                "Sir, I sent the deck again 🙏",
+                "Hello, I want join Kalari for fitness",
+                "Sir please send fees",
+                "Hello any reply?",
+                "Sir TTC dates?",
               ]}
-              footer="3 days · 0 replies · founder churned to next accelerator"
+              footer="3 channels · 1 phone · 80–120 inquiries/day · most lose interest by day 2"
             />
             <div
               style={{
@@ -323,12 +317,12 @@ export default async function VentureNavigatorDemoPage() {
               label="After"
               tone="good"
               lines={[
-                "👋 hi",
-                "Hi! I'm Vivek's screening agent. Quick 6 questions before he reviews — what's your startup?",
-                "Building a Malayalam-first farm-input marketplace…",
-                "Got it. Traction so far — revenue, signups, MoUs?",
+                "Hello, I want join Kalari for fitness",
+                "Namaskaram. Welcome to Agasthyam. Are you looking for our daily Tejas track or the BALAM intensive?",
+                "Tejas. I'm based in Trivandrum.",
+                "Thank you. May I ask your fitness background and which centre is closest to you?",
               ]}
-              footer="3 minutes · application captured · Vivek pinged for the hot ones"
+              footer="3 minutes · programme captured · routed to the team handling Tejas inquiries"
             />
           </div>
         </div>
@@ -345,14 +339,14 @@ export default async function VentureNavigatorDemoPage() {
         <section id="chat" style={{ scrollMarginTop: 80, marginBottom: 64 }}>
           <SectionHeader
             eyebrow="Live demo · talk or type"
-            title="Try it as if you were a founder applying."
-            sub="Type or talk. Default is English; switches to formal Malayalam script if the applicant writes in Malayalam. Reads Manglish input but never replies in Manglish — vendor evaluation deserves polish. Voice is the founder's actual cloned voice."
+            title="Try it as if you were a new applicant."
+            sub="Type or talk. Default is English; switches to formal Malayalam script if the applicant writes in Malayalam. Tone is calibrated to the institution — calm, respectful, never casual. Voice is the founder of Skillies' cloned voice."
           />
           <DemoBrandedChat
-            agentId={VENTURE_NAVIGATOR_AGENT_ID}
-            avatar="VN"
-            label="Venture Navigator · Founder Screener"
-            footer="Powered by Skillies.AI · For Vivek M V"
+            agentId={AGASTHYAM_AGENT_ID}
+            avatar="AG"
+            label="Agasthyam · Inquiry Coordinator"
+            footer="Powered by Skillies.AI · For Gurukkal Dr. Mahesh"
           />
           <p
             style={{
@@ -365,17 +359,17 @@ export default async function VentureNavigatorDemoPage() {
           >
             Demo agent · won't reveal system internals or vendors. The
             production agent connects directly to your WhatsApp Business
-            Account, routes hot leads to your phone, and learns from your
-            decisions over time.
+            Account, routes TTC + international inquiries to the senior team
+            in real time, and learns from each handoff over time.
           </p>
         </section>
 
         {/* ──────────── COMPETITOR DIFFERENTIATION CHART ───────────── */}
         <section style={{ marginBottom: 64 }}>
           <SectionHeader
-            eyebrow="The differentiation"
-            title="Why this — not AiSensy, WATI, Interakt, or a junior salesperson."
-            sub="Most options on the market are either broadcast tools that still need a human to reply, voice agents for outbound calling, or the human itself. Here's what each gives you for the same money."
+            eyebrow="Why Skillies, not the alternatives"
+            title="Why this — not AiSensy, WATI, or a part-time admin."
+            sub="The cheaper tools on the market are broadcast utilities — they don't reply on their own and don't know which programme an applicant is asking about. The other option is hiring an admin, which still misses overnight + international + Malayalam inquiries. Here's what each gives you for the same money."
           />
           <CompetitorTable />
         </section>
@@ -395,23 +389,23 @@ export default async function VentureNavigatorDemoPage() {
           >
             <FlowCard
               num="01"
-              title="The 130 daily applications"
-              body="Captures the six screener fields from every founder DM-ing you, in their language, in under 3 minutes. No Google Forms, no copy-paste."
+              title="The 80–120 daily inquiries"
+              body="Every caller, DM, and form-fill triaged into the right programme bucket — daily class, residential, TTC, therapy, corporate. No more 'send fees' messages going un-replied."
             />
             <FlowCard
               num="02"
-              title="The 'no reply' problem"
-              body="Every applicant gets a real conversation in 5 seconds — not a 'we'll get back' template. The complaint on your last reel goes away."
+              title="The international + overnight gap"
+              body="A founder in Berlin or Singapore inquires at 3am IST. The agent answers, captures their TTC fit, and the team has a complete brief by morning. No 8-hour gap."
             />
             <FlowCard
               num="03"
-              title="Triage, instant"
-              body="Hot founders (concrete traction, real ask, Kerala-based) ping your phone in 60 seconds. The rest stays queued for your schedule."
+              title="The right-person routing"
+              body="TTC + international applicants get flagged urgent and pinged to the senior team's WhatsApp in 60 seconds. Daily class inquiries flow to the standard intake queue."
             />
             <FlowCard
               num="04"
-              title="Audit + memory"
-              body="Every conversation logged + summarised. 9am email digest of overnight applicants. Returning founders are remembered. DPDP-compliant."
+              title="The lineage continuity"
+              body="Returning students are remembered across years. Every inquiry logged, summarised, and searchable. Daily 9am email digest of overnight inquiries. Respect for the Gurukkal's time."
             />
           </div>
         </section>
@@ -419,9 +413,9 @@ export default async function VentureNavigatorDemoPage() {
         {/* ──────────── PRICING (visual) ──────────── */}
         <section id="pricing" style={{ scrollMarginTop: 80, marginBottom: 64 }}>
           <SectionHeader
-            eyebrow="Pricing · sized to your volume"
-            title="Growth tier. ₹49,999 setup + ₹39,999/mo."
-            sub="Sized to ~130 applications/day. Sits inside the Growth band (1,000–1,499 conversations/month after the AI handles bulk screening). No commission. No annual lock-in. Meta WhatsApp API costs are pass-through to your own WABA."
+            eyebrow="Pricing · sized to your scale"
+            title="Scale tier. ₹99,999 setup + ₹99,999/mo."
+            sub="Sized to ~80–120 inquiries/day across 6 centres + global online + multi-vertical programme catalogue. Includes 15,000 conversations/month before overage. No commission. No annual lock-in. Meta WhatsApp API costs are pass-through to your own WABA."
           />
           <PricingCard />
         </section>
@@ -471,11 +465,11 @@ export default async function VentureNavigatorDemoPage() {
             }}
           >
             30 minutes on Zoom · live screen-share, dashboard tour, walk
-            through how this plugs into your application pipeline. Lock terms
-            on the same call if you're in.
+            through how this plugs into Agasthyam's intake pipeline.
+            Lock terms on the same call if it's a fit.
           </p>
           <a
-            href="https://wa.me/918714318352?text=Vivek%20here%20—%20saw%20the%20Venture%20Navigator%20demo,%20let's%20do%20the%20call"
+            href="https://wa.me/918714318352?text=Gurukkal%20%E2%80%94%20saw%20the%20Agasthyam%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
             style={{
               display: "inline-block",
               background: GOLD,
@@ -505,7 +499,6 @@ export default async function VentureNavigatorDemoPage() {
 
       <FooterEditorial />
 
-      {/* Mobile responsiveness */}
       <style>{`
         @media (max-width: 880px) {
           .vn-hero-grid {
@@ -521,7 +514,8 @@ export default async function VentureNavigatorDemoPage() {
 }
 
 // ──────────────────────────────────────────────────────────────────────────
-// Components
+// Components (mirrored from the venture-navigator page; identical visual
+// language across all prospect demos for consistency).
 // ──────────────────────────────────────────────────────────────────────────
 
 function SectionHeader({
@@ -648,21 +642,21 @@ function BeforeAfterBlock({
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {lines.map((line, i) => {
-          const isFounder = i % 2 === 0;
+          const isApplicant = i % 2 === 0;
           return (
             <div
               key={i}
               style={{
-                alignSelf: isFounder ? "flex-start" : "flex-end",
-                background: isFounder ? "white" : "#1F3A2E",
-                color: isFounder ? INK : CREAM,
+                alignSelf: isApplicant ? "flex-start" : "flex-end",
+                background: isApplicant ? "white" : "#1F3A2E",
+                color: isApplicant ? INK : CREAM,
                 fontSize: 12,
                 padding: "6px 10px",
                 borderRadius: 12,
-                borderTopLeftRadius: isFounder ? 4 : 12,
-                borderBottomRightRadius: isFounder ? 12 : 4,
+                borderTopLeftRadius: isApplicant ? 4 : 12,
+                borderBottomRightRadius: isApplicant ? 12 : 4,
                 maxWidth: "90%",
-                border: isFounder ? "1px solid #E5E7EB" : "none",
+                border: isApplicant ? "1px solid #E5E7EB" : "none",
               }}
             >
               {line}
@@ -750,21 +744,28 @@ type Capability = {
 
 const CAPABILITIES: Capability[] = [
   {
-    label: "AI replies in 5 Indian languages (native script)",
+    label: "AI replies in English + Malayalam (native script)",
     skillies: true,
     aisensy: false,
     wati: false,
-    human: "1–2 max",
+    human: "1 language",
   },
   {
-    label: "Per-customer memory across weeks",
+    label: "Knows the difference between TTC, residential, class, therapy",
+    skillies: true,
+    aisensy: false,
+    wati: false,
+    human: true,
+  },
+  {
+    label: "Per-applicant memory across weeks/months",
     skillies: true,
     aisensy: false,
     wati: false,
     human: false,
   },
   {
-    label: "Reads images (decks, screenshots, IDs)",
+    label: "Reads images (IDs, photos, deck slides)",
     skillies: true,
     aisensy: false,
     wati: false,
@@ -778,6 +779,20 @@ const CAPABILITIES: Capability[] = [
     human: true,
   },
   {
+    label: "International + overnight inquiries answered live",
+    skillies: true,
+    aisensy: "broadcast only",
+    wati: "broadcast only",
+    human: false,
+  },
+  {
+    label: "Routes TTC + intl. to senior team in 60s",
+    skillies: true,
+    aisensy: false,
+    wati: "manual",
+    human: "shift-bound",
+  },
+  {
     label: "Self-improving (corrects its own answers)",
     skillies: true,
     aisensy: false,
@@ -785,32 +800,11 @@ const CAPABILITIES: Capability[] = [
     human: false,
   },
   {
-    label: "24/7 · zero-second reply",
-    skillies: true,
-    aisensy: "broadcast only",
-    wati: "broadcast only",
-    human: false,
-  },
-  {
-    label: "Hot-lead routing to your phone",
-    skillies: true,
-    aisensy: false,
-    wati: "manual",
-    human: true,
-  },
-  {
-    label: "DPDP / TRAI compliant by design",
-    skillies: true,
-    aisensy: "retrofitted",
-    wati: "retrofitted",
-    human: "depends",
-  },
-  {
-    label: "Monthly cost (Kerala, 130 apps/day)",
-    skillies: "₹39,999",
-    aisensy: "₹3,200 + a human",
-    wati: "₹4,500 + a human",
-    human: "₹25–30K",
+    label: "Monthly cost (Trivandrum, ~100/day)",
+    skillies: "₹99,999",
+    aisensy: "₹3,200 + admin",
+    wati: "₹4,500 + admin",
+    human: "₹20–25K admin",
   },
 ];
 
@@ -825,18 +819,14 @@ const COLS: ColDef[] = [
   { key: "skillies", label: "Skillies", short: "Skillies", highlight: true },
   { key: "aisensy", label: "AiSensy", short: "AiSensy" },
   { key: "wati", label: "WATI", short: "WATI" },
-  { key: "human", label: "Junior salesperson", short: "Junior staff" },
+  { key: "human", label: "Part-time admin", short: "Admin" },
 ];
 
-// Skillies has a clear advantage on every row: true checkmarks on the
-// boolean rows, and the lowest-cost-per-capability on the cost row.
-// So the chip reads "9 of 9".
 const SKILLIES_WINS = CAPABILITIES.length;
 
 function CompetitorTable() {
   return (
     <div className="vn-comp">
-      {/* Top summary strip */}
       <div className="vn-comp-summary">
         <span className="vn-comp-badge">
           Skillies leads on {SKILLIES_WINS} of {CAPABILITIES.length}
@@ -846,7 +836,6 @@ function CompetitorTable() {
         </span>
       </div>
 
-      {/* DESKTOP table header (hidden on mobile) */}
       <div className="vn-comp-thead">
         <div className="vn-comp-thead-cap">Capability</div>
         {COLS.map((c) => (
@@ -859,7 +848,6 @@ function CompetitorTable() {
         ))}
       </div>
 
-      {/* Rows · same markup, CSS swaps layout at 760px */}
       {CAPABILITIES.map((cap, i) => (
         <div className="vn-comp-row" key={i}>
           <div className="vn-comp-rowlabel">{cap.label}</div>
@@ -884,13 +872,9 @@ function CompetitorTable() {
                   <span className="vn-comp-cell-vendor">{c.short}</span>
                   <span className="vn-comp-cell-value">
                     {isCheck ? (
-                      <span className="vn-comp-check" aria-label="Yes">
-                        ✓
-                      </span>
+                      <span className="vn-comp-check" aria-label="Yes">✓</span>
                     ) : isDash ? (
-                      <span className="vn-comp-no" aria-label="No">
-                        —
-                      </span>
+                      <span className="vn-comp-no" aria-label="No">—</span>
                     ) : (
                       <span className="vn-comp-text">{v}</span>
                     )}
@@ -946,17 +930,8 @@ function CompetitorTable() {
           font-weight: 700;
         }
 
-        /* ===== MOBILE LAYOUT (< 760px) ===============================
-           For each capability we show:
-             1. Capability label (top)
-             2. A prominent Skillies "win" pill (full width, teal)
-             3. A single compact strip with the three other vendors
-                rendered as small dim pills · the user instantly sees
-                "Skillies has it · others don't" without scanning a 2x2 grid.
-        */
-        .vn-comp-thead {
-          display: none;
-        }
+        /* MOBILE LAYOUT */
+        .vn-comp-thead { display: none; }
         .vn-comp-row {
           display: block;
           padding: 16px 16px 14px;
@@ -980,7 +955,6 @@ function CompetitorTable() {
           align-items: center;
           gap: 8px;
         }
-        /* Skillies pill · prominent, full-width, teal-tinted. The "winner". */
         .vn-comp-cell--skillies {
           flex: 1 0 100%;
           padding: 10px 14px;
@@ -1001,7 +975,6 @@ function CompetitorTable() {
           font-weight: 700;
           color: ${ACCENT};
         }
-        /* Others · inline compact strip (one row, three pills). */
         .vn-comp-cell:not(.vn-comp-cell--skillies) {
           flex: 1 1 calc((100% - 12px) / 3);
           min-width: 0;
@@ -1079,9 +1052,7 @@ function CompetitorTable() {
             font-weight: 600;
             letter-spacing: 0.04em;
           }
-          .vn-comp-thead-cap {
-            padding: 14px 16px;
-          }
+          .vn-comp-thead-cap { padding: 14px 16px; }
           .vn-comp-thead-vendor {
             padding: 14px 12px;
             text-align: center;
@@ -1098,9 +1069,7 @@ function CompetitorTable() {
             padding: 0;
             background: white;
           }
-          .vn-comp-row:nth-child(odd) {
-            background: #FAF5EB;
-          }
+          .vn-comp-row:nth-child(odd) { background: #FAF5EB; }
           .vn-comp-rowlabel {
             padding: 14px 16px;
             margin: 0;
@@ -1108,9 +1077,7 @@ function CompetitorTable() {
             align-items: center;
             font-size: 14px;
           }
-          .vn-comp-cells {
-            display: contents;
-          }
+          .vn-comp-cells { display: contents; }
           .vn-comp-cell {
             display: flex;
             flex-direction: column;
@@ -1126,9 +1093,7 @@ function CompetitorTable() {
           .vn-comp-cell--skillies {
             background: rgba(15, 118, 110, 0.05);
           }
-          .vn-comp-cell-vendor {
-            display: none;
-          }
+          .vn-comp-cell-vendor { display: none; }
         }
       `}</style>
     </div>
@@ -1147,7 +1112,6 @@ function PricingCard() {
         boxShadow: "0 18px 44px rgba(15, 118, 110, 0.08)",
       }}
     >
-      {/* Top stripe with tier name */}
       <div
         style={{
           background: `linear-gradient(135deg, ${DARK} 0%, #142821 100%)`,
@@ -1171,9 +1135,9 @@ function PricingCard() {
               marginBottom: 4,
             }}
           >
-            Recommended for Venture Navigator
+            Recommended for Agasthyam
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700 }}>Growth tier</div>
+          <div style={{ fontSize: 22, fontWeight: 700 }}>Scale tier</div>
         </div>
         <div
           style={{
@@ -1181,11 +1145,10 @@ function PricingCard() {
             color: "rgba(250,245,235,0.7)",
           }}
         >
-          1,000–1,499 conversations/mo · sized for ~130 applications/day
+          15,000 conversations/mo · multi-centre · multi-vertical · multi-language
         </div>
       </div>
 
-      {/* Numbers grid */}
       <div
         style={{
           display: "grid",
@@ -1194,24 +1157,23 @@ function PricingCard() {
       >
         <PriceTile
           label="Setup (one-time)"
-          value="₹49,999"
+          value="₹99,999"
           sub="Live in 14 working days · payable on go-live"
         />
         <PriceTile
           label="Monthly"
-          value="₹39,999"
-          sub="No commission · no annual lock-in"
+          value="₹99,999"
+          sub="No commission · no annual lock-in · 12-month term"
           accent
         />
         <PriceTile
           label="Founding-partner offer"
           value="Setup waived"
-          sub="In exchange for case study + testimonial reel + 3 peer intros"
+          sub="In exchange for case study + Gurukkal video testimonial + 3 peer intros"
           highlight
         />
       </div>
 
-      {/* Whats included */}
       <div
         style={{
           padding: "22px 28px",
@@ -1242,14 +1204,16 @@ function PricingCard() {
           }}
         >
           {[
-            "AI replies on every WhatsApp message · 5 Indian languages",
+            "AI replies on every WhatsApp + DM · English + Malayalam",
+            "Programme-aware triage (class / TTC / therapy / corp / online)",
             "Inbound voice-note transcription (Whisper)",
-            "Image understanding (decks, screenshots, IDs)",
-            "Per-customer memory across all conversations",
-            "Hot-lead alerts to your phone in 60 seconds",
-            "Daily 9am email digest of overnight applicants",
+            "Image understanding (IDs, deck slides, photos)",
+            "Per-applicant memory across all conversations",
+            "Hot-lead alerts (TTC + international) to senior team in 60s",
+            "Daily 9am email digest of overnight inquiries",
             "Self-improving prompt that fixes its own answers",
             "DPDP / TRAI compliance baked in",
+            "15,000 conversations/mo · ₹2/conv overage",
           ].map((line) => (
             <li
               key={line}
@@ -1285,7 +1249,6 @@ function PricingCard() {
         </ul>
       </div>
 
-      {/* Pass-through note */}
       <div
         style={{
           padding: "14px 28px",
@@ -1297,9 +1260,9 @@ function PricingCard() {
         }}
       >
         + 18% GST. Meta WhatsApp API costs are{" "}
-        <strong style={{ color: INK }}>pass-through</strong> · you connect
-        your own WABA, Meta bills you directly. Most inbound is free
-        (service conversations); only marketing broadcasts cost paise per
+        <strong style={{ color: INK }}>pass-through</strong> · Agasthyam
+        connects its own WABA, Meta bills Agasthyam directly. Most inbound is
+        free (service conversations); only marketing broadcasts cost paise per
         message.
       </div>
     </div>
