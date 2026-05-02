@@ -717,144 +717,283 @@ const CAPABILITIES: Capability[] = [
 type ColDef = {
   key: "skillies" | "aisensy" | "wati" | "human";
   label: string;
+  short: string;
   highlight?: boolean;
 };
 
-function CompetitorTable() {
-  const cols: ColDef[] = [
-    { key: "skillies", label: "Skillies", highlight: true },
-    { key: "aisensy", label: "AiSensy" },
-    { key: "wati", label: "WATI" },
-    { key: "human", label: "Junior salesperson" },
-  ];
+const COLS: ColDef[] = [
+  { key: "skillies", label: "Skillies", short: "Skillies", highlight: true },
+  { key: "aisensy", label: "AiSensy", short: "AiSensy" },
+  { key: "wati", label: "WATI", short: "WATI" },
+  { key: "human", label: "Junior salesperson", short: "Junior staff" },
+];
 
+// Count rows where Skillies has the strictly best answer (true while every
+// competitor is false / partial / numeric-loss). Used in the summary chip.
+const SKILLIES_WINS = CAPABILITIES.filter((c) => c.skillies === true).length;
+
+function CompetitorTable() {
   return (
-    <div
-      style={{
-        background: "white",
-        border: `1px solid ${ACCENT}1f`,
-        borderRadius: 16,
-        overflow: "hidden",
-        boxShadow: "0 4px 20px rgba(15, 118, 110, 0.06)",
-      }}
-    >
-      {/* Header row */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(220px, 1.4fr) repeat(4, minmax(110px, 1fr))",
-          background: DARK,
-          color: CREAM,
-          fontSize: 12,
-          letterSpacing: "0.04em",
-          fontWeight: 600,
-        }}
-      >
-        <div style={{ padding: "14px 16px" }}>Capability</div>
-        {cols.map((c) => (
+    <div className="vn-comp">
+      {/* Top summary strip */}
+      <div className="vn-comp-summary">
+        <span className="vn-comp-badge">
+          Skillies leads on {SKILLIES_WINS} of {CAPABILITIES.length}
+        </span>
+        <span className="vn-comp-tag">
+          For the <strong>same money or less</strong> than the alternatives.
+        </span>
+      </div>
+
+      {/* DESKTOP table header (hidden on mobile) */}
+      <div className="vn-comp-thead">
+        <div className="vn-comp-thead-cap">Capability</div>
+        {COLS.map((c) => (
           <div
             key={c.key}
-            style={{
-              padding: "14px 12px",
-              textAlign: "center",
-              background: c.highlight ? "#0F766E" : "transparent",
-              color: c.highlight ? "white" : CREAM,
-              borderLeft: "1px solid rgba(250,245,235,0.08)",
-              fontWeight: c.highlight ? 700 : 500,
-            }}
+            className={`vn-comp-thead-vendor ${c.highlight ? "is-skillies" : ""}`}
           >
             {c.label}
           </div>
         ))}
       </div>
 
-      {/* Body rows */}
+      {/* Rows · same markup, CSS swaps layout at 760px */}
       {CAPABILITIES.map((cap, i) => (
-        <div
-          key={i}
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "minmax(220px, 1.4fr) repeat(4, minmax(110px, 1fr))",
-            borderTop: i === 0 ? "none" : `1px solid ${ACCENT}1a`,
-            background: i % 2 === 0 ? "white" : "#FAF5EB",
-          }}
-        >
-          <div
-            style={{
-              padding: "14px 16px",
-              fontSize: 14,
-              color: INK,
-              fontWeight: 500,
-            }}
-          >
-            {cap.label}
+        <div className="vn-comp-row" key={i}>
+          <div className="vn-comp-rowlabel">{cap.label}</div>
+          <div className="vn-comp-cells">
+            {COLS.map((c) => {
+              const v = cap[c.key];
+              const isCheck = v === true;
+              const isDash = v === false;
+              const variant = c.highlight
+                ? "skillies"
+                : isCheck
+                  ? "ok"
+                  : isDash
+                    ? "no"
+                    : "text";
+              return (
+                <div
+                  key={c.key}
+                  className={`vn-comp-cell vn-comp-cell--${variant}`}
+                  data-vendor={c.key}
+                >
+                  <span className="vn-comp-cell-vendor">{c.short}</span>
+                  <span className="vn-comp-cell-value">
+                    {isCheck ? (
+                      <span className="vn-comp-check" aria-label="Yes">
+                        ✓
+                      </span>
+                    ) : isDash ? (
+                      <span className="vn-comp-no" aria-label="No">
+                        —
+                      </span>
+                    ) : (
+                      <span className="vn-comp-text">{v}</span>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-          {cols.map((c) => (
-            <CompetitorCell
-              key={c.key}
-              value={cap[c.key]}
-              highlight={c.highlight}
-            />
-          ))}
         </div>
       ))}
 
-      {/* Footnote */}
-      <div
-        style={{
-          padding: "10px 16px",
-          background: "#FAF5EB",
-          fontSize: 11,
-          color: "#6B7280",
-          textAlign: "center",
-          borderTop: `1px solid ${ACCENT}1a`,
-          letterSpacing: "0.02em",
-          fontStyle: "italic",
-        }}
-      >
-        Tools sell software · Skillies sells the work that software replaces. The bot answers, the human gets to focus on the calls that matter.
+      <div className="vn-comp-foot">
+        Tools sell software · Skillies sells the work that software replaces.
       </div>
-    </div>
-  );
-}
 
-function CompetitorCell({
-  value,
-  highlight,
-}: {
-  value: boolean | string;
-  highlight?: boolean;
-}) {
-  let content: React.ReactNode;
-  let color: string = INK;
-  if (value === true) {
-    content = "✓";
-    color = "#0F7A4D";
-  } else if (value === false) {
-    content = "—";
-    color = "#9CA3AF";
-  } else {
-    content = value;
-    color = INK;
-  }
-  return (
-    <div
-      style={{
-        padding: "14px 12px",
-        textAlign: "center",
-        fontSize: value === true || value === false ? 18 : 12,
-        fontWeight: 600,
-        color,
-        borderLeft: `1px solid ${ACCENT}1a`,
-        background: highlight ? "rgba(15, 118, 110, 0.04)" : "transparent",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        lineHeight: 1.3,
-      }}
-    >
-      {content}
+      <style>{`
+        .vn-comp {
+          background: white;
+          border: 1px solid ${ACCENT}1f;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 4px 20px rgba(15, 118, 110, 0.06);
+        }
+        .vn-comp-summary {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+          padding: 14px 18px;
+          background: linear-gradient(135deg, ${DARK} 0%, #142821 100%);
+          color: ${CREAM};
+        }
+        .vn-comp-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          background: ${ACCENT};
+          color: white;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+        }
+        .vn-comp-tag {
+          font-size: 12px;
+          color: rgba(250, 245, 235, 0.75);
+          letter-spacing: 0.02em;
+        }
+        .vn-comp-tag strong {
+          color: ${GOLD};
+          font-weight: 700;
+        }
+
+        /* ===== DESKTOP TABLE (≥ 760px) ============================== */
+        .vn-comp-thead {
+          display: none;
+        }
+        .vn-comp-row {
+          display: block;
+          padding: 14px 16px;
+          border-top: 1px solid ${ACCENT}1a;
+          background: #FAF5EB;
+        }
+        .vn-comp-rowlabel {
+          font-size: 14px;
+          font-weight: 600;
+          color: ${INK};
+          margin-bottom: 10px;
+          line-height: 1.4;
+        }
+        .vn-comp-cells {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+        .vn-comp-cell {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          padding: 8px 12px;
+          border-radius: 10px;
+          background: #FFFFFF;
+          border: 1px solid ${ACCENT}1a;
+          font-size: 13px;
+        }
+        .vn-comp-cell--skillies {
+          background: linear-gradient(135deg, rgba(15,118,110,0.10) 0%, rgba(15,118,110,0.05) 100%);
+          border-color: ${ACCENT}55;
+        }
+        .vn-comp-cell-vendor {
+          font-size: 11px;
+          color: ${MUTED};
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          font-weight: 700;
+        }
+        .vn-comp-cell--skillies .vn-comp-cell-vendor {
+          color: ${ACCENT};
+        }
+        .vn-comp-cell-value {
+          font-size: 14px;
+          font-weight: 600;
+          color: ${INK};
+        }
+        .vn-comp-check {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          border-radius: 999px;
+          background: ${ACCENT};
+          color: white;
+          font-size: 14px;
+          font-weight: 700;
+        }
+        .vn-comp-no {
+          color: #C7C4BD;
+          font-weight: 700;
+          font-size: 18px;
+        }
+        .vn-comp-text {
+          font-size: 12px;
+          font-weight: 600;
+          color: ${INK};
+        }
+        .vn-comp-cell--skillies .vn-comp-text {
+          color: ${ACCENT};
+        }
+        .vn-comp-foot {
+          padding: 12px 16px;
+          font-size: 12px;
+          color: #6B7280;
+          text-align: center;
+          font-style: italic;
+          border-top: 1px solid ${ACCENT}1a;
+          background: #FAF5EB;
+        }
+
+        @media (min-width: 760px) {
+          .vn-comp-thead {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr));
+            background: ${DARK};
+            color: ${CREAM};
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+          }
+          .vn-comp-thead-cap {
+            padding: 14px 16px;
+          }
+          .vn-comp-thead-vendor {
+            padding: 14px 12px;
+            text-align: center;
+            border-left: 1px solid rgba(250, 245, 235, 0.08);
+          }
+          .vn-comp-thead-vendor.is-skillies {
+            background: ${ACCENT};
+            color: white;
+            font-weight: 700;
+          }
+          .vn-comp-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr));
+            padding: 0;
+            background: white;
+          }
+          .vn-comp-row:nth-child(odd) {
+            background: #FAF5EB;
+          }
+          .vn-comp-rowlabel {
+            padding: 14px 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+          }
+          .vn-comp-cells {
+            display: contents;
+          }
+          .vn-comp-cell {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 14px 10px;
+            border: none;
+            border-left: 1px solid ${ACCENT}1a;
+            border-radius: 0;
+            gap: 0;
+            background: transparent;
+          }
+          .vn-comp-cell--skillies {
+            background: rgba(15, 118, 110, 0.05);
+          }
+          .vn-comp-cell-vendor {
+            display: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }
