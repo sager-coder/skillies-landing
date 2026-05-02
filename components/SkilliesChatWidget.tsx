@@ -47,6 +47,13 @@ type ChatMessage = {
   role: "user" | "agent" | "system";
   text?: string;
   paymentLink?: PaymentLinkCard;
+  /** Voice-note metadata · blobUrl is in-memory only (gone after reload),
+   * durationSec + transcript stay so the bubble still reads after refresh. */
+  audio?: {
+    blobUrl?: string;
+    durationSec: number;
+    transcript?: string;
+  };
   ts: number;
 };
 
@@ -79,21 +86,32 @@ function ChatWidgetUI() {
     {
       id: "intro",
       role: "agent",
-      text: "Hi, I'm the Skillies assistant. Ask me about the Workshop, the Batch, or how enrolment works — and I can send you a Razorpay payment link right here when you're ready. Tap the mic if you'd rather talk.",
+      text: "Hi, I'm the Skillies assistant. Ask me about the Workshop, the Batch, or how enrolment works — and I can send you a Razorpay payment link right here when you're ready. Tap the mic to send a voice note.",
       ts: Date.now(),
     },
   ]);
   const [pendingLink, setPendingLink] = useState(false);
   const [draft, setDraft] = useState("");
-  // The session-mode the user has chosen. `null` = no session yet. Switching
-  // requires ending the current session and starting a fresh one because the
-  // SDK can't change transport (websocket vs WebRTC) mid-conversation.
-  const [activeMode, setActiveMode] = useState<"text" | "voice" | null>(null);
+  // Single transport · always websocket + textOnly. Voice notes are
+  // recorded on-device and uploaded as transcripts, so the live session
+  // never needs WebRTC or a mic stream.
+  const [connected, setConnected] = useState(false);
+  // Voice-note recording state · matches the prospect-demo widget pattern.
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDurationSec, setRecordingDurationSec] = useState(0);
+  const [sendingVoiceNote, setSendingVoiceNote] = useState(false);
   const [unread, setUnread] = useState(0);
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  // Recording-session refs · MediaRecorder, captured chunks, the mic
+  // MediaStream we need to release on stop, and the start timestamp.
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingStartMsRef = useRef<number>(0);
+  const durationIntervalRef = useRef<number | null>(null);
 
   const appendMessage = useCallback((m: Omit<ChatMessage, "id" | "ts">) => {
     setMessages((prev) => [
@@ -196,9 +214,8 @@ function ChatWidgetUI() {
   // muted-but-still-publishing mic track.
   const conversation = useConversation({
     clientTools,
-    onDisconnect: () => {
-      setActiveMode(null);
-    },
+    onConnect: () => setConnected(true),
+    onDisconnect: () => setConnected(false),
     onError: (msg) => {
       appendMessage({ role: "system", text: `Connection error: ${msg}` });
     },
@@ -252,56 +269,34 @@ function ChatWidgetUI() {
   }, [open]);
 
   // === Session lifecycle ===================================================
-  // Session is started lazily — on first user action — in the requested
-  // mode. To switch modes (text↔voice) we end the existing session and
-  // start a new one with the right transport because the SDK can't change
-  // connectionType on an open conversation.
-  const startSessionInMode = useCallback(
-    (mode: "text" | "voice") => {
-      try {
-        // The agent reads `{{channel}}` from dynamicVariables and switches
-        // its OUTPUT STYLE accordingly — text mode strips voice-only tags
-        // ([pause], [warm]) and uses digits/₹ symbols instead of spelled
-        // numbers; voice mode keeps the voice-first rules.
-        const dynamicVariables = { channel: mode };
-        if (mode === "text") {
-          conversation.startSession({
-            agentId,
-            connectionType: "websocket",
-            overrides: { conversation: { textOnly: true } },
-            dynamicVariables,
-          });
-        } else {
-          conversation.startSession({
-            agentId,
-            connectionType: "webrtc",
-            dynamicVariables,
-          });
-        }
-        setActiveMode(mode);
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "failed to start session";
-        appendMessage({ role: "system", text: `Couldn't start: ${msg}` });
-        setActiveMode(null);
-      }
-    },
-    [agentId, appendMessage, conversation],
-  );
+  // Single transport · always websocket + textOnly. Voice notes are
+  // recorded on-device (MediaRecorder) and uploaded as transcripts via
+  // /api/transcribe, so the live session never needs WebRTC or a mic
+  // stream. Visitors who don't use voice notes never see a permission
+  // prompt.
+  const startedRef = useRef(false);
+  const startSession = useCallback(() => {
+    try {
+      conversation.startSession({
+        agentId,
+        connectionType: "websocket",
+        overrides: { conversation: { textOnly: true } },
+        dynamicVariables: { channel: "text" },
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "failed to start session";
+      appendMessage({ role: "system", text: `Couldn't start: ${msg}` });
+    }
+  }, [agentId, appendMessage, conversation]);
 
-  const ensureSession = useCallback(
-    (mode: "text" | "voice") => {
-      if (activeMode === mode) return;
-      if (activeMode !== null) {
-        try {
-          conversation.endSession();
-        } catch {
-          /* noop */
-        }
-      }
-      startSessionInMode(mode);
-    },
-    [activeMode, conversation, startSessionInMode],
-  );
+  // Auto-start the session lazily on first user gesture (open panel,
+  // click input, etc.) so we don't burn an LLM session on every page
+  // visit. The handlers below all check status and queue if needed.
+  const ensureSession = useCallback(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    startSession();
+  }, [startSession]);
 
   const handleSend = useCallback(() => {
     const text = draft.trim();
@@ -309,10 +304,7 @@ function ChatWidgetUI() {
     setDraft("");
     appendMessage({ role: "user", text });
 
-    // If the text connection is already live, send immediately. Otherwise
-    // queue the message and let the status-change effect flush it once
-    // the session reaches "connected".
-    if (activeMode === "text" && conversation.status === "connected") {
+    if (conversation.status === "connected") {
       try {
         conversation.sendUserMessage(text);
         return;
@@ -323,56 +315,225 @@ function ChatWidgetUI() {
       }
     }
     pendingSendsRef.current.push(text);
-    ensureSession("text");
-  }, [activeMode, appendMessage, conversation, draft, ensureSession]);
+    ensureSession();
+  }, [appendMessage, conversation, draft, ensureSession]);
 
-  const toggleVoice = useCallback(async () => {
-    if (activeMode === "voice") {
-      // End the call → drop back to text mode so typing still works.
-      try {
-        conversation.endSession();
-      } catch {
-        /* noop */
-      }
-      setActiveMode(null);
-      return;
+  // === Voice notes (WhatsApp-style) ========================================
+  // Tap mic → start recording → tick the duration counter → user taps
+  // cancel or send. On send · stop recorder, get the Blob, optimistically
+  // render an audio bubble, POST to /api/transcribe (auth-light, rate-
+  // limited), patch the bubble with the transcript, send the transcript
+  // to the agent so it can respond.
+
+  const stopMediaTracks = useCallback(() => {
+    if (durationIntervalRef.current !== null) {
+      window.clearInterval(durationIntervalRef.current);
+      durationIntervalRef.current = null;
     }
-    // Request mic up front so the permission prompt is tied to this user
-    // gesture (browsers block mid-flow getUserMedia calls).
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    mediaStreamRef.current = null;
+    mediaRecorderRef.current = null;
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    if (isRecording || sendingVoiceNote) return;
+    let stream: MediaStream;
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
       appendMessage({
         role: "system",
-        text: "Mic permission was denied. You can still chat by typing.",
+        text: "Mic permission was denied. Typing still works.",
       });
       return;
     }
-    ensureSession("voice");
-  }, [activeMode, appendMessage, conversation, ensureSession]);
+    let recorder: MediaRecorder;
+    try {
+      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+          ? "audio/mp4"
+          : "";
+      recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : {});
+    } catch (e) {
+      stream.getTracks().forEach((t) => t.stop());
+      const msg = e instanceof Error ? e.message : "recorder unavailable";
+      appendMessage({ role: "system", text: `Couldn't record: ${msg}` });
+      return;
+    }
+    audioChunksRef.current = [];
+    recorder.addEventListener("dataavailable", (e) => {
+      if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+    });
+    recorder.start();
+
+    mediaStreamRef.current = stream;
+    mediaRecorderRef.current = recorder;
+    recordingStartMsRef.current = Date.now();
+    setRecordingDurationSec(0);
+    setIsRecording(true);
+
+    // 90s safety cap (matches WhatsApp behaviour).
+    durationIntervalRef.current = window.setInterval(() => {
+      const sec = Math.floor(
+        (Date.now() - recordingStartMsRef.current) / 1000,
+      );
+      setRecordingDurationSec(sec);
+      if (sec >= 90) recorder.stop();
+    }, 250);
+  }, [appendMessage, isRecording, sendingVoiceNote]);
+
+  const cancelRecording = useCallback(() => {
+    if (!isRecording) return;
+    try {
+      mediaRecorderRef.current?.stop();
+    } catch {
+      /* noop */
+    }
+    audioChunksRef.current = [];
+    stopMediaTracks();
+    setIsRecording(false);
+    setRecordingDurationSec(0);
+  }, [isRecording, stopMediaTracks]);
+
+  const sendRecording = useCallback(async () => {
+    if (!isRecording) return;
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) {
+      cancelRecording();
+      return;
+    }
+    const durationSec = Math.max(
+      1,
+      Math.floor((Date.now() - recordingStartMsRef.current) / 1000),
+    );
+
+    const finalBlob: Blob = await new Promise((resolve) => {
+      recorder.addEventListener(
+        "stop",
+        () => {
+          const mime = recorder.mimeType || "audio/webm";
+          resolve(new Blob(audioChunksRef.current, { type: mime }));
+        },
+        { once: true },
+      );
+      try {
+        recorder.stop();
+      } catch {
+        resolve(new Blob(audioChunksRef.current, { type: "audio/webm" }));
+      }
+    });
+    stopMediaTracks();
+    setIsRecording(false);
+    setRecordingDurationSec(0);
+
+    if (finalBlob.size === 0) {
+      appendMessage({ role: "system", text: "Voice note was empty." });
+      return;
+    }
+
+    setSendingVoiceNote(true);
+    const blobUrl = URL.createObjectURL(finalBlob);
+
+    const placeholderId = `pending-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: placeholderId,
+        role: "user",
+        ts: Date.now(),
+        audio: { blobUrl, durationSec, transcript: undefined },
+      },
+    ]);
+
+    let transcript = "";
+    try {
+      const fd = new FormData();
+      const ext = finalBlob.type.includes("mp4") ? "m4a" : "webm";
+      fd.append("file", finalBlob, `voice-note.${ext}`);
+      const res = await fetch("/api/transcribe", { method: "POST", body: fd });
+      if (res.ok) {
+        const data = (await res.json()) as { transcript?: string };
+        transcript = (data.transcript ?? "").trim();
+      } else {
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        appendMessage({
+          role: "system",
+          text:
+            data.error === "rate_limited"
+              ? "Too many voice notes recently · try again in a bit."
+              : data.error === "stt_not_configured"
+                ? "Voice transcription isn't set up here yet."
+                : `Voice transcription failed (${res.status}).`,
+        });
+      }
+    } catch {
+      appendMessage({
+        role: "system",
+        text: "Couldn't reach the transcription service.",
+      });
+    }
+
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === placeholderId && m.audio
+          ? {
+              ...m,
+              audio: { ...m.audio, transcript: transcript || undefined },
+            }
+          : m,
+      ),
+    );
+
+    if (transcript) {
+      const payload = `[Voice note · ${durationSec}s] ${transcript}`;
+      if (conversation.status === "connected") {
+        try {
+          conversation.sendUserMessage(payload);
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "send failed";
+          appendMessage({ role: "system", text: msg });
+        }
+      } else {
+        pendingSendsRef.current.push(payload);
+        ensureSession();
+      }
+    }
+    setSendingVoiceNote(false);
+  }, [
+    appendMessage,
+    cancelRecording,
+    conversation,
+    ensureSession,
+    isRecording,
+    stopMediaTracks,
+  ]);
 
   const closePanel = useCallback(() => {
     setOpen(false);
   }, []);
 
-  // End the session on unmount (route change). We don't end on close-panel
-  // because the visitor may reopen and want to keep chatting without a
-  // fresh handshake.
+  // End the session + release mic on unmount (route change).
   useEffect(() => {
     return () => {
-      if (activeMode !== null) {
-        try {
-          conversation.endSession();
-        } catch {
-          /* noop */
-        }
+      try {
+        conversation.endSession();
+      } catch {
+        /* noop */
       }
+      try {
+        mediaRecorderRef.current?.stop();
+      } catch {
+        /* noop */
+      }
+      stopMediaTracks();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const status = conversation.status;
-  const isAgentSpeaking = activeMode === "voice" && conversation.isSpeaking;
 
   // === UI =================================================================
   return (
@@ -460,7 +621,7 @@ function ChatWidgetUI() {
                 }}
               >
                 <span className="text-base font-bold tracking-tight" style={{ color: "#FAF5EB" }}>S</span>
-                {isAgentSpeaking && (
+                {isRecording && (
                   <span
                     className="absolute inset-0 rounded-full"
                     style={{
@@ -476,17 +637,15 @@ function ChatWidgetUI() {
                   className="text-[11px] mt-0.5"
                   style={{ color: "rgba(250,245,235,.7)" }}
                 >
-                  {activeMode === "voice"
-                    ? status === "connected"
-                      ? isAgentSpeaking
-                        ? "Speaking…"
-                        : "Listening…"
-                      : "Connecting voice…"
-                    : status === "connected"
-                    ? "Online"
-                    : status === "connecting"
-                    ? "Connecting…"
-                    : "Ready when you are"}
+                  {isRecording
+                    ? "Recording voice note…"
+                    : sendingVoiceNote
+                      ? "Sending voice note…"
+                      : status === "connected" || connected
+                        ? "Online"
+                        : status === "connecting"
+                          ? "Connecting…"
+                          : "Ready when you are"}
                 </div>
               </div>
               <button
@@ -533,57 +692,140 @@ function ChatWidgetUI() {
                 background: "#FFFFFF",
               }}
             >
-              <button
-                type="button"
-                onClick={toggleVoice}
-                aria-pressed={activeMode === "voice"}
-                aria-label={activeMode === "voice" ? "End voice call" : "Start voice call"}
-                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-                style={{
-                  background: activeMode === "voice" ? "#C62828" : "#F5E6E6",
-                  color: activeMode === "voice" ? "#FAF5EB" : "#C62828",
-                  boxShadow:
-                    activeMode === "voice"
-                      ? "0 4px 12px rgba(196,30,58,.32),inset 0 1px 0 rgba(255,255,255,.12)"
-                      : "0 1px 2px rgba(31,58,46,.05)",
-                }}
-              >
-                <MicIcon active={activeMode === "voice"} />
-              </button>
-              <textarea
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    void handleSend();
-                  }
-                }}
-                placeholder="Type a message…"
-                rows={1}
-                className="flex-1 resize-none outline-none text-sm leading-snug py-2 px-3 rounded-xl"
-                style={{
-                  background: "#FAF5EB",
-                  color: "#1A1A1A",
-                  border: "1px solid #F0E8D8",
-                  fontFamily: "inherit",
-                  maxHeight: 120,
-                }}
-              />
-              <button
-                type="button"
-                onClick={handleSend}
-                disabled={!draft.trim()}
-                aria-label="Send message"
-                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-40"
-                style={{
-                  background: "linear-gradient(135deg,#C62828 0%,#8B1A1A 100%)",
-                  color: "#FAF5EB",
-                  boxShadow: "0 4px 12px rgba(196,30,58,.28)",
-                }}
-              >
-                <SendIcon />
-              </button>
+              {isRecording ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={cancelRecording}
+                    aria-label="Cancel voice note"
+                    className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                    style={{
+                      background: "#F5E6E6",
+                      color: "#C62828",
+                      boxShadow: "0 1px 2px rgba(31,58,46,.05)",
+                    }}
+                  >
+                    <CrossIcon />
+                  </button>
+                  <div
+                    className="flex-1 flex items-center gap-3 rounded-xl"
+                    style={{
+                      padding: "10px 14px",
+                      background: "#FBE9EA",
+                      border: "1px solid #F2C4C7",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: "50%",
+                        background: "#C62828",
+                        animation:
+                          "skillies-recording-pulse 1.2s cubic-bezier(0.4,0,0.6,1) infinite",
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "#8B1A1A",
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      Recording · {formatDuration(recordingDurationSec)}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={sendRecording}
+                    aria-label="Send voice note"
+                    className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                    style={{
+                      background: "linear-gradient(135deg,#C62828 0%,#8B1A1A 100%)",
+                      color: "#FAF5EB",
+                      boxShadow: "0 4px 12px rgba(196,30,58,.28)",
+                    }}
+                  >
+                    <SendIcon />
+                  </button>
+                </>
+              ) : sendingVoiceNote ? (
+                <div
+                  className="flex-1 flex items-center justify-center gap-2 rounded-xl"
+                  style={{
+                    padding: "10px 14px",
+                    background: "#FAF5EB",
+                    border: "1px solid #F0E8D8",
+                    fontSize: 13,
+                    color: "#6B7280",
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 12,
+                      height: 12,
+                      border: "2px solid #C7C4BD",
+                      borderTopColor: "#C62828",
+                      borderRadius: "50%",
+                      animation: "skillies-spin 0.9s linear infinite",
+                    }}
+                  />
+                  Sending voice note…
+                </div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={startRecording}
+                    aria-label="Record a voice note"
+                    className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                    style={{
+                      background: "#F5E6E6",
+                      color: "#C62828",
+                      boxShadow: "0 1px 2px rgba(31,58,46,.05)",
+                    }}
+                  >
+                    <MicIcon active={false} />
+                  </button>
+                  <textarea
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onFocus={ensureSession}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        void handleSend();
+                      }
+                    }}
+                    placeholder="Type a message or tap mic to send a voice note…"
+                    rows={1}
+                    className="flex-1 resize-none outline-none text-sm leading-snug py-2 px-3 rounded-xl"
+                    style={{
+                      background: "#FAF5EB",
+                      color: "#1A1A1A",
+                      border: "1px solid #F0E8D8",
+                      fontFamily: "inherit",
+                      maxHeight: 120,
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSend}
+                    disabled={!draft.trim()}
+                    aria-label="Send message"
+                    className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-40"
+                    style={{
+                      background: "linear-gradient(135deg,#C62828 0%,#8B1A1A 100%)",
+                      color: "#FAF5EB",
+                      boxShadow: "0 4px 12px rgba(196,30,58,.28)",
+                    }}
+                  >
+                    <SendIcon />
+                  </button>
+                </>
+              )}
             </div>
 
             <div
@@ -604,6 +846,13 @@ function ChatWidgetUI() {
         @keyframes skillies-launcher-ping {
           0% { transform: scale(1); opacity: .65; }
           100% { transform: scale(1.7); opacity: 0; }
+        }
+        @keyframes skillies-recording-pulse {
+          0%, 100% { opacity: 1;   transform: scale(1); }
+          50%      { opacity: .5;  transform: scale(1.25); }
+        }
+        @keyframes skillies-spin {
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </>
@@ -655,10 +904,90 @@ function MessageRow({ message }: { message: ChatMessage }) {
               }
         }
       >
+        {message.audio ? <AudioBubble audio={message.audio} isUser={isUser} /> : null}
         {message.text}
       </div>
     </div>
   );
+}
+
+// === Voice-note bubble ====================================================
+function AudioBubble({
+  audio,
+  isUser,
+}: {
+  audio: NonNullable<ChatMessage["audio"]>;
+  isUser: boolean;
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "6px 8px",
+          background: isUser ? "rgba(250,245,235,0.14)" : "#FAF5EB",
+          borderRadius: 12,
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 26,
+            height: 26,
+            borderRadius: "50%",
+            background: isUser ? "rgba(250,245,235,0.20)" : "#C62828",
+            color: "#FAF5EB",
+            flexShrink: 0,
+          }}
+        >
+          <MicIcon active />
+        </span>
+        {audio.blobUrl ? (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
+          <audio
+            src={audio.blobUrl}
+            controls
+            style={{ flex: 1, minWidth: 180, maxWidth: 240, height: 30 }}
+          />
+        ) : (
+          <span
+            style={{
+              flex: 1,
+              fontSize: 12,
+              color: isUser ? "rgba(250,245,235,0.85)" : "#6B7280",
+              fontStyle: "italic",
+            }}
+          >
+            Voice note · {formatDuration(audio.durationSec)}
+          </span>
+        )}
+      </div>
+      {audio.transcript ? (
+        <div
+          style={{
+            fontSize: 12,
+            color: isUser ? "rgba(250,245,235,0.92)" : "#6B7280",
+            fontStyle: "italic",
+            lineHeight: 1.4,
+            paddingLeft: 4,
+          }}
+        >
+          {audio.transcript}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function formatDuration(sec: number): string {
+  const total = Math.max(0, Math.floor(sec));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
 // === Payment-link card ====================================================
@@ -751,6 +1080,15 @@ function SendIcon() {
   return (
     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12l14-7-7 14-2-5-5-2Z" />
+    </svg>
+  );
+}
+
+function CrossIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 6l12 12" />
+      <path d="M18 6L6 18" />
     </svg>
   );
 }

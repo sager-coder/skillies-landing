@@ -500,7 +500,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
       const fd = new FormData();
       const ext = finalBlob.type.includes("mp4") ? "m4a" : "webm";
       fd.append("file", finalBlob, `voice-note.${ext}`);
-      const res = await fetch("/api/demo/transcribe", {
+      const res = await fetch("/api/transcribe", {
         method: "POST",
         body: fd,
       });
