@@ -36,6 +36,14 @@ type ChatMessage = {
   role: "user" | "agent" | "system";
   text?: string;
   imagePreviewUrl?: string;
+  /** Voice-note metadata · the blobUrl is in-memory only (won't survive
+   * a reload), but durationSec + transcript are persisted to sessionStorage
+   * so the bubble still reads sensibly after refresh. */
+  audio?: {
+    blobUrl?: string;
+    durationSec: number;
+    transcript?: string;
+  };
   ts: number;
 };
 
@@ -79,14 +87,22 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     }
   });
   const [draft, setDraft] = useState("");
-  const [activeMode, setActiveMode] = useState<"text" | "voice" | null>(null);
-  // True while the user has just clicked the voice button and we're
-  // tearing down + spinning up a new session. Used to disable the button
-  // and show "Switching…" status so the click feels responsive.
-  const [switching, setSwitching] = useState(false);
+  // Single transport · always websocket + textOnly. Voice-notes are
+  // recorded on the device and uploaded as an audio attachment, so the
+  // agent's session never needs a mic stream or WebRTC.
+  const [connected, setConnected] = useState(false);
   // True after a user message is sent, until the next agent message arrives.
   // Drives the typing indicator below the messages list.
   const [expectingResponse, setExpectingResponse] = useState(false);
+  // Voice-note recording state · isRecording flips on while the user
+  // holds the mic; durationSec is updated by an interval so the UI
+  // shows a live counter.
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDurationSec, setRecordingDurationSec] = useState(0);
+  // Set to true while we're uploading + transcribing the just-finished
+  // recording, so the input shows a "Sending voice note…" pill instead
+  // of the recording controls or the bare textarea.
+  const [sendingVoiceNote, setSendingVoiceNote] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [pendingImage, setPendingImage] = useState<{
     fileId: string;
@@ -99,6 +115,13 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const startedRef = useRef(false);
   const pendingSendsRef = useRef<Array<{ text?: string; fileId?: string }>>([]);
+  // Recording-session refs · MediaRecorder, the captured chunks, the
+  // mic MediaStream we need to release on stop, and the start timestamp.
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingStartMsRef = useRef<number>(0);
+  const durationIntervalRef = useRef<number | null>(null);
   // Reset to false every time we kick off a new session; flipped to true
   // once we've sent the prior-transcript bootstrap into the new session.
   // That way mode switches and reloads don't lose context.
@@ -119,17 +142,14 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
   );
 
   const conversation = useConversation({
-    onConnect: () => {},
-    onDisconnect: () => {
-      setActiveMode(null);
-    },
+    onConnect: () => setConnected(true),
+    onDisconnect: () => setConnected(false),
     onError: (msg) => {
       appendMessage({
         role: "system",
         text: `Connection error: ${typeof msg === "string" ? msg : "unknown"}`,
       });
       setExpectingResponse(false);
-      setSwitching(false);
     },
     onMessage: ({ message, role }) => {
       if (!message) return;
@@ -148,39 +168,59 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
 
   // Persist messages to sessionStorage so a tab reload (or mode switch
   // tearing down React state) doesn't lose what the user already saw.
+  // We strip the in-memory blob URLs from audio messages before persisting
+  // (URLs reference runtime Blob refs that won't survive); the transcript
+  // and durationSec stay so the bubble still reads sensibly after refresh.
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
+      const persistable = messages.map((m) =>
+        m.audio
+          ? {
+              ...m,
+              audio: {
+                durationSec: m.audio.durationSec,
+                transcript: m.audio.transcript,
+              },
+            }
+          : m,
+      );
       window.sessionStorage.setItem(
         storageKeyFor(agentId),
-        JSON.stringify(messages),
+        JSON.stringify(persistable),
       );
     } catch {
       /* sessionStorage may be full or disabled · ignore */
     }
   }, [agentId, messages]);
 
-  // Bootstrap each new session with prior transcript so the agent doesn't
-  // forget the conversation when we toggle modes (text ↔ voice ends and
-  // restarts the underlying connection) or after a tab reload.
+  // Bootstrap each new session with the prior transcript so the agent
+  // remembers the conversation across reloads. Voice notes are
+  // represented in the transcript by their text transcription.
   useEffect(() => {
     if (conversation.status !== "connected") return;
     if (bootstrappedSessionRef.current) return;
     bootstrappedSessionRef.current = true;
 
-    const real = messagesRef.current.filter(
-      (m) => m.role !== "system" && (m.text ?? "").trim().length > 0,
-    );
+    const real = messagesRef.current.filter((m) => {
+      if (m.role === "system") return false;
+      const hasText = (m.text ?? "").trim().length > 0;
+      const hasAudioTranscript =
+        (m.audio?.transcript ?? "").trim().length > 0;
+      return hasText || hasAudioTranscript;
+    });
     if (real.length === 0) return;
 
     const transcript = real
-      .map((m) => `${m.role === "user" ? "User" : "Agent"}: ${m.text}`)
+      .map((m) => {
+        const speaker = m.role === "user" ? "User" : "Agent";
+        const body =
+          m.text ?? m.audio?.transcript ?? "(voice note · empty transcript)";
+        return `${speaker}: ${body}`;
+      })
       .join("\n");
 
     try {
-      // sendContextualUpdate injects context into the LLM without
-      // triggering an immediate response · the agent simply remembers
-      // this on the next user turn.
       conversation.sendContextualUpdate(
         `[Resuming an in-progress conversation in this session. Use this transcript as your memory of what's already been said. Do NOT greet again or restart the screener · pick up exactly where the conversation left off.]\n\n${transcript}`,
       );
@@ -189,47 +229,28 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     }
   }, [conversation, conversation.status]);
 
-  // Clear the "switching modes" pulse as soon as the new session lands.
-  useEffect(() => {
-    if (conversation.status === "connected") {
-      setSwitching(false);
+  // Single transport · always websocket + textOnly. Voice notes are
+  // recorded on-device and uploaded as attachments, so the live session
+  // never needs WebRTC or a mic stream.
+  const startSession = useCallback(() => {
+    bootstrappedSessionRef.current = false;
+    try {
+      conversation.startSession({
+        agentId,
+        connectionType: "websocket",
+        overrides: { conversation: { textOnly: true } },
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "couldn't start session";
+      appendMessage({ role: "system", text: msg });
     }
-  }, [conversation.status]);
+  }, [agentId, appendMessage, conversation]);
 
-  // Memoised so the conversation hook keeps a stable reference.
-  const startSessionInMode = useCallback(
-    (mode: "text" | "voice") => {
-      // Reset the bootstrap guard so the new session gets the prior
-      // transcript fed in via sendContextualUpdate (see the effect below).
-      bootstrappedSessionRef.current = false;
-      try {
-        if (mode === "text") {
-          conversation.startSession({
-            agentId,
-            connectionType: "websocket",
-            overrides: { conversation: { textOnly: true } },
-          });
-        } else {
-          conversation.startSession({
-            agentId,
-            connectionType: "webrtc",
-          });
-        }
-        setActiveMode(mode);
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "couldn't start session";
-        appendMessage({ role: "system", text: msg });
-        setSwitching(false);
-      }
-    },
-    [agentId, appendMessage, conversation],
-  );
-
-  // Auto-start in text mode on mount.
+  // Auto-start the session on mount.
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
-    startSessionInMode("text");
+    startSession();
     return () => {
       try {
         conversation.endSession();
@@ -283,10 +304,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     if (text) payload.text = text;
     if (pendingImage) payload.fileId = pendingImage.fileId;
 
-    if (
-      activeMode &&
-      conversation.status === "connected"
-    ) {
+    if (conversation.status === "connected") {
       try {
         if (payload.fileId) {
           conversation.sendMultimodalMessage(payload);
@@ -305,17 +323,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     pendingSendsRef.current.push(payload);
     setExpectingResponse(true);
     setPendingImage(null);
-    if (!activeMode) {
-      startSessionInMode("text");
-    }
-  }, [
-    activeMode,
-    appendMessage,
-    conversation,
-    draft,
-    pendingImage,
-    startSessionInMode,
-  ]);
+  }, [appendMessage, conversation, draft, pendingImage]);
 
   const handleImagePick = useCallback(
     async (file: File) => {
@@ -332,9 +340,6 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
       }
       setUploadingImage(true);
       try {
-        // Need an active session to upload. Start text session if none.
-        if (!activeMode) startSessionInMode("text");
-
         // The SDK uploadFile awaits; if status isn't connected yet, it
         // returns a promise that the SDK queues internally.
         const result = await conversation.uploadFile(file);
@@ -348,56 +353,229 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         if (fileInputRef.current) fileInputRef.current.value = "";
       }
     },
-    [activeMode, appendMessage, conversation, startSessionInMode],
+    [appendMessage, conversation],
   );
 
-  const toggleVoice = useCallback(async () => {
-    if (switching) return; // ignore rapid double-clicks during transitions
+  // ─── Voice notes (WhatsApp-style) ───────────────────────────────────
+  // Tap mic → start recording (request mic perm if not granted yet) →
+  // tick the duration counter → user taps cancel or send.
+  // On send · stop the recorder, get the Blob, POST to /api/demo/transcribe
+  // for a transcript, render an audio bubble locally with playback +
+  // transcript, send the transcript to the agent so it can respond.
+  // Why local transcription rather than uploading audio to Convai:
+  // Convai's text-only websocket session reliably handles text input but
+  // multimodal-audio in textOnly mode is poorly documented. Transcribing
+  // ourselves is the safer path · we get a guaranteed text input the
+  // agent can reason over, and the visual audio bubble is just UX polish.
 
-    // Voice → text · synchronous, no permission ask. Show switching feedback
-    // immediately so the click feels instantaneous even while WebRTC is
-    // tearing down.
-    if (activeMode === "voice") {
-      setSwitching(true);
-      try {
-        conversation.endSession();
-      } catch {
-        /* noop */
-      }
-      setActiveMode(null);
-      // Restart in text mode so typing keeps working.
-      startSessionInMode("text");
-      return;
+  const stopMediaTracks = useCallback(() => {
+    if (durationIntervalRef.current !== null) {
+      window.clearInterval(durationIntervalRef.current);
+      durationIntervalRef.current = null;
     }
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    mediaStreamRef.current = null;
+    mediaRecorderRef.current = null;
+  }, []);
 
-    // Text → voice · ask mic permission first while still showing the old
-    // panel. If denied, surface a system message and stay in text mode.
-    setSwitching(true);
+  const startRecording = useCallback(async () => {
+    if (isRecording || sendingVoiceNote) return;
+    let stream: MediaStream;
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
       appendMessage({
         role: "system",
-        text: "Mic permission was denied. Typing still works.",
+        text: "Mic permission was denied. You can still type.",
       });
-      setSwitching(false);
       return;
     }
-    if (activeMode) {
+    let recorder: MediaRecorder;
+    try {
+      // Prefer opus-in-webm (broad browser support, small files); the
+      // default mime works on iOS Safari which doesn't support webm.
+      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+          ? "audio/mp4"
+          : "";
+      recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : {});
+    } catch (e) {
+      stream.getTracks().forEach((t) => t.stop());
+      const msg = e instanceof Error ? e.message : "recorder unavailable";
+      appendMessage({ role: "system", text: `Couldn't record: ${msg}` });
+      return;
+    }
+    audioChunksRef.current = [];
+    recorder.addEventListener("dataavailable", (e) => {
+      if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+    });
+    recorder.start();
+
+    mediaStreamRef.current = stream;
+    mediaRecorderRef.current = recorder;
+    recordingStartMsRef.current = Date.now();
+    setRecordingDurationSec(0);
+    setIsRecording(true);
+
+    // Live duration counter · also enforces a 90s safety cap.
+    durationIntervalRef.current = window.setInterval(() => {
+      const sec = Math.floor((Date.now() - recordingStartMsRef.current) / 1000);
+      setRecordingDurationSec(sec);
+      if (sec >= 90) {
+        // Auto-stop and prompt to send.
+        recorder.stop();
+      }
+    }, 250);
+  }, [appendMessage, isRecording, sendingVoiceNote]);
+
+  const cancelRecording = useCallback(() => {
+    if (!isRecording) return;
+    try {
+      mediaRecorderRef.current?.stop();
+    } catch {
+      /* noop */
+    }
+    audioChunksRef.current = [];
+    stopMediaTracks();
+    setIsRecording(false);
+    setRecordingDurationSec(0);
+  }, [isRecording, stopMediaTracks]);
+
+  const sendRecording = useCallback(async () => {
+    if (!isRecording) return;
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) {
+      cancelRecording();
+      return;
+    }
+    const durationSec = Math.max(
+      1,
+      Math.floor((Date.now() - recordingStartMsRef.current) / 1000),
+    );
+
+    // Stop the recorder and wait for the final dataavailable event.
+    const finalBlob: Blob = await new Promise((resolve) => {
+      recorder.addEventListener(
+        "stop",
+        () => {
+          const mime = recorder.mimeType || "audio/webm";
+          const blob = new Blob(audioChunksRef.current, { type: mime });
+          resolve(blob);
+        },
+        { once: true },
+      );
       try {
-        conversation.endSession();
+        recorder.stop();
+      } catch {
+        resolve(new Blob(audioChunksRef.current, { type: "audio/webm" }));
+      }
+    });
+    stopMediaTracks();
+    setIsRecording(false);
+    setRecordingDurationSec(0);
+
+    if (finalBlob.size === 0) {
+      appendMessage({ role: "system", text: "Voice note was empty." });
+      return;
+    }
+
+    setSendingVoiceNote(true);
+    const blobUrl = URL.createObjectURL(finalBlob);
+
+    // Optimistically render the audio bubble immediately.
+    const placeholderId = `pending-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: placeholderId,
+        role: "user",
+        ts: Date.now(),
+        audio: { blobUrl, durationSec, transcript: undefined },
+      },
+    ]);
+
+    let transcript = "";
+    try {
+      const fd = new FormData();
+      const ext = finalBlob.type.includes("mp4") ? "m4a" : "webm";
+      fd.append("file", finalBlob, `voice-note.${ext}`);
+      const res = await fetch("/api/demo/transcribe", {
+        method: "POST",
+        body: fd,
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { transcript?: string };
+        transcript = (data.transcript ?? "").trim();
+      } else {
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        appendMessage({
+          role: "system",
+          text:
+            data.error === "stt_not_configured"
+              ? "Voice transcription isn't configured on the server yet."
+              : `Voice transcription failed (${res.status}).`,
+        });
+      }
+    } catch {
+      appendMessage({
+        role: "system",
+        text: "Couldn't reach the transcription service.",
+      });
+    }
+
+    // Patch the audio bubble with the transcript (if any).
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === placeholderId && m.audio
+          ? {
+              ...m,
+              audio: { ...m.audio, transcript: transcript || undefined },
+            }
+          : m,
+      ),
+    );
+
+    if (transcript) {
+      // Send to the agent. Wrapped in a marker so the agent knows it
+      // came from a voice note (helps the agent acknowledge medium).
+      const payload = `[Voice note · ${durationSec}s] ${transcript}`;
+      if (conversation.status === "connected") {
+        try {
+          conversation.sendUserMessage(payload);
+          setExpectingResponse(true);
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "send failed";
+          appendMessage({ role: "system", text: msg });
+        }
+      } else {
+        pendingSendsRef.current.push({ text: payload });
+        setExpectingResponse(true);
+      }
+    }
+    setSendingVoiceNote(false);
+  }, [
+    appendMessage,
+    cancelRecording,
+    conversation,
+    isRecording,
+    stopMediaTracks,
+  ]);
+
+  // Cleanup on unmount · stop recorder + release mic if user navigates away.
+  useEffect(() => {
+    return () => {
+      try {
+        mediaRecorderRef.current?.stop();
       } catch {
         /* noop */
       }
-    }
-    startSessionInMode("voice");
-  }, [
-    activeMode,
-    appendMessage,
-    conversation,
-    startSessionInMode,
-    switching,
-  ]);
+      stopMediaTracks();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Reset · clears messages and storage, ends the live session, restarts
   // a fresh one in text mode. Useful for re-testing the demo flow without
@@ -424,28 +602,18 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     } catch {
       /* noop */
     }
-    setActiveMode(null);
-    setSwitching(true);
-    startSessionInMode("text");
-  }, [agentId, conversation, startSessionInMode]);
+    startSession();
+  }, [agentId, conversation, startSession]);
 
   const status = conversation.status;
-  const isAgentSpeaking = activeMode === "voice" && conversation.isSpeaking;
 
   const headerStatus = useMemo(() => {
-    if (switching) {
-      return activeMode === "voice" ? "Switching to text…" : "Switching to voice…";
-    }
-    if (activeMode === "voice") {
-      if (status === "connected") {
-        return isAgentSpeaking ? "Speaking…" : "Listening…";
-      }
-      return "Connecting voice…";
-    }
-    if (status === "connected") return "Online";
+    if (isRecording) return "Recording voice note…";
+    if (sendingVoiceNote) return "Sending voice note…";
+    if (status === "connected" || connected) return "Online";
     if (status === "connecting") return "Connecting…";
     return "Ready when you are";
-  }, [activeMode, isAgentSpeaking, status, switching]);
+  }, [connected, isRecording, sendingVoiceNote, status]);
 
   return (
     <div
@@ -501,7 +669,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
           }}
         >
           {avatar}
-          {isAgentSpeaking ? (
+          {isRecording ? (
             <span
               style={{
                 position: "absolute",
@@ -633,12 +801,12 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         </div>
       ) : null}
 
-      {/* Input bar */}
+      {/* Input bar · either the recording UI or the normal text+buttons row. */}
       <div
         style={{
           padding: "12px 12px",
           display: "flex",
-          alignItems: "flex-end",
+          alignItems: "center",
           gap: 8,
           borderTop: "1px solid #F0E8D8",
           background: "#FFFFFF",
@@ -654,66 +822,133 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
             if (f) void handleImagePick(f);
           }}
         />
-        <IconButton
-          ariaLabel="Upload an image"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploadingImage}
-          variant="ghost"
-        >
-          {uploadingImage ? <Spinner /> : <ImageIcon />}
-        </IconButton>
-        <IconButton
-          ariaLabel={
-            switching
-              ? "Switching modes…"
-              : activeMode === "voice"
-                ? "End voice"
-                : "Start voice"
-          }
-          onClick={toggleVoice}
-          disabled={switching}
-          variant={activeMode === "voice" ? "active" : "ghost"}
-        >
-          {switching ? <Spinner /> : <MicIcon active={activeMode === "voice"} />}
-        </IconButton>
-        <textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSend();
-            }
-          }}
-          placeholder={
-            pendingImage
-              ? "Add a caption (optional) and press Enter…"
-              : "Type a message…"
-          }
-          rows={1}
-          style={{
-            flex: 1,
-            resize: "none",
-            outline: "none",
-            fontSize: 14,
-            padding: "10px 14px",
-            borderRadius: 12,
-            background: "#FAF5EB",
-            color: "#1A1A1A",
-            border: "1px solid #F0E8D8",
-            fontFamily: "inherit",
-            maxHeight: 120,
-            lineHeight: 1.4,
-          }}
-        />
-        <IconButton
-          ariaLabel="Send"
-          onClick={handleSend}
-          disabled={!draft.trim() && !pendingImage}
-          variant="primary"
-        >
-          <SendIcon />
-        </IconButton>
+        {isRecording ? (
+          <>
+            {/* Cancel · discards the recording. */}
+            <IconButton
+              ariaLabel="Cancel voice note"
+              onClick={cancelRecording}
+              variant="ghost"
+            >
+              <CrossIcon />
+            </IconButton>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "10px 14px",
+                background: "#FBE9EA",
+                borderRadius: 12,
+                border: "1px solid #F2C4C7",
+              }}
+            >
+              <span
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  background: "#C62828",
+                  animation:
+                    "demo-recording-pulse 1.2s cubic-bezier(0.4,0,0.6,1) infinite",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#8B1A1A",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                Recording · {formatDuration(recordingDurationSec)}
+              </span>
+            </div>
+            <IconButton
+              ariaLabel="Send voice note"
+              onClick={sendRecording}
+              variant="primary"
+            >
+              <SendIcon />
+            </IconButton>
+          </>
+        ) : sendingVoiceNote ? (
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              padding: "10px 14px",
+              background: "#FAF5EB",
+              borderRadius: 12,
+              border: "1px solid #F0E8D8",
+              fontSize: 13,
+              color: "#6B7280",
+            }}
+          >
+            <Spinner />
+            Sending voice note…
+          </div>
+        ) : (
+          <>
+            <IconButton
+              ariaLabel="Upload an image"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingImage}
+              variant="ghost"
+            >
+              {uploadingImage ? <Spinner /> : <ImageIcon />}
+            </IconButton>
+            <IconButton
+              ariaLabel="Record a voice note"
+              onClick={startRecording}
+              variant="ghost"
+            >
+              <MicIcon active={false} />
+            </IconButton>
+            <textarea
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder={
+                pendingImage
+                  ? "Add a caption (optional) and press Enter…"
+                  : "Type a message or record a voice note…"
+              }
+              rows={1}
+              style={{
+                flex: 1,
+                resize: "none",
+                outline: "none",
+                fontSize: 14,
+                padding: "10px 14px",
+                borderRadius: 12,
+                background: "#FAF5EB",
+                color: "#1A1A1A",
+                border: "1px solid #F0E8D8",
+                fontFamily: "inherit",
+                maxHeight: 120,
+                lineHeight: 1.4,
+              }}
+            />
+            <IconButton
+              ariaLabel="Send"
+              onClick={handleSend}
+              disabled={!draft.trim() && !pendingImage}
+              variant="primary"
+            >
+              <SendIcon />
+            </IconButton>
+          </>
+        )}
       </div>
 
       {/* Footer */}
@@ -736,6 +971,10 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         @keyframes demo-chat-pulse {
           0%   { transform: scale(1);   opacity: .65; }
           100% { transform: scale(1.7); opacity: 0; }
+        }
+        @keyframes demo-recording-pulse {
+          0%, 100% { opacity: 1;   transform: scale(1); }
+          50%      { opacity: .5;  transform: scale(1.25); }
         }
       `}</style>
     </div>
@@ -856,10 +1095,105 @@ function MessageRow({ message }: { message: ChatMessage }) {
             }}
           />
         ) : null}
+        {message.audio ? <AudioBubble audio={message.audio} isUser={isUser} /> : null}
         {message.text}
       </div>
     </div>
   );
+}
+
+// ─── Voice-note bubble ─────────────────────────────────────────────────────
+function AudioBubble({
+  audio,
+  isUser,
+}: {
+  audio: NonNullable<ChatMessage["audio"]>;
+  isUser: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "6px 8px",
+          background: isUser ? "rgba(250,245,235,0.14)" : "#FAF5EB",
+          borderRadius: 12,
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 26,
+            height: 26,
+            borderRadius: "50%",
+            background: isUser ? "rgba(250,245,235,0.20)" : "#C62828",
+            color: isUser ? "#FAF5EB" : "#FAF5EB",
+            flexShrink: 0,
+          }}
+        >
+          <MicIcon active />
+        </span>
+        {audio.blobUrl ? (
+          // Real Blob URL (current session) · render an audio control.
+          // We force a small audio player so the bubble isn't huge.
+          // eslint-disable-next-line jsx-a11y/media-has-caption
+          <audio
+            src={audio.blobUrl}
+            controls
+            style={{
+              flex: 1,
+              minWidth: 180,
+              maxWidth: 280,
+              height: 30,
+            }}
+          />
+        ) : (
+          // Reload-restored audio · we don't have the blob anymore (it
+          // lived in memory only). Show a placeholder pill with duration.
+          <span
+            style={{
+              flex: 1,
+              fontSize: 12,
+              color: isUser ? "rgba(250,245,235,0.85)" : "#6B7280",
+              fontStyle: "italic",
+            }}
+          >
+            Voice note · {formatDuration(audio.durationSec)} · audio expired with this tab
+          </span>
+        )}
+      </div>
+      {audio.transcript ? (
+        <div
+          style={{
+            fontSize: 12,
+            color: isUser ? "rgba(250,245,235,0.92)" : "#6B7280",
+            fontStyle: "italic",
+            lineHeight: 1.4,
+            paddingLeft: 4,
+          }}
+        >
+          {audio.transcript}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function formatDuration(sec: number): string {
+  const total = Math.max(0, Math.floor(sec));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
 // ─── Reusable icon button ──────────────────────────────────────────────────
@@ -934,6 +1268,24 @@ function SendIcon() {
       strokeLinejoin="round"
     >
       <path d="M5 12l14-7-7 14-2-5-5-2Z" />
+    </svg>
+  );
+}
+
+function CrossIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={18}
+      height={18}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.4}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 6l12 12" />
+      <path d="M18 6L6 18" />
     </svg>
   );
 }
