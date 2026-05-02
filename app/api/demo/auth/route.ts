@@ -22,7 +22,7 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const VALID_SLUGS = new Set(["venture-navigator"]);
+const VALID_SLUGS = new Set(["venture-navigator", "agasthyam"]);
 
 export async function POST(req: NextRequest) {
   let body: { slug?: string; password?: string };
