@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
-import DemoConvaiWidget from "@/components/DemoConvaiWidget";
+import InteractiveDemo from "./InteractiveDemo";
 import PasswordGate from "./PasswordGate";
 import { cookieNameFor, verifyToken } from "@/lib/demo-auth";
 
@@ -185,7 +185,7 @@ export default async function VentureNavigatorDemoPage() {
               color: INK,
             }}
           >
-            Talk or text the screening agent
+            Pick a mode · text or voice
           </h2>
           <p
             style={{
@@ -195,11 +195,11 @@ export default async function VentureNavigatorDemoPage() {
               lineHeight: 1.55,
             }}
           >
-            Try writing as if you were a founder applying. Throw in Malayalam
-            or Manglish to see the language switching live.
+            Try it as if you were a founder applying. Type or talk · throw in
+            Malayalam or Manglish to see the language switching live.
           </p>
 
-          <DemoConvaiWidget agentId={VENTURE_NAVIGATOR_AGENT_ID} />
+          <InteractiveDemo agentId={VENTURE_NAVIGATOR_AGENT_ID} />
         </section>
 
         {/* ── WHAT THIS REPLACES ────────────────────────────────── */}
