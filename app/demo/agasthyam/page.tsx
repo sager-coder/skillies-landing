@@ -36,11 +36,18 @@ const GOLD = "#C9A24E";
 
 const AGASTHYAM_AGENT_ID = "agent_7301kqmeqyppewjtf6fqx8xf2yg8";
 
-export default async function AgasthyamDemoPage() {
+export default async function AgasthyamDemoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ demo_error?: string }>;
+}) {
   const cookieStore = await cookies();
   const token = cookieStore.get(cookieNameFor(SLUG))?.value;
   if (!verifyToken(SLUG, token)) {
-    return <PasswordGate slug={SLUG} />;
+    const params = await searchParams;
+    return (
+      <PasswordGate slug={SLUG} initialError={mapDemoError(params.demo_error)} />
+    );
   }
 
   return (
@@ -511,6 +518,19 @@ export default async function AgasthyamDemoPage() {
       `}</style>
     </main>
   );
+}
+
+// Maps the demo_error query param (set by the form-fallback path on auth
+// failure) into a human-readable message for PasswordGate to render.
+function mapDemoError(code: string | undefined): string | null {
+  if (!code) return null;
+  const map: Record<string, string> = {
+    wrong_password: "That access code didn't match. Try again.",
+    missing_password: "Please enter the access code.",
+    demo_not_configured: "This demo isn't active right now. Message Ehsan.",
+    unknown_slug: "This demo link is invalid. Message Ehsan.",
+  };
+  return map[code] ?? null;
 }
 
 // ──────────────────────────────────────────────────────────────────────────

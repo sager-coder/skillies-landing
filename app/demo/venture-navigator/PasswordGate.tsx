@@ -1,5 +1,25 @@
 "use client";
 
+/**
+ * PasswordGate · the access-code screen for prospect demos.
+ *
+ * Two transports for resilience:
+ *
+ *   1. Native HTML form POST (the default · works in every browser AND
+ *      every WebView, including WhatsApp's in-app browser, where a
+ *      JS fetch + window.location.reload() can drop the just-set cookie).
+ *      Form submits → server responds with 303 redirect + Set-Cookie →
+ *      browser handles cookie + navigation natively.
+ *
+ *   2. JS progressive enhancement (when JavaScript is enabled and the
+ *      fetch path looks reliable). On submit, intercept e.preventDefault(),
+ *      POST JSON, on success reload. Falls back to native form submit on
+ *      any error so we never leave the user stuck.
+ *
+ * Server-side initial errors (e.g. ?demo_error=wrong_code from a prior form
+ * POST that failed) are passed in via the `initialError` prop.
+ */
+
 import { useState } from "react";
 
 const CREAM = "#FAF5EB";
@@ -8,39 +28,67 @@ const ACCENT = "#0F766E";
 const RED = "#C62828";
 const GOLD = "#C9A24E";
 
-export default function PasswordGate({ slug }: { slug: string }) {
+const ERROR_MESSAGES: Record<string, string> = {
+  wrong_password: "That access code didn't match. Try again.",
+  missing_password: "Please enter the access code.",
+  demo_not_configured: "This demo isn't active right now. Message Ehsan.",
+  unknown_slug: "This demo link is invalid. Message Ehsan.",
+};
+
+export default function PasswordGate({
+  slug,
+  initialError,
+}: {
+  slug: string;
+  initialError?: string | null;
+}) {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError ?? null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // Progressive enhancement · only intercept if window.fetch exists AND
+    // the form has a button doing the submit. If anything goes wrong, we
+    // re-trigger the form submission natively so the user is never stuck.
+    if (typeof window === "undefined" || typeof window.fetch !== "function") {
+      return; // let the native form submit run
+    }
     e.preventDefault();
     if (busy) return;
     setBusy(true);
     setError(null);
+
+    const formEl = e.currentTarget;
     try {
       const res = await fetch("/api/demo/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // Send credentials in case the cookie scope ever changes;
+        // harmless for same-origin POSTs.
+        credentials: "same-origin",
         body: JSON.stringify({ slug, password }),
       });
       if (res.ok) {
-        // Cookie is set · reload to render the actual page server-side.
+        // Cookie is set · reload to render the demo server-side.
         window.location.reload();
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { error?: string };
-      if (data.error === "wrong_password") {
-        setError("That access code didn't match. Try again.");
-      } else if (data.error === "demo_not_configured") {
-        setError("This demo isn't active right now. Message Ehsan.");
-      } else {
-        setError("Could not verify. Try again or message Ehsan.");
-      }
-    } catch {
-      setError("Network error. Check your connection and try again.");
-    } finally {
+      const msg =
+        ERROR_MESSAGES[data.error ?? ""] ??
+        "Could not verify. Try again or message Ehsan.";
+      setError(msg);
       setBusy(false);
+    } catch {
+      // fetch threw (network / CORS / extension blocking) · fall back to
+      // native form submission, which works without JS in any browser.
+      try {
+        formEl.submit();
+        return;
+      } catch {
+        setError("Network error. Check your connection and try again.");
+        setBusy(false);
+      }
     }
   }
 
@@ -105,7 +153,14 @@ export default function PasswordGate({ slug }: { slug: string }) {
           valid for 7 days on this device.
         </p>
 
-        <form onSubmit={handleSubmit}>
+        <form
+          action="/api/demo/auth"
+          method="post"
+          onSubmit={handleSubmit}
+          // Critical for native-form fallback · the action URL must be
+          // exactly the auth route AND we send the slug as a hidden field.
+        >
+          <input type="hidden" name="slug" value={slug} />
           <label
             htmlFor="demo-password"
             style={{

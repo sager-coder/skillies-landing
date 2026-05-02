@@ -33,11 +33,16 @@ const GOLD = "#C9A24E";
 
 const VENTURE_NAVIGATOR_AGENT_ID = "agent_9401kqkyg1g3ejcsdke3x602jw2s";
 
-export default async function VentureNavigatorDemoPage() {
+export default async function VentureNavigatorDemoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ demo_error?: string }>;
+}) {
   const cookieStore = await cookies();
   const token = cookieStore.get(cookieNameFor(SLUG))?.value;
   if (!verifyToken(SLUG, token)) {
-    return <PasswordGate slug={SLUG} />;
+    const params = await searchParams;
+    return <PasswordGate slug={SLUG} initialError={mapDemoError(params.demo_error)} />;
   }
 
   return (
@@ -518,6 +523,19 @@ export default async function VentureNavigatorDemoPage() {
       `}</style>
     </main>
   );
+}
+
+// Maps the demo_error query param (set by the form-fallback path on auth
+// failure) into a human-readable message for PasswordGate to render.
+function mapDemoError(code: string | undefined): string | null {
+  if (!code) return null;
+  const map: Record<string, string> = {
+    wrong_password: "That access code didn't match. Try again.",
+    missing_password: "Please enter the access code.",
+    demo_not_configured: "This demo isn't active right now. Message Ehsan.",
+    unknown_slug: "This demo link is invalid. Message Ehsan.",
+  };
+  return map[code] ?? null;
 }
 
 // ──────────────────────────────────────────────────────────────────────────
