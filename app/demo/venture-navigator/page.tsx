@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 
-import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import VentureNavigatorChat from "./VentureNavigatorChat";
 import PasswordGate from "./PasswordGate";
@@ -41,17 +41,97 @@ export default async function VentureNavigatorDemoPage() {
   }
 
   return (
-    <main style={{ background: CREAM, minHeight: "100vh", color: INK }}>
-      <TopNav />
-
-      {/* Hide the global floating chat widget · this page has its own embed. */}
+    <main
+      className="vn-demo-page"
+      style={{ background: CREAM, minHeight: "100vh", color: INK }}
+    >
+      {/* Aggressive global-widget hide: SkilliesChatWidget renders a
+          motion.button with aria-label="Open Skillies chat" and the panel
+          has aria-label="Skillies chat". Both are fixed-positioned siblings
+          of <main>. Hiding by aria-label catches them deterministically. */}
       <style>{`
+        body > button[aria-label="Open Skillies chat"],
+        body > div[aria-label="Skillies chat"],
         body > [data-skillies-chat-launcher],
-        body > div[class*="chat-launcher"],
         body > #skillies-chat-root {
           display: none !important;
         }
+        /* Belt-and-suspenders: any fixed-positioned launcher that renders
+           outside our main · scoped tightly so we don't nuke unrelated UI. */
+        .vn-demo-page ~ button[class*="fixed"],
+        .vn-demo-page ~ div[class*="fixed"] {
+          display: none !important;
+        }
       `}</style>
+
+      {/* ───────────────────── MINI TOP BAR ───────────────────── */}
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          background: "rgba(250,245,235,0.85)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderBottom: `1px solid ${ACCENT}14`,
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1140,
+            margin: "0 auto",
+            padding: "14px 24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+          }}
+        >
+          <Link
+            href="/"
+            style={{
+              textDecoration: "none",
+              color: INK,
+              fontWeight: 800,
+              letterSpacing: "0.01em",
+              fontSize: 18,
+            }}
+          >
+            SKILLIES<span style={{ color: RED }}>.AI</span>
+          </Link>
+          <span
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: MUTED,
+              fontWeight: 600,
+            }}
+            className="vn-topbar-tag"
+          >
+            Private demo · For Vivek M V
+          </span>
+          <a
+            href="https://wa.me/918714318352?text=Vivek%20—%20saw%20the%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              background: ACCENT,
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: 999,
+              fontSize: 13,
+              fontWeight: 700,
+              textDecoration: "none",
+              letterSpacing: "0.02em",
+              whiteSpace: "nowrap",
+              boxShadow: "0 4px 12px rgba(15,118,110,0.20)",
+            }}
+          >
+            Book the call →
+          </a>
+        </div>
+      </header>
 
       {/* ───────────────────── HERO ───────────────────── */}
       <section
@@ -59,8 +139,8 @@ export default async function VentureNavigatorDemoPage() {
           position: "relative",
           background:
             "radial-gradient(1200px 600px at 80% -100px, rgba(15,118,110,0.15), transparent 60%), radial-gradient(900px 500px at 0% 0%, rgba(201,162,78,0.12), transparent 60%), " + CREAM,
-          paddingTop: 120,
-          paddingBottom: 60,
+          paddingTop: 64,
+          paddingBottom: 56,
           borderBottom: `1px solid ${ACCENT}1f`,
         }}
       >
@@ -92,14 +172,14 @@ export default async function VentureNavigatorDemoPage() {
             <h1
               style={{
                 fontFamily: "'Instrument Serif', serif",
-                fontSize: "clamp(38px, 5.4vw, 62px)",
+                fontSize: "clamp(36px, 5vw, 58px)",
                 lineHeight: 1.04,
                 fontWeight: 400,
-                margin: "0 0 22px",
+                margin: "0 0 18px",
                 letterSpacing: "-0.015em",
               }}
             >
-              The 130 founder applications you got this morning,{" "}
+              130 founders apply daily.{" "}
               <em
                 style={{
                   fontStyle: "italic",
@@ -107,23 +187,22 @@ export default async function VentureNavigatorDemoPage() {
                   fontWeight: 400,
                 }}
               >
-                already screened.
+                One screens them all.
               </em>
             </h1>
             <p
               style={{
-                fontSize: 18,
+                fontSize: 17,
                 lineHeight: 1.55,
                 color: MUTED,
-                margin: "0 0 16px",
-                maxWidth: 560,
+                margin: "0 0 14px",
+                maxWidth: 540,
               }}
             >
-              Skillies AI Sales Agent, configured for Venture Navigator's
-              founder-applicant flow. Captures{" "}
+              Built for Venture Navigator. Captures{" "}
               <strong style={{ color: INK }}>idea, traction, team, ask, runway, location</strong>{" "}
-              from every applicant in three minutes — in English or Malayalam,
-              with images, while you sleep.
+              from every applicant in three minutes — English or Malayalam, with
+              images, while you sleep.
             </p>
 
             {/* Quick-stat strip */}
@@ -728,9 +807,10 @@ const COLS: ColDef[] = [
   { key: "human", label: "Junior salesperson", short: "Junior staff" },
 ];
 
-// Count rows where Skillies has the strictly best answer (true while every
-// competitor is false / partial / numeric-loss). Used in the summary chip.
-const SKILLIES_WINS = CAPABILITIES.filter((c) => c.skillies === true).length;
+// Skillies has a clear advantage on every row: true checkmarks on the
+// boolean rows, and the lowest-cost-per-capability on the cost row.
+// So the chip reads "9 of 9".
+const SKILLIES_WINS = CAPABILITIES.length;
 
 function CompetitorTable() {
   return (

@@ -314,7 +314,16 @@ function ChatUI({ agentId }: { agentId: string }) {
           "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
         display: "flex",
         flexDirection: "column",
-        height: "min(640px, 78vh)",
+        // Center + cap width so the panel reads like a real WhatsApp/iMessage
+        // view rather than spanning the full container on desktop.
+        width: "100%",
+        maxWidth: 560,
+        marginLeft: "auto",
+        marginRight: "auto",
+        // Min keeps the panel useful before any messages exist; max prevents
+        // it from dominating the page when the conversation grows.
+        minHeight: 460,
+        maxHeight: "min(640px, 78vh)",
       }}
     >
       {/* Header */}
