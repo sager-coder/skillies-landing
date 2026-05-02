@@ -57,10 +57,36 @@ export default function DemoBrandedChat(props: DemoBrandedChatProps) {
   );
 }
 
+// SessionStorage key per agent · scoped per prospect demo. Cleared when
+// the user closes the tab (better privacy default than localStorage),
+// preserved across reloads in the same tab.
+function storageKeyFor(agentId: string): string {
+  return `demo_chat_${agentId}_v1`;
+}
+
 function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // Hydrate messages from sessionStorage on first render (lazy initializer
+  // so we don't pay the cost on every re-render).
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = window.sessionStorage.getItem(storageKeyFor(agentId));
+      if (!saved) return [];
+      const parsed = JSON.parse(saved) as ChatMessage[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
   const [draft, setDraft] = useState("");
   const [activeMode, setActiveMode] = useState<"text" | "voice" | null>(null);
+  // True while the user has just clicked the voice button and we're
+  // tearing down + spinning up a new session. Used to disable the button
+  // and show "Switching…" status so the click feels responsive.
+  const [switching, setSwitching] = useState(false);
+  // True after a user message is sent, until the next agent message arrives.
+  // Drives the typing indicator below the messages list.
+  const [expectingResponse, setExpectingResponse] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [pendingImage, setPendingImage] = useState<{
     fileId: string;
@@ -73,6 +99,10 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const startedRef = useRef(false);
   const pendingSendsRef = useRef<Array<{ text?: string; fileId?: string }>>([]);
+  // Reset to false every time we kick off a new session; flipped to true
+  // once we've sent the prior-transcript bootstrap into the new session.
+  // That way mode switches and reloads don't lose context.
+  const bootstrappedSessionRef = useRef(false);
 
   const appendMessage = useCallback(
     (m: Omit<ChatMessage, "id" | "ts">) => {
@@ -98,6 +128,8 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         role: "system",
         text: `Connection error: ${typeof msg === "string" ? msg : "unknown"}`,
       });
+      setExpectingResponse(false);
+      setSwitching(false);
     },
     onMessage: ({ message, role }) => {
       if (!message) return;
@@ -109,13 +141,67 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         appendMessage({ role: "user", text: message });
       } else {
         appendMessage({ role: "agent", text: message });
+        setExpectingResponse(false);
       }
     },
   });
 
+  // Persist messages to sessionStorage so a tab reload (or mode switch
+  // tearing down React state) doesn't lose what the user already saw.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.sessionStorage.setItem(
+        storageKeyFor(agentId),
+        JSON.stringify(messages),
+      );
+    } catch {
+      /* sessionStorage may be full or disabled · ignore */
+    }
+  }, [agentId, messages]);
+
+  // Bootstrap each new session with prior transcript so the agent doesn't
+  // forget the conversation when we toggle modes (text ↔ voice ends and
+  // restarts the underlying connection) or after a tab reload.
+  useEffect(() => {
+    if (conversation.status !== "connected") return;
+    if (bootstrappedSessionRef.current) return;
+    bootstrappedSessionRef.current = true;
+
+    const real = messagesRef.current.filter(
+      (m) => m.role !== "system" && (m.text ?? "").trim().length > 0,
+    );
+    if (real.length === 0) return;
+
+    const transcript = real
+      .map((m) => `${m.role === "user" ? "User" : "Agent"}: ${m.text}`)
+      .join("\n");
+
+    try {
+      // sendContextualUpdate injects context into the LLM without
+      // triggering an immediate response · the agent simply remembers
+      // this on the next user turn.
+      conversation.sendContextualUpdate(
+        `[Resuming an in-progress conversation in this session. Use this transcript as your memory of what's already been said. Do NOT greet again or restart the screener · pick up exactly where the conversation left off.]\n\n${transcript}`,
+      );
+    } catch {
+      /* SDK may not support contextual updates in some session types */
+    }
+  }, [conversation, conversation.status]);
+
+  // Clear the "switching modes" pulse as soon as the new session lands.
+  useEffect(() => {
+    if (conversation.status === "connected") {
+      setSwitching(false);
+    }
+  }, [conversation.status]);
+
   // Memoised so the conversation hook keeps a stable reference.
   const startSessionInMode = useCallback(
     (mode: "text" | "voice") => {
+      // Reset the bootstrap guard so the new session gets the prior
+      // transcript fed in via sendContextualUpdate (see the effect below).
+      bootstrappedSessionRef.current = false;
       try {
         if (mode === "text") {
           conversation.startSession({
@@ -133,6 +219,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
       } catch (e) {
         const msg = e instanceof Error ? e.message : "couldn't start session";
         appendMessage({ role: "system", text: msg });
+        setSwitching(false);
       }
     },
     [agentId, appendMessage, conversation],
@@ -175,11 +262,11 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     }
   }, [appendMessage, conversation, conversation.status]);
 
-  // Auto-scroll on new messages.
+  // Auto-scroll on new messages or when the typing indicator appears.
   useEffect(() => {
     if (!listRef.current) return;
     listRef.current.scrollTop = listRef.current.scrollHeight;
-  }, [messages]);
+  }, [messages, expectingResponse]);
 
   const handleSend = useCallback(() => {
     const text = draft.trim();
@@ -206,6 +293,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         } else if (payload.text) {
           conversation.sendUserMessage(payload.text);
         }
+        setExpectingResponse(true);
       } catch (e) {
         const msg = e instanceof Error ? e.message : "send failed";
         appendMessage({ role: "system", text: msg });
@@ -215,6 +303,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     }
 
     pendingSendsRef.current.push(payload);
+    setExpectingResponse(true);
     setPendingImage(null);
     if (!activeMode) {
       startSessionInMode("text");
@@ -263,7 +352,13 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
   );
 
   const toggleVoice = useCallback(async () => {
+    if (switching) return; // ignore rapid double-clicks during transitions
+
+    // Voice → text · synchronous, no permission ask. Show switching feedback
+    // immediately so the click feels instantaneous even while WebRTC is
+    // tearing down.
     if (activeMode === "voice") {
+      setSwitching(true);
       try {
         conversation.endSession();
       } catch {
@@ -274,6 +369,10 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
       startSessionInMode("text");
       return;
     }
+
+    // Text → voice · ask mic permission first while still showing the old
+    // panel. If denied, surface a system message and stay in text mode.
+    setSwitching(true);
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
@@ -281,6 +380,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         role: "system",
         text: "Mic permission was denied. Typing still works.",
       });
+      setSwitching(false);
       return;
     }
     if (activeMode) {
@@ -291,12 +391,51 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
       }
     }
     startSessionInMode("voice");
-  }, [activeMode, appendMessage, conversation, startSessionInMode]);
+  }, [
+    activeMode,
+    appendMessage,
+    conversation,
+    startSessionInMode,
+    switching,
+  ]);
+
+  // Reset · clears messages and storage, ends the live session, restarts
+  // a fresh one in text mode. Useful for re-testing the demo flow without
+  // closing the tab. Confirms before wiping in case it was an accidental
+  // click.
+  const resetConversation = useCallback(() => {
+    if (typeof window !== "undefined") {
+      const ok = window.confirm(
+        "Reset the demo? This clears the conversation and starts fresh.",
+      );
+      if (!ok) return;
+      try {
+        window.sessionStorage.removeItem(storageKeyFor(agentId));
+      } catch {
+        /* ignore */
+      }
+    }
+    setMessages([]);
+    setExpectingResponse(false);
+    setPendingImage(null);
+    setDraft("");
+    try {
+      conversation.endSession();
+    } catch {
+      /* noop */
+    }
+    setActiveMode(null);
+    setSwitching(true);
+    startSessionInMode("text");
+  }, [agentId, conversation, startSessionInMode]);
 
   const status = conversation.status;
   const isAgentSpeaking = activeMode === "voice" && conversation.isSpeaking;
 
   const headerStatus = useMemo(() => {
+    if (switching) {
+      return activeMode === "voice" ? "Switching to text…" : "Switching to voice…";
+    }
     if (activeMode === "voice") {
       if (status === "connected") {
         return isAgentSpeaking ? "Speaking…" : "Listening…";
@@ -306,7 +445,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
     if (status === "connected") return "Online";
     if (status === "connecting") return "Connecting…";
     return "Ready when you are";
-  }, [activeMode, isAgentSpeaking, status]);
+  }, [activeMode, isAgentSpeaking, status, switching]);
 
   return (
     <div
@@ -389,6 +528,30 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
             {headerStatus}
           </div>
         </div>
+        {/* Reset · clears conversation + starts fresh. Only meaningful
+            once the user has actually sent something. */}
+        {messages.length > 0 ? (
+          <button
+            type="button"
+            onClick={resetConversation}
+            aria-label="Reset conversation"
+            title="Reset conversation"
+            style={{
+              padding: "6px 10px",
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: "0.04em",
+              background: "rgba(250,245,235,0.10)",
+              color: "#FAF5EB",
+              border: "1px solid rgba(250,245,235,0.18)",
+              borderRadius: 999,
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+          >
+            Reset
+          </button>
+        ) : null}
       </div>
 
       {/* Messages */}
@@ -420,6 +583,7 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
         ) : (
           messages.map((m) => <MessageRow key={m.id} message={m} />)
         )}
+        {expectingResponse ? <TypingDots /> : null}
       </div>
 
       {/* Pending-image preview */}
@@ -499,11 +663,18 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
           {uploadingImage ? <Spinner /> : <ImageIcon />}
         </IconButton>
         <IconButton
-          ariaLabel={activeMode === "voice" ? "End voice" : "Start voice"}
+          ariaLabel={
+            switching
+              ? "Switching modes…"
+              : activeMode === "voice"
+                ? "End voice"
+                : "Start voice"
+          }
           onClick={toggleVoice}
+          disabled={switching}
           variant={activeMode === "voice" ? "active" : "ghost"}
         >
-          <MicIcon active={activeMode === "voice"} />
+          {switching ? <Spinner /> : <MicIcon active={activeMode === "voice"} />}
         </IconButton>
         <textarea
           value={draft}
@@ -572,6 +743,48 @@ function ChatUI({ agentId, avatar, label, footer }: DemoBrandedChatProps) {
 }
 
 // ─── Message bubble ────────────────────────────────────────────────────────
+// ─── Typing indicator ─────────────────────────────────────────────────────
+function TypingDots() {
+  return (
+    <div style={{ display: "flex", justifyContent: "flex-start" }}>
+      <div
+        style={{
+          padding: "10px 14px",
+          background: "#FFFFFF",
+          color: "#1A1A1A",
+          borderRadius: 18,
+          borderTopLeftRadius: 4,
+          border: "1px solid #F0E8D8",
+          boxShadow: "0 1px 2px rgba(31,58,46,.04)",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          height: 20,
+        }}
+        aria-label="Agent is typing"
+      >
+        <span className="demo-chat-dot" style={{ animationDelay: "0ms" }} />
+        <span className="demo-chat-dot" style={{ animationDelay: "150ms" }} />
+        <span className="demo-chat-dot" style={{ animationDelay: "300ms" }} />
+        <style>{`
+          .demo-chat-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: #C7C4BD;
+            animation: demo-chat-dot-bounce 1.1s ease-in-out infinite;
+          }
+          @keyframes demo-chat-dot-bounce {
+            0%, 80%, 100% { transform: translateY(0);    opacity: .4; }
+            40%           { transform: translateY(-3px); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+}
+
 function MessageRow({ message }: { message: ChatMessage }) {
   if (message.role === "system") {
     return (
