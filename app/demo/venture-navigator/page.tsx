@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
-import InteractiveDemo from "./InteractiveDemo";
+import VentureNavigatorChat from "./VentureNavigatorChat";
 import PasswordGate from "./PasswordGate";
 import { cookieNameFor, verifyToken } from "@/lib/demo-auth";
 
@@ -12,10 +12,6 @@ import { cookieNameFor, verifyToken } from "@/lib/demo-auth";
 //
 // Access · password-gated via DEMO_VENTURE_NAVIGATOR_PASSWORD env var.
 // Cookie set after correct entry, valid 7 days, scoped to this slug.
-//
-// Language design: English default, auto-switches to formal Malayalam
-// script when applicant types in Malayalam. Reads Manglish input but
-// never produces Manglish output.
 
 const SLUG = "venture-navigator";
 
@@ -32,6 +28,7 @@ const INK = "#1A1A1A";
 const MUTED = "#595959";
 const ACCENT = "#0F766E";
 const RED = "#C62828";
+const DARK = "#1F3A2E";
 const GOLD = "#C9A24E";
 
 const VENTURE_NAVIGATOR_AGENT_ID = "agent_9401kqkyg1g3ejcsdke3x602jw2s";
@@ -56,258 +53,289 @@ export default async function VentureNavigatorDemoPage() {
         }
       `}</style>
 
-      <article
+      {/* ───────────────────── HERO ───────────────────── */}
+      <section
         style={{
-          maxWidth: 880,
-          margin: "0 auto",
-          padding: "120px 24px 80px",
+          position: "relative",
+          background:
+            "radial-gradient(1200px 600px at 80% -100px, rgba(15,118,110,0.15), transparent 60%), radial-gradient(900px 500px at 0% 0%, rgba(201,162,78,0.12), transparent 60%), " + CREAM,
+          paddingTop: 120,
+          paddingBottom: 60,
+          borderBottom: `1px solid ${ACCENT}1f`,
         }}
       >
-        {/* ── EYEBROW ───────────────────────────────────────────── */}
-        <p
+        <div
           style={{
-            fontSize: 11,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            fontWeight: 700,
-            color: ACCENT,
-            margin: "0 0 18px",
+            maxWidth: 1140,
+            margin: "0 auto",
+            padding: "0 24px",
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1.05fr) minmax(0, 0.95fr)",
+            gap: 48,
+            alignItems: "center",
           }}
+          className="vn-hero-grid"
         >
-          Private Demo · For Vivek M V
-        </p>
-
-        {/* ── HEADLINE ─────────────────────────────────────────── */}
-        <h1
-          style={{
-            fontFamily: "'Instrument Serif', serif",
-            fontSize: "clamp(34px, 5vw, 54px)",
-            lineHeight: 1.05,
-            fontWeight: 400,
-            margin: "0 0 22px",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          Venture Navigator Founder Screener
-        </h1>
-
-        <p
-          style={{
-            fontSize: 18,
-            lineHeight: 1.55,
-            color: MUTED,
-            margin: "0 0 14px",
-            maxWidth: 720,
-          }}
-        >
-          Vivek — this is Skillies AI Sales Agent configured for your founder-applicant
-          screening flow. It captures the six things you'd ask any applicant before
-          you take the call yourself: idea, traction, team, ask, runway, location.
-        </p>
-
-        <p
-          style={{
-            fontSize: 18,
-            lineHeight: 1.55,
-            color: MUTED,
-            margin: "0 0 12px",
-            maxWidth: 720,
-          }}
-        >
-          Click the launcher below. Type or talk. The agent defaults to English and
-          auto-switches to formal Malayalam script if the applicant writes in Malayalam.
-          It reads Manglish input but never replies in Manglish — vendor evaluation
-          deserves polish.
-        </p>
-
-        <p
-          style={{
-            fontSize: 14,
-            lineHeight: 1.55,
-            color: "#7B7B7B",
-            margin: "0 0 40px",
-            maxWidth: 720,
-            fontStyle: "italic",
-          }}
-        >
-          What you're hearing is a demo. In production for Venture Navigator,
-          this would integrate with your WhatsApp Business Account, route hot
-          founders to your phone in 60 seconds, and learn from your decisions
-          over time. Same engine.
-        </p>
-
-        {/* ── DEMO PANEL ───────────────────────────────────────── */}
-        <section
-          aria-label="Live AI agent · Venture Navigator demo"
-          style={{
-            background: "#FFFFFF",
-            border: `1px solid ${ACCENT}33`,
-            borderRadius: 16,
-            padding: "32px 28px",
-            boxShadow: "0 10px 40px rgba(15, 118, 110, 0.08)",
-            margin: "0 0 56px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              marginBottom: 12,
-            }}
-          >
-            <span
+          <div>
+            <p
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: "#10B981",
-                boxShadow: "0 0 0 4px rgba(16, 185, 129, 0.18)",
-              }}
-            />
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                letterSpacing: "0.06em",
+                fontSize: 11,
+                letterSpacing: "0.32em",
                 textTransform: "uppercase",
-                color: MUTED,
+                fontWeight: 700,
+                color: ACCENT,
+                margin: "0 0 18px",
               }}
             >
-              Live · Configured for Venture Navigator
-            </span>
+              Private Demo · For Vivek M V
+            </p>
+            <h1
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(38px, 5.4vw, 62px)",
+                lineHeight: 1.04,
+                fontWeight: 400,
+                margin: "0 0 22px",
+                letterSpacing: "-0.015em",
+              }}
+            >
+              The 130 founder applications you got this morning,{" "}
+              <em
+                style={{
+                  fontStyle: "italic",
+                  color: RED,
+                  fontWeight: 400,
+                }}
+              >
+                already screened.
+              </em>
+            </h1>
+            <p
+              style={{
+                fontSize: 18,
+                lineHeight: 1.55,
+                color: MUTED,
+                margin: "0 0 16px",
+                maxWidth: 560,
+              }}
+            >
+              Skillies AI Sales Agent, configured for Venture Navigator's
+              founder-applicant flow. Captures{" "}
+              <strong style={{ color: INK }}>idea, traction, team, ask, runway, location</strong>{" "}
+              from every applicant in three minutes — in English or Malayalam,
+              with images, while you sleep.
+            </p>
+
+            {/* Quick-stat strip */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: 14,
+                margin: "26px 0 30px",
+                maxWidth: 540,
+              }}
+            >
+              <Stat n="~130" sub="founder applications/day · self-reported" />
+              <Stat n="<60s" sub="hot lead → your phone" />
+              <Stat n="5" sub="Indian languages, native script" />
+            </div>
+
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <a
+                href="#chat"
+                style={{
+                  background: RED,
+                  color: CREAM,
+                  padding: "12px 22px",
+                  borderRadius: 999,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  letterSpacing: "0.02em",
+                  boxShadow: "0 8px 22px rgba(196,40,40,0.28)",
+                }}
+              >
+                Open the agent ↓
+              </a>
+              <a
+                href="#pricing"
+                style={{
+                  background: "transparent",
+                  color: INK,
+                  padding: "12px 22px",
+                  borderRadius: 999,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  border: `1px solid ${INK}33`,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                See the price
+              </a>
+            </div>
           </div>
-          <h2
+
+          {/* Hero visual: a stylized "before vs after" */}
+          <div
             style={{
-              fontSize: 22,
-              fontWeight: 600,
-              margin: "0 0 8px",
-              color: INK,
+              background: "white",
+              border: `1px solid ${ACCENT}26`,
+              borderRadius: 18,
+              padding: 22,
+              boxShadow: "0 28px 56px rgba(31, 58, 46, 0.10)",
             }}
+            className="vn-hero-card"
           >
-            Pick a mode · text or voice
-          </h2>
+            <p
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: MUTED,
+                margin: "0 0 10px",
+              }}
+            >
+              Your inbox right now
+            </p>
+            <BeforeAfterBlock
+              label="Before"
+              tone="bad"
+              lines={[
+                "👋 hi",
+                "Sir, please review my pitch",
+                "Sir, when can we discuss?",
+                "Sir, I sent the deck again 🙏",
+              ]}
+              footer="3 days · 0 replies · founder churned to next accelerator"
+            />
+            <div
+              style={{
+                margin: "16px 0",
+                fontSize: 11,
+                fontWeight: 700,
+                color: ACCENT,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                textAlign: "center",
+              }}
+            >
+              ↓ With Skillies
+            </div>
+            <BeforeAfterBlock
+              label="After"
+              tone="good"
+              lines={[
+                "👋 hi",
+                "Hi! I'm Vivek's screening agent. Quick 6 questions before he reviews — what's your startup?",
+                "Building a Malayalam-first farm-input marketplace…",
+                "Got it. Traction so far — revenue, signups, MoUs?",
+              ]}
+              footer="3 minutes · application captured · Vivek pinged for the hot ones"
+            />
+          </div>
+        </div>
+      </section>
+
+      <article
+        style={{
+          maxWidth: 1080,
+          margin: "0 auto",
+          padding: "60px 24px 80px",
+        }}
+      >
+        {/* ───────────────────── DEMO PANEL ───────────────────── */}
+        <section id="chat" style={{ scrollMarginTop: 80, marginBottom: 64 }}>
+          <SectionHeader
+            eyebrow="Live demo · talk or type"
+            title="Try it as if you were a founder applying."
+            sub="Type or talk. Default is English; switches to formal Malayalam script if the applicant writes in Malayalam. Reads Manglish input but never replies in Manglish — vendor evaluation deserves polish. Voice is the founder's actual cloned voice."
+          />
+          <VentureNavigatorChat agentId={VENTURE_NAVIGATOR_AGENT_ID} />
           <p
             style={{
-              fontSize: 15,
-              color: MUTED,
-              margin: "0 0 24px",
-              lineHeight: 1.55,
+              fontSize: 12,
+              color: "#9CA3AF",
+              fontStyle: "italic",
+              textAlign: "center",
+              margin: "14px 0 0",
             }}
           >
-            Try it as if you were a founder applying. Type or talk · throw in
-            Malayalam or Manglish to see the language switching live.
+            Demo agent · won't reveal system internals or vendors. The
+            production agent connects directly to your WhatsApp Business
+            Account, routes hot leads to your phone, and learns from your
+            decisions over time.
           </p>
-
-          <InteractiveDemo agentId={VENTURE_NAVIGATOR_AGENT_ID} />
         </section>
 
-        {/* ── WHAT THIS REPLACES ────────────────────────────────── */}
-        <section style={{ margin: "0 0 56px" }}>
-          <h2
-            style={{
-              fontSize: 26,
-              fontWeight: 600,
-              margin: "0 0 24px",
-              color: INK,
-            }}
-          >
-            What this replaces in your current flow
-          </h2>
+        {/* ──────────── COMPETITOR DIFFERENTIATION CHART ───────────── */}
+        <section style={{ marginBottom: 64 }}>
+          <SectionHeader
+            eyebrow="The differentiation"
+            title="Why this — not AiSensy, WATI, Interakt, or a junior salesperson."
+            sub="Most options on the market are either broadcast tools that still need a human to reply, voice agents for outbound calling, or the human itself. Here's what each gives you for the same money."
+          />
+          <CompetitorTable />
+        </section>
 
+        {/* ──────────── HOW IT FITS YOUR FLOW ──────────── */}
+        <section style={{ marginBottom: 64 }}>
+          <SectionHeader
+            eyebrow="What it replaces in your flow"
+            title="Every leak, plugged."
+          />
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: 18,
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 16,
             }}
           >
-            <Card
+            <FlowCard
               num="01"
               title="The 130 daily applications"
               body="Captures the six screener fields from every founder DM-ing you, in their language, in under 3 minutes. No Google Forms, no copy-paste."
             />
-            <Card
+            <FlowCard
               num="02"
               title="The 'no reply' problem"
-              body="Every applicant gets a real conversation in 5 seconds — not a 'we'll get back to you' template. The complaint on your last reel goes away."
+              body="Every applicant gets a real conversation in 5 seconds — not a 'we'll get back' template. The complaint on your last reel goes away."
             />
-            <Card
+            <FlowCard
               num="03"
-              title="The triage decision"
-              body="Hot founders (concrete traction, real ask, Kerala-based) ping your phone in 60 seconds. Everyone else stays in a queue you review on your schedule."
+              title="Triage, instant"
+              body="Hot founders (concrete traction, real ask, Kerala-based) ping your phone in 60 seconds. The rest stays queued for your schedule."
             />
-            <Card
+            <FlowCard
               num="04"
-              title="The audit trail"
-              body="Every conversation logged, summarised, and searchable. Daily 9am email digest of overnight applicants. DPDP-compliant by design."
+              title="Audit + memory"
+              body="Every conversation logged + summarised. 9am email digest of overnight applicants. Returning founders are remembered. DPDP-compliant."
             />
           </div>
         </section>
 
-        {/* ── PRICING ──────────────────────────────────────────── */}
-        <section
-          style={{
-            background: "#FFFFFF",
-            border: `1px solid ${ACCENT}22`,
-            borderRadius: 16,
-            padding: "32px 28px",
-            margin: "0 0 56px",
-          }}
-        >
-          <h2
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              margin: "0 0 12px",
-              color: INK,
-            }}
-          >
-            Investment · Growth tier
-          </h2>
-          <p
-            style={{
-              fontSize: 14,
-              color: MUTED,
-              margin: "0 0 22px",
-              lineHeight: 1.55,
-            }}
-          >
-            Sized to your ~130 applications/day · ~3,900/month inbound volume.
-            Sits inside the Growth band (1,000 to 1,499 actively-converted
-            conversations/month after the AI handles bulk screening).
-          </p>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 24,
-              alignItems: "baseline",
-              margin: "0 0 14px",
-            }}
-          >
-            <Tile label="Setup (one-time)" value="₹49,999" sub="Live in 14 working days" />
-            <Tile label="Monthly" value="₹39,999" sub="No commission · no annual lock-in" accent />
-            <Tile
-              label="Founding-partner offer"
-              value="Setup waived"
-              sub="In exchange for a case study + a testimonial reel + 3 peer intros"
-            />
-          </div>
-          <p style={{ fontSize: 14, color: MUTED, margin: 0, lineHeight: 1.55 }}>
-            Plus 18% GST. Meta WhatsApp API costs are pass-through (you connect your own WABA · most inbound is free, only marketing broadcasts cost paise per message).
-          </p>
+        {/* ──────────── PRICING (visual) ──────────── */}
+        <section id="pricing" style={{ scrollMarginTop: 80, marginBottom: 64 }}>
+          <SectionHeader
+            eyebrow="Pricing · sized to your volume"
+            title="Growth tier. ₹49,999 setup + ₹39,999/mo."
+            sub="Sized to ~130 applications/day. Sits inside the Growth band (1,000–1,499 conversations/month after the AI handles bulk screening). No commission. No annual lock-in. Meta WhatsApp API costs are pass-through to your own WABA."
+          />
+          <PricingCard />
         </section>
 
-        {/* ── NEXT STEP ─────────────────────────────────────────── */}
+        {/* ──────────── NEXT STEP CTA ──────────── */}
         <section
           style={{
             textAlign: "center",
-            margin: "60px 0 0",
-            padding: "40px 24px",
-            background: "#0F0F0F",
-            color: "#FAF5EB",
-            borderRadius: 16,
+            margin: "0",
+            padding: "48px 28px",
+            background: DARK,
+            color: CREAM,
+            borderRadius: 18,
+            boxShadow: "0 24px 56px rgba(31, 58, 46, 0.18)",
           }}
         >
           <p
@@ -325,7 +353,7 @@ export default async function VentureNavigatorDemoPage() {
           <h3
             style={{
               fontFamily: "'Instrument Serif', serif",
-              fontSize: "clamp(28px, 4vw, 38px)",
+              fontSize: "clamp(28px, 4vw, 42px)",
               fontWeight: 400,
               margin: "0 0 16px",
               letterSpacing: "-0.01em",
@@ -339,12 +367,12 @@ export default async function VentureNavigatorDemoPage() {
               lineHeight: 1.55,
               color: "#D1D5DB",
               margin: "0 auto 28px",
-              maxWidth: 540,
+              maxWidth: 560,
             }}
           >
-            30 minutes on Zoom · live screen-share, dashboard tour, walk through
-            how this plugs into your application pipeline. We lock terms on the
-            same call if you're in.
+            30 minutes on Zoom · live screen-share, dashboard tour, walk
+            through how this plugs into your application pipeline. Lock terms
+            on the same call if you're in.
           </p>
           <a
             href="https://wa.me/918714318352?text=Vivek%20here%20—%20saw%20the%20Venture%20Navigator%20demo,%20let's%20do%20the%20call"
@@ -353,31 +381,226 @@ export default async function VentureNavigatorDemoPage() {
               background: GOLD,
               color: "#0F0F0F",
               padding: "14px 32px",
-              borderRadius: 8,
+              borderRadius: 999,
               fontWeight: 700,
               textDecoration: "none",
               fontSize: 15,
-              letterSpacing: "0.04em",
+              letterSpacing: "0.03em",
+              boxShadow: "0 8px 22px rgba(201,162,78,0.30)",
             }}
           >
-            WhatsApp Ehsan · book the 30 min
+            WhatsApp Ehsan · book the 30 min →
           </a>
+          <p
+            style={{
+              fontSize: 12,
+              color: "#9CA3AF",
+              margin: "20px 0 0",
+            }}
+          >
+            Or reply to this WhatsApp thread · Ehsan, Skillies founder, +91 87143 18352
+          </p>
         </section>
       </article>
 
       <FooterEditorial />
+
+      {/* Mobile responsiveness */}
+      <style>{`
+        @media (max-width: 880px) {
+          .vn-hero-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .vn-hero-card {
+            order: -1;
+          }
+        }
+      `}</style>
     </main>
   );
 }
 
-function Card({ num, title, body }: { num: string; title: string; body: string }) {
+// ──────────────────────────────────────────────────────────────────────────
+// Components
+// ──────────────────────────────────────────────────────────────────────────
+
+function SectionHeader({
+  eyebrow,
+  title,
+  sub,
+}: {
+  eyebrow: string;
+  title: string;
+  sub?: string;
+}) {
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <p
+        style={{
+          fontSize: 11,
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          fontWeight: 700,
+          color: ACCENT,
+          margin: "0 0 12px",
+        }}
+      >
+        {eyebrow}
+      </p>
+      <h2
+        style={{
+          fontFamily: "'Instrument Serif', serif",
+          fontSize: "clamp(26px, 3.4vw, 38px)",
+          lineHeight: 1.1,
+          fontWeight: 400,
+          margin: "0 0 14px",
+          letterSpacing: "-0.01em",
+          color: INK,
+        }}
+      >
+        {title}
+      </h2>
+      {sub ? (
+        <p
+          style={{
+            fontSize: 16,
+            lineHeight: 1.55,
+            color: MUTED,
+            margin: 0,
+            maxWidth: 760,
+          }}
+        >
+          {sub}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function Stat({ n, sub }: { n: string; sub: string }) {
   return (
     <div
       style={{
-        background: "#FFFFFF",
-        border: "1px solid #E7E5E4",
+        background: "rgba(255,255,255,0.7)",
+        backdropFilter: "blur(8px)",
+        border: `1px solid ${ACCENT}1f`,
         borderRadius: 12,
-        padding: "24px 22px",
+        padding: "12px 14px",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 26,
+          fontWeight: 700,
+          fontFamily: "'Instrument Serif', serif",
+          color: INK,
+          lineHeight: 1.0,
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {n}
+      </div>
+      <div
+        style={{
+          fontSize: 11,
+          color: MUTED,
+          marginTop: 4,
+          lineHeight: 1.35,
+        }}
+      >
+        {sub}
+      </div>
+    </div>
+  );
+}
+
+function BeforeAfterBlock({
+  label,
+  tone,
+  lines,
+  footer,
+}: {
+  label: string;
+  tone: "good" | "bad";
+  lines: string[];
+  footer: string;
+}) {
+  return (
+    <div
+      style={{
+        background: tone === "good" ? "#F1FAF6" : "#FAF5EB",
+        border: `1px solid ${tone === "good" ? "#10B98133" : "#D1D5DB"}`,
+        borderRadius: 12,
+        padding: "12px 14px",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.18em",
+          fontWeight: 700,
+          color: tone === "good" ? "#0F766E" : "#9CA3AF",
+          textTransform: "uppercase",
+          marginBottom: 8,
+        }}
+      >
+        {label}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {lines.map((line, i) => {
+          const isFounder = i % 2 === 0;
+          return (
+            <div
+              key={i}
+              style={{
+                alignSelf: isFounder ? "flex-start" : "flex-end",
+                background: isFounder ? "white" : "#1F3A2E",
+                color: isFounder ? INK : CREAM,
+                fontSize: 12,
+                padding: "6px 10px",
+                borderRadius: 12,
+                borderTopLeftRadius: isFounder ? 4 : 12,
+                borderBottomRightRadius: isFounder ? 12 : 4,
+                maxWidth: "90%",
+                border: isFounder ? "1px solid #E5E7EB" : "none",
+              }}
+            >
+              {line}
+            </div>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          fontSize: 11,
+          color: tone === "good" ? "#0F766E" : RED,
+          marginTop: 10,
+          fontStyle: "italic",
+        }}
+      >
+        {footer}
+      </div>
+    </div>
+  );
+}
+
+function FlowCard({
+  num,
+  title,
+  body,
+}: {
+  num: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div
+      style={{
+        background: "white",
+        border: `1px solid ${ACCENT}1f`,
+        borderRadius: 14,
+        padding: "22px 22px",
+        boxShadow: "0 4px 14px rgba(15, 118, 110, 0.05)",
       }}
     >
       <p
@@ -397,6 +620,7 @@ function Card({ num, title, body }: { num: string; title: string; body: string }
           fontWeight: 600,
           margin: "0 0 8px",
           color: INK,
+          letterSpacing: "-0.005em",
         }}
       >
         {title}
@@ -415,53 +639,452 @@ function Card({ num, title, body }: { num: string; title: string; body: string }
   );
 }
 
-function Tile({
+// ──────────── Competitor table ────────────
+type Capability = {
+  label: string;
+  skillies: boolean | string;
+  aisensy: boolean | string;
+  wati: boolean | string;
+  human: boolean | string;
+};
+
+const CAPABILITIES: Capability[] = [
+  {
+    label: "AI replies in 5 Indian languages (native script)",
+    skillies: true,
+    aisensy: false,
+    wati: false,
+    human: "1–2 max",
+  },
+  {
+    label: "Per-customer memory across weeks",
+    skillies: true,
+    aisensy: false,
+    wati: false,
+    human: false,
+  },
+  {
+    label: "Reads images (decks, screenshots, IDs)",
+    skillies: true,
+    aisensy: false,
+    wati: false,
+    human: true,
+  },
+  {
+    label: "Voice note transcription (inbound)",
+    skillies: true,
+    aisensy: false,
+    wati: false,
+    human: true,
+  },
+  {
+    label: "Self-improving (corrects its own answers)",
+    skillies: true,
+    aisensy: false,
+    wati: false,
+    human: false,
+  },
+  {
+    label: "24/7 · zero-second reply",
+    skillies: true,
+    aisensy: "broadcast only",
+    wati: "broadcast only",
+    human: false,
+  },
+  {
+    label: "Hot-lead routing to your phone",
+    skillies: true,
+    aisensy: false,
+    wati: "manual",
+    human: true,
+  },
+  {
+    label: "DPDP / TRAI compliant by design",
+    skillies: true,
+    aisensy: "retrofitted",
+    wati: "retrofitted",
+    human: "depends",
+  },
+  {
+    label: "Monthly cost (Kerala, 130 apps/day)",
+    skillies: "₹39,999",
+    aisensy: "₹3,200 + a human",
+    wati: "₹4,500 + a human",
+    human: "₹25–30K",
+  },
+];
+
+type ColDef = {
+  key: "skillies" | "aisensy" | "wati" | "human";
+  label: string;
+  highlight?: boolean;
+};
+
+function CompetitorTable() {
+  const cols: ColDef[] = [
+    { key: "skillies", label: "Skillies", highlight: true },
+    { key: "aisensy", label: "AiSensy" },
+    { key: "wati", label: "WATI" },
+    { key: "human", label: "Junior salesperson" },
+  ];
+
+  return (
+    <div
+      style={{
+        background: "white",
+        border: `1px solid ${ACCENT}1f`,
+        borderRadius: 16,
+        overflow: "hidden",
+        boxShadow: "0 4px 20px rgba(15, 118, 110, 0.06)",
+      }}
+    >
+      {/* Header row */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(220px, 1.4fr) repeat(4, minmax(110px, 1fr))",
+          background: DARK,
+          color: CREAM,
+          fontSize: 12,
+          letterSpacing: "0.04em",
+          fontWeight: 600,
+        }}
+      >
+        <div style={{ padding: "14px 16px" }}>Capability</div>
+        {cols.map((c) => (
+          <div
+            key={c.key}
+            style={{
+              padding: "14px 12px",
+              textAlign: "center",
+              background: c.highlight ? "#0F766E" : "transparent",
+              color: c.highlight ? "white" : CREAM,
+              borderLeft: "1px solid rgba(250,245,235,0.08)",
+              fontWeight: c.highlight ? 700 : 500,
+            }}
+          >
+            {c.label}
+          </div>
+        ))}
+      </div>
+
+      {/* Body rows */}
+      {CAPABILITIES.map((cap, i) => (
+        <div
+          key={i}
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "minmax(220px, 1.4fr) repeat(4, minmax(110px, 1fr))",
+            borderTop: i === 0 ? "none" : `1px solid ${ACCENT}1a`,
+            background: i % 2 === 0 ? "white" : "#FAF5EB",
+          }}
+        >
+          <div
+            style={{
+              padding: "14px 16px",
+              fontSize: 14,
+              color: INK,
+              fontWeight: 500,
+            }}
+          >
+            {cap.label}
+          </div>
+          {cols.map((c) => (
+            <CompetitorCell
+              key={c.key}
+              value={cap[c.key]}
+              highlight={c.highlight}
+            />
+          ))}
+        </div>
+      ))}
+
+      {/* Footnote */}
+      <div
+        style={{
+          padding: "10px 16px",
+          background: "#FAF5EB",
+          fontSize: 11,
+          color: "#6B7280",
+          textAlign: "center",
+          borderTop: `1px solid ${ACCENT}1a`,
+          letterSpacing: "0.02em",
+          fontStyle: "italic",
+        }}
+      >
+        Tools sell software · Skillies sells the work that software replaces. The bot answers, the human gets to focus on the calls that matter.
+      </div>
+    </div>
+  );
+}
+
+function CompetitorCell({
+  value,
+  highlight,
+}: {
+  value: boolean | string;
+  highlight?: boolean;
+}) {
+  let content: React.ReactNode;
+  let color: string = INK;
+  if (value === true) {
+    content = "✓";
+    color = "#0F7A4D";
+  } else if (value === false) {
+    content = "—";
+    color = "#9CA3AF";
+  } else {
+    content = value;
+    color = INK;
+  }
+  return (
+    <div
+      style={{
+        padding: "14px 12px",
+        textAlign: "center",
+        fontSize: value === true || value === false ? 18 : 12,
+        fontWeight: 600,
+        color,
+        borderLeft: `1px solid ${ACCENT}1a`,
+        background: highlight ? "rgba(15, 118, 110, 0.04)" : "transparent",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        lineHeight: 1.3,
+      }}
+    >
+      {content}
+    </div>
+  );
+}
+
+// ──────────── Pricing card (visual) ────────────
+function PricingCard() {
+  return (
+    <div
+      style={{
+        background: "white",
+        border: `1px solid ${ACCENT}26`,
+        borderRadius: 18,
+        overflow: "hidden",
+        boxShadow: "0 18px 44px rgba(15, 118, 110, 0.08)",
+      }}
+    >
+      {/* Top stripe with tier name */}
+      <div
+        style={{
+          background: `linear-gradient(135deg, ${DARK} 0%, #142821 100%)`,
+          color: CREAM,
+          padding: "20px 28px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 14,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.24em",
+              fontWeight: 700,
+              color: GOLD,
+              textTransform: "uppercase",
+              marginBottom: 4,
+            }}
+          >
+            Recommended for Venture Navigator
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 700 }}>Growth tier</div>
+        </div>
+        <div
+          style={{
+            fontSize: 12,
+            color: "rgba(250,245,235,0.7)",
+          }}
+        >
+          1,000–1,499 conversations/mo · sized for ~130 applications/day
+        </div>
+      </div>
+
+      {/* Numbers grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        }}
+      >
+        <PriceTile
+          label="Setup (one-time)"
+          value="₹49,999"
+          sub="Live in 14 working days · payable on go-live"
+        />
+        <PriceTile
+          label="Monthly"
+          value="₹39,999"
+          sub="No commission · no annual lock-in"
+          accent
+        />
+        <PriceTile
+          label="Founding-partner offer"
+          value="Setup waived"
+          sub="In exchange for case study + testimonial reel + 3 peer intros"
+          highlight
+        />
+      </div>
+
+      {/* Whats included */}
+      <div
+        style={{
+          padding: "22px 28px",
+          background: "#FAF5EB",
+          borderTop: `1px solid ${ACCENT}1f`,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            color: ACCENT,
+            margin: "0 0 12px",
+          }}
+        >
+          What's inside the monthly
+        </div>
+        <ul
+          style={{
+            margin: 0,
+            padding: 0,
+            listStyle: "none",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 10,
+          }}
+        >
+          {[
+            "AI replies on every WhatsApp message · 5 Indian languages",
+            "Inbound voice-note transcription (Whisper)",
+            "Image understanding (decks, screenshots, IDs)",
+            "Per-customer memory across all conversations",
+            "Hot-lead alerts to your phone in 60 seconds",
+            "Daily 9am email digest of overnight applicants",
+            "Self-improving prompt that fixes its own answers",
+            "DPDP / TRAI compliance baked in",
+          ].map((line) => (
+            <li
+              key={line}
+              style={{
+                fontSize: 13,
+                color: INK,
+                display: "flex",
+                gap: 10,
+                alignItems: "flex-start",
+                lineHeight: 1.45,
+              }}
+            >
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 18,
+                  height: 18,
+                  borderRadius: 999,
+                  background: ACCENT,
+                  color: "white",
+                  fontSize: 11,
+                  flexShrink: 0,
+                  marginTop: 1,
+                }}
+              >
+                ✓
+              </span>
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Pass-through note */}
+      <div
+        style={{
+          padding: "14px 28px",
+          background: "white",
+          borderTop: `1px solid ${ACCENT}1a`,
+          fontSize: 12,
+          color: MUTED,
+          lineHeight: 1.5,
+        }}
+      >
+        + 18% GST. Meta WhatsApp API costs are{" "}
+        <strong style={{ color: INK }}>pass-through</strong> · you connect
+        your own WABA, Meta bills you directly. Most inbound is free
+        (service conversations); only marketing broadcasts cost paise per
+        message.
+      </div>
+    </div>
+  );
+}
+
+function PriceTile({
   label,
   value,
   sub,
   accent,
+  highlight,
 }: {
   label: string;
   value: string;
-  sub?: string;
+  sub: string;
   accent?: boolean;
+  highlight?: boolean;
 }) {
   return (
-    <div>
-      <p
+    <div
+      style={{
+        padding: "22px 24px",
+        background: highlight ? "rgba(201,162,78,0.10)" : "white",
+        borderRight: `1px solid ${ACCENT}1a`,
+        borderBottom: `1px solid ${ACCENT}1a`,
+      }}
+    >
+      <div
         style={{
-          fontSize: 12,
+          fontSize: 11,
           letterSpacing: "0.18em",
           textTransform: "uppercase",
-          color: MUTED,
-          margin: "0 0 4px",
-          fontWeight: 600,
+          fontWeight: 700,
+          color: highlight ? GOLD : MUTED,
+          marginBottom: 6,
         }}
       >
         {label}
-      </p>
-      <p
+      </div>
+      <div
         style={{
           fontSize: 28,
           fontWeight: 700,
-          margin: 0,
           color: accent ? ACCENT : INK,
+          letterSpacing: "-0.01em",
+          lineHeight: 1.05,
         }}
       >
         {value}
-      </p>
-      {sub ? (
-        <p
-          style={{
-            fontSize: 12,
-            color: MUTED,
-            margin: "4px 0 0",
-            lineHeight: 1.4,
-          }}
-        >
-          {sub}
-        </p>
-      ) : null}
+      </div>
+      <div
+        style={{
+          fontSize: 12,
+          color: MUTED,
+          marginTop: 6,
+          lineHeight: 1.4,
+        }}
+      >
+        {sub}
+      </div>
     </div>
   );
 }
