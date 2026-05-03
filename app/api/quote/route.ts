@@ -19,7 +19,7 @@
  *
  * Response:
  *   QuoteOutput from lib/pricing.ts (setupTotal, monthlyTotal,
- *   twelveMonthTotal, breakdown[], sdrComparison)
+ *   twelveMonthTotal, breakdown[], humanComparison)
  *
  * Auth · open. The numbers it computes are public (same as /pricing).
  * Rate-limited per IP to prevent scrapers (10 req/min per IP).
@@ -27,7 +27,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
   calculateQuote,
-  TIERS,
+  INDUSTRY_SETUP,
   MODULES,
   type VerticalKey,
   type ModuleKey,
@@ -41,7 +41,7 @@ export const dynamic = "force-dynamic";
 const MAX_PER_MINUTE = 10;
 const WINDOW_SECONDS = 60;
 
-const VALID_VERTICALS = Object.keys(TIERS) as VerticalKey[];
+const VALID_VERTICALS = Object.keys(INDUSTRY_SETUP) as VerticalKey[];
 const VALID_MODULES = Object.keys(MODULES) as ModuleKey[];
 
 function clientIp(req: NextRequest): string {
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
     quote,
     // Pre-formatted summary for the agent to drop straight into chat
     agent_summary: {
-      headline: `Setup ₹${quote.setupTotal.toLocaleString("en-IN")} · then ₹${quote.monthlyTotal.toLocaleString("en-IN")}/month`,
+      headline: `${quote.tierName} tier · setup ₹${quote.setupTotal.toLocaleString("en-IN")} · then ₹${quote.monthlyTotal.toLocaleString("en-IN")}/month`,
       bullets: quote.breakdown
         .filter((b) => b.setup > 0 || b.monthly > 0)
         .map((b) => {
@@ -159,10 +159,10 @@ export async function POST(req: NextRequest) {
         }),
       tier: quote.tierName,
       year_one_total: `₹${quote.twelveMonthTotal.toLocaleString("en-IN")}`,
-      sdr_comparison:
-        quote.sdrComparison.savingsVsTwoSdrs > 0
-          ? `Cheaper than 2 Kerala SDRs (₹${quote.sdrComparison.sdrAnnualCost.toLocaleString("en-IN")}/yr) by ₹${quote.sdrComparison.savingsVsTwoSdrs.toLocaleString("en-IN")}`
-          : `Comparable to 2 Kerala SDRs · win is on coverage (24/7, multilingual, no attrition), not raw cost`,
+      human_comparison:
+        quote.humanComparison.savings > 0
+          ? `Same QC capacity hiring ${quote.humanComparison.description} runs ~₹${quote.humanComparison.humanMonthly.toLocaleString("en-IN")}/mo (~₹${quote.humanComparison.humanAnnual.toLocaleString("en-IN")}/yr). Skillies saves ~₹${quote.humanComparison.savings.toLocaleString("en-IN")}/yr — and the agent works 24/7, doesn't take leaves, never makes data-entry errors, and remembers every customer forever.`
+          : `Same QC capacity hiring ${quote.humanComparison.description} runs ~₹${quote.humanComparison.humanMonthly.toLocaleString("en-IN")}/mo. Skillies isn't dramatically cheaper at this volume — the wins are 24/7 coverage, lifelong memory, zero attrition, self-improving via monthly conversation analysis, and fixed-cost economics that get better as you scale.`,
     },
   });
 }
@@ -172,7 +172,7 @@ export async function GET() {
   const sample = calculateQuote({
     vertical: "real-estate",
     monthlyQc: 600,
-    modules: ["vision", "voice", "calendar", "crm", "memory", "industryCustom"],
+    modules: ["vision", "voice", "calendar", "memory", "industryCustom"],
   });
   return NextResponse.json({
     ok: true,
@@ -181,7 +181,7 @@ export async function GET() {
     sample_input: {
       vertical: "real-estate",
       monthly_qc: 600,
-      modules: ["vision", "voice", "calendar", "crm", "memory", "industryCustom"],
+      modules: ["vision", "voice", "calendar", "memory", "industryCustom"],
     },
     sample_output: sample,
     valid_verticals: VALID_VERTICALS,

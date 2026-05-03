@@ -95,8 +95,8 @@ export const coachingCopy = {
   },
 
   pricing: {
-    setup: "from ₹85,000",
-    monthly: "₹24,999/mo + capabilities",
+    setup: "from ₹75,000",
+    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
     bullets: [
       "Custom-trained on your batches, fees, faculty, results, scholarships",
       "Dual-persona handling · parent + student in the same thread",

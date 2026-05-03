@@ -96,15 +96,15 @@ export const studyAbroadCopy = {
   },
 
   pricing: {
-    setup: "from ₹1,35,000",
-    monthly: "₹39,999/mo + capabilities",
+    setup: "from ₹1,00,000",
+    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
     bullets: [
       "Custom-trained on your partner-university list, intake calendars, fees",
       "12-18 month memory · student returns 6 months later, agent remembers",
       "Document vision · transcripts, IELTS scorecards, passports",
       "Parent + student dual-thread · Mal + Eng + Hin",
       "EMI calculator · Leap, Avanse, Auxilo, Prodigy comparisons",
-      "CRM sync · Zoho / HubSpot / LeadSquared · NOT IDP-CRM unless you have partner status",
+      "Counsellor dashboard with hand-off + audit log per applicant",
     ],
   },
 

@@ -94,8 +94,8 @@ export const interiorsCopy = {
   },
 
   pricing: {
-    setup: "from ₹1,15,000",
-    monthly: "₹39,999/mo + capabilities",
+    setup: "from ₹1,00,000",
+    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
     bullets: [
       "Vision module · room photos, floor plans, Pinterest references",
       "Custom-trained on your priced templates, finishes, brands (Hettich/Hafele)",

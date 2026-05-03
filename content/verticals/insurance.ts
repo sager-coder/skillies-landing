@@ -18,7 +18,7 @@ export const insuranceCopy = {
       label: "Book a 30-min call",
     },
     trust:
-      "IRDAI-aware language · CRM sync (Plum / Coverfox / native) · Mal + Hin + Eng",
+      "IRDAI-aware language · long-term customer memory · Mal + Hin + Eng",
     image: {
       src: "/hero/insurance-hero.jpg",
       alt: "Indian middle-aged couple at home reviewing a printed insurance policy at evening, smartphone showing WhatsApp on the table",
@@ -92,14 +92,14 @@ export const insuranceCopy = {
   },
 
   pricing: {
-    setup: "from ₹1,15,000",
-    monthly: "₹29,999/mo + capabilities",
+    setup: "from ₹1,50,000",
+    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
     bullets: [
       "Custom-trained on YOUR carrier panel + commission structure",
       "Document vision · Aadhaar / PAN / medical reports / bank statements",
-      "CRM sync · Plum / Coverfox / Niva Bupa partner / native",
       "Razorpay/PayU for premium collection",
       "Long-horizon memory · same family, multiple policies, years apart",
+      "Cal.com booking + worker dashboard for your closing team",
       "IRDAI-aware language guardrails baked in · zero compliance risk",
     ],
   },

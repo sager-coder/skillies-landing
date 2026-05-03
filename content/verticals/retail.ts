@@ -92,8 +92,8 @@ export const retailCopy = {
   },
 
   pricing: {
-    setup: "from ₹35,000",
-    monthly: "₹14,999/mo (lightest tier)",
+    setup: "from ₹50,000",
+    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
     bullets: [
       "Text + payment · the entire product",
       "1 region's language pair (Malayalam + English default)",

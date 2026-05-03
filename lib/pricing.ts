@@ -1,73 +1,118 @@
 /**
- * Skillies pricing engine · single source of truth.
+ * Skillies pricing engine · single source of truth (v2.1).
  *
  * Used by:
  *   1. /pricing interactive calculator UI (client + server)
- *   2. WhatsApp scoping agent's calculate_quote() tool call
+ *   2. WhatsApp scoping agent's calculate_quote() webhook tool
  *
- * Source · skillies-MASTER-PLAN.md (founder-locked May 2026).
+ * Model:
+ *   - Universal QC-volume tier ladder (Solo → Squad → Floor → Pro → Pro+ → Scale)
+ *   - Per-industry setup base (varies with complexity, not flat)
+ *   - Capability modules add to setup + monthly
  *
- * Formula:
- *   Total Month-1 = Setup + Monthly_Base
- *                 + max(0, QC_handled − QC_included) × Per_QC_overage
- *                 + Σ Capability_Module_fees (setup + monthly)
- *                 + Pass-through (Meta WA charges, billed at-cost)
+ * Setup_total  = INDUSTRY_SETUP[vertical].base + Σ MODULES[m].setup
+ * Monthly_total = TIER.monthly (picked from QC volume) + Σ MODULES[m].monthly
+ * Year-1        = setup + 12 × monthly
+ *
+ * Human comparison scales with QC volume using Kerala benchmarks
+ * (1 caller @ ₹20K handles ~625 QC/month; +1 manager per ~8 callers).
  */
 
-// ─── Tier table · per-vertical anchor (typical setup, monthly base) ──────────
-export const TIERS = {
+// ─── Universal QC tier ladder ─────────────────────────────────────────────────
+// Pay the tier that matches your actual QC volume each month.
+// QC = 24-hour customer-initiated thread with ≥5 inbound messages OR a sales action.
+export const TIERS = [
+  {
+    name: "Solo",
+    qcMax: 1_000,
+    monthly: 50_000,
+    perQc: 50,
+    humanEquivalent: "~1.5 callers, but 24/7 + memory",
+  },
+  {
+    name: "Squad",
+    qcMax: 2_500,
+    monthly: 85_000,
+    perQc: 34,
+    humanEquivalent: "3–4 callers + manager share",
+  },
+  {
+    name: "Floor",
+    qcMax: 4_000,
+    monthly: 1_20_000,
+    perQc: 30,
+    humanEquivalent: "5–6 callers + 1 manager",
+  },
+  {
+    name: "Pro",
+    qcMax: 6_000,
+    monthly: 1_55_000,
+    perQc: 26,
+    humanEquivalent: "8–9 callers + 1 manager",
+  },
+  {
+    name: "Pro+",
+    qcMax: 8_000,
+    monthly: 1_85_000,
+    perQc: 23,
+    humanEquivalent: "10–12 callers + 2 managers (~₹2.5 L/mo human cost)",
+  },
+  {
+    name: "Scale",
+    qcMax: Number.POSITIVE_INFINITY,
+    monthly: null, // quoted custom
+    perQc: null,
+    humanEquivalent: "Enterprise — custom quote",
+  },
+] as const;
+
+export type TierName = (typeof TIERS)[number]["name"];
+
+export function pickTier(monthlyQc: number) {
+  return TIERS.find((t) => monthlyQc <= t.qcMax) ?? TIERS[TIERS.length - 1];
+}
+
+// ─── Per-industry setup base (varies with complexity) ────────────────────────
+// Industry complexity drives KB ingestion depth, integration count, training time.
+export const INDUSTRY_SETUP = {
   retail: {
-    name: "Retail · Light",
-    setup: 49_999,
-    monthlyBase: 14_999,
-    qcIncluded: 50,
-    perQcOverage: 49,
+    base: 50_000,
+    label: "Retail / Kirana",
+    complexity: "Low · single-product catalogue, simple flows",
   },
   hajj: {
-    name: "Standard · Hajj/Umrah",
-    setup: 1_25_000,
-    monthlyBase: 24_999,
-    qcIncluded: 150,
-    perQcOverage: 99,
+    base: 75_000,
+    label: "Hajj / Umrah",
+    complexity: "Medium · package variants + group bookings + Mahram rules",
   },
   coaching: {
-    name: "Standard · Coaching",
-    setup: 85_000,
-    monthlyBase: 24_999,
-    qcIncluded: 150,
-    perQcOverage: 99,
+    base: 75_000,
+    label: "Coaching / Edtech",
+    complexity: "Medium · batch + faculty + fee-quote logic",
   },
   "study-abroad": {
-    name: "Growth · Study Abroad",
-    setup: 1_35_000,
-    monthlyBase: 39_999,
-    qcIncluded: 300,
-    perQcOverage: 149,
+    base: 1_00_000,
+    label: "Study Abroad",
+    complexity: "Medium-high · multi-country + counselling + document workflow",
   },
   interiors: {
-    name: "Growth · Modular Kitchen / Interior",
-    setup: 1_15_000,
-    monthlyBase: 39_999,
-    qcIncluded: 300,
-    perQcOverage: 149,
+    base: 1_00_000,
+    label: "Modular Kitchen / Interior",
+    complexity: "Medium-high · vision-heavy + quote complexity + measurement",
   },
   "real-estate": {
-    name: "Scale · Real Estate",
-    setup: 1_99_000,
-    monthlyBase: 49_999,
-    qcIncluded: 500,
-    perQcOverage: 199,
+    base: 1_25_000,
+    label: "Real Estate",
+    complexity: "High · multi-project KB + RERA + floor-plan vision + CRM",
   },
   insurance: {
-    name: "Standard · Insurance",
-    setup: 1_15_000,
-    monthlyBase: 29_999,
-    qcIncluded: 250,
-    perQcOverage: 119,
+    base: 1_50_000,
+    label: "Insurance (multi-insurer)",
+    complexity: "High · 5 insurers × 4 categories + IRDAI + KYC vision",
   },
 } as const;
 
-export type VerticalKey = keyof typeof TIERS;
+export type VerticalKey = keyof typeof INDUSTRY_SETUP;
 
 export const VERTICAL_LABELS: Record<VerticalKey, string> = {
   retail: "Retail / Kirana",
@@ -79,7 +124,7 @@ export const VERTICAL_LABELS: Record<VerticalKey, string> = {
   insurance: "Insurance",
 };
 
-// ─── Capability modules · add-ons ───────────────────────────────────────────
+// ─── Capability modules · add-ons ────────────────────────────────────────────
 export const MODULES = {
   payment: {
     label: "Payment links (Razorpay / UPI)",
@@ -106,22 +151,16 @@ export const MODULES = {
     description: "English + 1 Indic is base; this adds Mal / Hin / Tam / Kan / Tel / Urdu etc.",
   },
   memory: {
-    label: "Long-horizon memory (weeks/months)",
+    label: "Lifelong per-customer memory",
     setup: 5_000,
     monthly: 2_500,
-    description: "Customer returns 6 months later, agent remembers full thread.",
+    description: "Customer returns 3 years later, agent remembers everything. Family composition, prior policies, kids' DOBs.",
   },
   calendar: {
     label: "Calendar booking (Cal.com / Google)",
     setup: 7_500,
     monthly: 2_500,
     description: "Site visits, demos, consultations booked into your calendar.",
-  },
-  crm: {
-    label: "CRM sync (Sell.do / LeadSquared / Zoho)",
-    setup: 25_000,
-    monthly: 4_999,
-    description: "Push qualified leads into your existing CRM with full conversation history.",
   },
   multichannel: {
     label: "Extra channel (per channel: IG DM / Email / Web)",
@@ -152,6 +191,38 @@ export const MODULES = {
 
 export type ModuleKey = keyof typeof MODULES;
 
+// ─── Human-equivalent comparison · scales with QC volume ─────────────────────
+// Kerala benchmarks: 1 caller @ ₹20K base handles ~625 QC/month.
+// Add 1 manager (₹50K loaded) per ~8 callers; 1 manager when ≥3 callers.
+const KERALA_CALLER_MONTHLY = 20_000;
+const QC_PER_CALLER = 625;
+const MANAGER_MONTHLY = 50_000;
+const CALLERS_PER_MANAGER = 8;
+
+export function humanEquivalentCost(monthlyQc: number): {
+  callers: number;
+  managers: number;
+  monthlyCost: number;
+  description: string;
+} {
+  const callers = Math.max(1, Math.ceil(monthlyQc / QC_PER_CALLER));
+  const managers =
+    callers >= 5
+      ? Math.ceil(callers / CALLERS_PER_MANAGER)
+      : callers >= 3
+        ? 1
+        : 0;
+  const monthlyCost = callers * KERALA_CALLER_MONTHLY + managers * MANAGER_MONTHLY;
+  const parts = [`${callers} caller${callers === 1 ? "" : "s"} (₹20K each)`];
+  if (managers > 0) parts.push(`${managers} manager${managers === 1 ? "" : "s"}`);
+  return {
+    callers,
+    managers,
+    monthlyCost,
+    description: parts.join(" + "),
+  };
+}
+
 // ─── Calculator function · used by both UI and WhatsApp agent ────────────────
 export type QuoteInput = {
   vertical: VerticalKey;
@@ -175,35 +246,42 @@ export type QuoteOutput = {
     setup: number;
     monthly: number;
   }[];
-  /** Anchor against Kerala SDR salary */
-  sdrComparison: {
-    sdrAnnualCost: number;
-    skilliesAnnualCost: number;
-    savingsVsTwoSdrs: number;
+  /** Equivalent human team cost, scaled with QC volume */
+  humanComparison: {
+    callers: number;
+    managers: number;
+    humanMonthly: number;
+    humanAnnual: number;
+    skilliesAnnual: number;
+    savings: number;
+    description: string;
   };
 };
 
-const KERALA_SDR_MONTHLY_LOADED = 35_000; // ₹35k/mo loaded cost per SDR (salary + ESI + PF)
-
 export function calculateQuote(input: QuoteInput): QuoteOutput {
-  const tier = TIERS[input.vertical];
+  const tier = pickTier(input.monthlyQc);
+  const industry = INDUSTRY_SETUP[input.vertical];
   const breakdown: QuoteOutput["breakdown"] = [];
 
-  // Base tier
+  // Industry setup base
   breakdown.push({
-    label: tier.name + " · base",
-    setup: tier.setup,
-    monthly: tier.monthlyBase,
+    label: `${industry.label} · setup`,
+    setup: industry.base,
+    monthly: 0,
   });
 
-  // QC overage
-  const qcOverage = Math.max(0, input.monthlyQc - tier.qcIncluded);
-  const qcOverageCost = qcOverage * tier.perQcOverage;
-  if (qcOverageCost > 0) {
+  // Tier monthly fee
+  if (tier.monthly !== null) {
     breakdown.push({
-      label: `QC overage · ${qcOverage} × ₹${tier.perQcOverage}`,
+      label: `${tier.name} tier · up to ${tier.qcMax.toLocaleString("en-IN")} QC/month`,
       setup: 0,
-      monthly: qcOverageCost,
+      monthly: tier.monthly,
+    });
+  } else {
+    breakdown.push({
+      label: `${tier.name} tier · enterprise · custom quote`,
+      setup: 0,
+      monthly: 0,
     });
   }
 
@@ -217,7 +295,8 @@ export function calculateQuote(input: QuoteInput): QuoteOutput {
       input.workerSeats &&
       input.workerSeats > 0
     ) {
-      const seatCost = input.workerSeats * (m as typeof MODULES.workerDashboard).perSeat;
+      const seatCost =
+        input.workerSeats * (m as typeof MODULES.workerDashboard).perSeat;
       monthly += seatCost;
       label += ` (${input.workerSeats} seats)`;
     }
@@ -232,6 +311,9 @@ export function calculateQuote(input: QuoteInput): QuoteOutput {
   const monthlyTotal = breakdown.reduce((sum, b) => sum + b.monthly, 0);
   const twelveMonthTotal = setupTotal + monthlyTotal * 12;
 
+  // Human comparison (scaled with QC volume)
+  const human = humanEquivalentCost(input.monthlyQc);
+
   return {
     vertical: input.vertical,
     tierName: tier.name,
@@ -239,34 +321,38 @@ export function calculateQuote(input: QuoteInput): QuoteOutput {
     monthlyTotal,
     twelveMonthTotal,
     breakdown,
-    sdrComparison: {
-      sdrAnnualCost: KERALA_SDR_MONTHLY_LOADED * 2 * 12, // 2 SDRs for fairness
-      skilliesAnnualCost: twelveMonthTotal,
-      savingsVsTwoSdrs: KERALA_SDR_MONTHLY_LOADED * 2 * 12 - twelveMonthTotal,
+    humanComparison: {
+      callers: human.callers,
+      managers: human.managers,
+      humanMonthly: human.monthlyCost,
+      humanAnnual: human.monthlyCost * 12,
+      skilliesAnnual: twelveMonthTotal,
+      savings: human.monthlyCost * 12 - twelveMonthTotal,
+      description: human.description,
     },
   };
 }
 
-// ─── Default capabilities per vertical (so the calculator opens with sensible state) ──
+// ─── Default capabilities per vertical (calculator opens with sensible state) ──
 export const DEFAULT_MODULES: Record<VerticalKey, ModuleKey[]> = {
   retail: ["payment"],
   hajj: ["voice", "calendar", "multilingual", "payment"],
-  coaching: ["calendar", "crm", "payment"],
-  "study-abroad": ["vision", "calendar", "crm", "memory", "multilingual"],
+  coaching: ["calendar", "payment"],
+  "study-abroad": ["vision", "calendar", "memory", "multilingual"],
   interiors: ["vision", "calendar", "memory", "multichannel"],
-  "real-estate": ["vision", "voice", "calendar", "crm", "memory", "industryCustom"],
-  insurance: ["vision", "crm", "memory", "multilingual", "payment", "industryCustom"],
+  "real-estate": ["vision", "voice", "calendar", "memory", "industryCustom"],
+  insurance: ["vision", "memory", "voice", "payment", "calendar", "industryCustom"],
 };
 
 // Default monthly QC volume per vertical (sensible mid-size client)
 export const DEFAULT_QC: Record<VerticalKey, number> = {
-  retail: 800, // high-volume but cheap
-  hajj: 250,
-  coaching: 600, // result-day spikes amortized
-  "study-abroad": 400,
-  interiors: 300,
-  "real-estate": 600,
-  insurance: 500, // brokers see steady high-volume across motor + health + life
+  retail: 1_500, // high-volume but cheap conversations
+  hajj: 800,
+  coaching: 1_500,
+  "study-abroad": 1_200,
+  interiors: 1_000,
+  "real-estate": 2_500,
+  insurance: 3_000, // brokers see steady high-volume across motor + health + life
 };
 
 // ─── Formatting helpers ─────────────────────────────────────────────────────
