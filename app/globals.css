@@ -96,8 +96,8 @@
   --sk-text-display: clamp(2.75rem, 5vw + 1rem, 5.5rem);
   --sk-text-h2:      clamp(2rem,    3vw + 1rem, 3.5rem);
   --sk-text-h3:      clamp(1.5rem,  1.5vw + 1rem, 2rem);
-  --sk-text-lead:    clamp(1.125rem, 0.5vw + 1rem, 1.375rem);
-  --sk-text-body:    1.0625rem; /* 17px */
+  --sk-text-lead:    clamp(1.1875rem, 0.5vw + 1rem, 1.4375rem); /* 19→23px · readability bump */
+  --sk-text-body:    1.125rem; /* 18px · bumped from 17 for mobile readability */
   --sk-text-small:   0.9375rem; /* 15px */
   --sk-text-meta:    0.8125rem; /* 13px tracked uppercase */
 }
@@ -234,7 +234,7 @@ body {
   font-family: var(--font-geist-sans), 'Inter', system-ui, sans-serif;
   font-weight: 400;
   letter-spacing: -0.005em;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 .sk-font-meta {
   font-family: var(--font-geist-sans), 'Inter', system-ui, sans-serif;
