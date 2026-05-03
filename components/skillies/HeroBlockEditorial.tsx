@@ -218,12 +218,10 @@ export default function HeroBlockEditorial({
           }}
         >
           {/* ─── Image column ───────────────────────────────────────
-              Visually appears on the RIGHT on desktop, but we render
-              it FIRST in DOM so mobile sees it first naturally — the
-              md:order-2 utility flips it to the right column on wider
-              screens without extra wrapper divs. */}
+              On mobile: text reads first (order-last on the image).
+              On desktop: image flips to the right column via md:order-2. */}
           <motion.div
-            className="md:order-2 md:col-start-2"
+            className="order-last md:order-2 md:col-start-2"
             style={{
               gridColumn: "1 / -1",
             }}
@@ -237,14 +235,15 @@ export default function HeroBlockEditorial({
               imageSrc={imageSrc}
               imageAlt={imageAlt}
               tint={tint}
+              accent={accent}
             />
           </motion.div>
 
           {/* ─── Text column ───────────────────────────────────────
-              Renders second in DOM so on mobile it appears below the
-              image. md:order-1 puts it on the left for desktop. */}
+              order-first on mobile so the headline lands above the image.
+              md:order-1 puts it on the left for desktop. */}
           <motion.div
-            className="md:order-1 md:col-start-1"
+            className="order-first md:order-1 md:col-start-1"
             style={{
               gridColumn: "1 / -1",
               display: "flex",
@@ -392,17 +391,20 @@ function ImageFrame({
   imageSrc,
   imageAlt,
   tint,
+  accent,
 }: {
   imageSrc: string;
   imageAlt: string;
   tint: string;
+  accent: string;
 }) {
   return (
     <div
-      className="relative w-full overflow-hidden rounded-2xl"
+      className="hero-image-frame relative w-full overflow-hidden rounded-2xl"
       style={{
-        // Mobile: 16:10. Desktop override below pushes to 4:5.
-        aspectRatio: "16 / 10",
+        // Mobile: shorter 3:2 so it doesn't dominate the viewport.
+        // Desktop override below pushes to 4:5 portrait.
+        aspectRatio: "3 / 2",
         boxShadow:
           "0 32px 64px -24px rgba(20, 20, 20, 0.18), 0 8px 24px -12px rgba(20, 20, 20, 0.10)",
         background: "var(--sk-ink10)",
@@ -417,9 +419,8 @@ function ImageFrame({
         style={{ objectFit: "cover" }}
       />
 
-      {/* Vertical-accent tint gradient — top edge only, low opacity.
-          Hex %1A ≈ 10% alpha. We layer the tint over a fully transparent
-          stop so the image stays mostly itself. */}
+      {/* Vertical-accent tint gradient at the top edge for palette
+          integration. Image stays mostly itself. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
@@ -428,19 +429,68 @@ function ImageFrame({
         }}
       />
 
-      {/* Desktop refinement — push to 4:5 + add a subtle tilt that
-          feels editorial without breaking the grid. */}
+      {/* Floating "agent at work" overlay · proof-of-life in the corner.
+          Pulsing green dot + a single confirmed-action bubble. Tells the
+          viewer the agent is live, even when looking at a quiet image. */}
+      <motion.div
+        className="absolute"
+        style={{
+          left: "clamp(12px, 3vw, 24px)",
+          bottom: "clamp(12px, 3vw, 24px)",
+          maxWidth: "min(78%, 320px)",
+          padding: "10px 12px",
+          borderRadius: 12,
+          background: "rgba(255, 255, 255, 0.94)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          boxShadow: "0 8px 24px -8px rgba(0, 0, 0, 0.25)",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          fontSize: "0.8125rem",
+          color: "var(--sk-ink)",
+          lineHeight: 1.35,
+        }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <span
+          aria-hidden
+          style={{
+            position: "relative",
+            width: 10,
+            height: 10,
+            borderRadius: "50%",
+            background: "#22c55e",
+            flexShrink: 0,
+            boxShadow: "0 0 0 0 rgba(34, 197, 94, 0.6)",
+            animation: "skAgentPulse 2.2s ease-out infinite",
+          }}
+        />
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <strong style={{ fontWeight: 600 }}>Agent online</strong>
+          <span style={{ color: "var(--sk-ink60)" }}>
+            {" · qualifying 12 leads · 1 site visit booked"}
+          </span>
+        </span>
+      </motion.div>
+
+      {/* Desktop refinement — push to 4:5 portrait. */}
       <style>{`
         @media (min-width: 768px) {
-          [data-hero-image-frame] {
+          .hero-image-frame {
             aspect-ratio: 4 / 5;
           }
         }
+        @keyframes skAgentPulse {
+          0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+          70%  { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
       `}</style>
-
-      {/* Marker so the media query above can find this exact node
-          without leaking selectors to the rest of the document. */}
-      <div data-hero-image-frame style={{ display: "none" }} />
+      {/* accent reserved for future per-vertical overlay tuning */}
+      <span aria-hidden style={{ display: "none" }} data-accent={accent} />
     </div>
   );
 }
