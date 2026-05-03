@@ -12,6 +12,7 @@ import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import PricingCalculator from "@/components/pricing/PricingCalculator";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import HumansVsAgent from "@/components/skillies/HumansVsAgent";
 import type { VerticalKey } from "@/lib/pricing";
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ const VALID_VERTICALS: VerticalKey[] = [
   "study-abroad",
   "interiors",
   "real-estate",
+  "insurance",
 ];
 
 type SearchParams = Promise<{ vertical?: string }>;
@@ -87,6 +89,11 @@ export default async function PricingPage(props: { searchParams: SearchParams })
       </section>
 
       <PricingCalculator initialVertical={initialVertical} />
+
+      <HumansVsAgent
+        headline="Same job. Different physics."
+        subhead="Hire 10 callers + 2 managers in Kerala for ~₹2.5 L/month. Or ship one agent that doesn't take leaves, doesn't make data-entry errors, and remembers every customer for life."
+      />
 
       {/* Why QC, not per-message */}
       <section

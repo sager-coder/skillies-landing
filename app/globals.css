@@ -833,3 +833,111 @@ html, body {
   from { transform: translate(-50%, 20px); opacity: 0; }
   to { transform: translate(-50%, 0); opacity: 1; }
 }
+
+/* ─── Motion + visual rhythm primitives ───────────────────────────
+   Reusable building blocks composed by RevealOnScroll, BigStatTicker,
+   and ad-hoc page sections that need staggered reveals, pull quotes,
+   asymmetric dividers, and subtle vertical-tinted backgrounds.
+
+   Builds on the existing `.sk-fade-up` initial-state declared above
+   (opacity: 0; transform: translateY(16px); 600ms ease). We add an
+   alternate revealed-state modifier `.is-visible` (sibling of `.in`)
+   so RevealOnScroll's IntersectionObserver toggle can opt into this
+   richer primitive without disturbing components already using `.in`.
+   Stagger uses its own slightly larger 24-px travel + 700ms easing
+   for editorial-section pacing as specified by the design spec. */
+.sk-fade-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sk-stagger > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.sk-stagger > *:nth-child(1) { transition-delay: 0ms; }
+.sk-stagger > *:nth-child(2) { transition-delay: 80ms; }
+.sk-stagger > *:nth-child(3) { transition-delay: 160ms; }
+.sk-stagger > *:nth-child(4) { transition-delay: 240ms; }
+.sk-stagger > *:nth-child(5) { transition-delay: 320ms; }
+.sk-stagger > *:nth-child(6) { transition-delay: 400ms; }
+.sk-stagger > *:nth-child(7) { transition-delay: 480ms; }
+.sk-stagger > *:nth-child(8) { transition-delay: 560ms; }
+.sk-stagger.is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sk-pull-quote {
+  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 1.5vw + 1rem, 2.25rem);
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  color: var(--sk-ink);
+  max-width: 22ch;
+}
+
+.sk-divider-asymmetric {
+  width: 60%;
+  margin-left: 20%;
+  height: 1px;
+  background: var(--sk-red);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.sk-divider-asymmetric.is-visible {
+  transform: scaleX(1);
+}
+
+/* Vertical-accent backgrounds — low-opacity tints of each vertical's
+   lighter neutral. Used to subtly key a section to its vertical
+   without a hard color block. ~12% mix via color-mix on top of cream. */
+.sk-bg-accent-real-estate {
+  background-color: color-mix(in srgb, var(--sk-realestate-sandstone) 12%, var(--sk-cream));
+}
+.sk-bg-accent-study-abroad {
+  background-color: color-mix(in srgb, var(--sk-studyabroad-parchment) 12%, var(--sk-cream));
+}
+.sk-bg-accent-coaching {
+  background-color: color-mix(in srgb, var(--sk-coaching-chalk) 12%, var(--sk-cream));
+}
+.sk-bg-accent-interiors {
+  background-color: color-mix(in srgb, var(--sk-interiors-putty) 12%, var(--sk-cream));
+}
+.sk-bg-accent-hajj {
+  background-color: color-mix(in srgb, var(--sk-hajj-ivory) 12%, var(--sk-cream));
+}
+.sk-bg-accent-retail {
+  background-color: color-mix(in srgb, var(--sk-retail-clay) 12%, var(--sk-cream));
+}
+.sk-bg-accent-insurance {
+  background-color: color-mix(in srgb, var(--sk-insurance-gold) 12%, var(--sk-cream));
+}
+
+.sk-num-display {
+  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  letter-spacing: -0.022em;
+  line-height: 1.0;
+  font-size: clamp(2.75rem, 5vw + 1rem, 5.5rem);
+  font-variation-settings: "opsz" 144;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-fade-up,
+  .sk-stagger > *,
+  .sk-divider-asymmetric {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .sk-divider-asymmetric { transform: scaleX(1) !important; }
+}
