@@ -67,7 +67,7 @@ export default function HeroB2B() {
                 See it for your business →
               </Link>
               <Link
-                href="https://wa.me/918714318353?text=Hi%20Ehsan%2C%20saw%20skillies.ai%20%E2%80%94%20I'd%20like%20to%20discuss%20the%20AI%20sales%20worker%20for%20my%20business%20%C2%B7%20"
+                href="https://cal.com/sager-zmd4kl/30min"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight"
@@ -76,7 +76,7 @@ export default function HeroB2B() {
                   color: "var(--sk-ink)",
                 }}
               >
-                WhatsApp Ehsan
+                Book Ehsan · 30 min
               </Link>
             </div>
 

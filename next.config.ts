@@ -47,25 +47,31 @@ const nextConfig: NextConfig = {
     ];
   },
   /**
-   * Old offerings (cheap cohort / mentorship / online courses / student
-   * dashboard / consultation booking) were retired when Skillies pivoted
-   * to the funnel of: /workshop (selection day) → /program (the Batch).
+   * Post-pivot redirect map. The old consumer routes (/workshop /program
+   * /mentorship /courses /learn /consultation /services) were deleted in
+   * the B2B pivot 2026-05-03. Anyone arriving on those URLs lands on the
+   * combined Skillies School page (KDP methodology) or /pricing for
+   * appointment booking.
    *
-   * /workshop is alive again — it's the entry filter. /consultation
-   * is dead — replaced by the workshop.
+   * /dashboard is intentionally NOT redirected · it still exists for
+   * authenticated users.
    */
   async redirects() {
     return [
-      { source: "/consultation", destination: "/workshop", permanent: true },
-      { source: "/consultation/:path*", destination: "/workshop", permanent: true },
-      { source: "/mentorship", destination: "/program", permanent: true },
-      { source: "/mentorship/:path*", destination: "/program", permanent: true },
-      { source: "/courses", destination: "/program", permanent: true },
-      { source: "/courses/:path*", destination: "/program", permanent: true },
-      { source: "/dashboard", destination: "/program", permanent: true },
-      { source: "/dashboard/:path*", destination: "/program", permanent: true },
-      { source: "/learn", destination: "/program", permanent: true },
-      { source: "/learn/:path*", destination: "/program", permanent: true },
+      { source: "/consultation", destination: "/pricing", permanent: true },
+      { source: "/consultation/:path*", destination: "/pricing", permanent: true },
+      { source: "/workshop", destination: "/skillies-school", permanent: true },
+      { source: "/workshop/:path*", destination: "/skillies-school", permanent: true },
+      { source: "/program", destination: "/skillies-school", permanent: true },
+      { source: "/program/:path*", destination: "/skillies-school", permanent: true },
+      { source: "/mentorship", destination: "/skillies-school", permanent: true },
+      { source: "/mentorship/:path*", destination: "/skillies-school", permanent: true },
+      { source: "/courses", destination: "/skillies-school", permanent: true },
+      { source: "/courses/:path*", destination: "/skillies-school", permanent: true },
+      { source: "/learn", destination: "/skillies-school", permanent: true },
+      { source: "/learn/:path*", destination: "/skillies-school", permanent: true },
+      { source: "/services", destination: "/for", permanent: true },
+      { source: "/services/:path*", destination: "/for", permanent: true },
     ];
   },
 };

@@ -1,10 +1,10 @@
 /**
  * BookCallCTA · the "Talk to Ehsan" / closing CTA.
  *
- * Hot-leads route to WhatsApp first (founder's request 2026-05-03).
- * Primary · WhatsApp +91 87143 18353 · prefilled message per vertical.
- * Secondary · Cal.com 30-min slot.
- * Email · footer-only fallback.
+ * 2026-05-03 · founder asked us to NOT publish his personal WhatsApp
+ * number on the site. All "Talk to Ehsan" CTAs route to Cal.com first ·
+ * appointment booking is the funnel. Ehsan WhatsApps the prospect after
+ * the slot is booked (he sees the booking + can choose to message).
  */
 import Link from "next/link";
 
@@ -15,23 +15,15 @@ export type BookCallCTAProps = {
   note: string;
   /** Cal.com URL */
   calHref?: string;
-  /** Vertical key for prefilled WhatsApp message · e.g. "real estate" */
+  /** Vertical key for context (used in metadata and pre-filled Cal.com fields) */
   verticalLabel?: string;
-  /** "softer" variant for hajj — quieter, no red pill */
+  /** "softer" variant for hajj — quieter */
   variant?: "default" | "soft";
   /** Optional Manglish line for Kerala-led verticals */
   manglishLine?: string;
 };
 
 const DEFAULT_CAL = "https://cal.com/sager-zmd4kl/30min";
-const WA_NUMBER = "918714318353";
-
-function waLink(verticalLabel?: string): string {
-  const msg = verticalLabel
-    ? `Hi Ehsan, saw the Skillies for ${verticalLabel} page. I run a ${verticalLabel.toLowerCase()} business and want to discuss the AI sales worker. My business is `
-    : "Hi Ehsan, saw the Skillies website. I'd like to discuss the AI sales worker for my business · ";
-  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-}
 
 export default function BookCallCTA({
   heading,
@@ -41,7 +33,9 @@ export default function BookCallCTA({
   variant = "default",
   manglishLine,
 }: BookCallCTAProps) {
-  const wa = waLink(verticalLabel);
+  const calWithVertical = verticalLabel
+    ? `${calHref}?notes=${encodeURIComponent("Vertical · " + verticalLabel)}`
+    : calHref;
 
   if (variant === "soft") {
     return (
@@ -70,8 +64,8 @@ export default function BookCallCTA({
             {note}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a
-              href={wa}
+            <Link
+              href={calWithVertical}
               target="_blank"
               rel="noreferrer"
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight"
@@ -80,8 +74,8 @@ export default function BookCallCTA({
                 color: "var(--sk-cream)",
               }}
             >
-              WhatsApp Ehsan · +91 87143 18353
-            </a>
+              Book a 30-min call with Ehsan
+            </Link>
           </div>
         </div>
       </section>
@@ -124,8 +118,8 @@ export default function BookCallCTA({
             </p>
           ) : null}
           <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <a
-              href={wa}
+            <Link
+              href={calWithVertical}
               target="_blank"
               rel="noreferrer"
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight transition-all hover:scale-[1.02]"
@@ -134,26 +128,14 @@ export default function BookCallCTA({
                 color: "var(--sk-cream)",
               }}
             >
-              WhatsApp Ehsan · +91 87143 18353
-            </a>
-            <Link
-              href={calHref}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight"
-              style={{
-                border: "1px solid var(--sk-ink20)",
-                color: "var(--sk-ink)",
-              }}
-            >
-              Or book a 30-min slot
+              Book a 30-min call with Ehsan
             </Link>
           </div>
           <p
             className="sk-font-meta mt-6"
             style={{ color: "var(--sk-ink40)" }}
           >
-            Replies usually under 4 hours · Mon–Fri 9am–9pm IST
+            Free · 30 minutes · auto-confirmed · our team handles logistics
           </p>
         </div>
       </div>
