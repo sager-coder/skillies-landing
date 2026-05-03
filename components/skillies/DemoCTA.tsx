@@ -1,8 +1,13 @@
 /**
- * DemoCTA · invites the prospect to experience the agent live and book a call.
- * Shows a faux chat preview + the live demo CTA + a Cal.com booking CTA.
+ * DemoCTA · invites the prospect to experience the agent.
+ * Two paths · (a) try it live on WhatsApp (the same Skillies WhatsApp
+ * Business line that sells customers — eat-our-own-dogfood proof), or
+ * (b) tap the embedded voice demo on the vertical page.
  *
- * Public CTAs MUST funnel through Cal.com — never expose personal WhatsApp.
+ * The Skillies WhatsApp Business number is +91 80899 41131. This is a
+ * legitimate operational/product CTA — it's the agent itself. "Talk to
+ * Ehsan personally" CTAs route through Cal.com instead (see BookCallCTA).
+ *
  * One emoji rule applies — keep this text-clean.
  */
 import Link from "next/link";
@@ -10,8 +15,9 @@ import Link from "next/link";
 export type DemoCTAProps = {
   /** Demo URL — typically /demo/<vertical> */
   demoHref: string;
-  /** Booking link · defaults to Ehsan's Cal.com 30-min slot */
-  bookHref?: string;
+  /** WhatsApp link · defaults to Skillies' WhatsApp Business line. Override
+   *  per-vertical to pre-fill the message text. */
+  waHref?: string;
   /** Section heading */
   heading: string;
   /** Body copy under heading (1–2 sentences) */
@@ -22,14 +28,15 @@ export type DemoCTAProps = {
   mockChat?: readonly { from: "user" | "agent"; text: string }[];
 };
 
-const DEFAULT_BOOK = "https://cal.com/sager-zmd4kl/30min";
+const DEFAULT_WA =
+  "https://wa.me/918089941131?text=Hi%2C%20I%20want%20to%20try%20the%20Skillies%20AI%20agent%20on%20WhatsApp.%20My%20business%20is%20";
 
 export default function DemoCTA({
   demoHref,
-  bookHref = DEFAULT_BOOK,
+  waHref = DEFAULT_WA,
   heading,
   body,
-  ctaLabel = "Try the live demo",
+  ctaLabel = "Try the agent on WhatsApp",
   mockChat,
 }: DemoCTAProps) {
   return (
@@ -85,7 +92,9 @@ export default function DemoCTA({
 
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
-              href={demoHref}
+              href={waHref}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight transition-all hover:scale-[1.02]"
               style={{
                 background: "var(--sk-red)",
@@ -95,16 +104,14 @@ export default function DemoCTA({
               {ctaLabel}
             </Link>
             <Link
-              href={bookHref}
-              target="_blank"
-              rel="noreferrer"
+              href={demoHref}
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight"
               style={{
                 border: "1px solid var(--sk-ink20)",
                 color: "var(--sk-ink)",
               }}
             >
-              Book a 30-min call
+              See the live demo
             </Link>
           </div>
         </div>
