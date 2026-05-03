@@ -48,7 +48,6 @@
  * tokens. Default export.
  */
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 
@@ -232,8 +231,7 @@ export default function HeroBlockEditorial({
             viewport={{ once: true, amount: 0.2 }}
           >
             <ImageFrame
-              imageSrc={imageSrc}
-              imageAlt={imageAlt}
+              vertical={vertical}
               tint={tint}
               accent={accent}
             />
@@ -387,96 +385,259 @@ export default function HeroBlockEditorial({
    for editorial asymmetry. Vertical-accent gradient at the top edge
    pulls the image visually into the page palette. */
 
+/* Per-vertical chat content for the phone mockup. Each scenario is
+   short on purpose — the hero visual reads in 2-3 seconds, not 10. */
+const VERTICAL_CHAT: Record<
+  Vertical,
+  { contactName: string; messages: { from: "buyer" | "agent"; text: string }[] }
+> = {
+  realestate: {
+    contactName: "Skillies · Real Estate",
+    messages: [
+      { from: "buyer", text: "Saw the Ocean Heights ad. 3BHK still available?" },
+      { from: "agent", text: "Yes — Tower B, 4 units left. ₹2.34 Cr all-in. Site visit Saturday 11am?" },
+      { from: "buyer", text: "Book it." },
+    ],
+  },
+  studyabroad: {
+    contactName: "Skillies · Study Abroad",
+    messages: [
+      { from: "buyer", text: "MS in Canada Fall 2026 — 7.5 IELTS, 6.8 GPA. Realistic?" },
+      { from: "agent", text: "Solid profile. McMaster, Concordia, Carleton all in range. Sending shortlist." },
+      { from: "buyer", text: "Counsellor call this week?" },
+    ],
+  },
+  coaching: {
+    contactName: "Skillies · Coaching",
+    messages: [
+      { from: "buyer", text: "NEET batch — son scored 580 in mock. Hostel?" },
+      { from: "agent", text: "Top 600 batch fits. Hostel + mess ₹1.4L/yr. Demo class Saturday 10am?" },
+      { from: "buyer", text: "Yes. Both of us coming." },
+    ],
+  },
+  interiors: {
+    contactName: "Skillies · Interiors",
+    messages: [
+      { from: "buyer", text: "[Photo] 2BHK Marathahalli — quote for full kitchen?" },
+      { from: "agent", text: "Got it. Standard ₹4.8L · Premium ₹7.2L. Designer site visit Sunday?" },
+      { from: "buyer", text: "Sunday 11am works." },
+    ],
+  },
+  hajj: {
+    contactName: "Skillies · Hajj",
+    messages: [
+      { from: "buyer", text: "Family of 4. Mahram with my mother. Premium package?" },
+      { from: "agent", text: "Premium 28-day · ₹3.95L pp · Madinah 5★ + Makkah Hilton. Document checklist sent." },
+      { from: "buyer", text: "Reserve 4 seats." },
+    ],
+  },
+  retail: {
+    contactName: "Skillies · Retail",
+    messages: [
+      { from: "buyer", text: "Refill same as last month — 5kg basmati, 2L oil, sugar 2kg." },
+      { from: "agent", text: "₹1,840 total. UPI link sent. Delivering by 6pm tomorrow." },
+      { from: "buyer", text: "Paid." },
+    ],
+  },
+  insurance: {
+    contactName: "Skillies · Insurance",
+    messages: [
+      { from: "buyer", text: "Father 62, diabetic. Health cover possible?" },
+      { from: "agent", text: "Niva Bupa Senior First — yes, with 2-year waiting period. ₹38,400/yr ₹10L cover." },
+      { from: "buyer", text: "Send the proposal." },
+    ],
+  },
+};
+
 function ImageFrame({
-  imageSrc,
-  imageAlt,
+  vertical,
   tint,
   accent,
 }: {
-  imageSrc: string;
-  imageAlt: string;
+  vertical: Vertical;
   tint: string;
   accent: string;
 }) {
+  const chat = VERTICAL_CHAT[vertical];
   return (
     <div
-      className="hero-image-frame relative w-full overflow-hidden rounded-2xl"
+      className="hero-image-frame relative w-full overflow-hidden rounded-[28px]"
       style={{
-        // Mobile: shorter 3:2 so it doesn't dominate the viewport.
+        // Mobile: 3:2 so it doesn't dominate the viewport.
         // Desktop override below pushes to 4:5 portrait.
         aspectRatio: "3 / 2",
         boxShadow:
           "0 32px 64px -24px rgba(20, 20, 20, 0.18), 0 8px 24px -12px rgba(20, 20, 20, 0.10)",
-        background: "var(--sk-ink10)",
+        background: `linear-gradient(135deg, color-mix(in srgb, ${tint} 35%, white), color-mix(in srgb, ${accent} 12%, white))`,
+        padding: "clamp(14px, 2.5vw, 22px)",
       }}
     >
-      <Image
-        src={imageSrc}
-        alt={imageAlt}
-        fill
-        priority
-        sizes="(max-width: 768px) 100vw, 42vw"
-        style={{ objectFit: "cover" }}
-      />
-
-      {/* Vertical-accent tint gradient at the top edge for palette
-          integration. Image stays mostly itself. */}
+      {/* Inner phone screen */}
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
+        className="relative flex h-full w-full flex-col overflow-hidden rounded-[20px]"
         style={{
-          background: `linear-gradient(to bottom, color-mix(in srgb, ${tint} 28%, transparent) 0%, transparent 45%)`,
+          background: "#FFFFFF",
+          boxShadow: "inset 0 0 0 1px rgba(20, 20, 20, 0.08)",
         }}
-      />
+      >
+        {/* WhatsApp-style header */}
+        <div
+          className="flex items-center gap-3 px-4 py-3"
+          style={{
+            background: accent,
+            color: "#FFFFFF",
+          }}
+        >
+          <div
+            aria-hidden
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+            style={{
+              background: "rgba(255, 255, 255, 0.18)",
+              fontSize: "0.875rem",
+              fontWeight: 700,
+            }}
+          >
+            S
+          </div>
+          <div className="flex flex-1 flex-col" style={{ minWidth: 0, lineHeight: 1.2 }}>
+            <span style={{ fontSize: "0.875rem", fontWeight: 600 }}>
+              {chat.contactName}
+            </span>
+            <span
+              style={{
+                fontSize: "0.6875rem",
+                opacity: 0.85,
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "#22c55e",
+                  display: "inline-block",
+                  animation: "skAgentPulse 2.2s ease-out infinite",
+                }}
+              />
+              online · replying instantly
+            </span>
+          </div>
+        </div>
 
-      {/* Floating "agent at work" overlay · proof-of-life in the corner.
-          Pulsing green dot + a single confirmed-action bubble. Tells the
-          viewer the agent is live, even when looking at a quiet image. */}
+        {/* Chat messages */}
+        <div
+          className="flex-1 overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(20, 20, 20, 0.02) 0%, rgba(20, 20, 20, 0.04) 100%)",
+            padding: "clamp(10px, 2vw, 16px)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "clamp(6px, 1.2vw, 10px)",
+          }}
+        >
+          {chat.messages.map((msg, i) => {
+            const isBuyer = msg.from === "buyer";
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: 0.7 + i * 0.55,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{
+                  alignSelf: isBuyer ? "flex-end" : "flex-start",
+                  maxWidth: "84%",
+                  padding: "8px 11px",
+                  borderRadius: 12,
+                  background: isBuyer ? "#dcf8c6" : "#FFFFFF",
+                  color: "var(--sk-ink)",
+                  fontSize: "0.8125rem",
+                  lineHeight: 1.4,
+                  boxShadow: "0 1px 1px rgba(0, 0, 0, 0.06)",
+                }}
+              >
+                {msg.text}
+              </motion.div>
+            );
+          })}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.3,
+              delay: 0.7 + chat.messages.length * 0.55,
+            }}
+            style={{
+              alignSelf: "flex-start",
+              padding: "8px 12px",
+              borderRadius: 12,
+              background: "#FFFFFF",
+              boxShadow: "0 1px 1px rgba(0, 0, 0, 0.06)",
+              display: "inline-flex",
+              gap: 4,
+            }}
+          >
+            {[0, 1, 2].map((d) => (
+              <span
+                key={d}
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "var(--sk-ink40)",
+                  display: "inline-block",
+                  animation: `skTypingDot 1.4s ${d * 0.16}s ease-in-out infinite`,
+                }}
+              />
+            ))}
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Floating "agent at work" stat pill — sits over the phone for proof of scale */}
       <motion.div
         className="absolute"
         style={{
-          left: "clamp(12px, 3vw, 24px)",
-          bottom: "clamp(12px, 3vw, 24px)",
-          maxWidth: "min(78%, 320px)",
-          padding: "10px 12px",
-          borderRadius: 12,
+          right: "clamp(8px, 2vw, 18px)",
+          top: "clamp(8px, 2vw, 18px)",
+          padding: "6px 10px",
+          borderRadius: 999,
           background: "rgba(255, 255, 255, 0.94)",
           backdropFilter: "blur(8px)",
           WebkitBackdropFilter: "blur(8px)",
-          boxShadow: "0 8px 24px -8px rgba(0, 0, 0, 0.25)",
+          boxShadow: "0 6px 16px -8px rgba(0, 0, 0, 0.18)",
           display: "flex",
           alignItems: "center",
-          gap: 10,
-          fontSize: "0.8125rem",
+          gap: 6,
+          fontSize: "0.6875rem",
+          fontWeight: 600,
           color: "var(--sk-ink)",
-          lineHeight: 1.35,
         }}
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
       >
         <span
           aria-hidden
           style={{
-            position: "relative",
-            width: 10,
-            height: 10,
+            width: 7,
+            height: 7,
             borderRadius: "50%",
             background: "#22c55e",
-            flexShrink: 0,
-            boxShadow: "0 0 0 0 rgba(34, 197, 94, 0.6)",
             animation: "skAgentPulse 2.2s ease-out infinite",
           }}
         />
-        <span style={{ flex: 1, minWidth: 0 }}>
-          <strong style={{ fontWeight: 600 }}>Agent online</strong>
-          <span style={{ color: "var(--sk-ink60)" }}>
-            {" · qualifying 12 leads · 1 site visit booked"}
-          </span>
-        </span>
+        <span>1,247 conversations now</span>
       </motion.div>
 
-      {/* Desktop refinement — push to 4:5 portrait. */}
       <style>{`
         @media (min-width: 768px) {
           .hero-image-frame {
@@ -485,12 +646,14 @@ function ImageFrame({
         }
         @keyframes skAgentPulse {
           0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
-          70%  { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+          70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
           100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
+        @keyframes skTypingDot {
+          0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+          30% { opacity: 1; transform: translateY(-2px); }
+        }
       `}</style>
-      {/* accent reserved for future per-vertical overlay tuning */}
-      <span aria-hidden style={{ display: "none" }} data-accent={accent} />
     </div>
   );
 }
@@ -507,7 +670,7 @@ function PrimaryCta({ label, href }: Cta) {
         paddingInline: 28,
         background: "var(--sk-red)",
         color: "var(--sk-cream)",
-        fontFamily: "var(--font-geist-sans), 'Inter', system-ui, sans-serif",
+        fontFamily: "var(--font-inter), 'Inter', system-ui, sans-serif",
         fontWeight: 500,
         fontSize: "0.9375rem",
         letterSpacing: "-0.005em",
@@ -529,7 +692,7 @@ function SecondaryCta({ label, href }: Cta) {
         border: "1px solid var(--sk-ink20)",
         color: "var(--sk-ink)",
         background: "transparent",
-        fontFamily: "var(--font-geist-sans), 'Inter', system-ui, sans-serif",
+        fontFamily: "var(--font-inter), 'Inter', system-ui, sans-serif",
         fontWeight: 500,
         fontSize: "0.9375rem",
         letterSpacing: "-0.005em",

@@ -406,7 +406,7 @@ function ChatBubble({
           fontSize: "0.875rem",
           lineHeight: 1.4,
           letterSpacing: "-0.005em",
-          fontFamily: "var(--font-geist-sans), Inter, system-ui, sans-serif",
+          fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
           boxShadow: isBuyer ? "none" : "0 1px 0 rgba(20,20,20,0.04)",
         }}
       >

@@ -317,7 +317,7 @@ export default function HeroChatPreview({
               fontSize: 14,
               lineHeight: 1.45,
               fontFamily:
-                "var(--font-geist-sans), 'Inter', system-ui, sans-serif",
+                "var(--font-inter), 'Inter', system-ui, sans-serif",
               borderTopRightRadius: b.from === "user" ? 4 : 14,
               borderTopLeftRadius: b.from === "user" ? 14 : 4,
             }}
@@ -359,7 +359,7 @@ export default function HeroChatPreview({
           color: "rgba(255,255,255,0.5)",
           textAlign: "center",
           fontFamily:
-            "var(--font-geist-sans), 'Inter', system-ui, sans-serif",
+            "var(--font-inter), 'Inter', system-ui, sans-serif",
           letterSpacing: "0.04em",
         }}
       >
