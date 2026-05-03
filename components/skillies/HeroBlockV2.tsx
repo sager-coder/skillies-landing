@@ -29,9 +29,9 @@ type Metric = {
 
 const METRICS: Metric[] = [
   { value: 6250, label: "Inbound conversations / month" },
-  { value: 5, label: "Indic languages supported" },
+  { value: 5, label: "Indian languages supported" },
   { value: 168, label: "Hours worked / week" },
-  { value: 12, label: "Hires you avoid" },
+  { value: 0, label: "Days off, sick leaves, attrition" },
 ];
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
