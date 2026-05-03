@@ -15,6 +15,7 @@ import Link from "next/link";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import SkilliesChatWidget from "@/components/SkilliesChatWidget";
 
 export const metadata: Metadata = {
   title: "Skillies School · Amazon KDP income skill",
@@ -185,6 +186,7 @@ export default function SkilliesSchoolPage() {
       />
 
       <FooterEditorial />
+      <SkilliesChatWidget />
     </main>
   );
 }

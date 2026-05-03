@@ -24,7 +24,7 @@ import ForHero from "./ForHero";
 import ScopeCallout from "./ScopeCallout";
 
 export const metadata: Metadata = {
-  title: "Skillies for [your business] · pick your vertical",
+  title: "Skillies — pick your vertical · AI sales workers for Indian businesses",
   description:
     "Skillies builds AI sales workers per vertical. Pick yours: Real Estate, Hajj/Umrah, Study Abroad, Coaching, Modular Kitchen, Retail, Insurance.",
 };

@@ -22,8 +22,6 @@ const COLUMNS: Col[] = [
     items: [
       ["Interactive pricing calculator", "/pricing"],
       ["Vertical chooser", "/for"],
-      ["Live demo · Venture Navigator", "/demo/venture-navigator"],
-      ["Live demo · Agasthyam Kalari", "/demo/agasthyam"],
       ["Book a 30-min call", "https://cal.com/sager-zmd4kl/30min"],
     ],
   },
