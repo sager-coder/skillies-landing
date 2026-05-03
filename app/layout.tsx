@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Inter, Fraunces, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/MetaPixel";
 import SkilliesChatWidget from "@/components/SkilliesChatWidget";
@@ -16,6 +16,14 @@ const fraunces = Fraunces({
   // which is required when defining axes like opsz (optical size).
   style: ["normal", "italic"],
   axes: ["opsz"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+  display: "swap",
 });
 
 // ⚠️ Critical — without this, mobile browsers render the page at a
@@ -64,7 +72,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${inter.variable} ${fraunces.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <MetaPixel />

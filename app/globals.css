@@ -941,3 +941,59 @@ html, body {
   }
   .sk-divider-asymmetric { transform: scaleX(1) !important; }
 }
+
+/* ─── Editorial typography · Instrument Serif as warmth layer ────────
+   Fraunces handles big display headlines. Inter handles UI + dense
+   meta text. Instrument Serif is the missing editorial-warmth voice
+   for sub-heads, pull quotes, and intermediate body emphasis. */
+
+.sk-font-editorial {
+  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.35;
+}
+.sk-font-editorial-italic {
+  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+.sk-font-pullquote {
+  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 1.5vw + 1rem, 2.25rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--sk-ink);
+  max-width: 26ch;
+}
+.sk-font-eyebrow-serif {
+  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.9375rem;
+  color: var(--sk-ink60);
+  letter-spacing: 0;
+}
+.sk-font-subhead-serif {
+  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(1.125rem, 0.5vw + 1rem, 1.375rem);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  color: var(--sk-ink60);
+}
+
+/* When body text needs serif warmth (e.g., founder's note, opinion blocks). */
+.sk-font-body-serif {
+  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.65;
+  letter-spacing: -0.003em;
+  color: var(--sk-ink);
+}
