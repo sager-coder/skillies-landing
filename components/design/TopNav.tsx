@@ -18,8 +18,8 @@ const LINKS: Link[] = [
 
 export default function TopNav({
   cta = {
-    href: "https://cal.com/sager-zmd4kl/30min",
-    label: "Book a call",
+    href: "https://wa.me/918714318353?text=Hi%20Ehsan%2C%20I'd%20like%20to%20discuss%20Skillies%20for%20my%20business",
+    label: "WhatsApp Ehsan",
   },
 }: {
   cta?: { href: string; label: string };

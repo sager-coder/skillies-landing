@@ -1,9 +1,10 @@
 /**
  * BookCallCTA · the "Talk to Ehsan" / closing CTA.
  *
- * Defaults to a Cal.com link (cal.com/sager-zmd4kl/30min) and includes a
- * note about email-as-fallback. Hajj variant pulls in a softer headline
- * ("A conversation, not a sales call") and email-only CTA.
+ * Hot-leads route to WhatsApp first (founder's request 2026-05-03).
+ * Primary · WhatsApp +91 87143 18353 · prefilled message per vertical.
+ * Secondary · Cal.com 30-min slot.
+ * Email · footer-only fallback.
  */
 import Link from "next/link";
 
@@ -14,25 +15,34 @@ export type BookCallCTAProps = {
   note: string;
   /** Cal.com URL */
   calHref?: string;
-  /** Email — shown as alternate */
-  email?: string;
-  /** "softer" variant for hajj — email-led, no Cal.com CTA */
+  /** Vertical key for prefilled WhatsApp message · e.g. "real estate" */
+  verticalLabel?: string;
+  /** "softer" variant for hajj — quieter, no red pill */
   variant?: "default" | "soft";
   /** Optional Manglish line for Kerala-led verticals */
   manglishLine?: string;
 };
 
 const DEFAULT_CAL = "https://cal.com/sager-zmd4kl/30min";
-const DEFAULT_EMAIL = "ehsan@skillies.ai";
+const WA_NUMBER = "918714318353";
+
+function waLink(verticalLabel?: string): string {
+  const msg = verticalLabel
+    ? `Hi Ehsan, saw the Skillies for ${verticalLabel} page. I run a ${verticalLabel.toLowerCase()} business and want to discuss the AI sales worker. My business is `
+    : "Hi Ehsan, saw the Skillies website. I'd like to discuss the AI sales worker for my business · ";
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
 
 export default function BookCallCTA({
   heading,
   note,
   calHref = DEFAULT_CAL,
-  email = DEFAULT_EMAIL,
+  verticalLabel,
   variant = "default",
   manglishLine,
 }: BookCallCTAProps) {
+  const wa = waLink(verticalLabel);
+
   if (variant === "soft") {
     return (
       <section className="sk-section text-center">
@@ -59,17 +69,20 @@ export default function BookCallCTA({
           >
             {note}
           </p>
-          <a
-            href={`mailto:${email}`}
-            className="sk-font-body mt-8 inline-block"
-            style={{
-              color: "var(--sk-ink)",
-              textDecoration: "underline",
-              textUnderlineOffset: "0.4em",
-            }}
-          >
-            {email}
-          </a>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a
+              href={wa}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight"
+              style={{
+                background: "var(--sk-ink)",
+                color: "var(--sk-cream)",
+              }}
+            >
+              WhatsApp Ehsan · +91 87143 18353
+            </a>
+          </div>
         </div>
       </section>
     );
@@ -111,8 +124,8 @@ export default function BookCallCTA({
             </p>
           ) : null}
           <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Link
-              href={calHref}
+            <a
+              href={wa}
               target="_blank"
               rel="noreferrer"
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight transition-all hover:scale-[1.02]"
@@ -121,19 +134,27 @@ export default function BookCallCTA({
                 color: "var(--sk-cream)",
               }}
             >
-              Book a 30-min call
-            </Link>
-            <a
-              href={`mailto:${email}`}
+              WhatsApp Ehsan · +91 87143 18353
+            </a>
+            <Link
+              href={calHref}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight"
               style={{
                 border: "1px solid var(--sk-ink20)",
                 color: "var(--sk-ink)",
               }}
             >
-              {email}
-            </a>
+              Or book a 30-min slot
+            </Link>
           </div>
+          <p
+            className="sk-font-meta mt-6"
+            style={{ color: "var(--sk-ink40)" }}
+          >
+            Replies usually under 4 hours · Mon–Fri 9am–9pm IST
+          </p>
         </div>
       </div>
     </section>

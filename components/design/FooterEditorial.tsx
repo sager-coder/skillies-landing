@@ -57,7 +57,7 @@ const COLUMNS: Col[] = [
 
 const SOCIAL: Array<[string, string]> = [
   ["Instagram · @skillies.ai", "https://instagram.com/skillies.ai"],
-  ["WhatsApp · +91 80899 41131", "https://wa.me/918089941131"],
+  ["WhatsApp Ehsan · +91 87143 18353", "https://wa.me/918714318353?text=Hi%20Ehsan%2C%20saw%20skillies.ai%20%E2%80%94%20"],
   ["Email · ehsan@skillies.ai", "mailto:ehsan@skillies.ai"],
 ];
 
