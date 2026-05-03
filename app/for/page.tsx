@@ -1,18 +1,32 @@
 /**
- * /for · the vertical chooser. Same content as the homepage VerticalGrid,
- * but standalone so the nav can link here and so we have a clean URL
- * for ad campaigns ("which Skillies is right for your business?").
+ * /for · the vertical chooser. Was a thin hero + static grid; now a
+ * motion-rich, code-flavored landing page that reads as "AI sales workers,
+ * alive". Routing intent is unchanged — each card still links to
+ * `/for/<vertical>`.
+ *
+ * The new pieces:
+ *   - Hero with a pulsing terminal cursor in the eyebrow
+ *   - A typed-on-mount code line under the headline
+ *   - A live-stat ticker (verticals · agents online · conversations / hour)
+ *   - <VerticalAgentGrid /> replacing the legacy <VerticalGrid />
+ *   - A dark editor-style "Don't see your vertical?" callout with a
+ *     "Run" button that books a 30-min call
+ *
+ * The legacy <VerticalGrid /> is intentionally NOT removed — the homepage
+ * still uses it.
  */
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
-import VerticalGrid from "@/components/design/VerticalGrid";
+import VerticalAgentGrid from "@/components/skillies/VerticalAgentGrid";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import ForHero from "./ForHero";
+import ScopeCallout from "./ScopeCallout";
 
 export const metadata: Metadata = {
   title: "Skillies for [your business] · pick your vertical",
   description:
-    "Skillies builds AI sales workers per vertical. Pick yours: Real Estate, Hajj/Umrah, Study Abroad, Coaching, Modular Kitchen, Retail.",
+    "Skillies builds AI sales workers per vertical. Pick yours: Real Estate, Hajj/Umrah, Study Abroad, Coaching, Modular Kitchen, Retail, Insurance.",
 };
 
 export default function ForIndexPage() {
@@ -20,45 +34,11 @@ export default function ForIndexPage() {
     <main style={{ background: "var(--sk-cream)" }}>
       <TopNav />
 
-      <section className="sk-section pt-32 md:pt-40">
-        <div className="sk-container">
-          <p
-            className="sk-font-meta mb-6"
-            style={{ color: "var(--sk-ink60)" }}
-          >
-            PICK YOUR VERTICAL
-          </p>
-          <h1
-            className="sk-font-display max-w-[20ch]"
-            style={{
-              fontSize: "var(--sk-text-display)",
-              color: "var(--sk-ink)",
-            }}
-          >
-            Skillies for{" "}
-            <span
-              className="sk-font-display-italic"
-              style={{ color: "var(--sk-red)" }}
-            >
-              your business
-            </span>
-            .
-          </h1>
-          <p
-            className="sk-font-body mt-6 max-w-[58ch]"
-            style={{
-              fontSize: "var(--sk-text-lead)",
-              color: "var(--sk-ink60)",
-            }}
-          >
-            Six vertical-specific AI sales workers. Pick the one closest to
-            your business. Each page has its own pain, its own demo, and its
-            own pricing.
-          </p>
-        </div>
-      </section>
+      <ForHero />
 
-      <VerticalGrid />
+      <VerticalAgentGrid />
+
+      <ScopeCallout />
 
       <BookCallCTA
         heading="Not sure which vertical fits?"

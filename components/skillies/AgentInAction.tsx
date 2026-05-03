@@ -318,10 +318,10 @@ function ChatPanel({
         className="flex-1 px-4 pt-4 pb-5 sm:px-5"
         style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}
       >
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence initial={false}>
           {vertical.messages.slice(0, visibleCount).map((msg, idx) => (
             <ChatBubble
-              key={`${vertical.key}-${idx}-${visibleCount}`}
+              key={`${vertical.key}-${idx}`}
               msg={msg}
               vertical={vertical}
             />
@@ -387,11 +387,9 @@ function ChatBubble({
   const isBuyer = msg.sender === "buyer";
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 8, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -4, scale: 0.97 }}
-      transition={{ duration: 0.35, ease: EASE_OUT_EXPO }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
       style={{
         alignSelf: isBuyer ? "flex-end" : "flex-start",
         maxWidth: "82%",
