@@ -366,35 +366,26 @@ function AgentCard({ vertical, idleDelayMs }: AgentCardProps) {
           {vertical.pain}
         </p>
 
-        {/* Bottom row — terminal-style agent activity + arrow */}
+        {/* Bottom row — explore arrow only (live-chat preview removed) */}
         <div
-          className="mt-5 flex items-center justify-between"
+          className="mt-5 flex items-center justify-end"
           style={{
             paddingTop: "0.85rem",
             borderTop: "1px dashed var(--sk-hairline)",
-            gap: "0.75rem",
           }}
         >
-          <TypingLine
-            text={vertical.activity}
-            active={hovered || cycleKey > 0}
-            cycleKey={cycleKey}
-            reducedMotion={reducedMotion}
-            promptColor={vertical.accent}
-          />
           <span
-            aria-hidden="true"
-            className="font-mono"
+            className="sk-font-meta"
             style={{
-              fontSize: "0.8125rem",
+              fontSize: "0.75rem",
               color: vertical.accent,
               fontWeight: 600,
+              letterSpacing: "0.08em",
               transform: hovered ? "translateX(2px)" : "translateX(0)",
               transition: "transform 220ms ease",
-              flex: "0 0 auto",
             }}
           >
-            →
+            EXPLORE →
           </span>
         </div>
       </Link>

@@ -11,7 +11,7 @@ type Link = { href: string; label: string };
  * destination page (consumer = secondary).
  */
 const LINKS: Link[] = [
-  { href: "/for/real-estate", label: "For Business" },
+  { href: "/for", label: "For Business" },
   { href: "/pricing", label: "Pricing" },
   { href: "/skillies-school", label: "Skillies School" },
 ];

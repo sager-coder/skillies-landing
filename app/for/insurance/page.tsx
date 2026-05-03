@@ -2,7 +2,9 @@
  * /for/insurance · Insurance vertical landing page (v3 visual uplift).
  * Visual identity · navy + warm gold · trustworthy elder-brother voice.
  *
- * Editorial asymmetric hero (HeroBlockEditorial) replaces old split.
+ * Bespoke interactive hero (InsuranceInteractiveHero) — five
+ * scenario tabs the visitor can click through, replacing the
+ * editorial hero + standalone HeroChatPreview block.
  *
  * Spec · 7th vertical, founder-added 2026-05-03.
  * Copy · content/verticals/insurance.ts
@@ -10,8 +12,7 @@
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
-import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
-import HeroChatPreview from "@/components/design/HeroChatPreview";
+import InsuranceInteractiveHero from "@/components/skillies/InsuranceInteractiveHero";
 import PainCard from "@/components/skillies/PainCard";
 import CapabilityHighlight from "@/components/skillies/CapabilityHighlight";
 import DemoCTA from "@/components/skillies/DemoCTA";
@@ -32,33 +33,7 @@ export default function InsurancePage() {
     <main style={{ background: "var(--sk-cream)" }}>
       <TopNav />
 
-      <HeroBlockEditorial
-        vertical="insurance"
-        eyebrow="SKILLIES FOR · INSURANCE"
-        headlineLead="Answer the"
-        headlineEmphasis="diabetic father's question"
-        headlineTail="at 11 PM, in Malayalam."
-        subhead="Calm anxious buyers, qualify without pressure tactics, handle pre-existing-disease and family-history questions in 5 Indian languages. IRDAI-aware language baked in. Built for brokers and agencies who want to keep every commission rupee."
-        trustLine="IRDAI-compliant disclaimers · Mal + Hin + Eng + Tam · Lifelong per-customer memory · Razorpay first-premium collection"
-        primaryCTA={copy.hero.ctaPrimary}
-        secondaryCTA={copy.hero.ctaSecondary}
-        imageSrc={copy.hero.image.src}
-        imageAlt={copy.hero.image.alt}
-      />
-
-      <RevealOnScroll>
-        <section className="sk-section" style={{ paddingTop: 0 }}>
-          <div className="sk-container max-w-[820px]">
-            <p
-              className="sk-font-meta mb-4"
-              style={{ color: "var(--sk-ink60)" }}
-            >
-              SEE IT WORK · LIVE THREAD
-            </p>
-            <HeroChatPreview lockTo="insurance" />
-          </div>
-        </section>
-      </RevealOnScroll>
+      <InsuranceInteractiveHero />
 
       <RevealOnScroll>
         <PainCard
