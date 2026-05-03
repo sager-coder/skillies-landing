@@ -11,6 +11,7 @@
 import TopNav from "@/components/design/TopNav";
 import HeroB2B from "@/components/design/HeroB2B";
 import ToolsVsWorkers from "@/components/design/ToolsVsWorkers";
+import WhySkilliesIsDifferent from "@/components/design/WhySkilliesIsDifferent";
 import VerticalGrid from "@/components/design/VerticalGrid";
 import B2BHowItWorks from "@/components/design/B2BHowItWorks";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
@@ -23,6 +24,7 @@ export default function Home() {
       <TopNav />
       <HeroB2B />
       <ToolsVsWorkers />
+      <WhySkilliesIsDifferent />
       <VerticalGrid />
       <B2BHowItWorks />
       <BookCallCTA

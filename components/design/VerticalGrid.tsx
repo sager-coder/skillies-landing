@@ -50,6 +50,13 @@ const VERTICALS = [
     accent: "var(--sk-retail-saffron)",
     eyebrow: "SHOPS · SALONS · GYMS",
   },
+  {
+    href: "/for/insurance",
+    title: "Skillies for Insurance",
+    pain: "Diabetic father at 11 PM, IRDAI compliance, premium fear. Skillies answers calmly, in Malayalam, with carrier-specific facts.",
+    accent: "var(--sk-insurance-navy)",
+    eyebrow: "BROKERS · AGENCIES",
+  },
 ];
 
 export default function VerticalGrid() {
@@ -70,7 +77,7 @@ export default function VerticalGrid() {
             className="sk-font-section"
             style={{ fontSize: "var(--sk-text-h2)", color: "var(--sk-ink)" }}
           >
-            One product. Six different workers.
+            One product. Seven different workers.
           </h2>
           <p
             className="sk-font-body mt-4 max-w-[58ch]"

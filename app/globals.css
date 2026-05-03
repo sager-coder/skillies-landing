@@ -89,6 +89,9 @@
   --sk-retail-saffron:       #E0A656;
   --sk-retail-clay:          #D9A99B;
 
+  --sk-insurance-navy:       #1B2E4B;
+  --sk-insurance-gold:       #C9A668;
+
   /* Fluid typography scale (mobile-first) */
   --sk-text-display: clamp(2.75rem, 5vw + 1rem, 5.5rem);
   --sk-text-h2:      clamp(2rem,    3vw + 1rem, 3.5rem);

@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlock from "@/components/skillies/HeroBlock";
+import HeroChatPreview from "@/components/design/HeroChatPreview";
 import PainCard from "@/components/skillies/PainCard";
 import CapabilityHighlight from "@/components/skillies/CapabilityHighlight";
 import DemoCTA from "@/components/skillies/DemoCTA";
@@ -38,6 +39,17 @@ export default function InteriorsPage() {
         trustStrip={copy.hero.trust}
         image={copy.hero.image}
       />
+      <section className="sk-section" style={{ paddingTop: 0 }}>
+        <div className="sk-container max-w-[820px]">
+          <p
+            className="sk-font-meta mb-4"
+            style={{ color: "var(--sk-ink60)" }}
+          >
+            SEE IT WORK · LIVE THREAD
+          </p>
+          <HeroChatPreview lockTo="interiors" />
+        </div>
+      </section>
 
       <PainCard
         items={copy.pain}

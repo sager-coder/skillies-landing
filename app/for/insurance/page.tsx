@@ -1,9 +1,9 @@
 /**
- * /for/study-abroad · Study Abroad vertical landing page.
- * Visual identity · library navy + warm parchment · mentoring tone.
+ * /for/insurance · Insurance vertical landing page.
+ * Visual identity · navy + warm gold · trustworthy elder-brother voice.
  *
- * Spec: skillies-visual-design-system-DRAFT.md Part 3.3
- * Copy: content/verticals/studyabroad.ts
+ * Spec · 7th vertical, founder-added 2026-05-03.
+ * Copy · content/verticals/insurance.ts
  */
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
@@ -16,22 +16,22 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
-import { studyAbroadCopy as copy } from "@/content/verticals/studyabroad";
+import { insuranceCopy as copy } from "@/content/verticals/insurance";
 
 export const metadata: Metadata = {
-  title: "Skillies for Study Abroad · AI sales worker for consultants",
+  title: "Skillies for Insurance · AI sales worker for brokers + agencies",
   description:
-    "Reply to every UK, Canada, Germany enquiry before they ghost. 12-18 month memory across the application cycle. Parent + student dual-thread in Malayalam, Hindi, English. ICEF-aware.",
+    "Calm anxious insurance buyers, qualify without pressure, handle pre-existing-disease conversations in 5 Indic languages. IRDAI-aware. Built for brokers and agencies.",
 };
 
-export default function StudyAbroadPage() {
+export default function InsurancePage() {
   return (
     <main style={{ background: "var(--sk-cream)" }}>
       <TopNav />
 
       <HeroBlock
         layout="split"
-        variant="studyabroad"
+        variant="default"
         headline={copy.hero.headline}
         subhead={copy.hero.subhead}
         ctaPrimary={copy.hero.ctaPrimary}
@@ -47,14 +47,14 @@ export default function StudyAbroadPage() {
           >
             SEE IT WORK · LIVE THREAD
           </p>
-          <HeroChatPreview lockTo="study-abroad" />
+          <HeroChatPreview lockTo="insurance" />
         </div>
       </section>
 
       <PainCard
         items={copy.pain}
         variant="stat-bordered"
-        accent="var(--sk-studyabroad-navy)"
+        accent="var(--sk-insurance-navy)"
       />
 
       <CapabilityHighlight
@@ -62,33 +62,32 @@ export default function StudyAbroadPage() {
         title={copy.capabilities.title}
         items={copy.capabilities.items}
         columns={2}
-        cardBg="var(--sk-studyabroad-parchment)"
-        cardHairline="var(--sk-studyabroad-navy)"
-        hairlinePosition="bottom"
+        cardHairline="var(--sk-insurance-gold)"
+        hairlinePosition="top"
       />
 
       <DemoCTA
-        demoHref="/demo/study-abroad"
+        demoHref="/demo/insurance"
         heading={copy.demoCTA.heading}
         body={copy.demoCTA.body}
         mockChat={copy.demoCTA.mockChat}
-        ctaLabel="Talk to the demo agent"
+        ctaLabel="Try the demo agent"
       />
 
       <PricingSnapshot
         layout="single"
         eyebrow="INVESTMENT"
+        sectionBg={`color-mix(in srgb, var(--sk-insurance-gold) 20%, var(--sk-cream) 80%)`}
         tiers={[
           {
-            name: "Study Abroad · Growth",
+            name: "Insurance · Standard",
             setup: copy.pricing.setup,
             monthly: copy.pricing.monthly,
             bullets: copy.pricing.bullets,
             ctaLabel: "Get a custom quote",
-            ctaHref: "/pricing?vertical=study-abroad",
+            ctaHref: "/pricing?vertical=insurance",
           },
         ]}
-        footnote="Public pricing calculator · /pricing"
       />
 
       <CaseStudyCard
@@ -97,13 +96,12 @@ export default function StudyAbroadPage() {
         role={copy.caseStudy.role}
         metrics={copy.caseStudy.metrics}
         verified={copy.caseStudy.verified}
-        sectionBg="var(--sk-studyabroad-parchment)"
       />
 
       <BookCallCTA
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
-        manglishLine="From one Malappuram founder to another."
+        verticalLabel="Insurance"
       />
 
       <FooterEditorial />

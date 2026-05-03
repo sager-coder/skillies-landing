@@ -3,8 +3,8 @@
  * out on hero load. Replaces the static founder-quote card on homepage —
  * shows the product instead of describing it.
  *
- * Cycles through 3 vertical scenarios (clinic / real estate / hajj) every
- * 12 seconds. No sound. Pauses on hover.
+ * Default · cycles through 3 vertical scenarios on the homepage.
+ * lockTo · vertical-page mode · stays on one scenario (no cycling).
  */
 "use client";
 
@@ -18,13 +18,24 @@ type Bubble = {
 };
 
 type Scenario = {
+  key: string;
   vertical: string;
   accent: string;
   thread: Bubble[];
 };
 
+export type LockToVertical =
+  | "real-estate"
+  | "hajj"
+  | "study-abroad"
+  | "coaching"
+  | "interiors"
+  | "retail"
+  | "insurance";
+
 const SCENARIOS: Scenario[] = [
   {
+    key: "real-estate",
     vertical: "Skillies for Real Estate",
     accent: "var(--sk-realestate-slate)",
     thread: [
@@ -41,6 +52,7 @@ const SCENARIOS: Scenario[] = [
     ],
   },
   {
+    key: "hajj",
     vertical: "Skillies for Hajj & Umrah",
     accent: "var(--sk-hajj-forest)",
     thread: [
@@ -60,6 +72,7 @@ const SCENARIOS: Scenario[] = [
     ],
   },
   {
+    key: "coaching",
     vertical: "Skillies for Coaching",
     accent: "var(--sk-coaching-indigo)",
     thread: [
@@ -78,10 +91,101 @@ const SCENARIOS: Scenario[] = [
       },
     ],
   },
+  {
+    key: "study-abroad",
+    vertical: "Skillies for Study Abroad",
+    accent: "var(--sk-studyabroad-navy)",
+    thread: [
+      {
+        from: "user",
+        text: "Hi · MS in Canada plan und. ente IELTS 6.5, Writing 5.5.",
+      },
+      {
+        from: "agent",
+        text: "Overall 6.5 nallathaanu — most Canadian universities accept. Pakshe Writing 5.5 visa-il problem aakum (SDS-il band-balance vendam). Re-test 4-6 weeks prep, OR pre-sessional English at university. Cost ariyaam, ipo decision veno?",
+      },
+      { from: "user", text: "Budget ₹25L per year mathram. Tier-2 universities show cheyyamo?" },
+      {
+        from: "agent",
+        text: "6-uni shortlist anuppi · Trent, Brock, Ontario Tech, UNB, Memorial, Lakehead. Tuition ₹15-22L/yr range, scholarship-eligible. Sep 2026 / Jan 2027 — eth match aakum?",
+      },
+    ],
+  },
+  {
+    key: "interiors",
+    vertical: "Skillies for Modular Kitchen",
+    accent: "var(--sk-interiors-terracotta)",
+    thread: [
+      {
+        from: "user",
+        text: "Hi · just got 2BHK in Whitefield, need full kitchen + 2 wardrobes. Budget around ₹5L.",
+      },
+      {
+        from: "agent",
+        text: "Got it. Could you send a photo of the empty kitchen? L-shape vs U-shape changes the quote. Also finish: laminate (₹3.8-4.2L), acrylic (₹4.5-5.2L), or PU (₹5.5-6.5L)?",
+      },
+      { from: "user", text: "[photo of empty kitchen] · acrylic preferred" },
+      {
+        from: "agent",
+        text: "L-shape, ~9x10 ft, window left wall. Acrylic + brass handles · ₹4.6-5.0L kitchen, ₹1.2L for 2 wardrobes. Past project photos matching this style coming below. Designer Priya available Sat 11 AM or Sun 4 PM — book?",
+      },
+    ],
+  },
+  {
+    key: "retail",
+    vertical: "Skillies for Retail",
+    accent: "var(--sk-retail-saffron)",
+    thread: [
+      {
+        from: "user",
+        text: "Hi · atta 5kg + 2L sunflower oil + 1kg sugar venam. Naale evening del-aano?",
+      },
+      {
+        from: "agent",
+        text: "Chechi, Aashirvaad atta 5kg ₹285, Sundrop 2L ₹420, sugar 1kg ₹52 — total ₹757. Naale evening 6-7pm del aakum, free above ₹500. UPI link aytho aanu COD aano?",
+      },
+      { from: "user", text: "UPI ayachu kollam." },
+      {
+        from: "agent",
+        text: "Order confirm. Pay link · razorpay.me/skillies-demo. Delivery boy Rajesh — 98xxx-xxxxx. 6 PM-nu mumbu ethum.",
+      },
+    ],
+  },
+  {
+    key: "insurance",
+    vertical: "Skillies for Insurance",
+    accent: "var(--sk-insurance-navy)",
+    thread: [
+      {
+        from: "user",
+        text: "Hi · ₹1 Cr term cover venam, age 38, non-smoker. Premium evidi range?",
+      },
+      {
+        from: "agent",
+        text: "Healthy non-smoker 38 male · ₹1 Cr term, 35-yr policy term · annual premium ₹14,000-22,000 across HDFC Life / ICICI Pru / Max Life / Tata AIA. Subject to medicals. Want carrier-by-carrier breakdown with CSR for each?",
+      },
+      { from: "user", text: "Athey. Mom-inu diabetes und, oru cover edukan plan und." },
+      {
+        from: "agent",
+        text: "Diabetic parents-il health cover possible · loading 25-40%, 30-day waiting for diabetes claims. Niva Bupa + Star Health typically takes diabetic seniors warmly. Mom age + sugar levels share cheytho — 3 carriers compare cheyam.",
+      },
+    ],
+  },
 ];
 
-export default function HeroChatPreview() {
-  const [scenarioIdx, setScenarioIdx] = useState(0);
+export default function HeroChatPreview({
+  lockTo,
+}: {
+  /** When set, freezes the preview to one vertical scenario (no cycling). */
+  lockTo?: LockToVertical;
+} = {}) {
+  // If lockTo is set, find the matching scenario and stay on it
+  const lockedIdx = lockTo
+    ? SCENARIOS.findIndex((s) => s.key === lockTo)
+    : -1;
+  const startIdx = lockedIdx >= 0 ? lockedIdx : 0;
+
+  const [scenarioIdx, setScenarioIdx] = useState(startIdx);
   const [bubbleIdx, setBubbleIdx] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -97,13 +201,17 @@ export default function HeroChatPreview() {
       );
       return () => clearTimeout(t);
     }
-    // All bubbles shown — wait, then advance
+    // All bubbles shown — wait, then advance (or restart if locked)
     const t = setTimeout(() => {
       setBubbleIdx(0);
-      setScenarioIdx((i) => (i + 1) % SCENARIOS.length);
+      if (lockedIdx >= 0) {
+        // stay on locked scenario · don't cycle
+      } else {
+        setScenarioIdx((i) => (i + 1) % SCENARIOS.length);
+      }
     }, 4500);
     return () => clearTimeout(t);
-  }, [bubbleIdx, scenarioIdx, scenario.thread.length, paused]);
+  }, [bubbleIdx, scenarioIdx, scenario.thread.length, paused, lockedIdx]);
 
   return (
     <aside
@@ -149,23 +257,35 @@ export default function HeroChatPreview() {
             {scenario.vertical.toUpperCase()}
           </p>
         </div>
-        <div className="hidden sm:flex" style={{ gap: 4 }}>
-          {SCENARIOS.map((_, i) => (
-            <span
-              key={i}
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background:
-                  i === scenarioIdx
-                    ? "rgba(255,255,255,0.7)"
-                    : "rgba(255,255,255,0.2)",
-                transition: "background 300ms",
-              }}
-            />
-          ))}
-        </div>
+        {lockedIdx < 0 ? (
+          <div className="hidden sm:flex" style={{ gap: 4 }}>
+            {SCENARIOS.map((_, i) => (
+              <span
+                key={i}
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background:
+                    i === scenarioIdx
+                      ? "rgba(255,255,255,0.7)"
+                      : "rgba(255,255,255,0.2)",
+                  transition: "background 300ms",
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <span
+            style={{
+              fontSize: 12,
+              color: "rgba(255,255,255,0.4)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            LIVE
+          </span>
+        )}
       </div>
 
       {/* Chat bubbles */}

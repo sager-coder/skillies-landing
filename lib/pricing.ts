@@ -58,6 +58,13 @@ export const TIERS = {
     qcIncluded: 500,
     perQcOverage: 199,
   },
+  insurance: {
+    name: "Standard · Insurance",
+    setup: 1_15_000,
+    monthlyBase: 29_999,
+    qcIncluded: 250,
+    perQcOverage: 119,
+  },
 } as const;
 
 export type VerticalKey = keyof typeof TIERS;
@@ -69,6 +76,7 @@ export const VERTICAL_LABELS: Record<VerticalKey, string> = {
   "study-abroad": "Study Abroad",
   interiors: "Modular Kitchen / Interior",
   "real-estate": "Real Estate",
+  insurance: "Insurance",
 };
 
 // ─── Capability modules · add-ons ───────────────────────────────────────────
@@ -247,6 +255,7 @@ export const DEFAULT_MODULES: Record<VerticalKey, ModuleKey[]> = {
   "study-abroad": ["vision", "calendar", "crm", "memory", "multilingual"],
   interiors: ["vision", "calendar", "memory", "multichannel"],
   "real-estate": ["vision", "voice", "calendar", "crm", "memory", "industryCustom"],
+  insurance: ["vision", "crm", "memory", "multilingual", "payment", "industryCustom"],
 };
 
 // Default monthly QC volume per vertical (sensible mid-size client)
@@ -257,6 +266,7 @@ export const DEFAULT_QC: Record<VerticalKey, number> = {
   "study-abroad": 400,
   interiors: 300,
   "real-estate": 600,
+  insurance: 500, // brokers see steady high-volume across motor + health + life
 };
 
 // ─── Formatting helpers ─────────────────────────────────────────────────────
