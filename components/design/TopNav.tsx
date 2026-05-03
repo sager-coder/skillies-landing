@@ -323,16 +323,16 @@ export default function TopNav({
           </a>
 
           <a
-            href="https://wa.me/918089941131"
+            href="https://cal.com/sager-zmd4kl/30min"
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeAnd()}
             style={{
               marginTop: 10,
               padding: "16px 20px",
-              background: "rgba(37, 211, 102, 0.12)",
-              border: "1px solid rgba(37,211,102,0.35)",
-              color: "#1A6E3F",
+              background: "#C62828",
+              border: "1px solid #C62828",
+              color: "white",
               textDecoration: "none",
               borderRadius: 14,
               fontSize: 14,
@@ -343,7 +343,7 @@ export default function TopNav({
               justifyContent: "space-between",
             }}
           >
-            <span>Message Ehsan on WhatsApp</span>
+            <span>Book a 30-min call with Ehsan</span>
             <span aria-hidden>↗</span>
           </a>
         </div>

@@ -107,9 +107,7 @@ export default function LearnTopBar() {
               ← Marketing site
             </a>
             <a
-              href="https://wa.me/918089941131"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:ehsan@skillies.ai"
               style={{
                 display: "block",
                 padding: "10px 12px",
@@ -119,7 +117,7 @@ export default function LearnTopBar() {
                 borderRadius: 10,
               }}
             >
-              Message Ehsan
+              Email Ehsan
             </a>
             <button
               onClick={signOut}

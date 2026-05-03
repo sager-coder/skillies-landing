@@ -14,8 +14,8 @@ export const insuranceCopy = {
       label: "Try the agent on yourself",
     },
     ctaSecondary: {
-      href: "https://wa.me/918714318353?text=Hi%20Ehsan%2C%20I%20run%20an%20insurance%20agency%20%E2%80%94%20",
-      label: "WhatsApp Ehsan",
+      href: "https://cal.com/sager-zmd4kl/30min?notes=Insurance%20agency%20%E2%80%94%20interested%20in%20the%20Skillies%20agent",
+      label: "Book a 30-min call",
     },
     trust:
       "IRDAI-aware language · CRM sync (Plum / Coverfox / native) · Mal + Hin + Eng",

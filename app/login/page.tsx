@@ -124,12 +124,10 @@ function LoginForm() {
           courses are one-device-per-student to keep them affordable —
           if you&rsquo;ve genuinely lost or switched phones,{" "}
           <a
-            href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20need%20to%20reset%20my%20device%20on%20skillies.ai.%20My%20phone%20is%20"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="mailto:ehsan@skillies.ai?subject=Device%20reset%20%E2%80%94%20skillies.ai&body=Hi%20Ehsan%2C%20I%20need%20to%20reset%20my%20device%20on%20skillies.ai.%20My%20phone%20number%20is%20"
             style={{ color: "#8a6a1f", fontWeight: 700 }}
           >
-            WhatsApp Ehsan
+            email Ehsan
           </a>{" "}
           and he&rsquo;ll unlock it for you.
         </div>
@@ -227,12 +225,10 @@ function LoginForm() {
       >
         Not enrolled yet?{" "}
         <a
-          href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enrol%20in%20the%2050-day%20program.%20My%20name%20is%20"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/skillies-school"
           style={{ color: "#C62828", fontWeight: 600 }}
         >
-          WhatsApp Ehsan →
+          See the Skillies School page →
         </a>
       </div>
     </>

@@ -120,7 +120,7 @@ export default async function VentureNavigatorDemoPage({
             Private demo · For Vivek M V
           </span>
           <a
-            href="https://wa.me/918714318352?text=Vivek%20—%20saw%20the%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
+            href="https://cal.com/sager-zmd4kl/30min?notes=Vivek%20%E2%80%94%20saw%20the%20Venture%20Navigator%20demo%2C%20booking%20the%2030-min%20call"
             target="_blank"
             rel="noopener noreferrer"
             className="vn-topbar-cta"
@@ -480,7 +480,7 @@ export default async function VentureNavigatorDemoPage({
             on the same call if you're in.
           </p>
           <a
-            href="https://wa.me/918714318352?text=Vivek%20here%20—%20saw%20the%20Venture%20Navigator%20demo,%20let's%20do%20the%20call"
+            href="https://cal.com/sager-zmd4kl/30min?notes=Vivek%20%E2%80%94%20Venture%20Navigator%20demo%2C%20booking%20the%2030-min%20call"
             style={{
               display: "inline-block",
               background: GOLD,
@@ -494,7 +494,7 @@ export default async function VentureNavigatorDemoPage({
               boxShadow: "0 8px 22px rgba(201,162,78,0.30)",
             }}
           >
-            WhatsApp Ehsan · book the 30 min →
+            Book the 30-min call →
           </a>
           <p
             style={{
@@ -503,7 +503,7 @@ export default async function VentureNavigatorDemoPage({
               margin: "20px 0 0",
             }}
           >
-            Or reply to this WhatsApp thread · Ehsan, Skillies founder, +91 87143 18352
+            Auto-confirmed · 30-min Zoom · Skillies founder Ehsan + the team handle logistics
           </p>
         </section>
       </article>

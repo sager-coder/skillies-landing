@@ -169,7 +169,7 @@ export default function PrivacyPage() {
             >
               ehsan@skillies.ai
             </a>{" "}
-            or WhatsApping +91 87143 18352. We respond within 7 working days.
+            . We respond within 7 working days.
           </p>
 
           <H2>Data retention</H2>
@@ -203,8 +203,6 @@ export default function PrivacyPage() {
             >
               ehsan@skillies.ai
             </a>
-            <br />
-            WhatsApp: +91 87143 18352
           </p>
         </Prose>
       </article>

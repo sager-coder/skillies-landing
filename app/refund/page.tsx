@@ -178,18 +178,7 @@ export default function RefundPage() {
             How to request a refund, transfer, or cancellation
           </h2>
           <p>
-            WhatsApp{" "}
-            <strong>
-              <a
-                href="https://wa.me/918714318352"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#C62828", fontWeight: 600 }}
-              >
-                +91 87143 18352
-              </a>
-            </strong>{" "}
-            or email{" "}
+            Email{" "}
             <a
               href="mailto:ehsan@skillies.ai"
               style={{ color: "#C62828", fontWeight: 600 }}

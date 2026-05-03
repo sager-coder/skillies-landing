@@ -1,7 +1,8 @@
 /**
- * DemoCTA · invites the prospect to experience the agent on WhatsApp.
- * Shows a faux chat preview + a primary CTA pointing to the vertical demo URL.
+ * DemoCTA · invites the prospect to experience the agent live and book a call.
+ * Shows a faux chat preview + the live demo CTA + a Cal.com booking CTA.
  *
+ * Public CTAs MUST funnel through Cal.com — never expose personal WhatsApp.
  * One emoji rule applies — keep this text-clean.
  */
 import Link from "next/link";
@@ -9,8 +10,8 @@ import Link from "next/link";
 export type DemoCTAProps = {
   /** Demo URL — typically /demo/<vertical> */
   demoHref: string;
-  /** WhatsApp link · falls back to Skillies main number if not provided */
-  waHref?: string;
+  /** Booking link · defaults to Ehsan's Cal.com 30-min slot */
+  bookHref?: string;
   /** Section heading */
   heading: string;
   /** Body copy under heading (1–2 sentences) */
@@ -21,14 +22,14 @@ export type DemoCTAProps = {
   mockChat?: readonly { from: "user" | "agent"; text: string }[];
 };
 
-const DEFAULT_WA = "https://wa.me/919562112334"; // Skillies' main WhatsApp
+const DEFAULT_BOOK = "https://cal.com/sager-zmd4kl/30min";
 
 export default function DemoCTA({
   demoHref,
-  waHref = DEFAULT_WA,
+  bookHref = DEFAULT_BOOK,
   heading,
   body,
-  ctaLabel = "Try the agent on WhatsApp",
+  ctaLabel = "Try the live demo",
   mockChat,
 }: DemoCTAProps) {
   return (
@@ -84,9 +85,7 @@ export default function DemoCTA({
 
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
-              href={waHref}
-              target="_blank"
-              rel="noreferrer"
+              href={demoHref}
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight transition-all hover:scale-[1.02]"
               style={{
                 background: "var(--sk-red)",
@@ -96,14 +95,16 @@ export default function DemoCTA({
               {ctaLabel}
             </Link>
             <Link
-              href={demoHref}
+              href={bookHref}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight"
               style={{
                 border: "1px solid var(--sk-ink20)",
                 color: "var(--sk-ink)",
               }}
             >
-              See the live demo
+              Book a 30-min call
             </Link>
           </div>
         </div>

@@ -93,7 +93,9 @@ export default function TalkToEhsan({
   const m = message ?? preset.message;
   const label = ctaLabel ?? preset.ctaLabel;
 
-  const href = `https://wa.me/918089941131?text=${enc(m)}`;
+  // Public CTA — funnel through Cal.com booking; never expose personal WhatsApp.
+  void enc;
+  const href = "https://cal.com/sager-zmd4kl/30min";
 
   const dark = tone === "charcoal";
 
@@ -272,7 +274,7 @@ export default function TalkToEhsan({
                   marginBottom: 2,
                 }}
               >
-                +91 80899 41131 · Ehsan
+                Cal.com · 30-min slot
               </div>
               <div
                 style={{

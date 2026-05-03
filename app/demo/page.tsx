@@ -387,7 +387,7 @@ export default function DemoPage() {
             for your specific programmes, fees, and lead lists.
           </p>
           <a
-            href="https://wa.me/918714318352?text=I'd%20like%20to%20talk%20about%20the%20AI%20Reactivation%20Agent%20demo"
+            href="https://cal.com/sager-zmd4kl/30min?notes=AI%20Reactivation%20Agent%20demo%20%E2%80%94%20want%20a%2030-min%20walkthrough"
             style={{
               display: "inline-block",
               background: GOLD,
@@ -400,7 +400,7 @@ export default function DemoPage() {
               letterSpacing: "0.04em",
             }}
           >
-            WhatsApp Ehsan · +91 8714318352
+            Book a 30-min call with Ehsan
           </a>
           <p
             style={{

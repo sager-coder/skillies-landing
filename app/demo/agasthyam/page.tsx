@@ -119,7 +119,7 @@ export default async function AgasthyamDemoPage({
             Private demo · For Gurukkal Dr. Mahesh
           </span>
           <a
-            href="https://wa.me/918714318352?text=Gurukkal%20%E2%80%94%20saw%20the%20Agasthyam%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
+            href="https://cal.com/sager-zmd4kl/30min?notes=Gurukkal%20%E2%80%94%20saw%20the%20Agasthyam%20demo%2C%20booking%20the%2030-min%20call"
             target="_blank"
             rel="noopener noreferrer"
             className="vn-topbar-cta"
@@ -476,7 +476,7 @@ export default async function AgasthyamDemoPage({
             Lock terms on the same call if it's a fit.
           </p>
           <a
-            href="https://wa.me/918714318352?text=Gurukkal%20%E2%80%94%20saw%20the%20Agasthyam%20demo%2C%20let%E2%80%99s%20do%20the%2030-min%20call"
+            href="https://cal.com/sager-zmd4kl/30min?notes=Gurukkal%20%E2%80%94%20saw%20the%20Agasthyam%20demo%2C%20booking%20the%2030-min%20call"
             style={{
               display: "inline-block",
               background: GOLD,
@@ -490,7 +490,7 @@ export default async function AgasthyamDemoPage({
               boxShadow: "0 8px 22px rgba(201,162,78,0.30)",
             }}
           >
-            WhatsApp Ehsan · book the 30 min →
+            Book the 30-min call →
           </a>
           <p
             style={{
@@ -499,7 +499,7 @@ export default async function AgasthyamDemoPage({
               margin: "20px 0 0",
             }}
           >
-            Or reply to this WhatsApp thread · Ehsan, Skillies founder, +91 87143 18352
+            Auto-confirmed · 30-min Zoom · Skillies founder Ehsan + the team handle logistics
           </p>
         </section>
       </article>

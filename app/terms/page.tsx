@@ -74,8 +74,7 @@ export default function TermsPage() {
             "we", "us", or "Skillies.AI" in these terms refers to that entity.
           </p>
           <p>
-            Contact: <a href="mailto:ehsan@skillies.ai" style={L}>ehsan@skillies.ai</a>{" "}
-            · WhatsApp +91 87143 18352
+            Contact: <a href="mailto:ehsan@skillies.ai" style={L}>ehsan@skillies.ai</a>
           </p>
 
           <H2>What we sell</H2>
@@ -174,7 +173,7 @@ export default function TermsPage() {
             <a href="mailto:ehsan@skillies.ai" style={L}>
               ehsan@skillies.ai
             </a>{" "}
-            or WhatsApp +91 87143 18352. We respond within 7 working days.
+            . We respond within 7 working days.
           </p>
         </div>
       </article>
