@@ -23,11 +23,18 @@
 // QC = 24-hour customer-initiated thread with ≥5 inbound messages OR a sales action.
 export const TIERS = [
   {
+    name: "Starter",
+    qcMax: 500,
+    monthly: 30_000,
+    perQc: 60,
+    humanEquivalent: "~1 caller, but 24/7 + memory",
+  },
+  {
     name: "Solo",
     qcMax: 1_000,
     monthly: 50_000,
     perQc: 50,
-    humanEquivalent: "~1.5 callers, but 24/7 + memory",
+    humanEquivalent: "~1.5 callers + manager share",
   },
   {
     name: "Squad",

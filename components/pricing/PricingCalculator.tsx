@@ -163,10 +163,10 @@ export default function PricingCalculator({ initialVertical }: Props) {
               </div>
               <input
                 type="range"
-                min={100}
+                min={500}
                 max={QC_SLIDER_MAX}
                 step={QC_SLIDER_STEP}
-                value={Math.min(monthlyQc, QC_SLIDER_MAX)}
+                value={Math.min(Math.max(monthlyQc, 500), QC_SLIDER_MAX)}
                 onChange={(e) => setMonthlyQc(parseInt(e.target.value, 10))}
                 className="mt-4 w-full"
                 style={{ accentColor: "var(--sk-red)" }}
