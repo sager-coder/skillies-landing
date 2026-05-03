@@ -43,7 +43,7 @@ function LoginShell({ children }: { children: React.ReactNode }) {
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") || "/learn";
+  const next = params.get("next") || "/skillies-school";
   const locked = params.get("locked") === "1";
 
   const [phone, setPhone] = useState("");

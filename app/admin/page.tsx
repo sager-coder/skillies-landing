@@ -27,7 +27,7 @@ export default async function AdminPage() {
     .select("is_admin, full_name, phone")
     .eq("id", user.id)
     .single();
-  if (!profile?.is_admin) redirect("/learn");
+  if (!profile?.is_admin) redirect("/skillies-school");
 
   // Pull recent enrollments + recent profiles for context. Same story:
   // use the admin client so RLS doesn't hide rows for us.

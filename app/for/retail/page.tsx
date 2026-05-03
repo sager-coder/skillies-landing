@@ -1,0 +1,93 @@
+/**
+ * /for/retail · Retail / Kirana vertical landing page.
+ * Visual identity · saffron + clay · LIGHTEST tier · plain bullets · no chrome.
+ * Smaller hero typography (signals practical / lower-priced).
+ *
+ * Spec: skillies-visual-design-system-DRAFT.md Part 3.7
+ * Copy: content/verticals/retail.ts
+ */
+import type { Metadata } from "next";
+import TopNav from "@/components/design/TopNav";
+import FooterEditorial from "@/components/design/FooterEditorial";
+import HeroBlock from "@/components/skillies/HeroBlock";
+import PainCard from "@/components/skillies/PainCard";
+import CapabilityHighlight from "@/components/skillies/CapabilityHighlight";
+import DemoCTA from "@/components/skillies/DemoCTA";
+import PricingSnapshot from "@/components/skillies/PricingSnapshot";
+import CaseStudyCard from "@/components/skillies/CaseStudyCard";
+import BookCallCTA from "@/components/skillies/BookCallCTA";
+import { retailCopy as copy } from "@/content/verticals/retail";
+
+export const metadata: Metadata = {
+  title: "Skillies for Retail &amp; Kirana · WhatsApp orders for shops, salons, gyms",
+  description:
+    "Voice + photo + text orders, UPI link auto-generated, restock reminders, push to Marg/Vyapar/Khatabook. ₹35k setup, ₹14,999/month. Live in 7 days.",
+};
+
+export default function RetailPage() {
+  return (
+    <main style={{ background: "var(--sk-cream)" }}>
+      <TopNav />
+
+      <HeroBlock
+        layout="split"
+        variant="retail"
+        headline={copy.hero.headline}
+        subhead={copy.hero.subhead}
+        ctaPrimary={copy.hero.ctaPrimary}
+        ctaSecondary={copy.hero.ctaSecondary}
+        trustStrip={copy.hero.trust}
+        image={copy.hero.image}
+      />
+
+      <PainCard items={copy.pain} variant="bullet" />
+
+      <CapabilityHighlight
+        eyebrow={copy.capabilities.eyebrow}
+        title={copy.capabilities.title}
+        items={copy.capabilities.items}
+        columns={2}
+        cardBg="var(--sk-retail-clay)"
+      />
+
+      <DemoCTA
+        demoHref="/demo/retail"
+        heading={copy.demoCTA.heading}
+        body={copy.demoCTA.body}
+        mockChat={copy.demoCTA.mockChat}
+        ctaLabel="Try the demo store"
+      />
+
+      <PricingSnapshot
+        layout="single"
+        eyebrow="STARTER"
+        tiers={[
+          {
+            name: "Retail · Light",
+            setup: copy.pricing.setup,
+            monthly: copy.pricing.monthly,
+            bullets: copy.pricing.bullets,
+            ctaLabel: "Sign up",
+            ctaHref: "/pricing?vertical=retail",
+          },
+        ]}
+        footnote="No long-term contract. Cancel any month."
+      />
+
+      <CaseStudyCard
+        quote={copy.caseStudy.quote}
+        author={copy.caseStudy.author}
+        role={copy.caseStudy.role}
+        metrics={copy.caseStudy.metrics}
+        verified={copy.caseStudy.verified}
+      />
+
+      <BookCallCTA
+        heading={copy.bookCall.heading}
+        note={copy.bookCall.note}
+      />
+
+      <FooterEditorial />
+    </main>
+  );
+}

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/MetaPixel";
 import SkilliesChatWidget from "@/components/SkilliesChatWidget";
@@ -7,6 +7,15 @@ import SkilliesChatWidget from "@/components/SkilliesChatWidget";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-geist-sans",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  // weight omitted = variable font (full 100–900 range available),
+  // which is required when defining axes like opsz (optical size).
+  style: ["normal", "italic"],
+  axes: ["opsz"],
 });
 
 // ⚠️ Critical — without this, mobile browsers render the page at a
@@ -21,25 +30,27 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Skillies.AI — AI Services for Businesses. AI Skills for Students.",
+  title: "Skillies.AI — AI sales workers for Indian businesses",
   description:
-    "One batch. 25 students. ₹50,000 to start. The rest only when you earn ₹1L+/mo. Plus AI services for Kerala businesses. Built in Malappuram. Proof: ₹8,71,982 earned from 63 books on Amazon KDP using the same methodology.",
+    "Skillies for [your business]. The AI sales worker that closes leads in WhatsApp + Instagram DMs in 5 Indian languages. Tools don't sell. Workers do.",
   keywords: [
-    "AI services India",
-    "AI for business",
-    "AI automation Kerala",
-    "AI skills training",
-    "Amazon KDP",
-    "AI publishing",
+    "AI sales agent India",
+    "WhatsApp AI for business",
+    "AI for real estate India",
+    "AI for hajj umrah",
+    "AI sales worker Kerala",
     "Skillies.AI",
-    "KDP course India",
+    "AI for clinics",
+    "AI for study abroad",
+    "AI for coaching institutes",
+    "AI for modular kitchen",
     "Kerala",
     "Malappuram",
   ],
   openGraph: {
-    title: "Skillies.AI — The Batch · 25 students · Malappuram",
+    title: "Skillies.AI — Tools don't sell. Workers do.",
     description:
-      "One batch. ₹50,000 to start. The rest only when you earn ₹1L+/mo. Plus AI services for Kerala businesses. Built in Malappuram.",
+      "AI sales workers for Indian businesses. Built per-vertical, in 5 Indic languages. From Malappuram, Kerala.",
     siteName: "Skillies.AI",
     type: "website",
   },
@@ -51,7 +62,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
         <MetaPixel />
         {children}

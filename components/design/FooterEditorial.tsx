@@ -7,45 +7,40 @@ type Col = { kicker: string; items: Array<[string, string]> };
 
 const COLUMNS: Col[] = [
   {
-    kicker: "AI Business Lab",
+    kicker: "For Business",
     items: [
-      ["All services · Kerala", "/services"],
-      ["AI Business Audit · ₹4,999", "/services#front-desk"],
-      ["AI Front Desk · flagship", "/services#front-desk"],
-      ["WhatsApp Lead Assistant", "/services"],
-      ["AI Voice Receptionist", "/services"],
-      ["CRM + Follow-up Autopilot", "/services"],
-      ["Industry packs", "/services"],
-      ["Book the Audit", "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%20want%20to%20book%20the%20Skillies%20AI%20Business%20Audit%20for%20my%20business.%20My%20business%20is%20"],
+      ["Skillies for Real Estate", "/for/real-estate"],
+      ["Skillies for Hajj & Umrah", "/for/hajj"],
+      ["Skillies for Study Abroad", "/for/study-abroad"],
+      ["Skillies for Coaching", "/for/coaching"],
+      ["Skillies for Modular Kitchen", "/for/interiors"],
+      ["Skillies for Retail / Kirana", "/for/retail"],
     ],
   },
   {
-    kicker: "The Batch",
+    kicker: "Pricing & Demos",
     items: [
-      ["Workshop · May 17 · ₹1,999", "/workshop"],
-      ["The Skillies Batch · 25 seats", "/program"],
-      ["Reserve Early Bird on WhatsApp", "https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20reserve%20an%20Early%20Bird%20%E2%82%B91%2C999%20seat%20for%20the%20May%2017%20Skillies%20Workshop%20in%20Malappuram.%20My%20name%20is%20"],
-      ["Free · AI Avatar Playbook", "/playbook"],
-      ["Free · ChatGPT Business Playbook", "/chatgpt-business"],
+      ["Interactive pricing calculator", "/pricing"],
+      ["Vertical chooser", "/for"],
+      ["Live demo · Venture Navigator", "/demo/venture-navigator"],
+      ["Live demo · Agasthyam Kalari", "/demo/agasthyam"],
+      ["Book a 30-min call", "https://cal.com/sager-zmd4kl/30min"],
+    ],
+  },
+  {
+    kicker: "Skillies School",
+    items: [
+      ["Amazon KDP methodology", "/skillies-school"],
+      ["₹8.7L from 63 books · the proof", "/skillies-school#proof"],
       ["Sign in · Alumni portal", "/login"],
-    ],
-  },
-  {
-    kicker: "Events",
-    items: [
-      ["Workshop · Kerala Tour · 3 Sundays", "/workshop"],
-      ["Workshop agenda", "/workshop#agenda"],
-      ["Workshop pricing", "/workshop#pricing"],
-      ["Upcoming dates", "/#faq"],
     ],
   },
   {
     kicker: "Company",
     items: [
-      ["The manifesto", "/#promise"],
-      ["Proof & receipts", "/#proof"],
-      ["About Ehsan", "/#about"],
-      ["FAQ", "/#faq"],
+      ["Built in Malappuram, Kerala", "/"],
+      ["Talk to Ehsan", "https://cal.com/sager-zmd4kl/30min"],
+      ["WhatsApp · ehsan@skillies.ai", "mailto:ehsan@skillies.ai"],
     ],
   },
   {
@@ -124,10 +119,10 @@ export default function FooterEditorial() {
               textWrap: "balance",
             }}
           >
-            Your first book could be
+            Tools don&rsquo;t sell.
             <br />
             <em style={{ fontStyle: "italic", color: "#EF4444" }}>
-              live on Amazon in 7 days.
+              Workers do.
             </em>
           </h2>
           <p
@@ -139,11 +134,11 @@ export default function FooterEditorial() {
               lineHeight: 1.6,
             }}
           >
-            One message to Ehsan. That’s the start. No commitment until you’re ready.
+            30 minutes with Ehsan. No slides. We scope your vertical, your volumes, the integrations that matter, and you leave with a clear quote.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <a
-              href="https://wa.me/918089941131?text=Hi%20Ehsan%2C%20I%27d%20like%20to%20enroll%20in%20the%2050-day%20KDP%20Mastery%20program.%20My%20name%20is%20"
+              href="https://cal.com/sager-zmd4kl/30min"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -169,13 +164,13 @@ export default function FooterEditorial() {
                 e.currentTarget.style.transform = "scale(1)";
               }}
             >
-              Message Ehsan on WhatsApp
+              Book a 30-min call
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 8l4 4-4 4M3 12h18" />
               </svg>
             </a>
             <a
-              href="/workshop"
+              href="/pricing"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -198,7 +193,7 @@ export default function FooterEditorial() {
                 e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
               }}
             >
-              Or: join the Kerala Tour workshop →
+              Or: see the pricing calculator →
             </a>
           </div>
         </div>

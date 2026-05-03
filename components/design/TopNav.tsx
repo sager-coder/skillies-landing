@@ -5,20 +5,22 @@ import { Wordmark } from "./Primitives";
 
 type Link = { href: string; label: string };
 
+/**
+ * Post-pivot nav · B2B AI Sales Worker is now the primary product.
+ * Workshop / Batch / KDP demoted to a single /skillies-school
+ * destination page (consumer = secondary).
+ */
 const LINKS: Link[] = [
-  { href: "/workshop", label: "Workshop · May 17" },
-  { href: "/program", label: "The Batch" },
-  { href: "/services", label: "Services" },
-  { href: "/services/ai-sales-agent", label: "AI Sales Agent" },
+  { href: "/for/real-estate", label: "For Business" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/skillies-school", label: "Skillies School" },
 ];
 
-/* Note: workshop route also renders an in-page "#pay" anchor
-   (the PaymentDetails section). Its top-nav still shows "Reserve"
-   as the primary CTA pointing to WhatsApp — the anchor is a
-   secondary path for people who scrolled past. */
-
 export default function TopNav({
-  cta = { href: "/workshop", label: "Reserve · ₹1,999" },
+  cta = {
+    href: "https://cal.com/sager-zmd4kl/30min",
+    label: "Book a call",
+  },
 }: {
   cta?: { href: string; label: string };
 }) {

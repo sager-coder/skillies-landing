@@ -53,6 +53,50 @@
   --font-sans: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   --font-serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
   --font-ml: 'Baloo Chettan 2', 'Anek Malayalam', 'Noto Sans Malayalam', 'Inter', system-ui, sans-serif;
+
+  /* ─── Skillies B2B Design System (2026 pivot) ──────────────────
+     The new vertical landing pages (/for/<vertical>) and post-pivot
+     homepage use these tokens. Older consumer-page components still
+     reference the legacy aliases above. */
+
+  /* Core brand */
+  --sk-cream:   #FAF5EB;
+  --sk-ink:     #141414;
+  --sk-red:     #D9342B;
+  --sk-ochre:   #C9A06B;
+  --sk-ink60:   rgba(20, 20, 20, 0.6);
+  --sk-ink40:   rgba(20, 20, 20, 0.4);
+  --sk-ink20:   rgba(20, 20, 20, 0.2);
+  --sk-ink10:   rgba(20, 20, 20, 0.1);
+  --sk-hairline: rgba(20, 20, 20, 0.1);
+
+  /* Vertical accent palettes — applied via per-page wrapper class */
+  --sk-realestate-slate:    #5C6670;
+  --sk-realestate-sandstone: #D4B896;
+
+  --sk-studyabroad-navy:     #1E2A44;
+  --sk-studyabroad-parchment: #F2E9D6;
+
+  --sk-coaching-indigo:      #3D4A6B;
+  --sk-coaching-chalk:       #F5EBD8;
+
+  --sk-interiors-terracotta: #B5613D;
+  --sk-interiors-putty:      #E8DCC4;
+
+  --sk-hajj-forest:          #1F3A2E;
+  --sk-hajj-ivory:           #F0E6D2;
+
+  --sk-retail-saffron:       #E0A656;
+  --sk-retail-clay:          #D9A99B;
+
+  /* Fluid typography scale (mobile-first) */
+  --sk-text-display: clamp(2.75rem, 5vw + 1rem, 5.5rem);
+  --sk-text-h2:      clamp(2rem,    3vw + 1rem, 3.5rem);
+  --sk-text-h3:      clamp(1.5rem,  1.5vw + 1rem, 2rem);
+  --sk-text-lead:    clamp(1.125rem, 0.5vw + 1rem, 1.375rem);
+  --sk-text-body:    1.0625rem; /* 17px */
+  --sk-text-small:   0.9375rem; /* 15px */
+  --sk-text-meta:    0.8125rem; /* 13px tracked uppercase */
 }
 
 @theme inline {
@@ -77,6 +121,11 @@
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
   --font-ml: var(--font-ml);
+  /* Skillies B2B tokens — exposed for Tailwind utility usage */
+  --color-sk-cream: var(--sk-cream);
+  --color-sk-ink: var(--sk-ink);
+  --color-sk-red: var(--sk-red);
+  --color-sk-ochre: var(--sk-ochre);
 }
 
 * {
@@ -146,6 +195,85 @@ body {
   font-style: italic;
   font-weight: 400;
   letter-spacing: -0.015em;
+}
+
+/* ─── Skillies B2B utility classes (post-pivot) ──────────────────
+   New vertical landing pages and the new homepage use these.
+   Legacy consumer components above are unaffected. */
+.sk-font-display {
+  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.02;
+  font-variation-settings: "opsz" 144;
+}
+.sk-font-display-light {
+  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.05;
+  font-variation-settings: "opsz" 96;
+}
+.sk-font-display-italic {
+  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.012em;
+  line-height: 1.05;
+}
+.sk-font-section {
+  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.08;
+}
+.sk-font-body {
+  font-family: var(--font-geist-sans), 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.5;
+}
+.sk-font-meta {
+  font-family: var(--font-geist-sans), 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: var(--sk-text-meta);
+  color: var(--sk-ink60);
+}
+
+/* Skillies B2B fade-up (single motion primitive — no parallax, no spring) */
+.sk-fade-up {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sk-fade-up.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-fade-up { transition: none; opacity: 1; transform: none; }
+}
+
+/* Section padding rhythm */
+.sk-section { padding-top: 6rem; padding-bottom: 6rem; }
+@media (min-width: 768px) {
+  .sk-section { padding-top: 8rem; padding-bottom: 8rem; }
+}
+
+/* Container */
+.sk-container {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (min-width: 768px) {
+  .sk-container { padding-left: 2.5rem; padding-right: 2.5rem; }
 }
 
 /* Scrollbar */

@@ -1,39 +1,33 @@
-import HeroV2 from "@/components/design/HeroV2";
-import PromiseEditorial from "@/components/design/PromiseEditorial";
-import Transformation from "@/components/design/Transformation";
-import ProofWall from "@/components/design/ProofWall";
-import First7Days from "@/components/design/First7Days";
-import HowItWorks from "@/components/design/HowItWorks";
-import Program from "@/components/design/ProgramEditorial";
-import Guarantee from "@/components/Guarantee";
-import AboutEditorial from "@/components/design/AboutEditorial";
-import TalkToEhsan from "@/components/design/TalkToEhsan";
-import FAQ from "@/components/FAQ";
-import FooterEditorial from "@/components/design/FooterEditorial";
+/**
+ * Homepage · post-pivot (May 2026).
+ *
+ * The B2B AI Sales Worker is now the front door. The consumer Workshop
+ * + Batch + Amazon KDP content lives at /skillies-school as a single
+ * destination page (not in primary nav).
+ *
+ * Section flow:
+ *   TopNav · HeroB2B · VerticalGrid · B2BHowItWorks · BookCallCTA · Footer
+ */
 import TopNav from "@/components/design/TopNav";
+import HeroB2B from "@/components/design/HeroB2B";
+import VerticalGrid from "@/components/design/VerticalGrid";
+import B2BHowItWorks from "@/components/design/B2BHowItWorks";
+import BookCallCTA from "@/components/skillies/BookCallCTA";
+import FooterEditorial from "@/components/design/FooterEditorial";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function Home() {
   return (
     <main>
       <TopNav />
-      <HeroV2 />
-      <section id="promise">
-        <PromiseEditorial />
-      </section>
-      <Transformation />
-      <section id="proof">
-        <ProofWall />
-      </section>
-      <First7Days />
-      <HowItWorks />
-      <Program />
-      <Guarantee />
-      <AboutEditorial />
-      <TalkToEhsan context="default" tone="cream" />
-      <section id="faq">
-        <FAQ />
-      </section>
+      <HeroB2B />
+      <VerticalGrid />
+      <B2BHowItWorks />
+      <BookCallCTA
+        heading="One conversation. We'll know if it's a fit."
+        note="30 minutes with Ehsan, founder of Skillies. We scope your vertical, your volumes, the integrations that matter, and you leave with a clear quote — not a brochure."
+        manglishLine="Malappuram-il ninnu thanne build cheyyunnu. Direct call cheyyam."
+      />
       <FooterEditorial />
       <WhatsAppButton />
     </main>

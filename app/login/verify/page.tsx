@@ -44,7 +44,7 @@ function VerifyForm() {
   const router = useRouter();
   const params = useSearchParams();
   const phone = params.get("phone") || "";
-  const next = params.get("next") || "/learn";
+  const next = params.get("next") || "/skillies-school";
 
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
