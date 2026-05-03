@@ -8,7 +8,7 @@
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
-import HeroBlock from "@/components/skillies/HeroBlock";
+import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
 import HeroChatPreview from "@/components/design/HeroChatPreview";
 import PainCard from "@/components/skillies/PainCard";
 import CapabilityHighlight from "@/components/skillies/CapabilityHighlight";
@@ -16,6 +16,7 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import RevealOnScroll from "@/components/skillies/RevealOnScroll";
 import { studyAbroadCopy as copy } from "@/content/verticals/studyabroad";
 
 export const metadata: Metadata = {
@@ -29,76 +30,89 @@ export default function StudyAbroadPage() {
     <main style={{ background: "var(--sk-cream)" }}>
       <TopNav />
 
-      <HeroBlock
-        layout="split"
-        variant="studyabroad"
-        headline={copy.hero.headline}
-        subhead={copy.hero.subhead}
-        ctaPrimary={copy.hero.ctaPrimary}
-        ctaSecondary={copy.hero.ctaSecondary}
-        trustStrip={copy.hero.trust}
-        image={copy.hero.image}
-      />
-      <section className="sk-section" style={{ paddingTop: 0 }}>
-        <div className="sk-container max-w-[820px]">
-          <p
-            className="sk-font-meta mb-4"
-            style={{ color: "var(--sk-ink60)" }}
-          >
-            SEE IT WORK · LIVE THREAD
-          </p>
-          <HeroChatPreview lockTo="study-abroad" />
-        </div>
-      </section>
-
-      <PainCard
-        items={copy.pain}
-        variant="stat-bordered"
-        accent="var(--sk-studyabroad-navy)"
+      <HeroBlockEditorial
+        vertical="studyabroad"
+        eyebrow="SKILLIES FOR · STUDY ABROAD"
+        headlineLead="Reply to every"
+        headlineEmphasis="UK, Canada, Germany"
+        headlineTail="enquiry before they ghost."
+        subhead="Skillies' WhatsApp agent qualifies students by IELTS band, country, budget and intake, sends the right brochure in Manglish or English, and only escalates serious enquiries to your counsellors. Mone, naale call cheyyam — but only if they're real."
+        trustLine="Used by counsellors placing students in UK, Canada, Germany, Australia · ICEF-aware"
+        primaryCTA={copy.hero.ctaPrimary}
+        secondaryCTA={copy.hero.ctaSecondary}
+        imageSrc={copy.hero.image.src}
+        imageAlt={copy.hero.image.alt}
       />
 
-      <CapabilityHighlight
-        eyebrow={copy.capabilities.eyebrow}
-        title={copy.capabilities.title}
-        items={copy.capabilities.items}
-        columns={2}
-        cardBg="var(--sk-studyabroad-parchment)"
-        cardHairline="var(--sk-studyabroad-navy)"
-        hairlinePosition="bottom"
-      />
+      <RevealOnScroll>
+        <section className="sk-section" style={{ paddingTop: 0 }}>
+          <div className="sk-container max-w-[820px]">
+            <p className="sk-font-meta mb-4" style={{ color: "var(--sk-ink60)" }}>
+              SEE IT WORK · LIVE THREAD
+            </p>
+            <HeroChatPreview lockTo="study-abroad" />
+          </div>
+        </section>
+      </RevealOnScroll>
 
-      <DemoCTA
-        demoHref="/demo/study-abroad"
-        heading={copy.demoCTA.heading}
-        body={copy.demoCTA.body}
-        mockChat={copy.demoCTA.mockChat}
-        ctaLabel="Talk to the demo agent"
-      />
+      <RevealOnScroll>
+        <PainCard
+          items={copy.pain}
+          variant="stat-bordered"
+          accent="var(--sk-studyabroad-navy)"
+        />
+      </RevealOnScroll>
 
-      <PricingSnapshot
-        layout="single"
-        eyebrow="INVESTMENT"
-        tiers={[
-          {
-            name: "Study Abroad · Growth",
-            setup: copy.pricing.setup,
-            monthly: copy.pricing.monthly,
-            bullets: copy.pricing.bullets,
-            ctaLabel: "Get a custom quote",
-            ctaHref: "/pricing?vertical=study-abroad",
-          },
-        ]}
-        footnote="Public pricing calculator · /pricing"
-      />
+      <RevealOnScroll>
+        <CapabilityHighlight
+          eyebrow={copy.capabilities.eyebrow}
+          title={copy.capabilities.title}
+          items={copy.capabilities.items}
+          columns={2}
+          cardBg="var(--sk-studyabroad-parchment)"
+          cardHairline="var(--sk-studyabroad-navy)"
+          hairlinePosition="bottom"
+        />
+      </RevealOnScroll>
 
-      <CaseStudyCard
-        quote={copy.caseStudy.quote}
-        author={copy.caseStudy.author}
-        role={copy.caseStudy.role}
-        metrics={copy.caseStudy.metrics}
-        verified={copy.caseStudy.verified}
-        sectionBg="var(--sk-studyabroad-parchment)"
-      />
+      <RevealOnScroll>
+        <DemoCTA
+          demoHref="/demo/study-abroad"
+          heading={copy.demoCTA.heading}
+          body={copy.demoCTA.body}
+          mockChat={copy.demoCTA.mockChat}
+          ctaLabel="Talk to the demo agent"
+        />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
+        <PricingSnapshot
+          layout="single"
+          eyebrow="INVESTMENT"
+          tiers={[
+            {
+              name: "Study Abroad · Growth",
+              setup: copy.pricing.setup,
+              monthly: copy.pricing.monthly,
+              bullets: copy.pricing.bullets,
+              ctaLabel: "Get a custom quote",
+              ctaHref: "/pricing?vertical=study-abroad",
+            },
+          ]}
+          footnote="Public pricing calculator · /pricing"
+        />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
+        <CaseStudyCard
+          quote={copy.caseStudy.quote}
+          author={copy.caseStudy.author}
+          role={copy.caseStudy.role}
+          metrics={copy.caseStudy.metrics}
+          verified={copy.caseStudy.verified}
+          sectionBg="var(--sk-studyabroad-parchment)"
+        />
+      </RevealOnScroll>
 
       <BookCallCTA
         heading={copy.bookCall.heading}

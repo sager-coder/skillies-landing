@@ -8,7 +8,7 @@
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
-import HeroBlock from "@/components/skillies/HeroBlock";
+import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
 import HeroChatPreview from "@/components/design/HeroChatPreview";
 import PainCard from "@/components/skillies/PainCard";
 import CapabilityHighlight from "@/components/skillies/CapabilityHighlight";
@@ -16,6 +16,7 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import RevealOnScroll from "@/components/skillies/RevealOnScroll";
 import { interiorsCopy as copy } from "@/content/verticals/interiors";
 
 export const metadata: Metadata = {
@@ -29,75 +30,88 @@ export default function InteriorsPage() {
     <main style={{ background: "var(--sk-cream)" }}>
       <TopNav />
 
-      <HeroBlock
-        layout="fullbleed"
-        variant="interiors"
-        headline={copy.hero.headline}
-        subhead={copy.hero.subhead}
-        ctaPrimary={copy.hero.ctaPrimary}
-        ctaSecondary={copy.hero.ctaSecondary}
-        trustStrip={copy.hero.trust}
-        image={copy.hero.image}
-      />
-      <section className="sk-section" style={{ paddingTop: 0 }}>
-        <div className="sk-container max-w-[820px]">
-          <p
-            className="sk-font-meta mb-4"
-            style={{ color: "var(--sk-ink60)" }}
-          >
-            SEE IT WORK · LIVE THREAD
-          </p>
-          <HeroChatPreview lockTo="interiors" />
-        </div>
-      </section>
-
-      <PainCard
-        items={copy.pain}
-        variant="stat-large"
-        accent="var(--sk-interiors-terracotta)"
+      <HeroBlockEditorial
+        vertical="interiors"
+        eyebrow="SKILLIES FOR · MODULAR KITCHEN / INTERIORS"
+        headlineLead="Convert your"
+        headlineEmphasis="Sunday-morning Instagram leads"
+        headlineTail="before they call HomeLane."
+        subhead="Skillies' WhatsApp agent qualifies modular kitchen and full-home interior leads, sends a personalized quote range from a customer's empty-room photo, books a designer site visit, and follows up for 30 days. Built for studios doing ₹5L–₹50L jobs."
+        trustLine="Used by interior studios in Kerala, Bangalore, Mumbai · Salesforce / Zoho / LeadSquared integrations"
+        primaryCTA={copy.hero.ctaPrimary}
+        secondaryCTA={copy.hero.ctaSecondary}
+        imageSrc={copy.hero.image.src}
+        imageAlt={copy.hero.image.alt}
       />
 
-      <CapabilityHighlight
-        eyebrow={copy.capabilities.eyebrow}
-        title={copy.capabilities.title}
-        items={copy.capabilities.items}
-        columns={2}
-        cardBg="var(--sk-interiors-putty)"
-        cardHairline="var(--sk-interiors-terracotta)"
-        hairlinePosition="top"
-      />
+      <RevealOnScroll>
+        <section className="sk-section" style={{ paddingTop: 0 }}>
+          <div className="sk-container max-w-[820px]">
+            <p className="sk-font-meta mb-4" style={{ color: "var(--sk-ink60)" }}>
+              SEE IT WORK · LIVE THREAD
+            </p>
+            <HeroChatPreview lockTo="interiors" />
+          </div>
+        </section>
+      </RevealOnScroll>
 
-      <DemoCTA
-        demoHref="/demo/interiors"
-        heading={copy.demoCTA.heading}
-        body={copy.demoCTA.body}
-        mockChat={copy.demoCTA.mockChat}
-        ctaLabel="Try the demo agent"
-      />
+      <RevealOnScroll>
+        <PainCard
+          items={copy.pain}
+          variant="stat-large"
+          accent="var(--sk-interiors-terracotta)"
+        />
+      </RevealOnScroll>
 
-      <PricingSnapshot
-        layout="single"
-        eyebrow="INVESTMENT"
-        tiers={[
-          {
-            name: "Interiors · Growth",
-            setup: copy.pricing.setup,
-            monthly: copy.pricing.monthly,
-            bullets: copy.pricing.bullets,
-            ctaLabel: "Get a custom quote",
-            ctaHref: "/pricing?vertical=interiors",
-          },
-        ]}
-      />
+      <RevealOnScroll>
+        <CapabilityHighlight
+          eyebrow={copy.capabilities.eyebrow}
+          title={copy.capabilities.title}
+          items={copy.capabilities.items}
+          columns={2}
+          cardBg="var(--sk-interiors-putty)"
+          cardHairline="var(--sk-interiors-terracotta)"
+          hairlinePosition="top"
+        />
+      </RevealOnScroll>
 
-      <CaseStudyCard
-        quote={copy.caseStudy.quote}
-        author={copy.caseStudy.author}
-        role={copy.caseStudy.role}
-        metrics={copy.caseStudy.metrics}
-        verified={copy.caseStudy.verified}
-        sectionBg="var(--sk-interiors-putty)"
-      />
+      <RevealOnScroll>
+        <DemoCTA
+          demoHref="/demo/interiors"
+          heading={copy.demoCTA.heading}
+          body={copy.demoCTA.body}
+          mockChat={copy.demoCTA.mockChat}
+          ctaLabel="Try the demo agent"
+        />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
+        <PricingSnapshot
+          layout="single"
+          eyebrow="INVESTMENT"
+          tiers={[
+            {
+              name: "Interiors · Growth",
+              setup: copy.pricing.setup,
+              monthly: copy.pricing.monthly,
+              bullets: copy.pricing.bullets,
+              ctaLabel: "Get a custom quote",
+              ctaHref: "/pricing?vertical=interiors",
+            },
+          ]}
+        />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
+        <CaseStudyCard
+          quote={copy.caseStudy.quote}
+          author={copy.caseStudy.author}
+          role={copy.caseStudy.role}
+          metrics={copy.caseStudy.metrics}
+          verified={copy.caseStudy.verified}
+          sectionBg="var(--sk-interiors-putty)"
+        />
+      </RevealOnScroll>
 
       <BookCallCTA
         heading={copy.bookCall.heading}
