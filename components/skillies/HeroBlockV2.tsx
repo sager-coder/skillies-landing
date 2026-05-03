@@ -200,16 +200,16 @@ function MetricTicker() {
 
 function MetricCell({ metric, delay }: { metric: Metric; delay: number }) {
   const reduced = useReducedMotion();
-  const [display, setDisplay] = useState(0);
+  // Initialize with target so SSR / no-JS / crawlers see the real number.
+  // After mount we briefly reset to 0 and animate up — SSR snapshot stays correct.
+  const [display, setDisplay] = useState(metric.value);
 
   useEffect(() => {
-    // Always route through animate() — reduced-motion gets duration: 0 so
-    // the value snaps to its final state via the same onUpdate codepath.
-    // Avoids the `react-hooks/set-state-in-effect` lint rule the existing
-    // CountUp component solved the same way.
+    if (reduced) return; // Reduced-motion users keep the static target.
+    setDisplay(0);
     const controls = animate(0, metric.value, {
-      duration: reduced ? 0 : 1.8,
-      delay: reduced ? 0 : delay,
+      duration: 1.8,
+      delay,
       ease: EASE_OUT_EXPO,
       onUpdate: (v) => setDisplay(v),
     });

@@ -60,16 +60,11 @@ function easeOutCubic(t: number): number {
  * lacks IntersectionObserver, we render the final value immediately
  * — keeps SSR + no-motion snapshots correct without a state churn.
  */
+// Always return `to` from the initializer so SSR and client first-render
+// match (no hydration warning). The useEffect below resets to 0 and
+// ramps up only when the element actually enters the viewport.
 function getInitialValue(to: number): number {
-  if (typeof window === "undefined") return 0;
-  if (typeof IntersectionObserver === "undefined") return to;
-  if (
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
-    return to;
-  }
-  return 0;
+  return to;
 }
 
 export default function BigStatTicker({

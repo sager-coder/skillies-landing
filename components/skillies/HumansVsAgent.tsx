@@ -113,13 +113,16 @@ type CounterProps = {
 };
 
 function Counter({ to, inView, formatter }: CounterProps) {
-  const value = useMotionValue(0);
+  // Start at target so SSR / no-JS / crawlers see the real number.
+  // When the section enters the viewport we reset to 0 and animate up.
+  const value = useMotionValue(to);
   const display = useTransform(value, (latest) =>
     formatter ? formatter(latest) : Math.round(latest).toLocaleString("en-IN"),
   );
 
   useEffect(() => {
     if (!inView) return;
+    value.set(0);
     const controls = animate(value, to, {
       duration: 1.5,
       ease: [0.22, 1, 0.36, 1],
