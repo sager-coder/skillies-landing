@@ -10,6 +10,7 @@
 "use client";
 
 import Link from "next/link";
+import HeroChatPreview from "./HeroChatPreview";
 
 export default function HeroB2B() {
   return (
@@ -89,45 +90,14 @@ export default function HeroB2B() {
           </div>
 
           <div className="hidden md:block">
-            <FounderQuote />
+            <HeroChatPreview />
           </div>
         </div>
       </div>
 
       <div className="sk-container mt-12 md:hidden">
-        <FounderQuote />
+        <HeroChatPreview />
       </div>
     </section>
-  );
-}
-
-function FounderQuote() {
-  return (
-    <aside
-      className="rounded-2xl p-7 md:p-8"
-      style={{
-        background: "var(--sk-cream-dark)",
-        border: "1px solid var(--sk-hairline)",
-      }}
-    >
-      <p
-        className="sk-font-display-italic"
-        style={{
-          fontSize: "1.25rem",
-          lineHeight: 1.45,
-          color: "var(--sk-ink)",
-        }}
-      >
-        &ldquo;Most WhatsApp tools route messages. We built workers that
-        actually close deals — in Malayalam, Hindi, English, and the dialect
-        your customer types in.&rdquo;
-      </p>
-      <p
-        className="sk-font-body mt-5"
-        style={{ fontSize: "0.9375rem", color: "var(--sk-ink60)" }}
-      >
-        <strong style={{ color: "var(--sk-ink)" }}>Ehsan</strong> · founder, Skillies.AI
-      </p>
-    </aside>
   );
 }
