@@ -206,27 +206,10 @@ export default function HumansVsAgent({
           </p>
         </div>
 
-        {/* Two-column grid */}
-        <div
-          className="grid gap-6 md:gap-0"
-          style={{
-            gridTemplateColumns: "1fr",
-          }}
-        >
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: "1fr",
-            }}
-          >
-            <div
-              className="md:grid"
-              style={{
-                gridTemplateColumns: "1fr 1px 1fr",
-                display: "grid",
-                gap: 0,
-              }}
-            >
+        {/* Two-column grid · stacks on mobile, 1fr-divider-1fr on desktop */}
+        <div className="grid gap-6 md:gap-0 grid-cols-1">
+          <div className="grid grid-cols-1">
+            <div className="grid grid-cols-1 md:[grid-template-columns:1fr_1px_1fr]">
               {/* LEFT — Without Skillies */}
               <motion.div
                 initial={{ opacity: 0, x: -32 }}
@@ -252,7 +235,7 @@ export default function HumansVsAgent({
                 <div
                   className="sk-font-display"
                   style={{
-                    fontSize: "clamp(3rem, 4.2vw + 1rem, 4.75rem)",
+                    fontSize: "clamp(2.25rem, 4vw + 0.5rem, 4.5rem)",
                     color: "var(--sk-ink)",
                     lineHeight: 0.95,
                     letterSpacing: "-0.025em",
@@ -415,7 +398,7 @@ export default function HumansVsAgent({
                 <div
                   className="sk-font-display"
                   style={{
-                    fontSize: "clamp(3rem, 4.2vw + 1rem, 4.75rem)",
+                    fontSize: "clamp(2.25rem, 4vw + 0.5rem, 4.5rem)",
                     color: "var(--sk-ink)",
                     lineHeight: 0.95,
                     letterSpacing: "-0.025em",

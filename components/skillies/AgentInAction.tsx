@@ -215,7 +215,9 @@ function PanelGrid() {
       }}
     >
       {VERTICALS.map((v, i) => (
-        <ChatPanel key={v.key} vertical={v} startDelay={i * 0.6} />
+        <div key={v.key} className={i > 0 ? "hidden md:block" : ""}>
+          <ChatPanel vertical={v} startDelay={i * 0.6} />
+        </div>
       ))}
     </div>
   );
