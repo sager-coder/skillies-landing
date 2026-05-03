@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/MetaPixel";
-import SkilliesChatWidget from "@/components/SkilliesChatWidget";
+import JsonLd from "@/components/JsonLd";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -97,6 +97,7 @@ export default function RootLayout({
       className={`${inter.variable} ${fraunces.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <JsonLd variant="site" />
         <MetaPixel />
         {children}
       </body>
