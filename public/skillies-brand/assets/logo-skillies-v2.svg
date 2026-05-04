@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 140" width="720" height="140" role="img" aria-label="Skillies.AI">
+  <defs>
+    <style>
+      .sk-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-weight: 900; letter-spacing: -0.055em; }
+      .sk-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+      .sk-meta { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.30em; text-transform: uppercase; }
+    </style>
+  </defs>
+
+  <!-- Editorial seal / masthead mark -->
+  <g transform="translate(12, 10)">
+    <circle cx="60" cy="60" r="58" fill="none" stroke="#1A1A1A" stroke-width="2.5"/>
+    <circle cx="60" cy="60" r="50" fill="none" stroke="#1A1A1A" stroke-width="0.75" opacity="0.35"/>
+
+    <!-- Section symbol, editorial nod -->
+    <text x="60" y="82" text-anchor="middle" class="sk-serif" font-size="78" fill="#C62828">S</text>
+
+    <!-- Micro dateline -->
+    <text x="60" y="108" text-anchor="middle" class="sk-meta" font-size="7" fill="#1A1A1A">EST · 2026 · KERALA</text>
+    <line x1="28" y1="20" x2="92" y2="20" stroke="#1A1A1A" stroke-width="1"/>
+  </g>
+
+  <!-- Wordmark lockup -->
+  <g transform="translate(160, 0)">
+    <!-- Top editorial rule + dateline -->
+    <line x1="0" y1="30" x2="24" y2="30" stroke="#C62828" stroke-width="2"/>
+    <text x="32" y="33" class="sk-meta" font-size="10" fill="#1A1A1A">§ A RESEARCH + TEACH SCHOOL</text>
+
+    <!-- Primary wordmark -->
+    <text x="0" y="96" class="sk-sans" font-size="84" fill="#1A1A1A">SKILLIES</text>
+    <text x="355" y="96" class="sk-sans" font-size="84" fill="#C62828">.AI</text>
+
+    <!-- Bottom editorial rule + tagline -->
+    <line x1="0" y1="116" x2="540" y2="116" stroke="#1A1A1A" stroke-width="0.75" opacity="0.35"/>
+    <text x="0" y="132" class="sk-meta" font-size="9" fill="#6B7280">FIND WHAT PAYS · TEACH IT PLAINLY · SHOW THE RECEIPTS</text>
+  </g>
+</svg>

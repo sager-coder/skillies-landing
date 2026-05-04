@@ -1,17 +1,13 @@
 "use client";
 
 /**
- * AgentInAction — three vertical-themed chat panels that loop continuously,
- * showing the same agent handling Real Estate, Insurance, and Coaching
- * conversations side-by-side. Above them: a live-feeling counter of
- * concurrent conversations across India; below them: a four-stat callout.
- *
- * The chat animation pattern per panel:
- *   typing dot → buyer message → typing dot → agent message → … → pause →
- *   reset (panel fades out, restarts from message 0).
- *
- * Each panel runs on its own React state machine so they don't sync up
- * mechanically — variation feels alive, sync feels like a slideshow.
+ * AgentInAction — three vertical-themed chat panels that loop continuously.
+ * 
+ * Visual uplift (v4):
+ *  - Glassmorphism on panels and headers.
+ *  - Refined typography and spacing.
+ *  - Subtle gradients and better depth for bubbles.
+ *  - More polished live indicator.
  */
 
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -19,14 +15,11 @@ import { useEffect, useState } from "react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
-/* ─────────────────────────── Data model ───────────────────────── */
-
 type Sender = "buyer" | "agent";
 
 type ChatMessage = {
   sender: Sender;
   text: string;
-  /** Optional small caption rendered under the bubble (e.g. "image attached"). */
   meta?: string;
 };
 
@@ -34,11 +27,8 @@ type Vertical = {
   key: string;
   label: string;
   scenario: string;
-  /** Background color of the panel body. */
   bg: string;
-  /** Accent color used for the agent avatar dot + buyer bubble. */
   accent: string;
-  /** Color of the buyer bubble text against the accent. */
   accentInk: string;
   messages: ChatMessage[];
 };
@@ -107,16 +97,14 @@ const VERTICALS: Vertical[] = [
   },
 ];
 
-/* ──────────────────────── Top-level section ────────────────────── */
-
 export default function AgentInAction() {
   return (
     <section
       id="agent-in-action"
-      className="relative"
+      className="relative sk-grain border-b border-sk-hairline overflow-hidden"
       style={{ background: "var(--sk-cream)" }}
     >
-      <div className="sk-container py-24 md:py-32">
+      <div className="sk-container py-32 md:py-44">
         <Header />
         <LiveTicker />
         <PanelGrid />
@@ -128,107 +116,101 @@ export default function AgentInAction() {
 
 function Header() {
   return (
-    <div className="max-w-[40ch]">
-      <p className="sk-font-meta">Agent in action</p>
-      <h2
-        className="sk-font-section mt-3"
+    <div className="max-w-2xl">
+      <motion.p 
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="sk-font-meta"
+      >
+        Agent in action
+      </motion.p>
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.1, duration: 0.8 }}
+        className="sk-font-section mt-4 sk-text-balance"
         style={{
           fontSize: "var(--sk-text-h2)",
           color: "var(--sk-ink)",
+          lineHeight: 1.1,
         }}
       >
-        One agent. Five verticals. Every conversation.
-      </h2>
+        One agent. Five verticals. <br />
+        <span className="text-sk-red">Every conversation remembered.</span>
+      </motion.h2>
     </div>
   );
 }
 
-/* ───────────────────────── Live ticker ─────────────────────────── */
-
 function LiveTicker() {
   const [count, setCount] = useState(1247);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
+    if (reduced) return;
     const id = window.setInterval(() => {
-      // Random walk around 1247 — bounded so we never sit on the same value
-      // for long but never spiral away from realistic.
       setCount((prev) => {
-        const jitter = Math.floor(Math.random() * 31) - 15; // -15..+15
+        const jitter = Math.floor(Math.random() * 31) - 15;
         const next = prev + jitter;
-        // Soft clamp toward 1247 so the walk doesn't drift forever.
         if (next < 1180) return 1200;
         if (next > 1320) return 1300;
         return next;
       });
-    }, 3000);
+    }, 5000); // Slower interval for better performance
     return () => window.clearInterval(id);
-  }, []);
+  }, [reduced]);
 
   return (
-    <div
-      className="mt-8 inline-flex items-center gap-3 rounded-full"
-      style={{
-        background: "var(--sk-cream)",
-        border: "1px solid var(--sk-hairline)",
-        padding: "0.6rem 1.1rem",
-      }}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      className="mt-10 inline-flex items-center gap-4 rounded-full sk-glass px-6 py-3"
     >
-      <span
-        aria-hidden
-        className="relative inline-flex h-2 w-2"
-      >
-        <span
-          className="absolute inset-0 rounded-full"
-          style={{ background: "var(--sk-red)", animation: "pulse 1.6s ease-in-out infinite" }}
+      <div className="relative flex h-3 w-3">
+        <motion.span
+          animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute h-full w-full rounded-full bg-sk-red opacity-75"
         />
-        <span
-          className="relative inline-flex h-2 w-2 rounded-full"
-          style={{ background: "var(--sk-red)" }}
-        />
-      </span>
+        <span className="relative h-3 w-3 rounded-full bg-sk-red shadow-[0_0_8px_var(--sk-red)]" />
+      </div>
       <p
         className="sk-font-body"
         style={{
-          fontSize: "0.9375rem",
+          fontSize: "1rem",
           color: "var(--sk-ink)",
-          letterSpacing: "-0.005em",
+          letterSpacing: "-0.01em",
         }}
       >
-        Right now, agents are handling{" "}
-        <span style={{ fontWeight: 600 }} className="tabular-nums">
+        Currently handling{" "}
+        <span style={{ fontWeight: 700 }} className="tabular-nums">
           {count.toLocaleString("en-IN")}
         </span>{" "}
-        <span style={{ color: "var(--sk-ink60)" }}>conversations across India</span>
+        <span className="opacity-60">conversations live</span>
       </p>
-    </div>
+    </motion.div>
   );
 }
-
-/* ──────────────────────── Panel grid ───────────────────────────── */
 
 function PanelGrid() {
   return (
     <div
-      className="mt-12 grid gap-6"
+      className="mt-16 grid gap-8"
       style={{
-        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
       }}
     >
       {VERTICALS.map((v, i) => (
-        <div key={v.key} className={i > 0 ? "hidden md:block" : ""}>
-          <ChatPanel vertical={v} startDelay={i * 0.6} />
+        <div key={v.key} className={i > 0 ? "hidden lg:block" : ""}>
+          <ChatPanel vertical={v} startDelay={i * 0.5} />
         </div>
       ))}
     </div>
   );
 }
-
-/* ──────────────────────── Single chat panel ─────────────────────
-   State machine: visibleCount tracks how many messages are revealed.
-   typing=true between message reveals. Each message dwells, the next
-   typing-dot appears, then the next message reveals. After the final
-   message, holds for ~3.5s then resets visibleCount→0 and loops.
-*/
 
 function ChatPanel({
   vertical,
@@ -252,9 +234,6 @@ function ChatPanel({
       timeouts.push(id);
     };
 
-    // Reduced-motion users see the full thread, no looping. Routed through
-    // schedule() so the setState calls don't run synchronously inside the
-    // effect body (matches react-hooks/set-state-in-effect).
     if (reduced) {
       schedule(() => {
         setVisibleCount(vertical.messages.length);
@@ -267,26 +246,23 @@ function ChatPanel({
     }
 
     const runCycle = () => {
-      let t = startDelay * 1000;
+      let t = (startDelay * 1000) + 500;
       schedule(() => {
         setVisibleCount(0);
         setTyping(false);
       }, t);
 
       vertical.messages.forEach((_, idx) => {
-        // Typing dot appears, then the message reveals 850ms later.
         schedule(() => setTyping(true), t);
-        t += 850;
+        t += 1000;
         schedule(() => {
           setTyping(false);
           setVisibleCount(idx + 1);
         }, t);
-        // Dwell between messages.
-        t += 1200;
+        t += 1500;
       });
 
-      // Hold the completed thread, then reset and loop.
-      t += 2500;
+      t += 3500;
       schedule(() => {
         if (!cancelled) runCycle();
       }, t);
@@ -302,21 +278,21 @@ function ChatPanel({
 
   return (
     <motion.div
-      className="flex flex-col overflow-hidden rounded-2xl"
-      initial={{ opacity: 0, y: 20 }}
+      className="flex flex-col overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(20,20,20,0.05)]"
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
       style={{
-        background: vertical.bg,
+        background: `linear-gradient(to bottom, white, ${vertical.bg})`,
         border: "1px solid var(--sk-hairline)",
-        minHeight: 460,
+        minHeight: 520,
       }}
     >
       <PanelHeader vertical={vertical} />
       <div
-        className="flex-1 px-4 pt-4 pb-5 sm:px-5"
-        style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}
+        className="flex-1 px-6 pt-6 pb-8"
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
       >
         <AnimatePresence initial={false}>
           {vertical.messages.slice(0, visibleCount).map((msg, idx) => (
@@ -336,39 +312,33 @@ function ChatPanel({
 function PanelHeader({ vertical }: { vertical: Vertical }) {
   return (
     <div
-      className="flex items-center gap-3 px-5 py-4"
-      style={{
-        borderBottom: "1px solid var(--sk-hairline)",
-        background: "rgba(255, 255, 255, 0.35)",
-      }}
+      className="flex items-center gap-4 px-6 py-5 sk-glass border-b border-sk-hairline"
     >
-      <span
-        aria-hidden
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full"
+      <div
+        className="flex h-10 w-10 items-center justify-center rounded-full shadow-sm"
         style={{
           background: vertical.accent,
           color: vertical.accentInk,
           fontFamily: "var(--font-fraunces), Georgia, serif",
-          fontWeight: 600,
-          fontSize: "0.95rem",
+          fontWeight: 700,
+          fontSize: "1.1rem",
         }}
       >
         S
-      </span>
+      </div>
       <div className="min-w-0">
         <p
-          className="sk-font-body truncate"
+          className="sk-font-body truncate font-bold"
           style={{
-            fontSize: "0.875rem",
-            fontWeight: 600,
+            fontSize: "0.95rem",
             color: "var(--sk-ink)",
           }}
         >
-          Skillies - {vertical.label}
+          {vertical.label} Agent
         </p>
         <p
-          className="sk-font-body truncate"
-          style={{ fontSize: "0.75rem", color: "var(--sk-ink60)" }}
+          className="sk-font-body truncate opacity-60 italic"
+          style={{ fontSize: "0.8rem" }}
         >
           {vertical.scenario}
         </p>
@@ -387,41 +357,40 @@ function ChatBubble({
   const isBuyer = msg.sender === "buyer";
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
       style={{
         alignSelf: isBuyer ? "flex-end" : "flex-start",
-        maxWidth: "82%",
+        maxWidth: "85%",
       }}
     >
       <div
+        className="shadow-sm"
         style={{
-          background: isBuyer ? vertical.accent : "rgba(255,255,255,0.92)",
+          background: isBuyer ? vertical.accent : "white",
           color: isBuyer ? vertical.accentInk : "var(--sk-ink)",
-          padding: "0.6rem 0.85rem",
+          padding: "0.8rem 1.1rem",
           borderRadius: isBuyer
-            ? "14px 14px 4px 14px"
-            : "14px 14px 14px 4px",
-          fontSize: "0.875rem",
-          lineHeight: 1.4,
-          letterSpacing: "-0.005em",
-          fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
-          boxShadow: isBuyer ? "none" : "0 1px 0 rgba(20,20,20,0.04)",
+            ? "20px 20px 4px 20px"
+            : "20px 20px 20px 4px",
+          fontSize: "0.9375rem",
+          lineHeight: 1.5,
+          letterSpacing: "-0.01em",
+          border: isBuyer ? "none" : "1px solid var(--sk-hairline)",
         }}
       >
         {msg.text}
       </div>
       {msg.meta ? (
         <p
-          className="sk-font-meta mt-1"
+          className="sk-font-meta mt-2"
           style={{
-            fontSize: "0.6875rem",
-            letterSpacing: "0.06em",
-            color: "var(--sk-ink60)",
-            paddingLeft: isBuyer ? 0 : "0.25rem",
-            paddingRight: isBuyer ? "0.25rem" : 0,
+            fontSize: "0.7rem",
+            letterSpacing: "0.05em",
+            color: "var(--sk-ink40)",
             textAlign: isBuyer ? "right" : "left",
+            fontWeight: 600,
           }}
         >
           {msg.meta}
@@ -437,29 +406,15 @@ function TypingDots({ vertical }: { vertical: Vertical }) {
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      style={{
-        alignSelf: "flex-start",
-        background: "rgba(255,255,255,0.92)",
-        padding: "0.6rem 0.85rem",
-        borderRadius: "14px 14px 14px 4px",
-        display: "inline-flex",
-        gap: "4px",
-        alignItems: "center",
-      }}
+      className="inline-flex gap-1.5 px-4 py-3 bg-white rounded-full border border-sk-hairline shadow-sm"
       aria-label="Agent is typing"
     >
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
-          style={{
-            width: 6,
-            height: 6,
-            borderRadius: "50%",
-            background: vertical.accent,
-            display: "inline-block",
-          }}
-          animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
+          className="w-2 h-2 rounded-full"
+          style={{ background: vertical.accent }}
+          animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
           transition={{
             duration: 1,
             repeat: Infinity,
@@ -472,8 +427,6 @@ function TypingDots({ vertical }: { vertical: Vertical }) {
   );
 }
 
-/* ──────────────────────── Bottom callout ───────────────────────── */
-
 function Callout() {
   const stats: Array<{ value: string; label: string }> = [
     { value: "12k+", label: "messages / day" },
@@ -484,44 +437,39 @@ function Callout() {
 
   return (
     <motion.div
-      className="mt-12 grid gap-y-6 rounded-2xl"
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, ease: EASE_OUT_EXPO }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.8, ease: EASE_OUT_EXPO, delay: 0.2 }}
+      className="mt-20 grid gap-8 rounded-[2.5rem] sk-glass p-8 md:p-12"
       style={{
-        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-        background: "var(--sk-ink)",
-        color: "var(--sk-cream)",
-        padding: "2rem 2.25rem",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
       }}
     >
       {stats.map((s, i) => (
         <div
           key={s.label}
-          className="flex flex-col"
-          style={{
-            // Subtle hairline separators between cells on wider screens.
-            borderLeft:
-              i === 0 ? "none" : "1px solid rgba(250, 245, 235, 0.12)",
-            paddingLeft: i === 0 ? 0 : "1.25rem",
-          }}
+          className="flex flex-col relative"
         >
+          {i > 0 && (
+            <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-sk-hairline hidden md:block opacity-30" />
+          )}
           <span
             className="sk-font-display tabular-nums"
             style={{
-              fontSize: "clamp(1.75rem, 2.4vw + 0.5rem, 2.5rem)",
-              color: "var(--sk-cream)",
+              fontSize: "clamp(2rem, 3vw, 3.5rem)",
+              color: "var(--sk-red)",
               lineHeight: 1,
             }}
           >
             {s.value}
           </span>
           <span
-            className="sk-font-meta mt-2"
+            className="sk-font-meta mt-3"
             style={{
-              color: "rgba(250, 245, 235, 0.6)",
-              letterSpacing: "0.08em",
+              color: "var(--sk-ink40)",
+              fontSize: "0.75rem",
+              fontWeight: 700,
             }}
           >
             {s.label}

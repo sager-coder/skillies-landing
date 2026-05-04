@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skillies.AI · Components</title>
+  <link rel="stylesheet" href="../tokens/index.css" />
+  <style>
+    body { padding: 64px 32px 120px; }
+    .wrap { max-width: 1120px; margin: 0 auto; }
+
+    .masthead {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      font-size: 11px; color: var(--fg-muted);
+      letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700;
+    }
+    .rule-red  { width: 44px; height: 1px; background: var(--red); }
+    .rule-fade { flex: 1; height: 1px; background: rgba(26,26,26,0.08); }
+
+    h1.intro {
+      font-weight: 900; font-size: clamp(44px, 6vw, 80px);
+      letter-spacing: -0.035em; line-height: 0.95;
+      color: var(--fg-1); margin: 0 0 14px;
+    }
+    h1.intro em {
+      font-family: var(--font-serif); font-style: italic;
+      font-weight: 400; color: var(--red);
+    }
+    .lede {
+      font-size: 17px; color: var(--fg-muted);
+      max-width: 620px; line-height: 1.6; margin: 0 0 64px;
+    }
+
+    h2 {
+      font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+      font-weight: 700; color: var(--red); margin: 72px 0 12px;
+    }
+    h2 + p {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 15px; color: var(--fg-subtle); margin: 0 0 24px;
+    }
+
+    .demo {
+      padding: 32px; background: white;
+      border: 1px solid var(--border-cream);
+      border-radius: 20px; margin-bottom: 16px;
+    }
+    .demo.dark {
+      background: var(--bg-charcoal); color: var(--fg-on-dark);
+      border: 1px solid var(--border-white-10);
+    }
+    .demo-row {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .demo-row + .demo-row { margin-top: 14px; }
+
+    pre.code {
+      margin: 0; padding: 14px 18px;
+      background: var(--bg-cream-dark); border-radius: 10px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted);
+      line-height: 1.55; overflow-x: auto;
+      border: 1px solid rgba(26,26,26,0.06);
+    }
+
+    /* ---------- Component: Kicker ---------- */
+    .kicker {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.3em; margin: 0;
+    }
+    .kicker.red    { color: var(--red); }
+    .kicker.green  { color: var(--green); }
+    .kicker.gold   { color: var(--gold); }
+    .kicker.on-dark{ color: var(--green-light); }
+
+    /* ---------- Component: KickerPill ---------- */
+    .kicker-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 500;
+    }
+    .kicker-pill .dot {
+      width: 8px; height: 8px; border-radius: 999px;
+    }
+    .kicker-pill.green  { background: rgba(91,123,91,0.10); border: 1px solid rgba(91,123,91,0.25); color: var(--green-dark); }
+    .kicker-pill.green .dot  { background: var(--green); }
+    .kicker-pill.red    { background: rgba(198,40,40,0.08); border: 1px solid rgba(198,40,40,0.25); color: var(--red); }
+    .kicker-pill.red .dot    { background: var(--red); }
+    .kicker-pill.gold   { background: rgba(201,162,78,0.10); border: 1px solid rgba(201,162,78,0.30); color: var(--gold-dark); }
+    .kicker-pill.gold .dot   { background: var(--gold); }
+
+    /* ---------- Component: Button ---------- */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 999px;
+      font-weight: 600; font-size: 15px;
+      text-decoration: none; cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.25s var(--ease-out);
+    }
+    .btn.primary {
+      background: var(--red); color: white;
+      box-shadow: var(--shadow-red);
+    }
+    .btn.primary:hover {
+      background: var(--red-dark); transform: scale(1.03);
+    }
+    .btn.secondary {
+      background: rgba(255,255,255,0.8); backdrop-filter: blur(8px);
+      border: 1px solid rgba(26,26,26,0.10); color: var(--fg-1);
+      font-weight: 500;
+    }
+    .btn.secondary:hover {
+      border-color: rgba(198,40,40,0.3); color: var(--red);
+    }
+    .btn .arrow { width: 14px; height: 14px; }
+
+    /* ---------- Component: Wordmark ---------- */
+    .wordmark {
+      font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+      color: var(--fg-1);
+    }
+    .wordmark .ai { color: var(--red); }
+    .wordmark.on-dark { color: var(--fg-on-dark); }
+    .wordmark.on-dark .ai { color: var(--red-bright); }
+
+    /* ---------- Component: Grain ---------- */
+    .grain-demo {
+      position: relative;
+      padding: 40px; border-radius: 18px;
+      background: var(--bg-charcoal); color: var(--fg-on-dark);
+      font-family: var(--font-serif); font-style: italic; font-size: 22px;
+      overflow: hidden;
+    }
+    .grain-demo .grain {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.18;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='5'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <span class="rule-red"></span>
+      § Specimen 03 · Components
+      <span class="rule-fade"></span>
+      <span>Primitives · six of them</span>
+    </div>
+
+    <h1 class="intro">
+      Six primitives.<br>
+      <em>One aesthetic.</em>
+    </h1>
+    <p class="lede">
+      Lifted from <code style="font-family: var(--font-mono); background: var(--bg-cream-dark); padding: 2px 6px; border-radius: 4px;">components/primitives.tsx</code>
+      — rendered here as plain HTML so you can copy-paste into any
+      stack. Every variant, every palette, every state.
+    </p>
+
+    <h2>Kicker</h2>
+    <p>Small uppercase tracked-out label. One per section.</p>
+    <div class="demo">
+      <div class="demo-row">
+        <p class="kicker red">§ 04 · The Receipts</p>
+      </div>
+      <div class="demo-row">
+        <p class="kicker green">Your mentor · Researcher + Teacher</p>
+      </div>
+      <div class="demo-row">
+        <p class="kicker gold">This month · lab notes</p>
+      </div>
+    </div>
+    <div class="demo dark">
+      <div class="demo-row">
+        <p class="kicker on-dark">Next office hours</p>
+      </div>
+    </div>
+    <pre class="code">.kicker { font-size: 12px; font-weight: 700; text-transform: uppercase;
+          letter-spacing: 0.3em; color: var(--red); }
+.kicker--green   { color: var(--green); }
+.kicker--gold    { color: var(--gold); }
+.kicker--on-dark { color: var(--green-light); }</pre>
+
+    <h2>KickerPill</h2>
+    <p>Kicker inside a pill, with a colored dot. More assertive.</p>
+    <div class="demo">
+      <div class="demo-row">
+        <span class="kicker-pill green"><span class="dot"></span>AI skills that generate real income</span>
+        <span class="kicker-pill red"><span class="dot"></span>Live · founding batch</span>
+        <span class="kicker-pill gold"><span class="dot"></span>Premium · guarantee</span>
+      </div>
+    </div>
+
+    <h2>Primary &amp; Secondary Button</h2>
+    <p>One primary per CTA stack. Secondary for "see more" actions.</p>
+    <div class="demo">
+      <div class="demo-row">
+        <a href="#" class="btn primary">
+          Join the Calicut workshop · ₹1,999
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 8l4 4-4 4M3 12h18"/>
+          </svg>
+        </a>
+        <a href="#" class="btn secondary">See the 50-day program</a>
+      </div>
+      <div class="demo-row" style="margin-top: 22px;">
+        <a href="#" class="btn primary" style="padding: 9px 18px; font-size: 13px;">
+          Reserve →
+        </a>
+        <a href="#" class="btn primary" style="padding: 18px 32px; font-size: 17px;">
+          Message Ehsan on WhatsApp
+          <svg class="arrow" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 8l4 4-4 4M3 12h18"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <h2>Wordmark</h2>
+    <p>SKILLIES with red .AI. Sized to context; no logo marks.</p>
+    <div class="demo">
+      <div class="demo-row" style="gap: 40px;">
+        <div class="wordmark" style="font-size: 22px;">SKILLIES<span class="ai">.AI</span></div>
+        <div class="wordmark" style="font-size: 36px;">SKILLIES<span class="ai">.AI</span></div>
+        <div class="wordmark" style="font-size: 56px;">SKILLIES<span class="ai">.AI</span></div>
+      </div>
+    </div>
+    <div class="demo dark">
+      <div class="demo-row" style="gap: 40px;">
+        <div class="wordmark on-dark" style="font-size: 36px;">SKILLIES<span class="ai">.AI</span></div>
+      </div>
+    </div>
+
+    <h2>Grain overlay</h2>
+    <p>SVG turbulence noise over dark surfaces. Adds paper feel.</p>
+    <div class="grain-demo">
+      <div class="grain"></div>
+      <div style="position: relative;">
+        "We don't teach AI for hype — we teach it for income."
+      </div>
+    </div>
+    <pre class="code" style="margin-top: 14px;">&lt;div style="position: relative; opacity: 0.08; mix-blend-mode: multiply;
+             background-image: url(&quot;data:image/svg+xml;utf8,&lt;svg xmlns='…'&gt;…&lt;/svg&gt;&quot;)"&gt;&lt;/div&gt;</pre>
+
+    <h2>In combination</h2>
+    <p>Primitives stacking in a typical hero-column layout.</p>
+    <div class="demo">
+      <span class="kicker-pill green"><span class="dot"></span>AI skills that generate real income</span>
+      <h3 style="font-weight: 900; font-size: clamp(36px, 4.5vw, 60px); letter-spacing: -0.035em; line-height: 0.95; color: var(--fg-1); margin: 22px 0 14px;">
+        Human brain.
+        <em style="font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--red);">AI skills.</em>
+        Real income.
+      </h3>
+      <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(22px, 2.4vw, 32px); color: var(--green-dark); margin: 0 0 22px; line-height: 1.2;">
+        Earn while you sleep.
+      </p>
+      <p style="font-size: 17px; color: var(--fg-muted); max-width: 560px; line-height: 1.65; margin: 0 0 24px;">
+        I teach English during the day. Last month, 63 books I
+        published on Amazon KDP paid me ₹1,16,000. Proof, not hype.
+      </p>
+      <div class="demo-row">
+        <a href="#" class="btn primary">
+          Join the Calicut workshop · ₹1,999
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 8l4 4-4 4M3 12h18"/>
+          </svg>
+        </a>
+        <a href="#" class="btn secondary">See the 50-day program</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

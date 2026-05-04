@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Skillies.AI favicon 512">
+  <defs>
+    <style>
+      .f-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+    </style>
+  </defs>
+
+  <!-- Rounded-square so it sits nicely on iOS + Android -->
+  <rect width="512" height="512" rx="112" fill="#FAF5EB"/>
+
+  <!-- Thin editorial ring -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#1A1A1A" stroke-width="6"/>
+
+  <!-- Italic S -->
+  <text x="256" y="368" text-anchor="middle" class="f-serif" font-size="380" fill="#1A1A1A">S</text>
+
+  <!-- Red period — positioned at the italic S's natural terminal -->
+  <circle cx="366" cy="348" r="20" fill="#C62828"/>
+</svg>

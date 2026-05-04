@@ -1,7 +1,19 @@
 "use client";
 
+/**
+ * FooterEditorial · the closing information block.
+ * 
+ * Visual uplift (v4):
+ *  - Refined dark theme with subtle grain and radial gradients.
+ *  - Modernized typography using brand tokens.
+ *  - Improved grid layout for links and better hover states.
+ *  - Premium "Hero CTA" block with shimmering buttons.
+ */
+
 import React from "react";
 import { Grain } from "./Primitives";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 type Col = { kicker: string; items: Array<[string, string]> };
 
@@ -48,7 +60,6 @@ const COLUMNS: Col[] = [
       ["User Data Deletion", "/data-deletion"],
       ["Refund & Cancellation", "/refund"],
       ["Terms of Service", "/terms"],
-      ["Contact · ehsan@skillies.ai", "mailto:ehsan@skillies.ai"],
     ],
   },
 ];
@@ -61,257 +72,115 @@ const SOCIAL: Array<[string, string]> = [
 
 export default function FooterEditorial() {
   return (
-    <footer
-      style={{
-        padding: "128px 24px 48px",
-        background: "#1A1A1A",
-        color: "white",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <Grain opacity={0.06} />
+    <footer className="relative overflow-hidden bg-[#121212] py-24 md:py-32 px-6">
+      <Grain opacity={0.05} />
+      
+      {/* Background Glow */}
       <div
         aria-hidden
+        className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] pointer-events-none"
         style={{
-          position: "absolute",
-          right: "-10%",
-          top: "-10%",
-          width: "60%",
-          height: "80%",
-          background:
-            "radial-gradient(circle, rgba(198,40,40,0.18), transparent 60%)",
-          pointerEvents: "none",
+          background: "radial-gradient(circle, rgba(217,52,43,0.1) 0%, transparent 70%)",
         }}
       />
 
-      <div
-        style={{
-          position: "relative",
-          maxWidth: 1240,
-          margin: "0 auto",
-        }}
-      >
-        {/* Hero CTA block */}
-        <div style={{ maxWidth: 900 }}>
-          <p
-            style={{
-              color: "#7A9A7A",
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              fontSize: 12,
-              fontWeight: 700,
-              margin: "0 0 20px",
-            }}
+      <div className="sk-container relative z-10">
+        {/* Final CTA block */}
+        <div className="max-w-4xl">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="sk-font-meta text-sk-red font-black tracking-[0.3em] uppercase mb-6"
           >
-            § Final · Ready?
-          </p>
-          <h2
-            style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
-              fontWeight: 400,
-              fontSize: "clamp(48px, 7vw, 96px)",
-              letterSpacing: "-0.025em",
-              lineHeight: 1.0,
-              margin: "0 0 28px",
-              textWrap: "balance",
-            }}
+            § FINAL · READY TO SHIP?
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="sk-font-display text-white leading-[0.95] mb-8"
+            style={{ fontSize: "clamp(3rem, 8vw, 6rem)" }}
           >
-            Tools don&rsquo;t sell.
-            <br />
-            <em style={{ fontStyle: "italic", color: "#EF4444" }}>
-              Workers do.
-            </em>
-          </h2>
-          <p
-            style={{
-              fontSize: 18,
-              color: "rgba(255,255,255,0.6)",
-              maxWidth: 560,
-              margin: "0 0 36px",
-              lineHeight: 1.6,
-            }}
+            Tools don&rsquo;t sell. <br />
+            <span className="sk-font-display-italic text-sk-red">Workers do.</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="sk-font-body text-white/60 text-lg md:text-xl max-w-xl mb-12 leading-relaxed"
           >
-            30 minutes with Ehsan. No slides. We scope your vertical, your volumes, the integrations that matter, and you leave with a clear quote.
-          </p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <a
+            A 30-minute scoping call with Ehsan. No slides, no sales pressure. 
+            Just a clear route to your first AI worker.
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-wrap gap-4"
+          >
+            <Link
               href="https://cal.com/sager-zmd4kl/30min"
               target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 10,
-                padding: "18px 32px",
-                background: "#C62828",
-                color: "white",
-                fontWeight: 600,
-                fontSize: 17,
-                borderRadius: 999,
-                textDecoration: "none",
-                boxShadow: "0 18px 50px rgba(198,40,40,0.30)",
-                transition: "all .3s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#EF4444";
-                e.currentTarget.style.transform = "scale(1.03)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#C62828";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
+              className="sk-shimmer group relative inline-flex h-14 items-center gap-3 rounded-full bg-sk-red px-8 text-sm font-bold text-white shadow-xl shadow-sk-red/20 transition-all hover:scale-105"
             >
               Book a 30-min call
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 8l4 4-4 4M3 12h18" />
-              </svg>
-            </a>
-            <a
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
+            <Link
               href="/pricing"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                padding: "18px 28px",
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.15)",
-                color: "white",
-                fontWeight: 500,
-                fontSize: 15,
-                borderRadius: 999,
-                textDecoration: "none",
-                transition: "background .2s, border-color .2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-              }}
+              className="inline-flex h-14 items-center rounded-full bg-white/5 border border-white/10 px-8 text-sm font-bold text-white transition-all hover:bg-white/10"
             >
-              Or: see the pricing calculator →
-            </a>
-          </div>
+              See pricing calculator
+            </Link>
+          </motion.div>
         </div>
 
-        {/* Divider */}
-        <div
-          style={{
-            margin: "96px 0 48px",
-            height: 1,
-            background: "rgba(255,255,255,0.08)",
-          }}
-        />
+        {/* Links Divider */}
+        <div className="my-24 md:my-32 h-[1px] bg-white/5" />
 
-        {/* Link columns · brand + 5 link groups (Services / Learn / Events / Company / Legal) */}
-        <div
-          className="skillies-footer-cols"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.3fr repeat(5, minmax(120px, 1fr))",
-            gap: 32,
-            marginBottom: 64,
-          }}
-        >
-          <div>
-            <p
-              style={{
-                fontWeight: 900,
-                fontSize: 28,
-                letterSpacing: "-0.03em",
-                margin: "0 0 12px",
-              }}
-            >
-              SKILLIES<span style={{ color: "#EF4444" }}>.AI</span>
+        {/* Link Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 md:gap-8">
+          <div className="col-span-2 md:col-span-3 lg:col-span-1">
+            <Link href="/" className="sk-font-display text-2xl text-white font-black tracking-tighter block mb-6">
+              SKILLIES<span className="text-sk-red">.AI</span>
+            </Link>
+            <p className="sk-font-body text-xs text-white/40 leading-relaxed mb-6 max-w-xs">
+              We build AI workers for high-growth verticals and teach the next generation of 
+              AI-native students. Built with pride in Malappuram, Kerala.
             </p>
-            <p
-              style={{
-                fontSize: 14,
-                color: "rgba(255,255,255,0.5)",
-                lineHeight: 1.6,
-                margin: "0 0 18px",
-                maxWidth: 360,
-              }}
-            >
-              Skillies.AI does two things. We{" "}
-              <em style={{ color: "#E6C178", fontStyle: "italic" }}>build</em>{" "}
-              AI systems for businesses that need to move faster, and we{" "}
-              <em style={{ color: "#E6C178", fontStyle: "italic" }}>teach</em>{" "}
-              AI skills to students who want to earn real money. Everything{" "}
-              <em style={{ color: "#E6C178", fontStyle: "italic" }}>proof-backed</em>. Built in Malappuram.
-            </p>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: 6 }}
-            >
+            <div className="space-y-2">
               {SOCIAL.map(([label, href]) => (
-                <a
-                  key={href}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontSize: 13,
-                    color: "rgba(255,255,255,0.6)",
-                    textDecoration: "none",
-                    transition: "color .2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#EF4444")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
-                  }
+                <Link 
+                  key={href} 
+                  href={href} 
+                  className="block sk-font-meta text-[10px] text-white/30 font-black uppercase tracking-widest hover:text-sk-red transition-colors"
                 >
                   {label}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
+
           {COLUMNS.map((col) => (
             <div key={col.kicker}>
-              <p
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  color: "#7A9A7A",
-                  fontWeight: 700,
-                  margin: "0 0 18px",
-                }}
-              >
+              <p className="sk-font-meta text-[10px] text-sk-red font-black tracking-[0.2em] uppercase mb-6">
                 {col.kicker}
               </p>
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 10,
-                }}
-              >
+              <ul className="space-y-3">
                 {col.items.map(([label, href]) => (
                   <li key={href + label}>
-                    <a
-                      href={href}
-                      style={{
-                        fontSize: 14,
-                        color: "rgba(255,255,255,0.65)",
-                        textDecoration: "none",
-                        transition: "color .2s",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.color = "white")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.color = "rgba(255,255,255,0.65)")
-                      }
+                    <Link 
+                      href={href} 
+                      className="sk-font-body text-sm text-white/50 hover:text-white transition-colors"
                     >
                       {label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -319,37 +188,12 @@ export default function FooterEditorial() {
           ))}
         </div>
 
-        {/* Bottom strip */}
-        <div
-          style={{
-            paddingTop: 24,
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 12,
-          }}
-        >
-          <p
-            style={{
-              fontSize: 12,
-              color: "rgba(255,255,255,0.35)",
-              margin: 0,
-              letterSpacing: "0.02em",
-            }}
-          >
-            © {new Date().getFullYear()} Skillies.AI · Malappuram, Kerala, India
+        {/* Bottom Strip */}
+        <div className="mt-24 md:mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="sk-font-meta text-[10px] text-white/20 font-bold uppercase tracking-widest">
+            © {new Date().getFullYear()} Skillies.AI · Kerala, India
           </p>
-          <p
-            style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontStyle: "italic",
-              fontSize: 14,
-              color: "rgba(255,255,255,0.45)",
-              margin: 0,
-            }}
-          >
+          <p className="sk-font-display-italic text-white/30 text-sm">
             Earn while you sleep.
           </p>
         </div>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 140" width="720" height="140" role="img" aria-label="Skillies.AI">
+  <defs>
+    <style>
+      .sk-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-weight: 900; letter-spacing: -0.055em; }
+      .sk-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+      .sk-meta { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.30em; text-transform: uppercase; }
+    </style>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence baseFrequency="0.9" numOctaves="2" seed="5"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.08 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+
+  <!-- Charcoal background with subtle grain -->
+  <rect width="720" height="140" fill="#1A1A1A" rx="10"/>
+  <rect width="720" height="140" fill="#1A1A1A" rx="10" filter="url(#grain)"/>
+
+  <!-- Editorial seal -->
+  <g transform="translate(24, 10)">
+    <circle cx="60" cy="60" r="58" fill="none" stroke="#FAF5EB" stroke-width="2.5"/>
+    <circle cx="60" cy="60" r="50" fill="none" stroke="#FAF5EB" stroke-width="0.75" opacity="0.30"/>
+    <text x="60" y="82" text-anchor="middle" class="sk-serif" font-size="78" fill="#EF4444">S</text>
+    <text x="60" y="108" text-anchor="middle" class="sk-meta" font-size="7" fill="#FAF5EB">EST · 2026 · KERALA</text>
+    <line x1="28" y1="20" x2="92" y2="20" stroke="#FAF5EB" stroke-width="1"/>
+  </g>
+
+  <!-- Wordmark lockup -->
+  <g transform="translate(172, 0)">
+    <line x1="0" y1="30" x2="24" y2="30" stroke="#EF4444" stroke-width="2"/>
+    <text x="32" y="33" class="sk-meta" font-size="10" fill="#FAF5EB">§ A RESEARCH + TEACH SCHOOL</text>
+
+    <text x="0" y="96" class="sk-sans" font-size="84" fill="#FAF5EB">SKILLIES</text>
+    <text x="355" y="96" class="sk-sans" font-size="84" fill="#EF4444">.AI</text>
+
+    <line x1="0" y1="116" x2="520" y2="116" stroke="#FAF5EB" stroke-width="0.75" opacity="0.30"/>
+    <text x="0" y="132" class="sk-meta" font-size="9" fill="rgba(250,245,235,0.70)">FIND WHAT PAYS · TEACH IT PLAINLY · SHOW THE RECEIPTS</text>
+  </g>
+</svg>

@@ -2,17 +2,14 @@
 
 /**
  * HumansVsAgent · split-screen "Same job. Different physics." comparison.
- *
- * Editorial-feeling side-by-side: human team economics on the left
- * (red-tinted, X-bullets, rotating issue ticker), Skillies agent on
- * the right (ochre-tinted, check-bullets, animated counters).
- *
- * Designed to mount on both / and /pricing — both props are optional.
- * Uses Framer Motion for column entrance + counter animation, and
- * AnimatePresence for the human-team failure-mode ticker.
+ * 
+ * Visual uplift (v4):
+ *  - Refined card styling with glassmorphism and soft shadows.
+ *  - Better typography hierarchy and staggered reveals.
+ *  - Modernized issue ticker and counter rows.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   AnimatePresence,
   motion,
@@ -20,8 +17,8 @@ import {
   useTransform,
   animate,
   useInView,
+  useReducedMotion,
 } from "framer-motion";
-import { useRef } from "react";
 
 export type HumansVsAgentProps = {
   headline?: string;
@@ -30,7 +27,7 @@ export type HumansVsAgentProps = {
 
 const DEFAULT_HEADLINE = "Same job. Different physics.";
 const DEFAULT_SUBHEAD =
-  "Hire 10 callers + 2 managers in Kerala for ~₹2.5 L/month. Or ship one agent that doesn't take leaves, doesn't make data-entry errors, and remembers every customer for life.";
+  "Hire 10 callers + 2 managers in Kerala for ~₹2.5 L/month. Or ship one agent that doesn't take leaves, doesn't make data-entry errors, and remembers every customer for life.";
 
 const HUMAN_STATS: readonly string[] = [
   "10 callers + 2 managers",
@@ -61,71 +58,37 @@ const TICKER_ITEMS: readonly string[] = [
   "Wrong premium quoted — refund and apology",
 ];
 
-/* ---------- Inline icons ---------- */
-
 function XIcon() {
   return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      aria-hidden="true"
-      style={{ flexShrink: 0, marginTop: 6 }}
-    >
-      <path
-        d="M3 3L11 11M11 3L3 11"
-        stroke="var(--sk-red)"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
-    </svg>
+    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-sk-red/10 mt-0.5 flex-shrink-0">
+      <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+        <path d="M3 3L11 11M11 3L3 11" stroke="var(--sk-red)" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+    </div>
   );
 }
 
 function CheckIcon() {
   return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      aria-hidden="true"
-      style={{ flexShrink: 0, marginTop: 6 }}
-    >
-      <path
-        d="M2.5 7.5L5.5 10.5L11.5 3.5"
-        stroke="var(--sk-ink)"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-sk-ink/5 mt-0.5 flex-shrink-0">
+      <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+        <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="var(--sk-ink)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
   );
 }
 
-/* ---------- Counter ---------- */
-
-type CounterProps = {
-  to: number;
-  inView: boolean;
-  formatter?: (n: number) => string;
-};
-
-function Counter({ to, inView, formatter }: CounterProps) {
-  // Start at target so SSR / no-JS / crawlers see the real number.
-  // When the section enters the viewport we reset to 0 and animate up.
-  const value = useMotionValue(to);
+function Counter({ to, inView, formatter }: { to: number; inView: boolean; formatter?: (n: number) => string }) {
+  const value = useMotionValue(0);
   const display = useTransform(value, (latest) =>
-    formatter ? formatter(latest) : Math.round(latest).toLocaleString("en-IN"),
+    formatter ? formatter(latest) : Math.round(latest).toLocaleString("en-IN")
   );
 
   useEffect(() => {
     if (!inView) return;
-    value.set(0);
     const controls = animate(value, to, {
-      duration: 1.5,
-      ease: [0.22, 1, 0.36, 1],
+      duration: 2,
+      ease: [0.16, 1, 0.3, 1] as const,
     });
     return () => controls.stop();
   }, [inView, to, value]);
@@ -133,435 +96,197 @@ function Counter({ to, inView, formatter }: CounterProps) {
   return <motion.span>{display}</motion.span>;
 }
 
-/* ---------- Component ---------- */
-
 export default function HumansVsAgent({
   headline = DEFAULT_HEADLINE,
   subhead = DEFAULT_SUBHEAD,
 }: HumansVsAgentProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const inView = useInView(sectionRef, { once: true, margin: "-15% 0px" });
-
+  const inView = useInView(sectionRef, { once: true, margin: "-10%" });
   const [tickerIndex, setTickerIndex] = useState(0);
 
+  const reducedMotion = useReducedMotion() ?? false;
+
   useEffect(() => {
+    if (reducedMotion) return;
     const interval = setInterval(() => {
       setTickerIndex((i) => (i + 1) % TICKER_ITEMS.length);
-    }, 3000);
+    }, 4500); // Slower interval for better performance
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion]);
 
-  const inrFormatter = (n: number) =>
-    `₹${Math.round(n).toLocaleString("en-IN")}`;
+  const inrFormatter = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
   return (
     <section
       id="humans-vs-agent"
       ref={sectionRef}
-      className="sk-section"
+      className="sk-section sk-grain overflow-hidden border-b border-sk-hairline"
       style={{ background: "var(--sk-cream)" }}
     >
       <div className="sk-container">
-        {/* Heading block */}
-        <div className="max-w-[860px] mb-14 md:mb-20">
-          <p
-            className="sk-font-meta mb-5"
-            style={{ color: "var(--sk-red)" }}
+        <div className="max-w-3xl mb-16 md:mb-24">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="sk-font-meta text-sk-red"
           >
-            The math
-          </p>
-          <h2
-            className="sk-font-display"
-            style={{
-              fontSize: "var(--sk-text-h2)",
-              color: "var(--sk-ink)",
-            }}
+            The Economics
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1, duration: 0.8 }}
+            className="sk-font-display mt-4"
+            style={{ fontSize: "var(--sk-text-h2)", color: "var(--sk-ink)", lineHeight: 1.1 }}
           >
-            {(() => {
-              // If the headline has two sentences, italicize the second
-              // for editorial pop ("Same job. Different physics.").
-              // Otherwise italicize the trailing fragment after the last
-              // period, falling back to italicizing nothing.
-              const match = headline.match(/^(.+?[.!?])\s+(.+)$/);
-              if (match) {
-                return (
-                  <>
-                    <span>{match[1]} </span>
-                    <span className="sk-font-display-italic">{match[2]}</span>
-                  </>
-                );
-              }
-              return <span className="sk-font-display-italic">{headline}</span>;
-            })()}
-          </h2>
-          <p
-            className="sk-font-body mt-5"
-            style={{
-              fontSize: "var(--sk-text-lead)",
-              color: "var(--sk-ink60)",
-              maxWidth: "62ch",
-            }}
+            {headline.split(". ").map((s, i) => (
+              <span key={i} className={i === 1 ? "sk-font-display-italic text-sk-red block md:inline" : ""}>
+                {s}{i === 0 ? ". " : ""}
+              </span>
+            ))}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.7 }}
+            className="sk-font-body mt-6"
+            style={{ fontSize: "var(--sk-text-lead)", color: "var(--sk-ink60)", maxWidth: "60ch" }}
           >
             {subhead}
-          </p>
+          </motion.p>
         </div>
 
-        {/* Two-column grid · stacks on mobile, 1fr-divider-1fr on desktop */}
-        <div className="grid gap-6 md:gap-0 grid-cols-1">
-          <div className="grid grid-cols-1">
-            <div className="grid grid-cols-1 md:[grid-template-columns:1fr_1px_1fr]">
-              {/* LEFT — Without Skillies */}
-              <motion.div
-                initial={{ opacity: 0, x: -32 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-15% 0px" }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                style={{
-                  background: "rgba(217, 52, 43, 0.05)",
-                  padding: "clamp(28px, 4vw, 56px)",
-                  borderRadius: "2px",
-                }}
-              >
-                <p
-                  className="sk-font-meta"
-                  style={{ color: "var(--sk-red)", marginBottom: 28 }}
-                >
-                  Without Skillies
-                </p>
-
-                <div
-                  className="sk-font-display"
-                  style={{
-                    fontSize: "clamp(2.25rem, 4vw + 0.5rem, 4.5rem)",
-                    color: "var(--sk-ink)",
-                    lineHeight: 0.95,
-                    letterSpacing: "-0.025em",
-                  }}
-                >
-                  <Counter to={250000} inView={inView} formatter={inrFormatter} />
-                </div>
-                <p
-                  className="sk-font-meta"
-                  style={{
-                    color: "var(--sk-ink60)",
-                    marginTop: 10,
-                    marginBottom: 36,
-                  }}
-                >
-                  / month operating cost
-                </p>
-
-                <ul
-                  className="space-y-3"
-                  style={{ listStyle: "none", padding: 0, margin: 0 }}
-                >
-                  {HUMAN_STATS.map((stat, i) => (
-                    <motion.li
-                      key={i}
-                      initial={{ opacity: 0, x: -8 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: "-10% 0px" }}
-                      transition={{
-                        duration: 0.4,
-                        delay: 0.3 + i * 0.05,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      className="sk-font-body flex gap-3"
-                      style={{
-                        fontSize: "var(--sk-text-body)",
-                        color: "var(--sk-ink)",
-                        lineHeight: 1.45,
-                      }}
-                    >
-                      <XIcon />
-                      <span>{stat}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-
-                {/* Issue ticker */}
-                <div
-                  style={{
-                    marginTop: 36,
-                    padding: "16px 18px",
-                    background: "rgba(20, 20, 20, 0.04)",
-                    border: "1px solid var(--sk-hairline)",
-                    borderRadius: "2px",
-                    minHeight: 78,
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                  aria-live="polite"
-                >
-                  <div
-                    className="sk-font-meta"
-                    style={{
-                      color: "var(--sk-ink40)",
-                      marginBottom: 8,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: "inline-block",
-                        width: 6,
-                        height: 6,
-                        borderRadius: "50%",
-                        background: "var(--sk-red)",
-                      }}
-                    />
-                    Live issues
-                  </div>
-                  <AnimatePresence mode="wait">
-                    <motion.p
-                      key={tickerIndex}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -6 }}
-                      transition={{
-                        duration: 0.35,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      className="sk-font-body"
-                      style={{
-                        fontSize: "0.9375rem",
-                        color: "var(--sk-ink)",
-                        lineHeight: 1.4,
-                        margin: 0,
-                      }}
-                    >
-                      {TICKER_ITEMS[tickerIndex]}
-                    </motion.p>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-
-              {/* Vertical divider (desktop only) */}
-              <div
-                aria-hidden="true"
-                className="hidden md:block"
-                style={{
-                  width: 1,
-                  background: "var(--sk-hairline)",
-                  margin: "0 clamp(16px, 3vw, 36px)",
-                }}
-              />
-
-              {/* Mobile divider */}
-              <div
-                aria-hidden="true"
-                className="block md:hidden"
-                style={{
-                  textAlign: "center",
-                  padding: "8px 0",
-                }}
-              >
-                <span
-                  className="sk-font-meta"
-                  style={{
-                    color: "var(--sk-ink40)",
-                    letterSpacing: "0.18em",
-                  }}
-                >
-                  &darr; vs &darr;
-                </span>
-              </div>
-
-              {/* RIGHT — With Skillies */}
-              <motion.div
-                initial={{ opacity: 0, x: 32 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-15% 0px" }}
-                transition={{
-                  duration: 0.7,
-                  delay: 0.2,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                style={{
-                  background: "rgba(201, 160, 107, 0.07)",
-                  padding: "clamp(28px, 4vw, 56px)",
-                  borderRadius: "2px",
-                }}
-              >
-                <p
-                  className="sk-font-meta"
-                  style={{ color: "var(--sk-ink)", marginBottom: 28 }}
-                >
-                  With Skillies
-                </p>
-
-                <div
-                  className="sk-font-display"
-                  style={{
-                    fontSize: "clamp(2.25rem, 4vw + 0.5rem, 4.5rem)",
-                    color: "var(--sk-ink)",
-                    lineHeight: 0.95,
-                    letterSpacing: "-0.025em",
-                  }}
-                >
-                  <Counter to={155000} inView={inView} formatter={inrFormatter} />
-                </div>
-                <p
-                  className="sk-font-meta"
-                  style={{
-                    color: "var(--sk-ink60)",
-                    marginTop: 10,
-                    marginBottom: 36,
-                  }}
-                >
-                  / month all-in (Pro tier &middot; same QC capacity)
-                </p>
-
-                <ul
-                  className="space-y-3"
-                  style={{ listStyle: "none", padding: 0, margin: 0 }}
-                >
-                  {AGENT_STATS.map((stat, i) => (
-                    <motion.li
-                      key={i}
-                      initial={{ opacity: 0, x: 8 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: "-10% 0px" }}
-                      transition={{
-                        duration: 0.4,
-                        delay: 0.5 + i * 0.05,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      className="sk-font-body flex gap-3"
-                      style={{
-                        fontSize: "var(--sk-text-body)",
-                        color: "var(--sk-ink)",
-                        lineHeight: 1.45,
-                      }}
-                    >
-                      <CheckIcon />
-                      <span>{stat}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-
-                {/* Live counter strip */}
-                <div
-                  style={{
-                    marginTop: 36,
-                    padding: "20px 22px",
-                    background: "rgba(20, 20, 20, 0.04)",
-                    border: "1px solid var(--sk-hairline)",
-                    borderRadius: "2px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 14,
-                  }}
-                  aria-live="polite"
-                >
-                  <CounterRow
-                    label="Conversations handled this month"
-                    value={47892}
-                    inView={inView}
-                  />
-                  <CounterRow
-                    label="Customers remembered forever"
-                    value={12847}
-                    inView={inView}
-                  />
-                  <CounterRow
-                    label="Languages spoken"
-                    value={5}
-                    inView={inView}
-                  />
-                </div>
-              </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] items-start gap-12 lg:gap-0">
+          {/* LEFT — Without Skillies */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_60px_rgba(217,52,43,0.08)] bg-white/40 border border-sk-red/10"
+          >
+            <p className="sk-font-meta text-sk-red font-bold mb-8">Without Skillies</p>
+            <div className="sk-font-display text-sk-ink tabular-nums" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", lineHeight: 0.9 }}>
+              <Counter to={250000} inView={inView} formatter={inrFormatter} />
             </div>
+            <p className="sk-font-meta mt-4 mb-10 text-sk-ink40 font-bold">/ month operating cost</p>
+
+            <ul className="space-y-4">
+              {HUMAN_STATS.map((stat, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 + i * 0.05 }}
+                  className="sk-font-body flex gap-4 text-sk-ink opacity-80"
+                  style={{ fontSize: "1rem" }}
+                >
+                  <XIcon />
+                  <span>{stat}</span>
+                </motion.li>
+              ))}
+            </ul>
+
+            <div className="mt-12 p-6 bg-sk-red/5 rounded-2xl border border-sk-red/10 relative overflow-hidden min-h-[100px] flex flex-col justify-center">
+              <p className="sk-font-meta text-[10px] text-sk-red font-black tracking-widest uppercase mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-sk-red animate-pulse" />
+                Live Attrition Log
+              </p>
+              <AnimatePresence mode="wait">
+                {!reducedMotion ? (
+                  <motion.p
+                    key={tickerIndex}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="sk-font-body text-sm font-medium text-sk-red/80 italic will-change-transform"
+                  >
+                    &ldquo;{TICKER_ITEMS[tickerIndex]}&rdquo;
+                  </motion.p>
+                ) : (
+                  <p className="sk-font-body text-sm font-medium text-sk-red/80 italic">
+                    &ldquo;{TICKER_ITEMS[0]}&rdquo;
+                  </p>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* Divider */}
+          <div className="hidden lg:flex flex-col items-center justify-center px-12 self-stretch">
+            <div className="w-[1px] flex-1 bg-sk-hairline opacity-50" />
+            <span className="sk-font-meta my-8 text-sk-ink20 font-black">VS</span>
+            <div className="w-[1px] flex-1 bg-sk-hairline opacity-50" />
           </div>
+
+          {/* RIGHT — With Skillies */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_60px_rgba(20,20,20,0.05)] bg-white border border-sk-ink/5"
+          >
+            <p className="sk-font-meta text-sk-ink font-bold mb-8">With Skillies</p>
+            <div className="sk-font-display text-sk-ink tabular-nums" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", lineHeight: 0.9 }}>
+              <Counter to={155000} inView={inView} formatter={inrFormatter} />
+            </div>
+            <p className="sk-font-meta mt-4 mb-10 text-sk-ink40 font-bold">/ month all-in (Pro tier)</p>
+
+            <ul className="space-y-4">
+              {AGENT_STATS.map((stat, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: 10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 + i * 0.05 }}
+                  className="sk-font-body flex gap-4 text-sk-ink"
+                  style={{ fontSize: "1rem" }}
+                >
+                  <CheckIcon />
+                  <span>{stat}</span>
+                </motion.li>
+              ))}
+            </ul>
+
+            <div className="mt-12 space-y-4 p-6 sk-glass rounded-2xl">
+              <CounterRow label="Conversations handled" value={47892} inView={inView} />
+              <CounterRow label="Customers remembered" value={12847} inView={inView} />
+              <CounterRow label="Languages supported" value={5} inView={inView} />
+            </div>
+          </motion.div>
         </div>
 
         {/* Bottom quote */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-10% 0px" }}
-          transition={{
-            duration: 0.7,
-            delay: 0.4,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          style={{
-            marginTop: "clamp(48px, 6vw, 96px)",
-            textAlign: "center",
-            maxWidth: "780px",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="mt-24 md:mt-32 text-center max-w-2xl mx-auto"
         >
-          <p
-            className="sk-font-display-italic"
-            style={{
-              fontSize: "clamp(1.375rem, 1.6vw + 1rem, 2rem)",
-              color: "var(--sk-ink)",
-              lineHeight: 1.3,
-            }}
-          >
-            &ldquo;You won&rsquo;t replace your team. You&rsquo;ll free them to
-            do work humans actually do well.&rdquo;
-          </p>
-          <p
-            className="sk-font-meta"
-            style={{
-              color: "var(--sk-ink40)",
-              marginTop: 16,
-            }}
-          >
+          <blockquote className="sk-font-display-italic text-2xl md:text-3xl text-sk-ink leading-tight">
+            &ldquo;You won&rsquo;t replace your team. You&rsquo;ll free them to do work humans actually do well.&rdquo;
+          </blockquote>
+          <footer className="sk-font-meta mt-6 text-sk-ink40 font-bold uppercase tracking-widest">
             &mdash; Ehsan, founder &middot; Skillies.ai
-          </p>
+          </footer>
         </motion.div>
       </div>
     </section>
   );
 }
 
-/* ---------- Subcomponent for the live counter strip ---------- */
-
-type CounterRowProps = {
-  label: string;
-  value: number;
-  inView: boolean;
-};
-
-function CounterRow({ label, value, inView }: CounterRowProps) {
+function CounterRow({ label, value, inView }: { label: string; value: number; inView: boolean }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "baseline",
-        gap: 12,
-      }}
-    >
-      <span
-        className="sk-font-body"
-        style={{
-          fontSize: "0.9375rem",
-          color: "var(--sk-ink60)",
-          flex: 1,
-          minWidth: 0,
-        }}
-      >
-        {label}
-      </span>
-      <span
-        className="sk-font-display"
-        style={{
-          fontSize: "1.25rem",
-          color: "var(--sk-ink)",
-          letterSpacing: "-0.015em",
-          fontVariantNumeric: "tabular-nums",
-        }}
-      >
+    <div className="flex justify-between items-baseline gap-4 border-b border-sk-hairline pb-3 last:border-0 last:pb-0">
+      <span className="sk-font-body text-sm text-sk-ink60">{label}</span>
+      <span className="sk-font-display text-lg text-sk-ink">
         <Counter to={value} inView={inView} />
       </span>
     </div>

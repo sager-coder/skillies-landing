@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skillies.AI · Typography</title>
+  <link rel="stylesheet" href="../tokens/index.css" />
+  <style>
+    body { padding: 64px 32px 120px; }
+    .wrap { max-width: 1040px; margin: 0 auto; }
+
+    .masthead {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      font-size: 11px; color: var(--fg-muted);
+      letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700;
+    }
+    .rule-red  { width: 44px; height: 1px; background: var(--red); }
+    .rule-fade { flex: 1; height: 1px; background: rgba(26,26,26,0.08); }
+
+    h1.intro {
+      font-weight: 900; font-size: clamp(44px, 6vw, 80px);
+      letter-spacing: -0.035em; line-height: 0.95;
+      color: var(--fg-1); margin: 0 0 14px;
+    }
+    h1.intro em {
+      font-family: var(--font-serif); font-style: italic;
+      font-weight: 400; color: var(--red);
+    }
+    .lede {
+      font-size: 17px; color: var(--fg-muted);
+      max-width: 620px; line-height: 1.6; margin: 0 0 72px;
+    }
+
+    .spec {
+      display: grid; grid-template-columns: 180px 1fr;
+      gap: 40px; padding: 40px 0;
+      border-top: 1px solid var(--border-cream);
+      align-items: baseline;
+    }
+    .spec:first-of-type { border-top: 2px solid var(--fg-1); }
+    .spec:last-of-type  { border-bottom: 2px solid var(--fg-1); }
+    .spec-label {
+      font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+      font-weight: 700; color: var(--red);
+    }
+    .spec-mono {
+      margin-top: 6px; font-family: var(--font-mono); font-size: 11px;
+      color: var(--fg-subtle); line-height: 1.5;
+    }
+    .spec-demo { margin: 0; }
+    .spec-desc {
+      margin-top: 14px; font-size: 13px; color: var(--fg-muted);
+      font-family: var(--font-serif); font-style: italic;
+      max-width: 560px; line-height: 1.5;
+    }
+
+    h2 {
+      font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+      font-weight: 700; color: var(--red); margin: 72px 0 20px;
+    }
+
+    .pairing {
+      padding: 32px; border-radius: 18px;
+      background: white; border: 1px solid var(--border-cream);
+    }
+    .swatch-heading {
+      font-weight: 900; font-size: clamp(36px, 4vw, 56px);
+      letter-spacing: -0.035em; line-height: 0.95;
+      color: var(--fg-1); margin: 0 0 10px;
+    }
+    .swatch-heading em {
+      font-family: var(--font-serif); font-style: italic;
+      font-weight: 400; color: var(--red);
+    }
+
+    .weight-ladder {
+      display: grid; gap: 4px;
+    }
+    .weight-row {
+      display: grid; grid-template-columns: 80px 1fr 60px;
+      gap: 20px; padding: 8px 0; align-items: baseline;
+      border-bottom: 1px dashed rgba(26,26,26,0.08);
+    }
+    .weight-row small {
+      font-family: var(--font-mono); font-size: 10px; color: var(--fg-subtle);
+      letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .weight-row .line { font-size: 22px; color: var(--fg-1); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <span class="rule-red"></span>
+      § Specimen 02 · Typography
+      <span class="rule-fade"></span>
+      <span>Inter + Instrument Serif</span>
+    </div>
+
+    <h1 class="intro">
+      Two families.<br>
+      <em>One italic pullout.</em>
+    </h1>
+    <p class="lede">
+      Inter carries every utility role — body, UI, headings.
+      Instrument Serif italic appears only where you need an
+      editorial accent. Two families max per page. The italic
+      is the brand's voice.
+    </p>
+
+    <h2>The type scale · top to bottom</h2>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Hero</div>
+        <div class="spec-mono">.t-hero<br>Inter 900<br>clamp(82, 184)<br>-0.06em</div>
+      </div>
+      <div>
+        <h1 class="t-hero spec-demo">
+          Human&nbsp;brain.<br>
+          <em class="t-serif-italic" style="color: var(--red)">AI&nbsp;skills.</em><br>
+          Real&nbsp;income.
+        </h1>
+        <p class="spec-desc">One per page. Italic pullout on exactly one line.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">H1</div>
+        <div class="spec-mono">.t-h1<br>Inter 900<br>clamp(44, 84)<br>-0.035em</div>
+      </div>
+      <div>
+        <h2 class="t-h1 spec-demo">
+          What people actually ask,
+          <em class="t-serif-italic" style="color: var(--red)">answered straight.</em>
+        </h2>
+        <p class="spec-desc">Masthead of a major section.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Serif display</div>
+        <div class="spec-mono">.t-serif-display<br>Instrument Serif 400<br>clamp(56, 112)<br>-0.02em</div>
+      </div>
+      <div>
+        <p class="t-serif-display spec-demo">
+          One week — <em>one story.</em>
+        </p>
+        <p class="spec-desc">Elegant hero variant. Quote-led feature moments.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">H2</div>
+        <div class="spec-mono">.t-h2<br>Inter 800<br>clamp(36, 60)<br>-0.025em</div>
+      </div>
+      <div>
+        <p class="t-h2 spec-demo">₹1,16,000 last month. Zero new books.</p>
+        <p class="spec-desc">Sub-section / card cluster.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Serif number</div>
+        <div class="spec-mono">.t-serif-number<br>Instrument Serif italic<br>clamp(44, 72)<br>tabular-nums</div>
+      </div>
+      <div>
+        <p class="t-serif-number spec-demo" style="color: var(--fg-1);">₹8,71,982.06</p>
+        <p class="spec-desc">Receipts, royalties, any real money number.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Lead</div>
+        <div class="spec-mono">.t-lead<br>Inter 400<br>19px / 1.65</div>
+      </div>
+      <div>
+        <p class="t-lead spec-demo" style="margin-top: 0;">
+          A research-and-teach school for the age of AI. We find
+          what pays in 2026, teach it plainly, and build tools for
+          Kerala businesses. Proof-backed. Editorial. Honest.
+        </p>
+        <p class="spec-desc">Paragraph directly under H1/H2.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Body</div>
+        <div class="spec-mono">.t-body<br>Inter 400<br>16px / 1.7</div>
+      </div>
+      <div>
+        <p class="t-body spec-demo" style="margin-top: 0;">
+          I teach English at a school in Malappuram. In the gaps
+          between classes — lunch breaks, after-school hours, Sunday
+          mornings — I learned to use AI tools to publish books on
+          Amazon. 63 books later, they pay me ₹1,16,000 a month.
+        </p>
+        <p class="spec-desc">The workhorse. Line-height 1.7 is generous on purpose.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Pullquote</div>
+        <div class="spec-mono">.t-pullquote<br>Instrument Serif italic<br>clamp(22, 32)<br>border-left gold</div>
+      </div>
+      <div>
+        <blockquote class="t-pullquote spec-demo" style="margin: 0;">
+          If you can use a browser, you can publish.
+        </blockquote>
+        <p class="spec-desc">Embedded inside some answers / sections. Not every one.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Kicker</div>
+        <div class="spec-mono">.t-kicker<br>Inter 700<br>12px<br>0.3em tracking</div>
+      </div>
+      <div>
+        <p class="t-kicker spec-demo" style="margin-top: 0;">Exhibit A · My actual KDP dashboard</p>
+        <p class="spec-desc">Small-caps label over a section.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Dateline</div>
+        <div class="spec-mono">.t-dateline<br>Inter 700<br>11px<br>0.32em tracking</div>
+      </div>
+      <div>
+        <p class="t-dateline spec-demo" style="margin-top: 0;">§ 04 · The Receipts · Apr 19, 2026</p>
+        <p class="spec-desc">Masthead label in the § dateline strip.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div>
+        <div class="spec-label">Small / caption</div>
+        <div class="spec-mono">.t-small<br>13px / 1.5<br>muted grey</div>
+      </div>
+      <div>
+        <p class="t-small spec-demo" style="margin-top: 0;">
+          Source: kdpreports.amazon.com · Rounded figures · Includes
+          estimated KENP royalties.
+        </p>
+        <p class="spec-desc">Captions, footnotes, inline meta.</p>
+      </div>
+    </div>
+
+    <h2>Inter · weight ladder</h2>
+    <div class="pairing">
+      <div class="weight-ladder">
+        <div class="weight-row">
+          <small>300 · Light</small>
+          <div class="line" style="font-weight: 300;">The campus is being built.</div>
+          <small style="text-align: right;">rarely</small>
+        </div>
+        <div class="weight-row">
+          <small>400 · Regular</small>
+          <div class="line" style="font-weight: 400;">The campus is being built.</div>
+          <small style="text-align: right;">body</small>
+        </div>
+        <div class="weight-row">
+          <small>500 · Medium</small>
+          <div class="line" style="font-weight: 500;">The campus is being built.</div>
+          <small style="text-align: right;">UI / chips</small>
+        </div>
+        <div class="weight-row">
+          <small>600 · Semibold</small>
+          <div class="line" style="font-weight: 600;">The campus is being built.</div>
+          <small style="text-align: right;">emphasis</small>
+        </div>
+        <div class="weight-row">
+          <small>700 · Bold</small>
+          <div class="line" style="font-weight: 700;">The campus is being built.</div>
+          <small style="text-align: right;">kickers</small>
+        </div>
+        <div class="weight-row">
+          <small>800 · Extrabold</small>
+          <div class="line" style="font-weight: 800;">The campus is being built.</div>
+          <small style="text-align: right;">h2 / h3</small>
+        </div>
+        <div class="weight-row">
+          <small>900 · Black</small>
+          <div class="line" style="font-weight: 900;">The campus is being built.</div>
+          <small style="text-align: right;">h1 / hero</small>
+        </div>
+      </div>
+    </div>
+
+    <h2>Instrument Serif · the italic pullout</h2>
+    <div class="pairing">
+      <p style="font-size: 15px; color: var(--fg-muted); margin: 0 0 18px; line-height: 1.6;">
+        Use Instrument Serif italic <strong>only</strong> as an accent
+        inside an otherwise bold-sans heading, or as a pullquote inside
+        an answer. Never for whole paragraphs. The contrast is the point.
+      </p>
+      <p style="font-weight: 900; font-size: clamp(28px, 3.6vw, 48px); letter-spacing: -0.025em; line-height: 1.05; color: var(--fg-1); margin: 0 0 16px;">
+        I could publish more books and
+        <em class="t-serif-italic" style="color: var(--red); font-size: 1em;">
+          earn more. I'm choosing not to.
+        </em>
+      </p>
+      <p class="t-small" style="margin: 0;">
+        The sans line anchors the sentence. The italic serif is the
+        emotional beat — only ever one line per heading.
+      </p>
+    </div>
+
+    <h2>Numbers behave editorially too</h2>
+    <div class="pairing" style="display: flex; gap: 48px; flex-wrap: wrap; align-items: baseline;">
+      <div>
+        <p class="t-dateline" style="color: var(--red);">Receipt style</p>
+        <p class="t-serif-number" style="margin: 10px 0 0; color: var(--fg-1);">₹1,16,000</p>
+      </div>
+      <div>
+        <p class="t-dateline" style="color: var(--red);">On dark</p>
+        <p class="t-number" style="margin: 10px 0 0; padding: 10px 18px; background: var(--bg-charcoal); border-radius: 10px; display: inline-block;">63</p>
+      </div>
+      <div>
+        <p class="t-dateline" style="color: var(--red);">Mono · for meta</p>
+        <p class="font-mono" style="margin: 10px 0 0; font-size: 15px; color: var(--fg-1);">2026-04-19 14:00 IST</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="640" height="640" role="img" aria-label="Skillies.AI — WhatsApp profile">
+  <defs>
+    <style>
+      .w-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+      .w-meta  { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.32em; text-transform: uppercase; }
+    </style>
+  </defs>
+
+  <!-- Cream background, no grain (WhatsApp compresses — keep it clean) -->
+  <rect width="640" height="640" fill="#FAF5EB"/>
+
+  <!-- Single strong ring, readable at 40 px avatar -->
+  <circle cx="320" cy="320" r="260" fill="none" stroke="#1A1A1A" stroke-width="10"/>
+  <circle cx="320" cy="320" r="240" fill="none" stroke="#1A1A1A" stroke-width="2" opacity="0.3"/>
+
+  <!-- Big italic S, no ornament — survives small sizes -->
+  <text x="320" y="440" text-anchor="middle" class="w-serif" font-size="440" fill="#1A1A1A">S</text>
+
+  <!-- Red period -->
+  <circle cx="452" cy="415" r="22" fill="#C62828"/>
+
+  <!-- Minimal dateline at bottom — drops out at tiny sizes but reads on full profile -->
+  <text x="320" y="565" text-anchor="middle" class="w-meta" font-size="18" fill="#1A1A1A">SKILLIES · DOT · AI</text>
+</svg>

@@ -2,28 +2,20 @@
 
 /**
  * HeroBlockV2 — the post-pivot homepage hero.
- *
- * Replaces the static editorial HeroBlock with an alive, motion-rich entry:
- *  - Two-line headline ("Tools don't sell. / Workers do.") with a scale-in
- *    cubic ease on the italic red second line.
- *  - Animated metric ticker (4 stats, count-up on mount) that reframes the
- *    pitch as "what one worker absorbs" rather than "tools you assemble".
- *  - Cream background with a subtle ochre/red radial wash, anchored to the
- *    upper-left so it doesn't fight the headline.
- *
- * No props — this is the singular homepage hero. Hardcoded copy is
- * intentional; if we ever need a second instance, lift to props then.
+ * 
+ * Visual uplift (v4):
+ *  - Animated mesh-gradient background for a premium feel.
+ *  - Headline polish with text-wrap: balance and refined motion.
+ *  - CTA buttons with sk-shimmer and hover scales.
+ *  - Metric ticker with subtle separators and smoother count-up.
  */
 
 import { animate, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 type Metric = {
-  /** Final value the counter lands on. */
   value: number;
-  /** Caption shown beneath the number. */
   label: string;
-  /** Optional suffix (e.g. "+" or "/wk"). Numbers stay clean without one. */
   suffix?: string;
 };
 
@@ -40,59 +32,84 @@ export default function HeroBlockV2() {
   return (
     <section
       id="hero"
-      className="relative isolate overflow-hidden"
+      className="sk-grain relative isolate overflow-hidden border-b border-sk-hairline"
       style={{ background: "var(--sk-cream)" }}
     >
-      {/* Ambient gradient — radial ochre→red wash, low opacity, top-left bias.
-          Pointer-events:none so it never intercepts CTA clicks. */}
+      {/* Animated Mesh Background */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background: `
-            radial-gradient(ellipse 60% 50% at 18% 22%, rgba(201, 160, 107, 0.22), transparent 65%),
-            radial-gradient(ellipse 55% 45% at 82% 8%, rgba(217, 52, 43, 0.14), transparent 60%)
-          `,
-        }}
-      />
+      >
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.4, 0.6, 0.4],
+            x: [0, 20, 0],
+            y: [0, -20, 0],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -top-1/4 -left-1/4 w-full h-full rounded-full opacity-40 blur-[100px]"
+          style={{ background: "radial-gradient(circle, var(--sk-ochre), transparent 70%)" }}
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.4, 0.2],
+            x: [0, -30, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -bottom-1/4 -right-1/4 w-full h-full rounded-full opacity-30 blur-[100px]"
+          style={{ background: "radial-gradient(circle, var(--sk-red), transparent 70%)" }}
+        />
+      </div>
 
-      <div className="sk-container pt-24 pb-16 md:pt-36 md:pb-24">
-        <Headline />
-        <Subhead />
-        <Ctas />
+      <div className="sk-container pt-32 pb-20 md:pt-44 md:pb-28">
+        <div className="max-w-4xl">
+          <Headline />
+          <Subhead />
+          <Ctas />
+        </div>
         <MetricTicker />
       </div>
     </section>
   );
 }
 
-/* ─────────────────────────── Headline ─────────────────────────── */
-
 function Headline() {
   return (
     <h1
-      className="sk-font-display max-w-[18ch]"
+      className="sk-font-display sk-text-balance"
       style={{
         fontSize: "var(--sk-text-display)",
         color: "var(--sk-ink)",
+        lineHeight: 1.05,
       }}
     >
       <motion.span
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}
+        transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
         style={{ display: "block" }}
       >
         Tools don&rsquo;t sell.
       </motion.span>
       <motion.span
-        className="sk-font-display-italic"
-        initial={{ opacity: 0, scale: 0.92, y: 8 }}
+        className="sk-font-display-italic relative"
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{
-          duration: 0.85,
+          duration: 1,
           ease: EASE_OUT_EXPO,
-          delay: 0.25,
+          delay: 0.3,
         }}
         style={{
           display: "block",
@@ -101,63 +118,68 @@ function Headline() {
         }}
       >
         Workers do.
+        <motion.span 
+          className="absolute -bottom-2 left-0 h-[3px] bg-sk-red opacity-20"
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ delay: 1.2, duration: 1.5, ease: "easeOut" }}
+        />
       </motion.span>
     </h1>
   );
 }
 
-/* ─────────────────────────── Subhead ──────────────────────────── */
-
 function Subhead() {
   return (
     <motion.p
-      className="sk-font-body mt-7 max-w-[60ch]"
-      initial={{ opacity: 0, y: 10 }}
+      className="sk-font-body mt-8 max-w-[55ch] sk-text-balance"
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: EASE_OUT_EXPO, delay: 0.55 }}
+      transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: 0.6 }}
       style={{
         fontSize: "var(--sk-text-lead)",
         color: "var(--sk-ink60)",
+        lineHeight: 1.6,
       }}
     >
-      An AI sales worker for your business — handles every inbound DM in 5
-      Indic languages, 24/7, with memory, vision, and zero attrition. From{" "}
-      <span style={{ color: "var(--sk-ink)", fontWeight: 500 }}>
-        &#8377;30,000/mo
-      </span>
-      .
+      Your business needs a closer, not just a chatbot. Skillies handles every inbound 
+      DM in 5 Indic languages, 24/7, with memory, vision, and zero attrition. 
+      Integrated and live from <span style={{ color: "var(--sk-ink)", fontWeight: 600 }}>&#8377;30,000/mo</span>.
     </motion.p>
   );
 }
 
-/* ──────────────────────────── CTAs ────────────────────────────── */
-
 function Ctas() {
   return (
     <motion.div
-      className="mt-10 flex flex-wrap gap-3"
-      initial={{ opacity: 0, y: 10 }}
+      className="mt-12 flex flex-wrap gap-4"
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: EASE_OUT_EXPO, delay: 0.7 }}
+      transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: 0.8 }}
     >
       <a
         href="#agent-in-action"
-        className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight transition-transform duration-200 hover:scale-[1.02] active:scale-[0.99]"
+        className="sk-shimmer group relative inline-flex min-h-[3.5rem] items-center justify-center rounded-full px-8 py-3 text-[15px] md:text-[16px] font-semibold tracking-tight transition-all duration-300 hover:shadow-[0_12px_40px_rgba(217,52,43,0.3)] hover:scale-[1.03] active:scale-[0.98] text-center"
         style={{
           background: "var(--sk-red)",
           color: "var(--sk-cream)",
-          letterSpacing: "-0.005em",
         }}
       >
-        See it in action <span aria-hidden className="ml-1.5">&darr;</span>
+        <span>See it in action</span>
+        <motion.span 
+          className="ml-2 inline-block"
+          animate={{ y: [0, 4, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        >
+          &darr;
+        </motion.span>
       </a>
       <a
         href="https://cal.com/sager-zmd4kl/30min"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex h-12 items-center rounded-full px-7 text-[15px] font-medium tracking-tight transition-colors duration-200"
+        className="sk-glass group inline-flex min-h-[3.5rem] items-center justify-center rounded-full px-8 py-3 text-[15px] md:text-[16px] font-semibold tracking-tight transition-all duration-300 hover:bg-sk-ink hover:text-sk-cream hover:scale-[1.03] active:scale-[0.98] text-center"
         style={{
-          border: "1px solid var(--sk-ink20)",
           color: "var(--sk-ink)",
         }}
       >
@@ -167,30 +189,27 @@ function Ctas() {
   );
 }
 
-/* ─────────────────────── Metric ticker ────────────────────────── */
-
 function MetricTicker() {
   return (
     <motion.div
-      className="mt-16 md:mt-20"
-      initial={{ opacity: 0, y: 14 }}
+      className="mt-24 md:mt-32"
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: 0.85 }}
+      transition={{ duration: 0.8, ease: EASE_OUT_EXPO, delay: 1 }}
     >
       <div
-        className="grid gap-x-8 gap-y-8"
+        className="grid gap-x-12 gap-y-12"
         style={{
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
           borderTop: "1px solid var(--sk-hairline)",
-          paddingTop: "2.25rem",
+          paddingTop: "3rem",
         }}
       >
         {METRICS.map((m, i) => (
           <MetricCell
             key={m.label}
             metric={m}
-            // Cascade each cell's count-up so they don't all spike together.
-            delay={0.95 + i * 0.12}
+            delay={1.2 + i * 0.15}
           />
         ))}
       </div>
@@ -200,15 +219,13 @@ function MetricTicker() {
 
 function MetricCell({ metric, delay }: { metric: Metric; delay: number }) {
   const reduced = useReducedMotion();
-  // Initialize with target so SSR / no-JS / crawlers see the real number.
-  // After mount we briefly reset to 0 and animate up — SSR snapshot stays correct.
   const [display, setDisplay] = useState(metric.value);
 
   useEffect(() => {
-    if (reduced) return; // Reduced-motion users keep the static target.
+    if (reduced) return;
     setDisplay(0);
     const controls = animate(0, metric.value, {
-      duration: 1.8,
+      duration: 2,
       delay,
       ease: EASE_OUT_EXPO,
       onUpdate: (v) => setDisplay(v),
@@ -216,29 +233,32 @@ function MetricCell({ metric, delay }: { metric: Metric; delay: number }) {
     return () => controls.stop();
   }, [metric.value, delay, reduced]);
 
-  // Round during the tween — fractional pixels in giant numerals look noisy.
   const formatted = Math.round(display).toLocaleString("en-IN");
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col relative">
+      {/* Subtle separator */}
+      <div className="absolute -left-6 top-0 bottom-0 w-[1px] bg-sk-hairline hidden md:block opacity-50" />
+      
       <span
         className="sk-font-display tabular-nums"
         style={{
-          fontSize: "clamp(2.5rem, 4vw + 0.5rem, 4rem)",
+          fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
           color: "var(--sk-ink)",
-          lineHeight: 1,
+          lineHeight: 0.9,
+          letterSpacing: "-0.03em",
         }}
       >
         {formatted}
         {metric.suffix ?? ""}
       </span>
       <span
-        className="sk-font-body mt-3"
+        className="sk-font-meta mt-4 block"
         style={{
-          fontSize: "0.9375rem",
-          color: "var(--sk-ink60)",
-          letterSpacing: "-0.005em",
-          maxWidth: "22ch",
+          fontSize: "0.75rem",
+          letterSpacing: "0.1em",
+          color: "var(--sk-ink40)",
+          maxWidth: "24ch",
         }}
       >
         {metric.label}

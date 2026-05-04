@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Skillies.AI seal">
+  <defs>
+    <style>
+      .sk-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+      .sk-meta  { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.34em; text-transform: uppercase; }
+      .sk-sans  { font-family: 'Inter', system-ui, sans-serif; font-weight: 900; letter-spacing: -0.05em; }
+    </style>
+    <path id="topArc" d="M 60,200 A 140,140 0 0 1 340,200" fill="none"/>
+    <path id="botArc" d="M 70,200 A 130,130 0 0 0 330,200" fill="none"/>
+  </defs>
+
+  <!-- Cream background -->
+  <rect width="400" height="400" fill="#FAF5EB"/>
+
+  <!-- Concentric editorial rings -->
+  <circle cx="200" cy="200" r="165" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+  <circle cx="200" cy="200" r="155" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.35"/>
+  <circle cx="200" cy="200" r="120" fill="none" stroke="#1A1A1A" stroke-width="0.75" opacity="0.25"/>
+
+  <!-- Circular text: top arc -->
+  <text class="sk-meta" font-size="13" fill="#1A1A1A">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">SKILLIES · DOT · AI · SKILLIES · DOT · AI</textPath>
+  </text>
+
+  <!-- Circular text: bottom arc -->
+  <text class="sk-meta" font-size="11" fill="#C62828">
+    <textPath href="#botArc" startOffset="50%" text-anchor="middle">FIND WHAT PAYS · TEACH IT PLAINLY</textPath>
+  </text>
+
+  <!-- Center serif italic "S" -->
+  <text x="200" y="250" text-anchor="middle" class="sk-serif" font-size="220" fill="#1A1A1A">S</text>
+
+  <!-- Red dot period — echoes .AI -->
+  <circle cx="270" cy="238" r="10" fill="#C62828"/>
+
+  <!-- Decorative star / dividers at left/right of masthead -->
+  <text x="50" y="208" text-anchor="middle" class="sk-serif" font-size="28" fill="#C62828">§</text>
+  <text x="350" y="208" text-anchor="middle" class="sk-serif" font-size="28" fill="#C62828">§</text>
+
+  <!-- Dateline strip at the base -->
+  <text x="200" y="332" text-anchor="middle" class="sk-meta" font-size="10" fill="#1A1A1A">EST · 2026 · MALAPPURAM</text>
+</svg>

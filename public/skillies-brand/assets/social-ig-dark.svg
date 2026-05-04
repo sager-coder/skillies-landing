@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080" role="img" aria-label="Skillies.AI — Instagram charcoal">
+  <defs>
+    <style>
+      .s-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+      .s-meta  { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.34em; text-transform: uppercase; }
+    </style>
+    <path id="topArcD" d="M 180,540 A 360,360 0 0 1 900,540" fill="none"/>
+    <path id="botArcD" d="M 200,540 A 340,340 0 0 0 880,540" fill="none"/>
+    <filter id="grainD" x="0" y="0" width="100%" height="100%">
+      <feTurbulence baseFrequency="0.85" numOctaves="2" seed="7"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0"/>
+    </filter>
+  </defs>
+
+  <rect width="1080" height="1080" fill="#1A1A1A"/>
+  <rect width="1080" height="1080" filter="url(#grainD)"/>
+
+  <circle cx="540" cy="540" r="440" fill="none" stroke="#FAF5EB" stroke-width="8"/>
+  <circle cx="540" cy="540" r="420" fill="none" stroke="#FAF5EB" stroke-width="2" opacity="0.30"/>
+  <circle cx="540" cy="540" r="320" fill="none" stroke="#FAF5EB" stroke-width="1.5" opacity="0.18"/>
+
+  <text class="s-meta" font-size="34" fill="#FAF5EB">
+    <textPath href="#topArcD" startOffset="50%" text-anchor="middle">SKILLIES · DOT · AI · SKILLIES · DOT · AI</textPath>
+  </text>
+  <text class="s-meta" font-size="28" fill="#EF4444">
+    <textPath href="#botArcD" startOffset="50%" text-anchor="middle">FIND WHAT PAYS · TEACH IT PLAINLY</textPath>
+  </text>
+
+  <text x="540" y="680" text-anchor="middle" class="s-serif" font-size="600" fill="#FAF5EB">S</text>
+  <circle cx="730" cy="650" r="28" fill="#EF4444"/>
+
+  <text x="150" y="560" text-anchor="middle" class="s-serif" font-size="80" fill="#EF4444">§</text>
+  <text x="930" y="560" text-anchor="middle" class="s-serif" font-size="80" fill="#EF4444">§</text>
+
+  <text x="540" y="920" text-anchor="middle" class="s-meta" font-size="26" fill="#FAF5EB">EST · 2026 · MALAPPURAM</text>
+</svg>

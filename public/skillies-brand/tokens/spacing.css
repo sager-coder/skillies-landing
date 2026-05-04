@@ -1,0 +1,64 @@
+/* =========================================================
+   Skillies.AI — Spacing + Radius + Layout Tokens
+   4-px base scale. Editorial generosity — prefer more whitespace,
+   not less.
+   ========================================================= */
+
+:root {
+  /* ---------- Spacing scale (4px base) ---------- */
+  --sp-1:    4px;
+  --sp-2:    8px;
+  --sp-3:   12px;
+  --sp-4:   16px;
+  --sp-5:   24px;
+  --sp-6:   32px;
+  --sp-7:   40px;
+  --sp-8:   56px;
+  --sp-9:   80px;
+  --sp-10: 128px;
+
+  /* Section padding presets — pick one */
+  --section-pad-sm:  48px 24px;
+  --section-pad-md:  80px 32px;
+  --section-pad-lg: 128px 48px;
+
+  /* ---------- Radii — a restricted set ---------- */
+  --r-sm:    6px;    /* tags, small inline chips */
+  --r-md:   14px;    /* form elements, small cards */
+  --r-lg:   20px;    /* cards */
+  --r-xl:   24px;    /* large cards / dialog */
+  --r-2xl:  32px;    /* hero cards */
+  --r-pill: 999px;   /* buttons, kicker pills, chips */
+
+  /* ---------- Max widths ---------- */
+  --mw-narrow:   720px;   /* reading column, single-col sections */
+  --mw-content:  960px;   /* default content width */
+  --mw-wide:    1120px;   /* wide sections */
+  --mw-full:    1240px;   /* broadsheet sections / landing hero */
+
+  /* ---------- Z-index ---------- */
+  --z-base:      1;
+  --z-nav:      60;
+  --z-overlay:  80;
+  --z-modal:   100;
+}
+
+/*
+  LAYOUT RULES
+
+  1. Most sections use section-pad-lg (128px 48px). Use section-pad-md
+     only when you explicitly want a tighter rhythm.
+
+  2. Default max-width is --mw-content (960px). Use --mw-full (1240px)
+     for landing + dashboard layouts, and --mw-narrow for single-
+     column reading (like a long-form article).
+
+  3. Radii are restricted to this set. Never introduce ad-hoc
+     radius values. 6 / 14 / 20 / 24 / 32 / 999. Done.
+
+  4. Card-on-card nesting: outer card = 20-24px radius, inner chips =
+     999px (pill) or 6px. Never nest two medium-radius cards.
+
+  5. Whitespace is editorial generosity. When in doubt, more breathing
+     room. A site that reads like a magazine doesn't skimp on margins.
+*/

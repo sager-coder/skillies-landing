@@ -1,0 +1,40 @@
+/* =========================================================
+   Skillies.AI — All tokens in one import
+   Use this if you want the whole system in one line:
+     @import url("../skillies-brand/tokens/index.css");
+   Order matters: typography's @import must be first.
+   ========================================================= */
+
+@import url("./typography.css");
+@import url("./colors.css");
+@import url("./spacing.css");
+@import url("./motion.css");
+
+/* ---------- Base reset + essentials ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-cream);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--red);
+  color: white;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-cream-dark); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }

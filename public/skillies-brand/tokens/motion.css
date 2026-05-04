@@ -1,0 +1,72 @@
+/* =========================================================
+   Skillies.AI — Motion Tokens
+   Motion is subtle, editorial. Never bouncy. Never fast.
+   ========================================================= */
+
+:root {
+  /* ---------- Easings ---------- */
+  --ease-out:       cubic-bezier(0.22, 1, 0.36, 1);    /* default */
+  --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);     /* slow + quiet */
+
+  /* ---------- Durations ---------- */
+  --dur-fast:  200ms;
+  --dur-base:  400ms;
+  --dur-slow:  700ms;
+}
+
+/* ---------- Shared keyframes used across the system ---------- */
+
+@keyframes pulse-ring {
+  0%   { opacity: .35; transform: scale(1); }
+  80%  { opacity: 0;   transform: scale(2); }
+  100% { opacity: 0;   transform: scale(2); }
+}
+
+@keyframes ticker-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: .4; transform: scale(1); }
+  50%      { opacity: 0;  transform: scale(1.8); }
+}
+
+@keyframes slide-up {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to   { transform: translate(-50%, 0);    opacity: 1; }
+}
+
+@keyframes scroll-indicator {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+
+/*
+  MOTION RULES
+
+  1. Transitions default to 250ms + --ease-out. Don't exceed 700ms
+     unless it's a scroll-reveal on a hero element.
+
+  2. Hover lift: translateY(-4px) + shadow growth. Don't scale cards.
+
+  3. Button hover: background color shift + scale(1.03). Never more.
+
+  4. No spring physics, no wobble, no bounce. This is editorial, not
+     playful SaaS.
+
+  5. Respect prefers-reduced-motion — disable decorative animation
+     but keep state transitions (accordion, hover feedback).
+*/
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

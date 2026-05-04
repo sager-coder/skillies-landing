@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Skillies.AI apple-touch-icon">
+  <defs>
+    <style>
+      .f-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+    </style>
+  </defs>
+
+  <rect width="180" height="180" rx="40" fill="#FAF5EB"/>
+  <circle cx="90" cy="90" r="74" fill="none" stroke="#1A1A1A" stroke-width="2.5"/>
+  <text x="90" y="130" text-anchor="middle" class="f-serif" font-size="134" fill="#1A1A1A">S</text>
+  <circle cx="128" cy="122" r="7" fill="#C62828"/>
+</svg>

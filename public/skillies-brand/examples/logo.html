@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skillies.AI — Logo System</title>
+<link rel="stylesheet" href="../tokens/index.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #FAF5EB;
+    color: #1A1A1A;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 80px 40px 120px; }
+
+  /* Masthead */
+  .masthead {
+    border-top: 3px solid #1A1A1A;
+    border-bottom: 1px solid rgba(26,26,26,0.2);
+    padding: 20px 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 48px;
+  }
+  .masthead .dateline {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.32em;
+    text-transform: uppercase; color: #6B7280;
+  }
+  .masthead .issue {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.32em;
+    text-transform: uppercase; color: #C62828;
+  }
+
+  h1.t-hero {
+    font-weight: 900;
+    font-size: clamp(64px, 9vw, 128px);
+    line-height: 0.86;
+    letter-spacing: -0.055em;
+    margin-bottom: 16px;
+  }
+  h1.t-hero em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    color: #C62828;
+  }
+  .t-lead {
+    font-size: 19px;
+    line-height: 1.65;
+    color: #6B7280;
+    max-width: 620px;
+    margin-bottom: 72px;
+  }
+
+  /* Section dateline */
+  .dateline-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 22px;
+  }
+  .dateline-row .section-num {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 28px;
+    color: #C62828;
+  }
+  .dateline-row .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.30em;
+    text-transform: uppercase; color: #1A1A1A;
+  }
+  .dateline-row .rule { flex: 1; height: 1px; background: rgba(26,26,26,0.2); }
+
+  section { margin-bottom: 80px; }
+  section h2 {
+    font-size: clamp(28px, 3.4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+  }
+  section p.note {
+    font-size: 15px; color: #6B7280; line-height: 1.65;
+    max-width: 620px; margin-bottom: 32px;
+  }
+
+  /* Display panels */
+  .panel {
+    border: 1px solid rgba(26,26,26,0.15);
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 56px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel.cream  { background: #FAF5EB; }
+  .panel.dark   { background: #1A1A1A; }
+  .panel.forest { background: #1F3A2E; }
+  .panel.red    { background: #C62828; }
+  .panel.gold   { background: #C9A24E; }
+
+  .panel .tag {
+    position: absolute; top: 14px; left: 18px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.30em;
+    text-transform: uppercase; color: rgba(26,26,26,0.55);
+  }
+  .panel.dark .tag, .panel.forest .tag, .panel.red .tag { color: rgba(250,245,235,0.55); }
+  .panel.gold .tag { color: rgba(26,26,26,0.65); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 860px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  /* Wordmark primitives (rebuilt in HTML for live text) */
+  .wordmark {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.055em;
+    line-height: 1;
+    color: #1A1A1A;
+  }
+  .wordmark .dotai { color: #C62828; }
+  .wordmark.on-dark { color: #FAF5EB; }
+  .wordmark.on-dark .dotai { color: #EF4444; }
+  .wordmark.on-gold { color: #1A1A1A; }
+  .wordmark.on-gold .dotai { color: #1A1A1A; }
+
+  .lockup {
+    display: flex; align-items: center; gap: 24px;
+  }
+  .lockup .seal {
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 2px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .lockup .seal::before {
+    content: ""; position: absolute; inset: 6px;
+    border: 1px solid currentColor; opacity: 0.35;
+    border-radius: 50%;
+  }
+  .lockup .seal span {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 64px;
+    line-height: 1;
+    color: #C62828;
+  }
+  .on-dark .lockup .seal span { color: #EF4444; }
+
+  .lockup .stack .kicker {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.30em;
+    text-transform: uppercase; color: inherit;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0.9;
+    margin-bottom: 6px;
+  }
+  .lockup .stack .kicker::before {
+    content: ""; display: block; width: 18px; height: 2px; background: #C62828;
+  }
+  .on-dark .lockup .stack .kicker::before { background: #EF4444; }
+
+  .lockup .stack .tag {
+    position: static; font-size: 9px; color: inherit; opacity: 0.55;
+    margin-top: 10px; letter-spacing: 0.30em;
+  }
+
+  .favicon-row { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
+  .favicon {
+    width: 120px; height: 120px; border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 108px; line-height: 1;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .favicon.circle { border-radius: 50%; }
+  .favicon.cream { background: #FAF5EB; color: #1A1A1A; border: 2px solid #1A1A1A; }
+  .favicon.cream .dot { position: absolute; right: 18px; top: 46px; width: 10px; height: 10px; background: #C62828; border-radius: 50%; }
+  .favicon.dark  { background: #1A1A1A; color: #FAF5EB; }
+  .favicon.dark .dot { position: absolute; right: 18px; top: 46px; width: 10px; height: 10px; background: #EF4444; border-radius: 50%; }
+  .favicon.red   { background: #C62828; color: #FAF5EB; }
+  .favicon.gold  { background: #C9A24E; color: #1A1A1A; }
+  .favicon sup {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    vertical-align: top;
+    margin-left: 2px;
+    opacity: 0.75;
+  }
+
+  .clear-space {
+    position: relative;
+    padding: 64px;
+    border: 1px dashed rgba(26,26,26,0.3);
+    background: #FAF5EB;
+    border-radius: 12px;
+  }
+  .clear-space .box { position: absolute; border: 1px dashed #C62828; }
+  .clear-space .box.t { top: 16px; left: 16px; right: 16px; height: 32px; }
+  .clear-space .box.b { bottom: 16px; left: 16px; right: 16px; height: 32px; }
+  .clear-space .box.l { top: 56px; left: 16px; bottom: 56px; width: 32px; }
+  .clear-space .box.r { top: 56px; right: 16px; bottom: 56px; width: 32px; }
+  .clear-space .box::after {
+    content: "x"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif; font-style: italic; font-size: 18px; color: #C62828;
+  }
+
+  .dont-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 860px) { .dont-row { grid-template-columns: 1fr; } }
+  .dont { border: 1px solid rgba(26,26,26,0.15); border-radius: 12px; padding: 32px; background: #FFFFFF; position: relative; }
+  .dont::before {
+    content: "✗ DON'T";
+    position: absolute; top: 14px; left: 18px;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: #C62828;
+  }
+  .dont .demo { padding: 36px 8px; text-align: center; }
+  .dont .label { font-size: 13px; color: #6B7280; line-height: 1.5; margin-top: 8px; }
+
+  footer {
+    border-top: 1px solid rgba(26,26,26,0.2);
+    padding-top: 24px;
+    font-size: 12px; letter-spacing: 0.30em; text-transform: uppercase;
+    color: #6B7280;
+    display: flex; justify-content: space-between;
+    margin-top: 80px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="dateline">§ 01 · Brand System · Logo</div>
+    <div class="issue">Vol. 1 · Issue 01 · Apr 2026</div>
+  </div>
+
+  <h1 class="t-hero">The <em>Skillies.AI</em><br>mark system.</h1>
+  <p class="t-lead">
+    An editorial wordmark paired with a proof-stamped seal.
+    Built for cream pages, charcoal surfaces, and 40&times;40-pixel
+    Instagram avatars alike. No gradients. No glow. No SaaS.
+  </p>
+
+  <!-- PRIMARY LOCKUP -->
+  <section>
+    <div class="dateline-row">
+      <span class="section-num">§ 01</span>
+      <span class="section-label">Primary Lockup · Cream</span>
+      <span class="rule"></span>
+    </div>
+    <h2>The masthead lockup.</h2>
+    <p class="note">
+      Editorial seal on the left, wordmark on the right, framed by
+      dateline and tagline rules. Use this anywhere a masthead would
+      appear: homepage header, letterhead, business cards, press kit.
+    </p>
+
+    <div class="panel cream">
+      <span class="tag">01 · PRIMARY · CREAM</span>
+      <div class="lockup">
+        <div class="seal"><span>S</span></div>
+        <div class="stack">
+          <div class="kicker">§ A Research + Teach School</div>
+          <div class="wordmark" style="font-size: 72px;">SKILLIES<span class="dotai">.AI</span></div>
+          <div class="tag">Find What Pays · Teach It Plainly · Show The Receipts</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DARK VARIANT -->
+  <section>
+    <div class="dateline-row">
+      <span class="section-num">§ 02</span>
+      <span class="section-label">On Dark Surfaces</span>
+      <span class="rule"></span>
+    </div>
+    <h2>Charcoal, forest, brand-red.</h2>
+    <p class="note">
+      The same lockup, inverted for dramatic dark sections. Red
+      becomes the bright red (#EF4444) so it still pops against
+      charcoal. Reserved for hero moments, not every page.
+    </p>
+
+    <div class="grid-2">
+      <div class="panel dark">
+        <span class="tag">02 · CHARCOAL</span>
+        <div class="lockup on-dark" style="color:#FAF5EB;">
+          <div class="seal"><span>S</span></div>
+          <div class="stack">
+            <div class="kicker">§ A Research + Teach School</div>
+            <div class="wordmark on-dark" style="font-size: 56px;">SKILLIES<span class="dotai">.AI</span></div>
+            <div class="tag">Find What Pays · Show The Receipts</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel forest">
+        <span class="tag">03 · FOREST · PAISA MODE</span>
+        <div class="lockup on-dark" style="color:#FAF5EB;">
+          <div class="seal"><span>S</span></div>
+          <div class="stack">
+            <div class="kicker">§ Storytelling Edition</div>
+            <div class="wordmark on-dark" style="font-size: 56px;">SKILLIES<span class="dotai" style="color:#C9A24E;">.AI</span></div>
+            <div class="tag">Weekly reels · News cards</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORDMARK ALONE -->
+  <section>
+    <div class="dateline-row">
+      <span class="section-num">§ 03</span>
+      <span class="section-label">Wordmark — Standalone</span>
+      <span class="rule"></span>
+    </div>
+    <h2>Just the wordmark.</h2>
+    <p class="note">
+      Drop the seal when you need less weight — footer, body copy,
+      run-in mentions. Inter Black (900), tracking&nbsp;−0.055em,
+      period always red.
+    </p>
+
+    <div class="grid-2">
+      <div class="panel cream">
+        <span class="tag">WORDMARK · CREAM</span>
+        <div class="wordmark" style="font-size: 92px;">SKILLIES<span class="dotai">.AI</span></div>
+      </div>
+      <div class="panel dark">
+        <span class="tag">WORDMARK · CHARCOAL</span>
+        <div class="wordmark on-dark" style="font-size: 92px;">SKILLIES<span class="dotai">.AI</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAVICON / AVATAR -->
+  <section>
+    <div class="dateline-row">
+      <span class="section-num">§ 04</span>
+      <span class="section-label">Avatar &amp; Favicon</span>
+      <span class="rule"></span>
+    </div>
+    <h2>One letter, one period.</h2>
+    <p class="note">
+      Instrument Serif italic "S" with the red period, locked in a
+      square or circle. Works at 40×40&nbsp;px. The period carries
+      the .AI signal so the mark never feels half-finished.
+    </p>
+
+    <div class="panel cream" style="padding: 48px;">
+      <div class="favicon-row">
+        <div class="favicon cream">S<span class="dot"></span></div>
+        <div class="favicon dark">S<span class="dot"></span></div>
+        <div class="favicon red">S</div>
+        <div class="favicon gold">S</div>
+        <div class="favicon cream circle">S<span class="dot"></span></div>
+        <div class="favicon dark circle">S<span class="dot"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLEAR SPACE -->
+  <section>
+    <div class="dateline-row">
+      <span class="section-num">§ 05</span>
+      <span class="section-label">Clear Space</span>
+      <span class="rule"></span>
+    </div>
+    <h2>Give it air.</h2>
+    <p class="note">
+      Minimum clear space on all sides = the height of the capital
+      "S" in the wordmark. Don't let anything — copy, buttons,
+      photos — enter the red "x" zone.
+    </p>
+
+    <div class="clear-space">
+      <div class="box t"></div>
+      <div class="box b"></div>
+      <div class="box l"></div>
+      <div class="box r"></div>
+      <div style="text-align:center;">
+        <div class="wordmark" style="font-size: 84px;">SKILLIES<span class="dotai">.AI</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DON'TS -->
+  <section>
+    <div class="dateline-row">
+      <span class="section-num">§ 06</span>
+      <span class="section-label">Misuse · Don'ts</span>
+      <span class="rule"></span>
+    </div>
+    <h2>Things that kill the brand.</h2>
+    <p class="note">
+      Three quick rules. If a variation drifts into any of these,
+      it's not the Skillies.AI mark anymore.
+    </p>
+
+    <div class="dont-row">
+      <div class="dont">
+        <div class="demo" style="background: linear-gradient(135deg,#6C5CE7,#00CECE); border-radius: 10px; padding: 44px 0;">
+          <span style="font-family:'Inter'; font-weight:900; font-size:32px; letter-spacing:-0.05em; color:#fff;">SKILLIES<span style="color:#FFD93D;">.AI</span></span>
+        </div>
+        <div class="label">No purple/blue/SaaS gradients. The palette is cream, charcoal, red — plus sage / forest / gold.</div>
+      </div>
+
+      <div class="dont">
+        <div class="demo">
+          <span style="font-family:'Comic Sans MS', cursive; font-weight:700; font-size:32px; color:#1A1A1A;">skillies.ai</span>
+        </div>
+        <div class="label">No substituted fonts. Inter Black + Instrument Serif italic only. No Comic Sans, Poppins, Roboto.</div>
+      </div>
+
+      <div class="dont">
+        <div class="demo">
+          <span style="font-family:'Inter'; font-weight:900; font-size:32px; letter-spacing:0.2em; color:#1A1A1A;">S K I L L I E S<span style="color:#C62828;">. A I</span></span>
+        </div>
+        <div class="label">No wide tracking. The wordmark is tight (−0.055em). Never spaced-out, never lowercase only.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>Skillies.AI · Logo System v2</span>
+    <span>§ Malappuram · Kerala · 2026</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

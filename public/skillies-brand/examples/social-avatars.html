@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skillies.AI — Social Avatars &amp; Favicons</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #FAF5EB;
+    color: #1A1A1A;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 72px 40px 120px; }
+
+  .masthead {
+    border-top: 3px solid #1A1A1A;
+    border-bottom: 1px solid rgba(26,26,26,0.2);
+    padding: 18px 0 22px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 48px;
+  }
+  .masthead .dateline {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.32em;
+    text-transform: uppercase; color: #6B7280;
+  }
+  .masthead .issue {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.32em;
+    text-transform: uppercase; color: #C62828;
+  }
+
+  h1 {
+    font-weight: 900;
+    font-size: clamp(56px, 8vw, 112px);
+    line-height: 0.86;
+    letter-spacing: -0.055em;
+    margin-bottom: 14px;
+  }
+  h1 em {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-weight: 400; letter-spacing: -0.015em; color: #C62828;
+  }
+  .lead {
+    font-size: 19px; line-height: 1.65; color: #6B7280;
+    max-width: 640px; margin-bottom: 72px;
+  }
+
+  .dateline-row { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .dateline-row .n {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 28px; color: #C62828;
+  }
+  .dateline-row .l {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.30em;
+    text-transform: uppercase;
+  }
+  .dateline-row .rule { flex: 1; height: 1px; background: rgba(26,26,26,0.2); }
+
+  section { margin-bottom: 96px; }
+  section h2 {
+    font-size: clamp(28px, 3.4vw, 44px);
+    font-weight: 800; letter-spacing: -0.025em;
+    margin-bottom: 12px;
+  }
+  section p.note {
+    font-size: 15px; color: #6B7280; line-height: 1.65;
+    max-width: 620px; margin-bottom: 32px;
+  }
+
+  /* ------- Instagram profile mock ------- */
+  .phone {
+    background: #FFFFFF;
+    border: 1px solid rgba(26,26,26,0.15);
+    border-radius: 28px;
+    padding: 18px 22px 24px;
+    max-width: 420px;
+    font-family: system-ui, sans-serif;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+  }
+  .phone .status {
+    display: flex; justify-content: space-between;
+    font-size: 13px; font-weight: 600; color: #1A1A1A;
+    padding: 6px 4px 10px;
+  }
+  .phone .topbar {
+    display: flex; align-items: center; gap: 14px; padding: 4px 2px 14px;
+    border-bottom: 1px solid rgba(26,26,26,0.08);
+  }
+  .phone .topbar .handle { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+  .phone .topbar .handle::after { content: " ▾"; font-size: 13px; color: #888; }
+
+  .ig-profile {
+    padding: 22px 0 10px;
+    display: flex; gap: 28px; align-items: center;
+  }
+  .avatar {
+    width: 104px; height: 104px; border-radius: 50%;
+    overflow: hidden;
+    padding: 3px;
+    background: linear-gradient(135deg, #F58529, #DD2A7B, #8134AF, #515BD4);
+  }
+  .avatar > div {
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 3px solid #FFFFFF;
+    background: center/cover no-repeat;
+  }
+  .stats { display: flex; gap: 22px; flex: 1; }
+  .stats .stat { text-align: center; }
+  .stats .stat b { display: block; font-size: 17px; font-weight: 700; }
+  .stats .stat span { font-size: 13px; color: #555; }
+
+  .ig-bio { padding: 6px 0 14px; }
+  .ig-bio .name { font-size: 14px; font-weight: 700; }
+  .ig-bio .title { font-size: 13px; color: #555; }
+  .ig-bio .desc { font-size: 13.5px; margin-top: 4px; line-height: 1.45; }
+  .ig-bio .link { font-size: 13px; color: #0055AA; margin-top: 4px; }
+
+  .ig-buttons { display: flex; gap: 8px; padding: 4px 0 12px; }
+  .ig-buttons .btn {
+    flex: 1; text-align: center; padding: 8px 0;
+    background: #EFEFEF; border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+  }
+  .ig-buttons .btn.primary { background: #0095F6; color: white; }
+
+  /* Feed header — tiny avatar */
+  .feed-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 2px 12px;
+    border-top: 1px solid rgba(26,26,26,0.08);
+  }
+  .feed-row .av-sm {
+    width: 40px; height: 40px; border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg,#F58529,#DD2A7B,#8134AF,#515BD4);
+  }
+  .feed-row .av-sm > div {
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 2px solid white;
+    background: center/cover no-repeat;
+  }
+  .feed-row .who b { font-size: 13px; font-weight: 600; }
+  .feed-row .who span { display: block; font-size: 11px; color: #777; }
+
+  /* Story ring — even smaller */
+  .stories { display: flex; gap: 12px; padding-top: 14px; overflow-x: auto; }
+  .story {
+    text-align: center; flex-shrink: 0;
+  }
+  .story .ring {
+    width: 58px; height: 58px; border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg,#F58529,#DD2A7B,#8134AF,#515BD4);
+    margin-bottom: 6px;
+  }
+  .story .ring > div {
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 2px solid white;
+    background: center/cover no-repeat;
+  }
+  .story .cap { font-size: 11px; color: #333; }
+
+  /* ------- WhatsApp chat mock ------- */
+  .whatsapp {
+    background: #FFFFFF;
+    border: 1px solid rgba(26,26,26,0.15);
+    border-radius: 22px;
+    overflow: hidden;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+  }
+  .wa-head {
+    background: #075E54; color: white;
+    padding: 14px 18px; font-size: 15px; font-weight: 600;
+  }
+  .wa-chat {
+    display: flex; gap: 14px; align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(26,26,26,0.06);
+  }
+  .wa-chat .av {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: center/cover no-repeat;
+    flex-shrink: 0;
+  }
+  .wa-chat .body { flex: 1; min-width: 0; }
+  .wa-chat .body .row1 {
+    display: flex; justify-content: space-between;
+    font-size: 15px; font-weight: 600;
+  }
+  .wa-chat .body .row1 time { font-size: 12px; color: #25D366; font-weight: 500; }
+  .wa-chat .body .preview {
+    font-size: 14px; color: #667781;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .unread {
+    background: #25D366; color: white;
+    border-radius: 999px;
+    min-width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    padding: 0 6px;
+  }
+
+  /* WhatsApp profile view */
+  .wa-profile {
+    background: #FFFFFF;
+    border: 1px solid rgba(26,26,26,0.15);
+    border-radius: 22px;
+    max-width: 420px;
+    padding: 40px 32px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+  }
+  .wa-profile .hero-av {
+    width: 176px; height: 176px; border-radius: 50%;
+    background: center/cover no-repeat;
+    margin: 0 auto 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+  .wa-profile h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
+  .wa-profile p { font-size: 14px; color: #667781; margin-top: 4px; }
+
+  /* ------- Browser tabs mock ------- */
+  .browser {
+    background: #E4E7EB;
+    border-radius: 14px 14px 0 0;
+    padding: 10px 10px 0;
+    max-width: 760px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+  }
+  .browser .tabs { display: flex; gap: 2px; }
+  .browser .tab {
+    background: #F5F7FA;
+    border-radius: 10px 10px 0 0;
+    padding: 8px 12px 10px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px;
+    max-width: 210px;
+    color: #444;
+  }
+  .browser .tab.active { background: #FFFFFF; color: #1A1A1A; font-weight: 500; }
+  .browser .tab .ico {
+    width: 16px; height: 16px; border-radius: 3px;
+    background: center/cover no-repeat;
+    flex-shrink: 0;
+  }
+  .browser .tab .ttl {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .browser .tab .x { color: #999; font-size: 14px; margin-left: 4px; }
+  .browser .content {
+    background: #FFFFFF;
+    height: 40px; border-radius: 0 0 14px 14px;
+  }
+
+  /* ------- Favicon scale strip ------- */
+  .scale {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px;
+    background: #FFFFFF;
+    border: 1px solid rgba(26,26,26,0.12);
+    border-radius: 14px;
+    padding: 32px 24px;
+  }
+  .scale .cell { text-align: center; }
+  .scale .cell .img {
+    background: center/contain no-repeat;
+    margin: 0 auto 10px;
+    border: 1px solid rgba(26,26,26,0.08);
+  }
+  .scale .cell .px {
+    font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: #6B7280; font-weight: 700;
+  }
+  @media (max-width: 860px) {
+    .scale { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* ------- Two-column layout ------- */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: flex-start; }
+  @media (max-width: 920px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  footer {
+    border-top: 1px solid rgba(26,26,26,0.2);
+    padding-top: 24px; margin-top: 60px;
+    font-size: 12px; letter-spacing: 0.30em; text-transform: uppercase;
+    color: #6B7280;
+    display: flex; justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="dateline">§ 02 · Brand System · Social &amp; Favicons</div>
+    <div class="issue">Vol. 1 · Issue 02 · Apr 2026</div>
+  </div>
+
+  <h1>Where the mark <em>lives</em>.</h1>
+  <p class="lead">
+    Instagram profile and feed headers. WhatsApp chat lists and
+    contact cards. Browser tabs, pinned apps, home-screen icons.
+    The same mark, tuned for each pixel budget.
+  </p>
+
+  <!-- INSTAGRAM -->
+  <section>
+    <div class="dateline-row">
+      <span class="n">§ 01</span>
+      <span class="l">Instagram</span>
+      <span class="rule"></span>
+    </div>
+    <h2>Instagram.</h2>
+    <p class="note">
+      The cream version is the default — it reads as an editorial
+      stamp, not another beige SaaS avatar. Use the charcoal version
+      for paid posts, partnerships, or when the feed surrounding it
+      is light.
+    </p>
+
+    <div class="grid-2">
+
+      <!-- Profile view -->
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●</span></div>
+        <div class="topbar">
+          <div class="handle">skillies.ai</div>
+          <div style="margin-left:auto; font-size: 18px;">＋ ≡</div>
+        </div>
+
+        <div class="ig-profile">
+          <div class="avatar"><div style="background-image: url('../assets/social-ig-cream.svg');"></div></div>
+          <div class="stats">
+            <div class="stat"><b>63</b><span>posts</span></div>
+            <div class="stat"><b>4,812</b><span>followers</span></div>
+            <div class="stat"><b>98</b><span>following</span></div>
+          </div>
+        </div>
+
+        <div class="ig-bio">
+          <div class="name">Skillies.AI</div>
+          <div class="title">Research &amp; teach school · Malappuram</div>
+          <div class="desc">₹1,16,000 last month from 63 AI-assisted books. I teach what I actually run. Calicut workshop: May 31.</div>
+          <div class="link">skillies.ai</div>
+        </div>
+
+        <div class="ig-buttons">
+          <div class="btn primary">Follow</div>
+          <div class="btn">Message</div>
+          <div class="btn">▾</div>
+        </div>
+
+        <div class="stories">
+          <div class="story"><div class="ring"><div style="background-image: url('../assets/social-ig-cream.svg');"></div></div><div class="cap">receipts</div></div>
+          <div class="story"><div class="ring"><div style="background-image: url('../assets/social-ig-cream.svg');"></div></div><div class="cap">kdp</div></div>
+          <div class="story"><div class="ring"><div style="background-image: url('../assets/social-ig-dark.svg');"></div></div><div class="cap">workshop</div></div>
+          <div class="story"><div class="ring"><div style="background-image: url('../assets/social-ig-dark.svg');"></div></div><div class="cap">paisa</div></div>
+        </div>
+      </div>
+
+      <!-- Feed header -->
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●</span></div>
+        <div class="feed-row">
+          <div class="av-sm"><div style="background-image: url('../assets/social-ig-cream.svg');"></div></div>
+          <div class="who"><b>skillies.ai</b><span>Malappuram, Kerala · Sponsored</span></div>
+        </div>
+        <div style="background:#FAF5EB; margin: 8px -22px 0; padding: 28px 22px; border-top: 1px solid rgba(26,26,26,0.06);">
+          <div style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 30px; line-height: 1.15; color: #1A1A1A;">
+            ₹1,16,000 last month. From books I wrote with AI, not courses I sold.
+          </div>
+          <div style="margin-top: 14px; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; color: #C62828; font-weight: 700;">§ Open the receipts →</div>
+        </div>
+
+        <div class="feed-row">
+          <div class="av-sm"><div style="background-image: url('../assets/social-ig-dark.svg');"></div></div>
+          <div class="who"><b>skillies.ai</b><span>Charcoal variant · partnership</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHATSAPP -->
+  <section>
+    <div class="dateline-row">
+      <span class="n">§ 02</span>
+      <span class="l">WhatsApp</span>
+      <span class="rule"></span>
+    </div>
+    <h2>WhatsApp.</h2>
+    <p class="note">
+      Simpler than the Instagram version — WhatsApp compresses
+      aggressively and the chat-list avatar shows at 40 px. Single
+      ring, big italic S, red period. The dateline strip drops out
+      at small sizes but reads on the profile view.
+    </p>
+
+    <div class="grid-2">
+      <!-- Chat list -->
+      <div class="whatsapp">
+        <div class="wa-head">Chats</div>
+
+        <div class="wa-chat">
+          <div class="av" style="background-image: url('../assets/social-whatsapp.svg');"></div>
+          <div class="body">
+            <div class="row1"><span>Skillies.AI</span><time>9:41 AM</time></div>
+            <div class="preview">Workshop reminder: Calicut, May 31 — ₹499 early bird closes tonight.</div>
+          </div>
+          <div class="unread">2</div>
+        </div>
+
+        <div class="wa-chat">
+          <div class="av" style="background:#075E54; display:flex; align-items:center; justify-content:center; color:white; font-weight:700;">RA</div>
+          <div class="body">
+            <div class="row1"><span>Rashid Ali</span><time>Yesterday</time></div>
+            <div class="preview">Can you share the KDP niche list you mentioned?</div>
+          </div>
+        </div>
+
+        <div class="wa-chat">
+          <div class="av" style="background:#128C7E; display:flex; align-items:center; justify-content:center; color:white; font-weight:700;">F</div>
+          <div class="body">
+            <div class="row1"><span>Family</span><time>Wed</time></div>
+            <div class="preview">Umma: send the workshop link to Shabeer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile view -->
+      <div class="wa-profile">
+        <div class="hero-av" style="background-image: url('../assets/social-whatsapp.svg');"></div>
+        <h3>Skillies.AI</h3>
+        <p>+91 9847 XX XXXX</p>
+        <p style="font-style: italic; margin-top: 12px; color: #1A1A1A;">"Find what pays. Teach it plainly. Show the receipts."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAVICONS -->
+  <section>
+    <div class="dateline-row">
+      <span class="n">§ 03</span>
+      <span class="l">Favicons &amp; Touch Icons</span>
+      <span class="rule"></span>
+    </div>
+    <h2>Favicons, scaled.</h2>
+    <p class="note">
+      Three designs across six sizes. At 16 and 32 px, the italic S
+      collapses — so those sizes switch to Inter Black sans with a
+      square red pixel. 180 px and up get the serif italic with the
+      editorial ring.
+    </p>
+
+    <div class="scale">
+      <div class="cell">
+        <div class="img" style="background-image: url('../assets/favicon-16.svg'); width:16px; height:16px;"></div>
+        <div class="px">16 px · TAB</div>
+      </div>
+      <div class="cell">
+        <div class="img" style="background-image: url('../assets/favicon-32.svg'); width:32px; height:32px;"></div>
+        <div class="px">32 px · TAB HD</div>
+      </div>
+      <div class="cell">
+        <div class="img" style="background-image: url('../assets/favicon-180.svg'); width:64px; height:64px; border-radius:14px;"></div>
+        <div class="px">180 px · iOS</div>
+      </div>
+      <div class="cell">
+        <div class="img" style="background-image: url('../assets/favicon-512.svg'); width:96px; height:96px; border-radius:21px;"></div>
+        <div class="px">192 px · PWA</div>
+      </div>
+      <div class="cell">
+        <div class="img" style="background-image: url('../assets/favicon-512.svg'); width:128px; height:128px; border-radius:28px;"></div>
+        <div class="px">512 px · HI-RES</div>
+      </div>
+      <div class="cell">
+        <div class="img" style="background-image: url('../assets/social-whatsapp.svg'); width:128px; height:128px; border-radius:50%;"></div>
+        <div class="px">AVATAR · MASK</div>
+      </div>
+    </div>
+
+    <!-- Browser tab mock -->
+    <div style="margin-top: 28px;">
+      <div class="browser">
+        <div class="tabs">
+          <div class="tab active">
+            <div class="ico" style="background-image: url('../assets/favicon-32.svg');"></div>
+            <div class="ttl">Skillies.AI — Find what pays</div>
+            <span class="x">×</span>
+          </div>
+          <div class="tab">
+            <div class="ico" style="background:#4285F4; border-radius:50%;"></div>
+            <div class="ttl">Google Search</div>
+            <span class="x">×</span>
+          </div>
+          <div class="tab">
+            <div class="ico" style="background:#FF9800; border-radius:3px;"></div>
+            <div class="ttl">KDP Dashboard</div>
+            <span class="x">×</span>
+          </div>
+        </div>
+        <div class="content"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USAGE -->
+  <section>
+    <div class="dateline-row">
+      <span class="n">§ 04</span>
+      <span class="l">File Map &amp; Usage</span>
+      <span class="rule"></span>
+    </div>
+    <h2>What to upload where.</h2>
+    <p class="note">Copy-paste reference. Export any SVG to PNG/ICO with <code style="background:#F0E8D8; padding:2px 6px; border-radius:3px;">rsvg-convert</code> or any SVG-to-PNG tool before upload if the platform doesn't accept SVG.</p>
+
+    <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+      <thead>
+        <tr style="background:#F0E8D8; text-align:left;">
+          <th style="padding: 12px 14px; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;">Platform</th>
+          <th style="padding: 12px 14px; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;">File</th>
+          <th style="padding: 12px 14px; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;">Upload Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid rgba(26,26,26,0.08);"><td style="padding: 14px;">Instagram — profile pic</td><td style="padding: 14px;"><code>social-ig-cream.svg</code></td><td style="padding: 14px;">1080 × 1080 PNG</td></tr>
+        <tr style="border-bottom: 1px solid rgba(26,26,26,0.08);"><td style="padding: 14px;">Instagram — dark posts</td><td style="padding: 14px;"><code>social-ig-dark.svg</code></td><td style="padding: 14px;">1080 × 1080 PNG</td></tr>
+        <tr style="border-bottom: 1px solid rgba(26,26,26,0.08);"><td style="padding: 14px;">WhatsApp — business profile</td><td style="padding: 14px;"><code>social-whatsapp.svg</code></td><td style="padding: 14px;">640 × 640 PNG</td></tr>
+        <tr style="border-bottom: 1px solid rgba(26,26,26,0.08);"><td style="padding: 14px;">WhatsApp — personal / DP</td><td style="padding: 14px;"><code>social-whatsapp.svg</code></td><td style="padding: 14px;">640 × 640 PNG</td></tr>
+        <tr style="border-bottom: 1px solid rgba(26,26,26,0.08);"><td style="padding: 14px;">Web — <code>favicon.ico</code></td><td style="padding: 14px;"><code>favicon-16.svg</code> + <code>32.svg</code></td><td style="padding: 14px;">16, 32, 48 px .ICO</td></tr>
+        <tr style="border-bottom: 1px solid rgba(26,26,26,0.08);"><td style="padding: 14px;">iOS — apple-touch-icon</td><td style="padding: 14px;"><code>favicon-180.svg</code></td><td style="padding: 14px;">180 × 180 PNG</td></tr>
+        <tr style="border-bottom: 1px solid rgba(26,26,26,0.08);"><td style="padding: 14px;">Android / PWA manifest</td><td style="padding: 14px;"><code>favicon-512.svg</code></td><td style="padding: 14px;">192 + 512 PNG</td></tr>
+        <tr><td style="padding: 14px;">Twitter / LinkedIn avatar</td><td style="padding: 14px;"><code>social-ig-cream.svg</code></td><td style="padding: 14px;">400 × 400 PNG</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <span>Skillies.AI · Social + Favicon set</span>
+    <span>§ Malappuram · Kerala · 2026</span>
+  </footer>
+</div>
+</body>
+</html>

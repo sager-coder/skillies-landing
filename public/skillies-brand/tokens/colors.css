@@ -1,0 +1,91 @@
+/* =========================================================
+   Skillies.AI — Color Tokens
+   Warm Kerala editorial palette. Cream is the default, not white.
+   ========================================================= */
+
+:root {
+  /* ---------- Backgrounds (cream-first) ---------- */
+  --bg-cream:          #FAF5EB;   /* page default */
+  --bg-cream-dark:     #F0E8D8;   /* card cream, subtle dividers */
+  --bg-white:          #FFFFFF;   /* elevated cards only, sparing */
+  --bg-charcoal:       #1A1A1A;   /* dramatic dark sections */
+  --bg-charcoal-2:     #2D2D2D;   /* elevated surfaces on charcoal */
+
+  /* ---------- Brand Red — CTA, brand moments ---------- */
+  --red:               #C62828;   /* primary red · all CTAs */
+  --red-dark:          #8B1A1A;   /* hover · pressed · shadow */
+  --red-bright:        #EF4444;   /* sparing accent · glow · on-dark */
+  --red-light-bg:      #F5E6E6;   /* soft red surface */
+
+  /* ---------- Sage green — secondary accent ---------- */
+  --green:             #5B7B5B;   /* sage · mentor moments · steady */
+  --green-light:       #7A9A7A;   /* on-dark text accent */
+  --green-dark:        #3D5A3D;   /* on-cream readable */
+
+  /* ---------- Forest green — Paisa-style editorial dark ---------- */
+  --forest:            #1F3A2E;
+  --forest-2:          #2D4A3A;
+  --forest-deep:       #142821;
+  --forest-glow:       #3D5F4A;
+
+  /* ---------- Gold — premium, guarantee, proof ---------- */
+  --gold:              #C9A24E;
+  --gold-light:        #E6C178;
+  --gold-dark:         #8A6A1F;   /* use on light backgrounds */
+
+  /* ---------- Text colors ---------- */
+  --fg-1:              #1A1A1A;   /* primary text */
+  --fg-2:              #2D2D2D;   /* elevated dark text */
+  --fg-muted:          #6B7280;   /* secondary · body gray */
+  --fg-subtle:         #9CA3AF;   /* tertiary · meta · captions */
+  --fg-on-dark:        #FFFFFF;
+  --fg-on-dark-muted:  rgba(255, 255, 255, 0.70);
+  --fg-on-dark-subtle: rgba(255, 255, 255, 0.40);
+
+  /* ---------- Borders ---------- */
+  --border-cream:      #F0E8D8;
+  --border-charcoal-10: rgba(26, 26, 26, 0.10);
+  --border-charcoal-15: rgba(26, 26, 26, 0.15);
+  --border-red-30:     rgba(198, 40, 40, 0.30);
+  --border-white-10:   rgba(255, 255, 255, 0.10);
+  --border-white-15:   rgba(255, 255, 255, 0.15);
+
+  /* ---------- Shadow tokens (subtle, editorial) ---------- */
+  --shadow-sm:         0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md:         0 10px 30px rgba(0, 0, 0, 0.05);
+  --shadow-lg:         0 20px 60px rgba(0, 0, 0, 0.05);
+  --shadow-xl:         0 40px 90px rgba(0, 0, 0, 0.10);
+  --shadow-red:        0 12px 40px rgba(198, 40, 40, 0.15);
+  --shadow-red-strong: 0 18px 50px rgba(198, 40, 40, 0.30);
+  --shadow-gold:       0 30px 70px rgba(201, 162, 78, 0.18);
+}
+
+/* =========================================================
+   Usage rules (comment-only, informative)
+   ========================================================= */
+
+/*
+  CREAM defaults everywhere. Use --bg-white only for elevated cards
+  sitting on top of cream — never as a page background.
+
+  RED is for one thing at a time. The primary CTA on a page should
+  be red. Don't scatter red across the page; let it anchor.
+
+  GOLD is premium / proof / guarantee. Use sparingly — it's the
+  "this is special" color. Not a secondary accent.
+
+  SAGE GREEN (--green) is the "steady, mentor, organic" color.
+  Use for long-form reads, secondary proof, office-hours moments.
+
+  FOREST GREEN is ONLY for Paisa.AI-style storytelling surfaces
+  (weekly reel covers, news cards) — it's heavier than sage.
+
+  CHARCOAL sections are dramatic punctuation. Don't string three
+  dark sections together; let cream breathe between them.
+
+  Text tokens:
+    --fg-1 for body + H2/H3
+    --fg-2 for emphasized body
+    --fg-muted for secondary / caption / sub-heads
+    --fg-subtle for tertiary / meta only
+*/

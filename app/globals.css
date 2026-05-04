@@ -166,6 +166,70 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  cursor: default;
+}
+
+/* Premium Glassmorphism */
+.sk-glass {
+  background: rgba(250, 245, 235, 0.75);
+  backdrop-filter: blur(8px) saturate(160%);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  transform: translateZ(0); /* GPU acceleration */
+}
+
+@media (min-width: 768px) {
+  .sk-glass {
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+  }
+}
+
+.sk-glass-dark {
+  background: rgba(20, 20, 20, 0.75);
+  backdrop-filter: blur(8px) saturate(160%);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+  border: 1px solid rgba(250, 245, 235, 0.1);
+  transform: translateZ(0);
+}
+
+@media (min-width: 768px) {
+  .sk-glass-dark {
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+  }
+}
+
+/* Shimmer Effect */
+.sk-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.sk-shimmer::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: sk-shimmer 3s infinite linear;
+}
+
+@keyframes sk-shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* Text Balance */
+.sk-text-balance {
+  text-wrap: balance;
 }
 
 /* Font utility classes used by design bundle components */
@@ -182,31 +246,29 @@ body {
    New vertical landing pages and the new homepage use these.
    Legacy consumer components above are unaffected. */
 .sk-font-display {
-  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.022em;
-  line-height: 1.02;
-  font-variation-settings: "opsz" 144;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
 }
 .sk-font-display-light {
-  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
-  font-weight: 500;
-  letter-spacing: -0.018em;
-  line-height: 1.05;
-  font-variation-settings: "opsz" 96;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
 }
 .sk-font-display-italic {
-  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
-  font-weight: 500;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 900;
   font-style: italic;
-  letter-spacing: -0.012em;
-  line-height: 1.05;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
 }
 .sk-font-section {
-  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.018em;
-  line-height: 1.08;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 .sk-font-body {
   font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
@@ -263,7 +325,30 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
 
 /* Selection */
-::selection { background: var(--red); color: white; }
+::selection { background: var(--sk-red); color: white; }
+
+/* Subtle Grain Overlay */
+.sk-grain {
+  position: relative;
+  isolation: isolate;
+}
+.sk-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.015;
+  mix-blend-mode: overlay;
+  will-change: transform;
+}
+
+@media (max-width: 768px) {
+  .sk-grain::before {
+    display: none; /* Disable grain on mobile for smooth scrolling */
+  }
+}
 
 /* =========================================================
    Responsive overrides — mobile-first correctness pass

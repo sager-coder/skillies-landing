@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skillies.AI · Colors</title>
+  <link rel="stylesheet" href="../tokens/index.css" />
+  <style>
+    body { padding: 64px 32px 120px; }
+    .wrap { max-width: 1120px; margin: 0 auto; }
+    .masthead {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      font-size: 11px; color: var(--fg-muted);
+      letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700;
+    }
+    .rule-red  { width: 44px; height: 1px; background: var(--red); }
+    .rule-fade { flex: 1; height: 1px; background: rgba(26,26,26,0.08); }
+    h1 {
+      font-weight: 900; font-size: clamp(44px, 6vw, 80px);
+      letter-spacing: -0.035em; line-height: 0.95;
+      color: var(--fg-1); margin: 0 0 14px;
+    }
+    h1 em {
+      font-family: var(--font-serif); font-style: italic;
+      font-weight: 400; color: var(--red);
+    }
+    .lede {
+      font-size: 17px; color: var(--fg-muted);
+      max-width: 620px; line-height: 1.6; margin: 0 0 64px;
+    }
+    h2 {
+      font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+      font-weight: 700; color: var(--red); margin: 64px 0 20px;
+    }
+    .family {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .swatch {
+      border-radius: 18px; overflow: hidden;
+      border: 1px solid var(--border-cream);
+      background: white;
+    }
+    .swatch .chip { height: 120px; }
+    .swatch .meta { padding: 16px 18px 18px; }
+    .swatch .name {
+      font-size: 13px; font-weight: 700; color: var(--fg-1);
+      letter-spacing: -0.005em; margin-bottom: 4px;
+    }
+    .swatch .hex {
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--fg-subtle); margin-bottom: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .swatch .use {
+      font-size: 12px; color: var(--fg-muted); line-height: 1.5;
+    }
+    .stamp {
+      display: inline-flex; align-items: baseline; gap: 10px;
+      padding: 4px 10px; border-radius: 4px;
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .stamp.cta  { background: rgba(198,40,40,0.10); color: var(--red); }
+    .stamp.safe { background: rgba(91,123,91,0.12); color: var(--green-dark); }
+    .stamp.rare { background: rgba(201,162,78,0.14); color: var(--gold-dark); }
+    .stamp.dark { background: rgba(26,26,26,0.08); color: var(--fg-1); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <span class="rule-red"></span>
+      § Specimen 01 · Colors
+      <span class="rule-fade"></span>
+      <span>Hex + intent, no accident</span>
+    </div>
+
+    <h1>
+      Warm Kerala <em>editorial palette.</em>
+    </h1>
+    <p class="lede">
+      Cream is the default, never white. Red anchors CTAs. Gold
+      marks proof and premium. Sage holds steady. Forest is
+      reserved. Charcoal is dramatic punctuation.
+    </p>
+
+    <h2>Backgrounds</h2>
+    <div class="family">
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-cream); border-bottom: 1px solid var(--border-cream);"></div>
+        <div class="meta">
+          <span class="stamp safe">Default</span>
+          <div class="name">Cream · page bg</div>
+          <div class="hex">--bg-cream · #FAF5EB</div>
+          <div class="use">The default page background. Use this, not white.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-cream-dark);"></div>
+        <div class="meta">
+          <div class="name">Cream dark · card</div>
+          <div class="hex">--bg-cream-dark · #F0E8D8</div>
+          <div class="use">Card cream, subtle dividers, soft recessed surfaces.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-white); border-bottom: 1px solid var(--border-cream);"></div>
+        <div class="meta">
+          <span class="stamp rare">Sparing</span>
+          <div class="name">White · elevated card</div>
+          <div class="hex">--bg-white · #FFFFFF</div>
+          <div class="use">Only for cards sitting on cream. Never as a page bg.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-charcoal);"></div>
+        <div class="meta">
+          <span class="stamp dark">Dramatic</span>
+          <div class="name">Charcoal · dark section</div>
+          <div class="hex">--bg-charcoal · #1A1A1A</div>
+          <div class="use">Dramatic punctuation. Promise, About, Footer.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Brand red · for CTAs</h2>
+    <div class="family">
+      <div class="swatch">
+        <div class="chip" style="background: var(--red);"></div>
+        <div class="meta">
+          <span class="stamp cta">CTA</span>
+          <div class="name">Red</div>
+          <div class="hex">--red · #C62828</div>
+          <div class="use">Primary button, brand accent, one per page.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--red-dark);"></div>
+        <div class="meta">
+          <div class="name">Red dark</div>
+          <div class="hex">--red-dark · #8B1A1A</div>
+          <div class="use">Hover / pressed state for primary CTA.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--red-bright);"></div>
+        <div class="meta">
+          <span class="stamp rare">Sparing</span>
+          <div class="name">Red bright</div>
+          <div class="hex">--red-bright · #EF4444</div>
+          <div class="use">Glow / on-dark accent. Never on cream.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--red-light-bg);"></div>
+        <div class="meta">
+          <div class="name">Red soft bg</div>
+          <div class="hex">--red-light-bg · #F5E6E6</div>
+          <div class="use">Soft red surface for highlighted rows / badges.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Sage green · secondary accent</h2>
+    <div class="family">
+      <div class="swatch">
+        <div class="chip" style="background: var(--green);"></div>
+        <div class="meta">
+          <div class="name">Green / sage</div>
+          <div class="hex">--green · #5B7B5B</div>
+          <div class="use">Mentor moments, steady tone, secondary accent.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--green-light);"></div>
+        <div class="meta">
+          <div class="name">Green light</div>
+          <div class="hex">--green-light · #7A9A7A</div>
+          <div class="use">On-dark text accent — kickers on charcoal.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--green-dark);"></div>
+        <div class="meta">
+          <div class="name">Green dark</div>
+          <div class="hex">--green-dark · #3D5A3D</div>
+          <div class="use">On-cream readable text for steady moments.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Forest green · Paisa-style storytelling</h2>
+    <div class="family">
+      <div class="swatch">
+        <div class="chip" style="background: var(--forest);"></div>
+        <div class="meta">
+          <span class="stamp rare">Reserved</span>
+          <div class="name">Forest</div>
+          <div class="hex">--forest · #1F3A2E</div>
+          <div class="use">Only for storytelling surfaces (reel covers, feature cards).</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--forest-deep);"></div>
+        <div class="meta">
+          <div class="name">Forest deep</div>
+          <div class="hex">--forest-deep · #142821</div>
+          <div class="use">Deepest shadow in a forest composition.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--forest-glow);"></div>
+        <div class="meta">
+          <div class="name">Forest glow</div>
+          <div class="hex">--forest-glow · #3D5F4A</div>
+          <div class="use">Radial glow accent inside forest surfaces.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Gold · premium + proof</h2>
+    <div class="family">
+      <div class="swatch">
+        <div class="chip" style="background: var(--gold);"></div>
+        <div class="meta">
+          <span class="stamp rare">Sparing</span>
+          <div class="name">Gold</div>
+          <div class="hex">--gold · #C9A24E</div>
+          <div class="use">Premium, guarantee, proof, "this is special".</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--gold-light);"></div>
+        <div class="meta">
+          <div class="name">Gold light</div>
+          <div class="hex">--gold-light · #E6C178</div>
+          <div class="use">Gradient terminus, on-dark accent.</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-cream); color: var(--gold-dark); padding: 20px; font-family: var(--font-serif); font-style: italic; font-size: 30px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border-cream);">
+          ₹8,71,982
+        </div>
+        <div class="meta">
+          <div class="name">Gold dark · text on cream</div>
+          <div class="hex">--gold-dark · #8A6A1F</div>
+          <div class="use">Readable gold for large italic serif numbers on cream.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Text colors</h2>
+    <div class="family">
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-cream); color: var(--fg-1); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700;">Primary</div>
+        <div class="meta"><div class="name">fg-1 · primary text</div><div class="hex">#1A1A1A</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-cream); color: var(--fg-2); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700;">Elevated</div>
+        <div class="meta"><div class="name">fg-2 · elevated</div><div class="hex">#2D2D2D</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-cream); color: var(--fg-muted); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 500;">Muted</div>
+        <div class="meta"><div class="name">fg-muted · body grey</div><div class="hex">#6B7280</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background: var(--bg-cream); color: var(--fg-subtle); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 500;">Subtle</div>
+        <div class="meta"><div class="name">fg-subtle · meta</div><div class="hex">#9CA3AF</div></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

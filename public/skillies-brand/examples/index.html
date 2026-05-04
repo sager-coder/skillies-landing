@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skillies.AI · Brand System</title>
+  <link rel="stylesheet" href="../tokens/index.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      padding: 80px 32px 120px;
+      background:
+        radial-gradient(ellipse at 85% 10%, rgba(198,40,40,0.18), transparent 55%),
+        radial-gradient(ellipse at 10% 90%, rgba(201,162,78,0.16), transparent 60%),
+        var(--bg-cream);
+    }
+    .wrap { max-width: 960px; margin: 0 auto; }
+
+    .masthead {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 32px;
+      font-size: 11px; color: var(--fg-muted);
+      letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700;
+    }
+    .rule-red  { width: 44px; height: 1px; background: var(--red); }
+    .rule-fade { flex: 1; height: 1px; background: rgba(26,26,26,0.08); }
+
+    h1 {
+      font-weight: 900; font-size: clamp(56px, 8vw, 120px);
+      letter-spacing: -0.045em; line-height: 0.92;
+      color: var(--fg-1); margin: 0 0 22px;
+    }
+    h1 em {
+      font-family: var(--font-serif); font-style: italic; font-weight: 400;
+      color: var(--red);
+    }
+    .tagline {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(26px, 2.8vw, 40px);
+      color: var(--green-dark); font-weight: 400;
+      margin: 0 0 22px; line-height: 1.2;
+    }
+    .lead {
+      font-size: 18px; color: var(--fg-muted);
+      max-width: 620px; line-height: 1.7; margin: 0 0 48px;
+    }
+
+    .pages {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px; margin-bottom: 64px;
+    }
+    .page-card {
+      padding: 24px; background: white;
+      border: 1px solid var(--border-cream);
+      border-radius: var(--r-lg);
+      text-decoration: none; color: inherit;
+      transition: transform 0.25s var(--ease-out), box-shadow 0.25s;
+      display: block;
+    }
+    .page-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(198,40,40,0.25);
+    }
+    .page-card .kicker {
+      font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+      font-weight: 700; color: var(--red); margin-bottom: 8px;
+    }
+    .page-card h3 {
+      font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
+      color: var(--fg-1); margin: 0 0 8px;
+    }
+    .page-card p {
+      font-size: 13px; color: var(--fg-muted); line-height: 1.5; margin: 0;
+    }
+    .page-card .arrow {
+      display: block; margin-top: 14px; font-size: 12px;
+      color: var(--red); font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .stamp {
+      display: inline-flex; align-items: baseline; gap: 8px;
+      padding: 10px 18px; border: 1.5px solid var(--green);
+      border-radius: 4px; transform: rotate(-2deg);
+      color: var(--green-dark); font-size: 11px; font-weight: 900;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tokens-strip {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      padding: 20px; background: white; border-radius: 16px;
+      border: 1px solid var(--border-cream); margin-bottom: 48px;
+    }
+    .tok {
+      font-family: var(--font-mono); font-size: 11px;
+      padding: 6px 12px; border-radius: 999px;
+      background: var(--bg-cream); color: var(--fg-1);
+      border: 1px solid var(--border-cream);
+    }
+
+    footer {
+      margin-top: 96px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-charcoal-10);
+      display: flex; justify-content: space-between; flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px; color: var(--fg-subtle);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <span class="rule-red"></span>
+      § Brand System · v1.0
+      <span class="rule-fade"></span>
+      <span>Malappuram · April 2026</span>
+    </div>
+
+    <h1>
+      The Skillies.AI<br>
+      <em>brand template.</em>
+    </h1>
+
+    <p class="tagline">Everything you need to design under this name.</p>
+
+    <p class="lead">
+      Warm Kerala editorial system — tokens, fonts, primitives, patterns,
+      voice. Open the specimens below for type, color, and component
+      demos. Read <code style="font-family: var(--font-mono); background:#F0E8D8; padding: 2px 6px; border-radius:4px;">README.md</code> first
+      if you haven't.
+    </p>
+
+    <div style="margin-bottom: 40px;">
+      <span class="stamp">Ready to ship · v1.0</span>
+    </div>
+
+    <div class="pages">
+      <a class="page-card" href="./colors.html">
+        <div class="kicker">Specimen · 01</div>
+        <h3>Colors</h3>
+        <p>Cream backgrounds, red for CTA, sage for steady, gold for premium. Every swatch with hex + usage note.</p>
+        <span class="arrow">Open →</span>
+      </a>
+
+      <a class="page-card" href="./typography.html">
+        <div class="kicker">Specimen · 02</div>
+        <h3>Typography</h3>
+        <p>Inter + Instrument Serif italic. Full type scale from hero 184px down to 13px caption.</p>
+        <span class="arrow">Open →</span>
+      </a>
+
+      <a class="page-card" href="./components.html">
+        <div class="kicker">Specimen · 03</div>
+        <h3>Components</h3>
+        <p>Kicker, KickerPill, PrimaryButton, SecondaryButton, Wordmark, Grain — the six primitives.</p>
+        <span class="arrow">Open →</span>
+      </a>
+
+      <a class="page-card" href="./masthead.html">
+        <div class="kicker">Pattern · 01</div>
+        <h3>Editorial masthead</h3>
+        <p>The § numbered section dateline in every variant.</p>
+        <span class="arrow">Open →</span>
+      </a>
+    </div>
+
+    <div class="tokens-strip">
+      <span class="tok">tokens/colors.css</span>
+      <span class="tok">tokens/typography.css</span>
+      <span class="tok">tokens/spacing.css</span>
+      <span class="tok">tokens/motion.css</span>
+      <span class="tok">tokens/index.css ← imports all</span>
+    </div>
+
+    <div style="padding: 28px 32px; border-radius: 20px;
+                background: var(--bg-charcoal); color: white;
+                position: relative; overflow: hidden;">
+      <div style="font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+                  font-weight: 700; color: var(--gold-light); margin-bottom: 12px;">
+        Before you design anything
+      </div>
+      <p style="font-family: var(--font-serif); font-style: italic;
+                font-size: 22px; line-height: 1.4; margin: 0; max-width: 700px;">
+        Read <strong style="font-style: normal; color: var(--gold-light);">voice/VOICE.md</strong>.
+        Copy is 70% of this brand; typography is the last 30%. Voice
+        wrong, everything else falls over.
+      </p>
+    </div>
+
+    <footer>
+      <span>© 2026 Skillies.AI · Malappuram, Kerala</span>
+      <span style="font-family: var(--font-serif); font-style: italic; color: var(--fg-muted);">
+        Earn while you sleep.
+      </span>
+    </footer>
+  </div>
+</body>
+</html>

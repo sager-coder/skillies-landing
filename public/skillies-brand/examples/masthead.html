@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skillies.AI · Editorial Masthead</title>
+  <link rel="stylesheet" href="../tokens/index.css" />
+  <style>
+    body { padding: 64px 32px 120px; }
+    .wrap { max-width: 1040px; margin: 0 auto; }
+
+    .masthead {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      font-size: 11px; color: var(--fg-muted);
+      letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700;
+    }
+    .masthead.dark { color: rgba(255,255,255,0.4); }
+    .rule-red  { width: 44px; height: 1px; background: var(--red); }
+    .rule-red-bright { width: 40px; height: 1px; background: var(--red-bright); }
+    .rule-fade { flex: 1; height: 1px; background: rgba(26,26,26,0.08); }
+    .rule-fade-dark { flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+    h1.intro {
+      font-weight: 900; font-size: clamp(44px, 6vw, 80px);
+      letter-spacing: -0.035em; line-height: 0.95;
+      color: var(--fg-1); margin: 0 0 14px;
+    }
+    h1.intro em {
+      font-family: var(--font-serif); font-style: italic;
+      font-weight: 400; color: var(--red);
+    }
+    .lede {
+      font-size: 17px; color: var(--fg-muted);
+      max-width: 620px; line-height: 1.6; margin: 0 0 64px;
+    }
+
+    h2 {
+      font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+      font-weight: 700; color: var(--red); margin: 56px 0 12px;
+    }
+    h2 + p {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 15px; color: var(--fg-subtle); margin: 0 0 24px;
+    }
+
+    .demo {
+      padding: 40px 36px; background: white;
+      border: 1px solid var(--border-cream);
+      border-radius: 20px; margin-bottom: 16px;
+    }
+    .demo.dark {
+      background: var(--bg-charcoal); color: var(--fg-on-dark);
+      border: 1px solid var(--border-white-10);
+    }
+    .demo.forest { background: var(--forest); color: var(--fg-on-dark); }
+
+    pre.code {
+      margin: 18px 0 0; padding: 16px 20px;
+      background: var(--bg-cream-dark); border-radius: 10px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted);
+      line-height: 1.55; overflow-x: auto;
+      border: 1px solid rgba(26,26,26,0.06);
+    }
+
+    .section-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 14px;
+    }
+    .section-table th, .section-table td {
+      text-align: left; padding: 12px 16px;
+      border-bottom: 1px solid var(--border-cream);
+    }
+    .section-table th {
+      font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+      font-weight: 700; color: var(--fg-subtle);
+      border-bottom: 2px solid var(--fg-1);
+    }
+    .section-table .num {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 18px; color: var(--red); width: 96px;
+      font-variant-numeric: tabular-nums;
+    }
+    .section-table .name { font-weight: 600; color: var(--fg-1); }
+    .section-table .use { color: var(--fg-muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <span class="rule-red"></span>
+      § Pattern 01 · The Masthead
+      <span class="rule-fade"></span>
+      <span>Every section starts here</span>
+    </div>
+
+    <h1 class="intro">
+      The § numbered<br>
+      <em>section dateline.</em>
+    </h1>
+    <p class="lede">
+      Four parts: red rule, tracked-out label, fading spacer,
+      caption. Used at the top of every major section on every
+      Skillies.AI surface. It's what gives the whole system its
+      magazine feel.
+    </p>
+
+    <h2>Anatomy</h2>
+    <p>Four parts, left to right. Don't drop any of them.</p>
+    <div class="demo">
+      <div class="masthead" style="margin-bottom: 0;">
+        <span class="rule-red"></span>
+        § 04 · The Receipts
+        <span class="rule-fade"></span>
+        <span>Screenshots on request.</span>
+      </div>
+    </div>
+    <pre class="code">&lt;div class="masthead"&gt;
+  &lt;span class="rule-red"&gt;&lt;/span&gt;        &lt;!-- 44px red bar --&gt;
+  § 04 · The Receipts                      &lt;!-- tracked label  --&gt;
+  &lt;span class="rule-fade"&gt;&lt;/span&gt;       &lt;!-- flex-1 spacer   --&gt;
+  &lt;span&gt;Screenshots on request.&lt;/span&gt;   &lt;!-- caption         --&gt;
+&lt;/div&gt;</pre>
+
+    <h2>Variants · on cream</h2>
+    <p>The default. Used on 90% of sections.</p>
+    <div class="demo">
+      <div class="masthead" style="margin-bottom: 18px;">
+        <span class="rule-red"></span>
+        Vol. 01 · The Skillies Manifesto
+        <span class="rule-fade"></span>
+        <span>Kerala · India · 2026</span>
+      </div>
+      <div class="masthead" style="margin-bottom: 18px;">
+        <span class="rule-red"></span>
+        § 03 · The Transformation
+        <span class="rule-fade"></span>
+        <span>Not theory — lived.</span>
+      </div>
+      <div class="masthead" style="margin-bottom: 18px;">
+        <span class="rule-red"></span>
+        § 08 · The flagship program
+        <span class="rule-fade"></span>
+        <span>Small cohort · mentor-led</span>
+      </div>
+      <div class="masthead" style="margin-bottom: 18px;">
+        <span class="rule-red"></span>
+        § The Itinerary
+        <span class="rule-fade"></span>
+        <span>Sunday · May 31 · 2026</span>
+      </div>
+      <div class="masthead" style="margin-bottom: 0;">
+        <span class="rule-red"></span>
+        § Q &amp; A · The Honest Column
+        <span class="rule-fade"></span>
+        <span>Six questions, straight answers.</span>
+      </div>
+    </div>
+
+    <h2>Variants · on charcoal</h2>
+    <p>For dark sections (Promise, About, Footer).
+       Swap the fade rule to a lighter tone.</p>
+    <div class="demo dark">
+      <div class="masthead dark" style="margin-bottom: 18px;">
+        <span class="rule-red-bright"></span>
+        § 02 · The Manifesto
+        <span class="rule-fade-dark"></span>
+        <span style="color: rgba(255,255,255,0.5);">To be read once, believed forever.</span>
+      </div>
+      <div class="masthead dark" style="margin-bottom: 0;">
+        <span class="rule-red-bright"></span>
+        § 09 · About the Founder
+        <span class="rule-fade-dark"></span>
+        <span style="color: rgba(255,255,255,0.5);">Long-form · read slowly</span>
+      </div>
+    </div>
+
+    <h2>Variant · on forest (Paisa-style)</h2>
+    <p>Reserved. Only for weekly-story / Paisa-style surfaces.</p>
+    <div class="demo forest">
+      <div class="masthead" style="margin-bottom: 0; color: rgba(255,255,255,0.5);">
+        <span style="width: 40px; height: 1px; background: var(--gold-light);"></span>
+        § 01 · Ep 014 · Farida's ₹4.2L
+        <span style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></span>
+        <span>One week — one story.</span>
+      </div>
+    </div>
+
+    <h2>Section numbering · canonical order</h2>
+    <p>When adding a section, pick the next number. Renumber if
+       the order shifts.</p>
+    <div class="demo" style="padding: 20px 24px;">
+      <table class="section-table">
+        <thead>
+          <tr>
+            <th>§</th>
+            <th>Section</th>
+            <th>Where</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">Vol. 01</td><td class="name">Hero masthead</td><td class="use">Landing hero</td></tr>
+          <tr><td class="num">§ 02</td><td class="name">The Manifesto (Promise)</td><td class="use">Landing</td></tr>
+          <tr><td class="num">§ 03</td><td class="name">The Transformation</td><td class="use">Landing</td></tr>
+          <tr><td class="num">§ 04</td><td class="name">The Receipts (Proof)</td><td class="use">Landing</td></tr>
+          <tr><td class="num">§ 05</td><td class="name">Your first 7 days</td><td class="use">Landing</td></tr>
+          <tr><td class="num">§ 06</td><td class="name">The Loop (How it works)</td><td class="use">Landing</td></tr>
+          <tr><td class="num">§ 07</td><td class="name">KDP Mastery Program</td><td class="use">Landing</td></tr>
+          <tr><td class="num">§ 08</td><td class="name">The flagship program</td><td class="use">Landing (Program)</td></tr>
+          <tr><td class="num">§ 09</td><td class="name">About the Founder</td><td class="use">Landing (About)</td></tr>
+          <tr><td class="num">§ Q&amp;A</td><td class="name">The Honest Column</td><td class="use">Workshop</td></tr>
+          <tr><td class="num">§ Final</td><td class="name">Ready? (Footer CTA)</td><td class="use">Footer</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Rules</h2>
+    <div class="demo" style="padding: 28px 32px;">
+      <ol style="margin: 0; padding-left: 22px; font-size: 15px; color: var(--fg-1); line-height: 1.75;">
+        <li>
+          <strong>Always four parts</strong> — red rule, label, fade
+          spacer, caption. Never drop the caption.
+        </li>
+        <li>
+          <strong>Caption is never a sentence</strong> unless it's a
+          punchy one. Periods optional.
+        </li>
+        <li>
+          <strong>Tracking is 0.32em.</strong> Less reads sloppy,
+          more reads affected.
+        </li>
+        <li>
+          <strong>No emoji. No icons.</strong> The § is the only
+          glyph allowed.
+        </li>
+        <li>
+          <strong>Don't animate.</strong> It's set type. Magazines
+          don't fade in.
+        </li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>

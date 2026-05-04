@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080" role="img" aria-label="Skillies.AI — Instagram cream">
+  <defs>
+    <style>
+      .s-serif { font-family: 'Instrument Serif', 'Times New Roman', Georgia, serif; font-style: italic; font-weight: 400; }
+      .s-meta  { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.34em; text-transform: uppercase; }
+    </style>
+    <path id="topArc1080" d="M 180,540 A 360,360 0 0 1 900,540" fill="none"/>
+    <path id="botArc1080" d="M 200,540 A 340,340 0 0 0 880,540" fill="none"/>
+    <filter id="grain1080" x="0" y="0" width="100%" height="100%">
+      <feTurbulence baseFrequency="0.85" numOctaves="2" seed="5"/>
+      <feColorMatrix values="0 0 0 0 0.10  0 0 0 0 0.10  0 0 0 0 0.10  0 0 0 0.06 0"/>
+    </filter>
+  </defs>
+
+  <!-- Cream background -->
+  <rect width="1080" height="1080" fill="#FAF5EB"/>
+  <rect width="1080" height="1080" filter="url(#grain1080)"/>
+
+  <!-- Concentric rings (safe inside the circle crop) -->
+  <circle cx="540" cy="540" r="440" fill="none" stroke="#1A1A1A" stroke-width="8"/>
+  <circle cx="540" cy="540" r="420" fill="none" stroke="#1A1A1A" stroke-width="2" opacity="0.35"/>
+  <circle cx="540" cy="540" r="320" fill="none" stroke="#1A1A1A" stroke-width="1.5" opacity="0.2"/>
+
+  <!-- Circular text -->
+  <text class="s-meta" font-size="34" fill="#1A1A1A">
+    <textPath href="#topArc1080" startOffset="50%" text-anchor="middle">SKILLIES · DOT · AI · SKILLIES · DOT · AI</textPath>
+  </text>
+  <text class="s-meta" font-size="28" fill="#C62828">
+    <textPath href="#botArc1080" startOffset="50%" text-anchor="middle">FIND WHAT PAYS · TEACH IT PLAINLY</textPath>
+  </text>
+
+  <!-- Center serif italic S -->
+  <text x="540" y="680" text-anchor="middle" class="s-serif" font-size="600" fill="#1A1A1A">S</text>
+
+  <!-- Red period — carries the .AI signal -->
+  <circle cx="730" cy="650" r="28" fill="#C62828"/>
+
+  <!-- Section symbols left/right -->
+  <text x="150" y="560" text-anchor="middle" class="s-serif" font-size="80" fill="#C62828">§</text>
+  <text x="930" y="560" text-anchor="middle" class="s-serif" font-size="80" fill="#C62828">§</text>
+
+  <!-- Bottom dateline strip -->
+  <text x="540" y="920" text-anchor="middle" class="s-meta" font-size="26" fill="#1A1A1A">EST · 2026 · MALAPPURAM</text>
+</svg>

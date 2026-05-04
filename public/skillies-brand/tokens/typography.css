@@ -1,0 +1,241 @@
+/* =========================================================
+   Skillies.AI — Typography Tokens
+   Two families: Inter (sans) for body + UI, Instrument Serif (italic)
+   for editorial display moments. Baloo Chettan 2 kept available for
+   Malayalam but de-emphasised — English is the primary voice.
+   ========================================================= */
+
+/* Load fonts from Google Fonts. If you want offline fidelity, host
+   the .woff2 files locally and replace the @import with @font-face
+   declarations. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Baloo+Chettan+2:wght@400;500;600;700;800&family=Anek+Malayalam:wght@400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;700;900&display=swap');
+
+:root {
+  /* ---------- Font families ---------- */
+  --font-sans:
+    'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-serif:
+    'Instrument Serif', 'Times New Roman', Georgia, serif;
+  --font-ml:
+    'Baloo Chettan 2', 'Anek Malayalam', 'Noto Sans Malayalam',
+    'Inter', system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---------- Tracking defaults ---------- */
+  --track-tight:     -0.035em;   /* big display */
+  --track-tighter:   -0.06em;    /* hero */
+  --track-tightish:  -0.02em;    /* H2/H3 */
+  --track-body:      0;
+  --track-wide:      0.22em;     /* small caps / kicker labels */
+  --track-wider:     0.3em;      /* section datelines */
+  --track-widest:    0.32em;     /* masthead labels */
+}
+
+/* =========================================================
+   Base + utilities
+   ========================================================= */
+
+html, body {
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg-cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.font-sans  { font-family: var(--font-sans); }
+.font-serif { font-family: var(--font-serif); letter-spacing: -0.01em; }
+.font-ml    { font-family: var(--font-ml); letter-spacing: -0.01em; }
+.font-mono  { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Editorial serif italic accent — use INSIDE a bold sans heading as
+   an italic pullout word. Example:
+     <h1>Not theory — <em class="t-serif-italic">real</em> income.</h1> */
+.t-serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+/* =========================================================
+   The type scale — semantic classes
+   ========================================================= */
+
+/* HERO — the biggest type on the page. One per page, max. */
+.t-hero {
+  font-weight: 900;
+  font-size: clamp(82px, 11vw, 184px);
+  line-height: 0.82;
+  letter-spacing: var(--track-tighter);
+  color: var(--fg-1);
+}
+
+/* H1 — masthead of a section */
+.t-h1 {
+  font-weight: 900;
+  font-size: clamp(44px, 6vw, 84px);
+  line-height: 0.95;
+  letter-spacing: var(--track-tight);
+  color: var(--fg-1);
+}
+
+/* H2 — sub-section */
+.t-h2 {
+  font-weight: 800;
+  font-size: clamp(36px, 4.5vw, 60px);
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+  color: var(--fg-1);
+}
+
+/* H3 — card or article title */
+.t-h3 {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--fg-1);
+}
+
+/* Serif display — elegant hero variant for quote-led moments */
+.t-serif-display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(56px, 8vw, 112px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--fg-1);
+}
+.t-serif-display em { font-style: italic; }
+
+/* Lead — paragraph directly under H1/H2 */
+.t-lead {
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+/* Body */
+.t-body {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--fg-1);
+}
+.t-body-muted { color: var(--fg-muted); }
+
+/* Small / caption */
+.t-small {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-muted);
+}
+
+/* Kicker — uppercase label, tracked out. Red by default. */
+.t-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--track-wider);
+  color: var(--red);
+  margin: 0;
+}
+.t-kicker--green     { color: var(--green); }
+.t-kicker--gold      { color: var(--gold); }
+.t-kicker--on-dark   { color: var(--green-light); }
+
+/* Section dateline — the § numbered header */
+.t-dateline {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--track-widest);
+  color: var(--fg-muted);
+}
+
+/* Pullquote — italic serif, gold accent */
+.t-pullquote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(22px, 2.6vw, 32px);
+  line-height: 1.4;
+  color: var(--gold-dark);
+  border-left: 2px solid var(--gold);
+  padding-left: 18px;
+  margin: 0;
+}
+
+/* Number reveal — gradient-filled big figures (on dark) */
+.t-number {
+  font-weight: 900;
+  font-size: clamp(48px, 7vw, 96px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--gold-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Serif italic number — the receipts style, on cream */
+.t-serif-number {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(44px, 5vw, 72px);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   Editorial patterns
+   ========================================================= */
+
+/* Serif italic numbered list marker (01., 02., 03.) */
+.t-serif-numeral {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 44px;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: var(--red);
+}
+
+/* Drop cap — first letter of a paragraph */
+.t-drop-cap::first-letter {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 3.2em;
+  float: left;
+  line-height: 0.85;
+  padding: 4px 10px 0 0;
+  color: var(--red);
+}
+
+/*
+  WRITING NOTES
+
+  1. Pair bold sans headline + serif italic pullout word. Do not mix
+     three fonts in one heading. Instrument Serif italic is the ONLY
+     way to add editorial flavor.
+
+  2. Kickers + datelines are UPPERCASE with loose tracking. Titles
+     are TIGHT tracking (-0.02 to -0.06 em). Body is neutral.
+
+  3. Body line-height is generous (1.7). Don't tighten. The site
+     reads like a long-form article, not a dashboard.
+
+  4. Use tabular-nums for any number that might animate or align in
+     a column. Royalty numbers always tabular.
+
+  5. Malayalam should not be the dominant voice. Use --font-ml ONLY
+     for actual Malayalam script, not for English text with a "Kerala
+     feel". That looks amateur.
+*/
