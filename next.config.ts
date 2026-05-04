@@ -72,6 +72,18 @@ const nextConfig: NextConfig = {
       { source: "/learn/:path*", destination: "/skillies-school", permanent: true },
       { source: "/services", destination: "/for", permanent: true },
       { source: "/services/:path*", destination: "/for", permanent: true },
+      // Instagram auto-DM PDF deliveries · the old /playbook and
+      // /chatgpt-business landing pages were deleted in the B2B pivot
+      // (44b07be) but the Instagram auto-reply flow is still sending
+      // people to those URLs. Without these redirects they hit 404.
+      // Redirecting straight to the PDF · Meta's in-app browser displays
+      // PDFs inline, so the user gets the file the moment they tap the
+      // link. permanent: false because we may swap in a real landing
+      // page later (with email gate or upsell).
+      // No nav link points to either route · only people who hit the
+      // Instagram-shared URL ever land here.
+      { source: "/playbook", destination: "/ai-avatar-playbook.pdf", permanent: false },
+      { source: "/chatgpt-business", destination: "/chatgpt-business-playbook.pdf", permanent: false },
     ];
   },
 };
