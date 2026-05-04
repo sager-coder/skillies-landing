@@ -7,10 +7,21 @@ import { motion, AnimatePresence } from "framer-motion";
 type Link = { href: string; label: string };
 
 const LINKS: Link[] = [
+  { href: "/", label: "Home" },
   { href: "/for", label: "For Business" },
   { href: "/pricing", label: "Pricing" },
   { href: "/skillies-school", label: "Skillies School" },
 ];
+
+// When the user clicks a link that points to "/", scroll to top.
+// If they're already on the home page the browser won't re-navigate,
+// so we trigger the scroll explicitly. On other pages it's harmless —
+// navigation happens immediately after.
+const scrollTopIfHome = (href: string) => {
+  if (href === "/" && typeof window !== "undefined") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+};
 
 export default function TopNav({
   cta = {
@@ -72,6 +83,7 @@ export default function TopNav({
               <a
                 key={l.href}
                 href={l.href}
+                onClick={() => scrollTopIfHome(l.href)}
                 className="sk-font-meta text-[12px] font-semibold tracking-[0.1em] text-sk-ink opacity-70 transition-all duration-300 hover:opacity-100 hover:text-sk-red"
               >
                 {l.label}
@@ -134,7 +146,7 @@ export default function TopNav({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + i * 0.05 }}
-                  onClick={closeAnd()}
+                  onClick={closeAnd(() => scrollTopIfHome(l.href))}
                   className="flex items-center justify-between py-6 border-b border-sk-hairline"
                 >
                   <span className="sk-font-display text-4xl text-sk-ink">{l.label}</span>
