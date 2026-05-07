@@ -45,7 +45,8 @@ export default function HeroBlockV2() {
             rotate: [0, 90, 0]
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[10%] -right-[5%] w-[90%] h-[90%] rounded-full bg-sk-red/8 blur-[140px]"
+          className="absolute -top-[10%] -right-[5%] w-[90%] h-[90%] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(217,52,43,0.08) 0%, transparent 70%)" }}
         />
         <motion.div 
           animate={{ 
@@ -54,7 +55,8 @@ export default function HeroBlockV2() {
             scale: [1, 0.9, 1.2, 1]
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-[20%] -left-[10%] w-[80%] h-[80%] rounded-full bg-sk-ochre/5 blur-[120px]"
+          className="absolute -bottom-[20%] -left-[10%] w-[80%] h-[80%] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(201,160,107,0.05) 0%, transparent 70%)" }}
         />
         <motion.div 
           animate={{ 
@@ -62,7 +64,8 @@ export default function HeroBlockV2() {
             scale: [0.8, 1.1, 0.8]
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[20%] left-[30%] w-[40%] h-[40%] rounded-full bg-sk-red/5 blur-[100px]"
+          className="absolute top-[20%] left-[30%] w-[40%] h-[40%] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(217,52,43,0.05) 0%, transparent 70%)" }}
         />
       </div>
 

@@ -218,13 +218,6 @@ export default function AgentFunnel() {
             <stop offset="20%" stopColor="white" />
             <stop offset="100%" stopColor="var(--sk-red)" />
           </radialGradient>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
 
         {/* ── Market Radial Field ── */}
@@ -258,7 +251,6 @@ export default function AgentFunnel() {
                   d={path} stroke="url(#marketPathGradient)" strokeWidth="6" fill="none"
                   animate={isMobile ? { opacity: 0.1 } : { opacity: [0.08, 0.18, 0.08] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
-                  style={{ filter: isMobile ? "none" : "blur(4px)" }}
                 />
                 {/* Animated Energy Core */}
                 <motion.path
@@ -280,7 +272,6 @@ export default function AgentFunnel() {
                   d={path} stroke="url(#teamPathGradient)" strokeWidth="6" fill="none"
                   animate={isMobile ? { opacity: 0.1 } : { opacity: [0.08, 0.18, 0.08] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
-                  style={{ filter: isMobile ? "none" : "blur(4px)" }}
                 />
                 {/* Animated Energy Core */}
                 <motion.path
@@ -317,7 +308,7 @@ export default function AgentFunnel() {
                     initial={{ offsetDistance: "0%" }}
                     animate={{ offsetDistance: "100%" }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
-                    style={{ offsetPath: `path("${getMarketPath(t.pIdx)}")`, filter: isMobile ? "none" : "url(#glow)" }}
+                    style={{ offsetPath: `path("${getMarketPath(t.pIdx)}")` }}
                   />
                   <motion.circle
                     r={3} fill="url(#travelerGradient)"
@@ -346,7 +337,7 @@ export default function AgentFunnel() {
                     initial={{ offsetDistance: "0%" }}
                     animate={{ offsetDistance: "100%" }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
-                    style={{ offsetPath: `path("${getTeamPath(t.cIdx)}")`, filter: isMobile ? "none" : "url(#glow)" }}
+                    style={{ offsetPath: `path("${getTeamPath(t.cIdx)}")` }}
                   />
                   <motion.circle
                     r={3} fill="url(#travelerGradient)"
@@ -391,8 +382,9 @@ export default function AgentFunnel() {
       <div className="absolute" style={{ top: "43.5%", left: "56%", transform: "translate(-50%, -50%)" }}>
         <div className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center scale-90 md:scale-100">
           <motion.div 
-            className="absolute inset-0 rounded-full bg-sk-red/5 blur-3xl"
-            animate={isProcessing ? { scale: [1.2, 1.4, 1.2], opacity: [0.3, 0.8, 0.3] } : { scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+            className="absolute inset-0 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(217,52,43,0.15) 0%, transparent 70%)" }}
+            animate={isProcessing ? { scale: [1.2, 1.4, 1.2], opacity: [0.5, 1, 0.5] } : { scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
             transition={{ duration: 0.8 }}
           />
           

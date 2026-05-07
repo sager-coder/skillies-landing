@@ -256,7 +256,7 @@ function WhatsAppChatPreview() {
       className="relative mx-auto max-w-[320px] md:max-w-[420px] rounded-[2rem] md:rounded-[3rem] bg-white shadow-[0_60px_120px_-20px_rgba(20,20,20,0.12)] border border-sk-hairline overflow-hidden p-2 md:p-3 scale-[0.95] md:scale-100 origin-top"
     >
       {/* Header */}
-      <div className="bg-[#f0f2f5]/50 backdrop-blur-md p-3 md:p-5 flex items-center justify-between border-b border-sk-hairline">
+      <div className="bg-[#f0f2f5]/90 p-3 md:p-5 flex items-center justify-between border-b border-sk-hairline">
         <div className="flex items-center gap-3 md:gap-4">
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sk-ink flex items-center justify-center text-white">
              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 md:w-5 md:h-5">

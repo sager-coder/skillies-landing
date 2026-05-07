@@ -66,7 +66,7 @@ export default function TopNav({
         className={`fixed top-0 left-0 right-0 z-60 transition-all duration-500 ease-in-out ${
           scrolled ? "py-3 sk-glass border-b" : "py-6 bg-transparent"
         }`}
-        style={{ transform: "translateZ(0)", willChange: "transform, padding, background-color" }}
+        style={{ transform: "translateZ(0)" }}
       >
         <div className="sk-container flex items-center justify-between gap-8">
           <a

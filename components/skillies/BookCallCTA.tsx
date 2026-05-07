@@ -78,8 +78,8 @@ export default function BookCallCTA({
           className="mx-auto max-w-[850px] text-center sk-glass rounded-[3.5rem] p-12 md:p-24 border border-sk-hairline shadow-[0_60px_100px_rgba(20,20,20,0.1)] relative overflow-hidden will-change-transform"
         >
           {/* Subtle background glow */}
-          <div className="absolute -top-24 -left-24 w-64 h-64 bg-sk-red opacity-[0.03] blur-[80px] pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-sk-ochre opacity-[0.05] blur-[80px] pointer-events-none" />
+          <div className="absolute -top-24 -left-24 w-64 h-64 pointer-events-none" style={{ background: "radial-gradient(circle, rgba(217,52,43,0.05) 0%, transparent 70%)" }} />
+          <div className="absolute -bottom-24 -right-24 w-64 h-64 pointer-events-none" style={{ background: "radial-gradient(circle, rgba(201,160,107,0.06) 0%, transparent 70%)" }} />
 
           <motion.p 
             {...FADE_UP}
