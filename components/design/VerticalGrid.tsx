@@ -284,7 +284,7 @@ function WhatsAppChatPreview() {
             key={i}
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ delay: 0.5 + i * 1.2, duration: 0.6 }}
+            transition={{ delay: 0.2 + i * 0.3, duration: 0.4 }}
             className={`flex ${m.type === "sent" ? "justify-end" : "justify-start"}`}
           >
              <div 
@@ -302,7 +302,7 @@ function WhatsAppChatPreview() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 4.5, duration: 0.6 }}
+          transition={{ delay: 1.5, duration: 0.4 }}
           className="flex flex-wrap gap-1.5 pt-2"
         >
           {VERTICALS.slice(0, 8).map((v) => (

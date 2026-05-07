@@ -136,7 +136,8 @@ export default function TopNav({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-55 pt-24 px-6 pb-10 bg-sk-cream flex flex-col sk-grain"
+            className="fixed inset-0 h-[100dvh] w-screen z-55 pt-24 px-6 pb-10 bg-sk-cream flex flex-col sk-grain"
+            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
           >
             <div className="flex-1 flex flex-col gap-2 mt-8">
               {LINKS.map((l, i) => (

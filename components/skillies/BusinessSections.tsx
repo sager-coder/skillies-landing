@@ -117,41 +117,79 @@ const STEPS = [
 
 export function BusinessProcess() {
   return (
-    <section className="py-24 md:py-36 border-y border-sk-hairline relative isolate overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-full bg-sk-red/[0.01] -z-10" />
+    <section className="py-24 md:py-36 border-y border-sk-hairline relative isolate overflow-hidden sk-grain bg-white">
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(217,52,43,0.03)_0%,transparent_70%)] pointer-events-none" />
       
-      <div className="sk-container">
-        <div className="text-center mb-24">
-          <p className="sk-font-meta text-sk-red font-black uppercase tracking-[0.2em] text-[11px] mb-6">Automated Workflow</p>
-          <h2 className="sk-font-display text-[36px] md:text-[52px] font-black text-sk-ink tracking-tighter leading-none">From lead to sale, <br className="hidden md:block" /> <span className="text-sk-ink40">on autopilot.</span></h2>
+      <div className="sk-container max-w-6xl">
+        <div className="text-center mb-20 md:mb-32">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center justify-center gap-2 bg-sk-red/5 px-4 py-1.5 rounded-full border border-sk-red/10 mb-6"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-sk-red animate-pulse" />
+            <span className="sk-font-meta text-sk-red font-black tracking-[0.2em] uppercase text-[10px]">The Funnel Map</span>
+          </motion.div>
+          
+          <h2 className="sk-font-display text-[36px] md:text-[52px] lg:text-[64px] font-black text-sk-ink tracking-tighter leading-[1.05] sk-text-balance max-w-4xl mx-auto">
+            From lead to sale, <br className="hidden md:block" />
+            <span className="text-sk-ink40 pr-2">on complete autopilot.</span>
+          </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 relative">
-          {/* Connecting lines for desktop */}
-          <div className="hidden lg:block absolute top-[64px] left-[12.5%] right-[12.5%] h-[2px] z-0">
-            <svg width="100%" height="2" fill="none">
-              <line x1="0" y1="1" x2="100%" y2="1" stroke="var(--sk-red)" strokeWidth="2" strokeDasharray="8 8" opacity="0.2" />
-            </svg>
+        <div className="relative max-w-md mx-auto md:max-w-none">
+          {/* Desktop connecting line (Base) */}
+          <div className="hidden md:block absolute top-[40px] left-[10%] right-[10%] h-[3px] bg-sk-red/10 rounded-full" />
+          {/* Desktop connecting line (Animated) */}
+          <motion.div 
+            className="hidden md:block absolute top-[40px] left-[10%] h-[3px] bg-gradient-to-r from-sk-red to-sk-ochre rounded-full"
+            initial={{ width: "0%" }}
+            whileInView={{ width: "80%" }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+          />
+
+          {/* Mobile connecting line (Base) */}
+          <div className="md:hidden absolute top-[40px] bottom-[40px] left-[39px] w-[3px] bg-sk-red/10 rounded-full" />
+          {/* Mobile connecting line (Animated) */}
+          <motion.div 
+            className="md:hidden absolute top-[40px] left-[39px] w-[3px] bg-gradient-to-b from-sk-red to-sk-ochre rounded-full origin-top"
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+          />
+
+          <div className="flex flex-col md:flex-row justify-between gap-12 md:gap-6 relative z-10">
+            {STEPS.map((s, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+                transition={{ duration: 0.6, delay: i * 0.3 + 0.2, ease: EASE_OUT_EXPO }}
+                className="flex flex-row md:flex-col items-start md:items-center text-left md:text-center gap-6 md:gap-8 group relative w-full"
+              >
+                {/* Map Node */}
+                <div className="relative flex-shrink-0">
+                  {/* Ambient Glow */}
+                  <div className="absolute inset-0 rounded-full bg-sk-red/10 scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="w-[80px] h-[80px] md:w-[84px] md:h-[84px] rounded-full bg-white shadow-[0_10px_30px_-10px_rgba(20,20,20,0.1)] border border-sk-red/20 flex items-center justify-center text-sk-red relative z-10 group-hover:scale-110 group-hover:border-sk-red/40 transition-all duration-500">
+                    {s.icon}
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col flex-1 pt-3 md:pt-0">
+                  <div className="sk-font-meta text-sk-red/60 font-black text-[10px] tracking-[0.2em] mb-1.5 md:mb-2">{s.id}</div>
+                  <h4 className="sk-font-display text-[20px] md:text-[24px] font-black text-sk-ink tracking-tight mb-2 md:mb-3">{s.title}</h4>
+                  <p className="sk-font-body text-[14px] md:text-[15px] leading-relaxed text-sk-ink60 max-w-[220px] md:max-w-[200px] mx-0 md:mx-auto">{s.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          
-          {STEPS.map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: i * 0.15, ease: EASE_OUT_EXPO }}
-              className="relative z-10 text-center flex flex-col items-center group"
-            >
-              <div className="mb-6 sk-font-meta text-sk-red font-black text-[13px] tracking-widest">{s.id}</div>
-              <div className="w-[120px] h-[120px] rounded-full bg-white shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] border border-sk-hairline flex items-center justify-center text-sk-red mb-10 group-hover:scale-110 transition-transform duration-500 relative">
-                <div className="absolute inset-0 rounded-full bg-sk-red/5 scale-0 group-hover:scale-110 transition-transform duration-500 -z-10" />
-                {s.icon}
-              </div>
-              <h4 className="sk-font-display text-[24px] font-black text-sk-ink mb-4 tracking-tight">{s.title}</h4>
-              <p className="sk-font-body text-[15px] leading-relaxed text-sk-ink60 max-w-[220px] mx-auto">{s.desc}</p>
-            </motion.div>
-          ))}
         </div>
       </div>
     </section>

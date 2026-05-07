@@ -9,15 +9,15 @@
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { useMemo, useState, useEffect, useCallback } from "react";
 
-const VB_W = 1000;
+const VB_W = 1200;
 const VB_H = 480;
 
 // Composition
-const MARKET_CX = 240;
+const MARKET_CX = 300;
 const MARKET_CY = 210;
-const AGENT_CX = 560;
+const AGENT_CX = 600;
 const AGENT_CY = 210;
-const CLOSER_CX = 860;
+const CLOSER_CX = 900;
 const CLOSER_CY = 210;
 
 const CLOSERS = [
@@ -379,7 +379,7 @@ export default function AgentFunnel() {
       ))}
 
       {/* ── Minimal AI Bulb Core ── */}
-      <div className="absolute" style={{ top: "43.5%", left: "56%", transform: "translate(-50%, -50%)" }}>
+      <div className="absolute" style={{ top: "43.5%", left: "50%", transform: "translate(-50%, -50%)" }}>
         <div className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center scale-90 md:scale-100">
           <motion.div 
             className="absolute inset-0 rounded-full"
@@ -415,7 +415,7 @@ export default function AgentFunnel() {
       </div>
 
       {/* ── Sales Team ── */}
-      <div className="absolute" style={{ top: "43.5%", left: "86%", transform: "translate(-50%, -50%)" }}>
+      <div className="absolute" style={{ top: "43.5%", left: "75%", transform: "translate(-50%, -50%)" }}>
         <div className="grid grid-cols-2 gap-4 md:gap-10 scale-[0.7] md:scale-100 origin-center">
           {CLOSERS.map((c, i) => (
             <div key={i} className="relative">
@@ -446,15 +446,15 @@ export default function AgentFunnel() {
       </div>
 
       {/* ── Section Labels ── */}
-      <div className="absolute bottom-[-8%] left-[24%] -translate-x-1/2 whitespace-nowrap">
+      <div className="absolute bottom-[-8%] left-[25%] -translate-x-1/2 whitespace-nowrap">
         <p className="sk-font-meta text-[10px] text-sk-ink20 font-black tracking-[0.3em] uppercase">Your Market</p>
       </div>
 
-      <div className="absolute bottom-[-8%] left-[56%] -translate-x-1/2 whitespace-nowrap">
+      <div className="absolute bottom-[-8%] left-[50%] -translate-x-1/2 whitespace-nowrap">
         <p className="sk-font-meta text-[10px] text-sk-red/40 font-black tracking-[0.3em] uppercase">Skillies AI Agent</p>
       </div>
 
-      <div className="absolute bottom-[-8%] left-[86%] -translate-x-1/2 whitespace-nowrap">
+      <div className="absolute bottom-[-8%] left-[75%] -translate-x-1/2 whitespace-nowrap">
         <p className="sk-font-meta text-[10px] text-sk-ink20 font-black tracking-[0.3em] uppercase">Your Closers</p>
       </div>
     </div>

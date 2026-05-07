@@ -59,10 +59,12 @@ export default function ForIndexPage() {
       <ScopeCallout /> 
       */}
 
+      {/* 
       <BookCallCTA
         heading="Not sure which vertical fits?"
         note="30 min with Ehsan — we'll figure it out together. Even if it's a vertical we don't have a page for yet, we can build."
-      />
+      /> 
+      */}
 
       <FooterEditorial />
     </main>
