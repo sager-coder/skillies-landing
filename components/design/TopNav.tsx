@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Wordmark } from "./Primitives";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Link = { href: string; label: string };
@@ -75,7 +74,7 @@ export default function TopNav({
             className="transition-transform duration-300 hover:scale-[1.02]"
             onClick={closeAnd()}
           >
-            <Wordmark size={24} />
+            <img src="/skillies-logo-transparent.png" alt="Skillies.AI" className="h-10 md:h-12 w-auto object-contain" />
           </a>
 
           <div className="hidden md:flex items-center gap-10">

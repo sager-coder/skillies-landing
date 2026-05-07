@@ -221,7 +221,7 @@ export default function WhySkilliesIsDifferent() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-32 text-center"
+          className="mt-16 text-center"
         >
           <div className="h-px w-full bg-sk-ink/[0.05] mb-10" />
           <p className="sk-font-meta text-sk-red font-black tracking-[0.4em] text-[10px] md:text-[11px] uppercase opacity-60">
