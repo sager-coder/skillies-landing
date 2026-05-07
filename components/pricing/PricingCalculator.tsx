@@ -277,7 +277,7 @@ export default function PricingCalculator({ initialVertical }: Props) {
             </fieldset>
 
             {/* Worker seats slider, only visible when workerDashboard is checked */}
-            {modules.includes("workerDashboard") ? (
+            {/* {modules.includes("workerDashboard") ? (
               <fieldset className="mb-10">
                 <legend
                   className="sk-font-section mb-2"
@@ -316,7 +316,7 @@ export default function PricingCalculator({ initialVertical }: Props) {
                   style={{ accentColor: "var(--sk-red)" }}
                 />
               </fieldset>
-            ) : null}
+            ) : null} */}
 
             {/* Tier ladder reference */}
             <div className="mb-10">

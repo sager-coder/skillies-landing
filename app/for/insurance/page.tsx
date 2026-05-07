@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function InsurancePage() {
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative">
       <TopNav />
 
       <InsuranceInteractiveHero />

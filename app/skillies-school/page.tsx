@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * /skillies-school · the consumer page (Amazon KDP only, post-pivot).
  *
@@ -10,26 +12,52 @@
  * Amazon KDP using the same methodology — but it's no longer the
  * primary product.
  */
-import type { Metadata } from "next";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
 import SkilliesChatWidget from "@/components/SkilliesChatWidget";
 
-export const metadata: Metadata = {
-  title: "Skillies School · Amazon KDP income skill",
-  description:
-    "The Amazon KDP methodology that generated ₹8,71,982 from 63 books. Self-paced, founder-taught, Kerala-context. The original Skillies product, still here.",
-};
-
 export default function SkilliesSchoolPage() {
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative min-h-screen overflow-hidden" style={{ background: "var(--sk-cream)" }}>
+      {/* ── Ambient Background Motion (Home Vibe) ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Vibrant fluid red glows */}
+        <motion.div 
+          animate={{ 
+            x: [0, 100, -50, 0],
+            y: [0, -80, 120, 0],
+            scale: [1, 1.3, 0.8, 1],
+            rotate: [0, 90, 0]
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-[10%] -right-[5%] w-[90%] h-[90%] rounded-full bg-sk-red/8 blur-[140px]"
+        />
+        <motion.div 
+          animate={{ 
+            x: [0, -120, 80, 0],
+            y: [0, 60, -100, 0],
+            scale: [1, 0.9, 1.2, 1]
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -bottom-[20%] -left-[10%] w-[80%] h-[80%] rounded-full bg-sk-ochre/5 blur-[120px]"
+        />
+        <motion.div 
+          animate={{ 
+            opacity: [0.1, 0.3, 0.1],
+            scale: [0.8, 1.1, 0.8]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[20%] left-[30%] w-[40%] h-[40%] rounded-full bg-sk-red/5 blur-[100px]"
+        />
+      </div>
+
       <TopNav />
 
       {/* Hero */}
-      <section className="sk-section pt-32 md:pt-40">
+      <section className="relative sk-section pt-32 md:pt-40">
         <div className="sk-container">
           <p
             className="sk-font-meta mb-6"

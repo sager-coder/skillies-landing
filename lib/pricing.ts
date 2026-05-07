@@ -89,7 +89,7 @@ export const INDUSTRY_SETUP = {
   },
   hajj: {
     base: 75_000,
-    label: "Hajj / Umrah",
+    label: "Travels",
     complexity: "Medium · package variants + group bookings + Mahram rules",
   },
   coaching: {
@@ -123,7 +123,7 @@ export type VerticalKey = keyof typeof INDUSTRY_SETUP;
 
 export const VERTICAL_LABELS: Record<VerticalKey, string> = {
   retail: "Retail / Kirana",
-  hajj: "Hajj / Umrah",
+  hajj: "Travels",
   coaching: "Coaching / Edtech",
   "study-abroad": "Study Abroad",
   interiors: "Modular Kitchen / Interior",
@@ -152,10 +152,10 @@ export const MODULES = {
     description: "Indic voice notes from older customers, transcribed and answered. ₹8/voice variable also applies.",
   },
   multilingual: {
-    label: "Extra Indic language (per language)",
+    label: "Additional Indic Language (Bilingual Support)",
     setup: 12_500,
     monthly: 3_500,
-    description: "English + 1 Indic is base; this adds Mal / Hin / Tam / Kan / Tel / Urdu etc.",
+    description: "English + 1 Indic is base; this adds support for a second Indic language (Total 2 Indic + English).",
   },
   memory: {
     label: "Lifelong per-customer memory",
@@ -181,12 +181,6 @@ export const MODULES = {
     monthly: 9_999,
     perSeat: 2_500,
     description: "Role-based access for your sales team. Hot-lead routing, performance reports, audit log.",
-  },
-  metaAds: {
-    label: "Meta Ads conversion service (creative + targeting + tracking)",
-    setup: 50_000,
-    monthly: 25_000,
-    description: "End-to-end Meta Ads management. 8% of ad-spend managed (capped at ₹50k/mo fee).",
   },
   industryCustom: {
     label: "Industry-custom integration (RERA, EMR, IATA, etc.)",

@@ -120,8 +120,7 @@ export default function HumansVsAgent({
     <section
       id="humans-vs-agent"
       ref={sectionRef}
-      className="sk-section sk-grain overflow-hidden border-b border-sk-hairline"
-      style={{ background: "var(--sk-cream)" }}
+      className="sk-section overflow-hidden border-b border-sk-hairline"
     >
       <div className="sk-container">
         <div className="max-w-3xl mb-16 md:mb-24">

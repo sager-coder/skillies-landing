@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function StudyAbroadPage() {
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative">
       <TopNav />
 
       <HeroBlockEditorial

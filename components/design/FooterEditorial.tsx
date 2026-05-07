@@ -22,7 +22,7 @@ const COLUMNS: Col[] = [
     kicker: "For Business",
     items: [
       ["Skillies for Real Estate", "/for/real-estate"],
-      ["Skillies for Hajj & Umrah", "/for/hajj"],
+      ["Skillies for Travels", "/for/hajj"],
       ["Skillies for Study Abroad", "/for/study-abroad"],
       ["Skillies for Coaching", "/for/coaching"],
       ["Skillies for Modular Kitchen", "/for/interiors"],

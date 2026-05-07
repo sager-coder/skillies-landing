@@ -20,25 +20,44 @@ import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import VerticalAgentGrid from "@/components/skillies/VerticalAgentGrid";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
-import ForHero from "./ForHero";
+import ForHeroV2 from "./ForHeroV2";
+import { BusinessFeatureRow, BusinessProcess, BusinessResults } from "@/components/skillies/BusinessSections";
 import ScopeCallout from "./ScopeCallout";
 
+import HumansVsAgent from "@/components/skillies/HumansVsAgent";
+import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+
 export const metadata: Metadata = {
-  title: "Skillies — pick your vertical · AI sales workers for Indian businesses",
+  title: "Your sales team should close deals — Skillies handles the conversations. · Skillies AI",
   description:
-    "Skillies builds AI sales workers per vertical. Pick yours: Real Estate, Hajj/Umrah, Study Abroad, Coaching, Modular Kitchen, Retail, Insurance.",
+    "Skillies AI automates conversations, qualifies leads, and closes sales on autopilot. Explore how our per-vertical AI workers deliver 3X more qualified sales and 70% time savings.",
 };
 
 export default function ForIndexPage() {
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative">
       <TopNav />
 
-      <ForHero />
+      <ForHeroV2 />
 
-      <VerticalAgentGrid />
+      <BusinessFeatureRow />
 
-      <ScopeCallout />
+      <BusinessProcess />
+
+      <BusinessResults />
+
+      {/* <VerticalAgentGrid /> */}
+
+      {/* 
+      <RevealOnScroll>
+        <HumansVsAgent 
+          headline="The Economics of Growth."
+          subhead="Traditional sales teams scale linearly with cost. Skillies scales exponentially with volume. Capture every lead, qualify every intent, and close every sale without the overhead."
+        />
+      </RevealOnScroll>
+
+      <ScopeCallout /> 
+      */}
 
       <BookCallCTA
         heading="Not sure which vertical fits?"
