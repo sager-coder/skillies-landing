@@ -63,12 +63,12 @@ export default function TopNav({
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-60 transition-all duration-500 ease-in-out px-6 md:px-10 ${
+        className={`fixed top-0 left-0 right-0 z-60 transition-all duration-500 ease-in-out ${
           scrolled ? "py-3 sk-glass border-b" : "py-6 bg-transparent"
         }`}
         style={{ transform: "translateZ(0)", willChange: "transform, padding, background-color" }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-8">
+        <div className="sk-container flex items-center justify-between gap-8">
           <a
             href="/"
             aria-label="Skillies.AI — home"
@@ -102,7 +102,7 @@ export default function TopNav({
               href={cta.href}
               target={cta.href.startsWith("http") ? "_blank" : undefined}
               rel={cta.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="sk-shimmer relative inline-flex items-center justify-center px-6 py-2.5 bg-sk-red text-sk-cream rounded-full text-[13px] font-bold tracking-tight shadow-[0_8px_20px_rgba(217,52,43,0.15)] transition-all duration-300 hover:scale-[1.05] hover:shadow-[0_12px_30px_rgba(217,52,43,0.25)] active:scale-[0.98]"
+              className="sk-shimmer relative inline-flex items-center justify-center px-5 py-2 bg-sk-red text-sk-cream rounded-full text-[11px] md:text-[12px] font-bold tracking-tight shadow-[0_8px_20px_rgba(217,52,43,0.15)] transition-all duration-300 hover:scale-[1.05] hover:shadow-[0_12px_30px_rgba(217,52,43,0.25)] active:scale-[0.98]"
             >
               {cta.label}
             </a>

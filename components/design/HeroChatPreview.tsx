@@ -53,7 +53,7 @@ const SCENARIOS: Scenario[] = [
   },
   {
     key: "hajj",
-    vertical: "Skillies for Hajj & Umrah",
+    vertical: "Skillies for Travels",
     accent: "var(--sk-hajj-forest)",
     thread: [
       {

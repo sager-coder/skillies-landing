@@ -1,21 +1,16 @@
 "use client";
 
-/**
- * /for · hero block.
- *
- * Co-located with `page.tsx` (not in `components/skillies/`) because it's
- * the page-specific composition for the vertical chooser. 
- * 
- * Visual uplift (v4):
- *  - Fixed metric ticker overflow.
- *  - Standardized typography with the new Tech Sans system.
- *  - Refined spacing and layout.
- *  - Improved mobile responsiveness for the ticker.
- */
-
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import BigStatTicker from "@/components/skillies/BigStatTicker";
+
+/**
+ * ForHero · v6 New Stat UI.
+ * Replaced the single stat card with a 'Metric Pillar' system.
+ * This is more robust against text overflow and feels more premium.
+ */
+
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
 /* ─────────────────────────── Typed code line ──────────────────── */
 
@@ -39,283 +34,144 @@ const CODE_TOKENS: Token[] = [
   { text: " })" },
 ];
 
-function totalChars(tokens: Token[]): number {
-  return tokens.reduce((acc, t) => acc + t.text.length, 0);
-}
-
-function sliceTokens(tokens: Token[], n: number): Token[] {
-  if (n <= 0) return [];
-  let remaining = n;
-  const out: Token[] = [];
-  for (const t of tokens) {
-    if (remaining <= 0) break;
-    if (t.text.length <= remaining) {
-      out.push(t);
-      remaining -= t.text.length;
-    } else {
-      out.push({ ...t, text: t.text.slice(0, remaining) });
-      remaining = 0;
-    }
-  }
-  return out;
-}
-
 function TypedCodeLine() {
   const reducedMotion = useReducedMotion() ?? false;
   const ref = useRef<HTMLDivElement | null>(null);
   const inView = useInView(ref, { amount: 0.4, once: true });
-  const total = totalChars(CODE_TOKENS);
+  const total = CODE_TOKENS.reduce((acc, t) => acc + t.text.length, 0);
   const [chars, setChars] = useState<number>(reducedMotion ? total : 0);
 
   useEffect(() => {
-    if (reducedMotion) {
-      const id = window.setTimeout(() => setChars(total), 0);
-      return () => window.clearTimeout(id);
-    }
-    if (!inView) return;
-    let cancelled = false;
+    if (reducedMotion || !inView) return;
     let i = 0;
-    const stepMs = 18;
     const tick = () => {
-      if (cancelled) return;
       i += 1;
       setChars(i);
-      if (i < total) {
-        window.setTimeout(tick, stepMs);
-      }
+      if (i < total) window.setTimeout(tick, 18);
     };
-    const start = window.setTimeout(tick, 320);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(start);
-    };
+    const start = window.setTimeout(tick, 500);
+    return () => window.clearTimeout(start);
   }, [inView, reducedMotion, total]);
 
-  const visible = sliceTokens(CODE_TOKENS, chars);
-  const done = chars >= total;
+  let currentChars = chars;
+  const visible = CODE_TOKENS.reduce((acc, t) => {
+    if (currentChars <= 0) return acc;
+    const sliceLen = Math.min(t.text.length, currentChars);
+    acc.push({ ...t, text: t.text.slice(0, sliceLen) });
+    currentChars -= sliceLen;
+    return acc;
+  }, [] as Token[]);
 
   return (
-    <div
+    <motion.div
       ref={ref}
-      className="font-mono"
-      style={{
-        marginTop: "1.5rem",
-        padding: "1rem 1.25rem",
-        borderRadius: "1rem",
-        background: "color-mix(in srgb, var(--sk-ink) 4%, var(--sk-cream))",
-        border: "1px solid var(--sk-hairline)",
-        fontSize: "0.8125rem",
-        color: "var(--sk-ink)",
-        letterSpacing: "-0.01em",
-        lineHeight: 1.6,
-        maxWidth: "min(640px, 100%)",
-        whiteSpace: "pre-wrap",
-        overflowWrap: "anywhere",
-      }}
+      initial={{ opacity: 0, x: -10 }}
+      animate={inView ? { opacity: 1, x: 0 } : {}}
+      transition={{ duration: 0.8, delay: 0.4, ease: EASE_OUT_EXPO }}
+      className="mt-10 p-5 md:p-6 rounded-2xl border border-sk-hairline bg-white/40 backdrop-blur-md shadow-sm font-mono text-[12px] md:text-[13px] leading-relaxed max-w-xl"
     >
       {visible.map((t, i) => (
-        <span
-          key={i}
-          style={{
-            color: t.color ?? "var(--sk-ink)",
-            fontStyle: t.italic ? "italic" : "normal",
-          }}
-        >
+        <span key={i} style={{ color: t.color ?? "var(--sk-ink)", fontStyle: t.italic ? "italic" : "normal" }}>
           {t.text}
         </span>
       ))}
-      <span
-        aria-hidden="true"
-        style={{
-          display: "inline-block",
-          width: "0.55ch",
-          marginLeft: "0.1em",
-          color: "var(--sk-red)",
-          opacity: done ? 1 : 0.85,
-          animation: reducedMotion
-            ? "none"
-            : "sk-fh-blink 1.05s steps(2, start) infinite",
-        }}
-      >
-        |
-      </span>
-    </div>
+      <span className="inline-block ml-1 text-sk-red animate-pulse">▍</span>
+    </motion.div>
   );
 }
 
-/* ─────────────────────────── Live-stat ticker ─────────────────── */
+/* ─────────────────────────── Metric Pillars ─────────────────── */
 
-function LiveStatTicker() {
+const STATS = [
+  { value: 7, label: "verticals active", prefix: "" },
+  { value: 16, label: "agents online", prefix: "" },
+  { value: 2400, label: "convos this hour", prefix: "~" },
+];
+
+function MetricPillars() {
   return (
-    <div
-      className="sk-glass"
-      style={{
-        display: "grid",
-        // Switched to auto-fit with a reasonable min-width to trigger stacking on mobile
-        gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-        gap: "1.5rem",
-        padding: "2rem",
-        borderRadius: "2rem",
-        border: "1px solid var(--sk-hairline)",
-        background: "color-mix(in srgb, var(--sk-ochre) 5%, var(--sk-cream))",
-      }}
-      aria-label="Live Skillies status"
-    >
-      <StatCell to={7} label="verticals active" />
-      <StatCell to={16} label="agents online" />
-      <StatCell to={2400} label="convos this hour" prefix="~" />
+    <div className="flex flex-wrap gap-4 md:gap-6 lg:gap-8">
+      {STATS.map((s, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 + i * 0.1, ease: EASE_OUT_EXPO }}
+          className="flex-1 min-w-[140px] p-6 md:p-8 rounded-[2rem] bg-white border border-sk-hairline shadow-[0_30px_60px_-15px_rgba(20,20,20,0.06)] group hover:scale-[1.05] transition-transform duration-500"
+        >
+          <div className="sk-font-display text-[32px] md:text-[36px] font-black tracking-tighter text-sk-ink leading-none group-hover:text-sk-red transition-colors duration-300">
+            <BigStatTicker to={s.value} format="comma" prefix={s.prefix} />
+          </div>
+          <div className="sk-font-meta mt-4 text-[10px] text-sk-ink40 font-black uppercase tracking-[0.12em] leading-tight">
+            {s.label}
+          </div>
+        </motion.div>
+      ))}
     </div>
-  );
-}
-
-function StatCell({
-  to,
-  label,
-  prefix,
-}: {
-  to: number;
-  label: string;
-  prefix?: string;
-}) {
-  return (
-    <div className="flex flex-col min-w-0">
-      <div
-        className="sk-font-display"
-        style={{
-          fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-          lineHeight: 1.0,
-          letterSpacing: "-0.03em",
-          whiteSpace: "nowrap", // Keep number on one line
-        }}
-      >
-        <BigStatTicker to={to} format="comma" prefix={prefix} />
-      </div>
-      <div
-        className="sk-font-meta"
-        style={{
-          color: "var(--sk-ink40)",
-          fontSize: "0.6875rem",
-          marginTop: "0.6rem",
-          lineHeight: 1.2,
-          letterSpacing: "0.05em",
-        }}
-      >
-        {label}
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────── Eyebrow w/ cursor ────────────────── */
-
-function EyebrowWithCursor() {
-  const reducedMotion = useReducedMotion() ?? false;
-  return (
-    <p
-      className="sk-font-meta mb-6"
-      style={{ color: "var(--sk-ink40)", display: "inline-flex", alignItems: "center" }}
-    >
-      <span>PICK YOUR VERTICAL</span>
-      <span
-        aria-hidden="true"
-        style={{
-          display: "inline-block",
-          marginLeft: "0.5em",
-          color: "var(--sk-red)",
-          fontFamily: "monospace",
-          fontWeight: 700,
-          animation: reducedMotion
-            ? "none"
-            : "sk-fh-blink 1.05s steps(2, start) infinite",
-        }}
-      >
-        ▍
-      </span>
-    </p>
   );
 }
 
 /* ─────────────────────────── Section ──────────────────────────── */
 
 export default function ForHero() {
-  const reducedMotion = useReducedMotion() ?? false;
-
   return (
-    <section className="sk-section pt-32 md:pt-40" style={{ paddingBottom: "3rem" }}>
-      <style>{`
-        @keyframes sk-fh-blink {
-          0%, 49%   { opacity: 1; }
-          50%, 100% { opacity: 0; }
-        }
-      `}</style>
-
+    <section className="relative pt-32 pb-16 md:pt-48 md:pb-24">
       <div className="sk-container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr)",
-            gap: "3rem",
-            alignItems: "end",
-          }}
-          className="sk-fh-grid"
-        >
-          <div>
-            <EyebrowWithCursor />
-            <motion.h1
-              className="sk-font-display sk-text-balance"
-              initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          
+          {/* Left Side: Messaging */}
+          <div className="relative z-10 max-w-2xl">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              style={{
-                fontSize: "var(--sk-text-display)",
-                color: "var(--sk-ink)",
-                maxWidth: "18ch",
-              }}
+              transition={{ duration: 0.6, ease: EASE_OUT_EXPO }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-sk-red/10 bg-sk-red/[0.04] mb-8"
             >
-              Skillies for{" "}
-              <span
-                className="sk-font-display-italic"
-                style={{ color: "var(--sk-red)" }}
-              >
-                your business
+              <span className="text-[10.5px] font-bold tracking-[0.12em] text-sk-red uppercase flex items-center gap-1.5">
+                <span className="text-sm">▍</span> PICK YOUR VERTICAL
               </span>
-              .
-            </motion.h1>
-            <motion.p
-              className="sk-font-body mt-6"
-              initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.1, ease: EASE_OUT_EXPO }}
+              className="sk-font-display text-sk-ink sk-text-balance"
               style={{
-                fontSize: "var(--sk-text-lead)",
-                color: "var(--sk-ink60)",
-                maxWidth: "50ch",
+                fontSize: "clamp(2.8rem, 6vw, 4.8rem)",
+                lineHeight: 0.95,
+                fontWeight: 900,
+                letterSpacing: "-0.04em",
               }}
             >
-              Seven vertical-specific AI sales workers. Pick the one closest
-              to your business — each has its own pain, demo, and price.
+              Skillies for <br />
+              <span className="sk-font-display-italic text-sk-red">your business.</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: EASE_OUT_EXPO }}
+              className="sk-font-body mt-10 text-sk-ink60"
+              style={{ fontSize: "1.25rem", lineHeight: 1.5, maxWidth: "45ch" }}
+            >
+              Seven vertical-specific AI sales workers. Pick the one closest 
+              to your business &mdash; each has its own pain, demo, and price.
             </motion.p>
+
             <TypedCodeLine />
           </div>
 
-          <motion.div
-            initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            style={{ maxWidth: "600px", width: "100%" }}
-          >
-            <LiveStatTicker />
-          </motion.div>
+          {/* Right Side: Stats (New Pillars UI) */}
+          <div className="relative w-full lg:pl-12">
+            <MetricPillars />
+            
+            {/* Subtle atmospheric glow behind stats */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-sk-red/[0.04] blur-[100px] -z-10 pointer-events-none rounded-full" />
+          </div>
+
         </div>
       </div>
-
-      <style>{`
-        @media (min-width: 900px) {
-          .sk-fh-grid {
-            grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

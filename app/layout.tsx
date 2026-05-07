@@ -86,6 +86,8 @@ export const metadata: Metadata = {
   },
 };
 
+import GlobalBackground from "@/components/design/GlobalBackground";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -96,7 +98,8 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${fraunces.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col relative isolate">
+        <GlobalBackground />
         <JsonLd variant="site" />
         <MetaPixel />
         {children}

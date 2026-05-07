@@ -84,7 +84,7 @@ export default function HeroB2B() {
               className="sk-font-meta mt-8"
               style={{ color: "var(--sk-ink60)" }}
             >
-              Real Estate · Hajj &amp; Umrah · Study Abroad · Coaching ·
+              Real Estate · Travels · Study Abroad · Coaching ·
               Modular Kitchen · Retail
             </p>
           </div>

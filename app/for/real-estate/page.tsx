@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RealEstatePage() {
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative">
       <TopNav />
 
       <HeroBlockEditorial
@@ -92,7 +92,7 @@ export default function RealEstatePage() {
         <PricingSnapshot
           layout="single"
           eyebrow="INVESTMENT"
-          sectionBg={`color-mix(in srgb, var(--sk-realestate-sandstone) 30%, var(--sk-cream) 70%)`}
+          
           tiers={[
             {
               name: "Real Estate · Scale",

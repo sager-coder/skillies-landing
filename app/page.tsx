@@ -25,7 +25,7 @@ import HeroBlockV2 from "@/components/skillies/HeroBlockV2";
 import WhySkilliesIsDifferent from "@/components/design/WhySkilliesIsDifferent";
 import VerticalGrid from "@/components/design/VerticalGrid";
 // ===== Removed Section: The Process =====
-// import B2BHowItWorks from "@/components/design/B2BHowItWorks";
+import B2BHowItWorks from "@/components/design/B2BHowItWorks";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
 import FooterEditorial from "@/components/design/FooterEditorial";
@@ -33,7 +33,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function Home() {
   return (
-    <main>
+    <main className="relative">
       <TopNav />
       <HeroBlockV2 />
 
@@ -50,7 +50,6 @@ export default function Home() {
         <VerticalGrid />
       </RevealOnScroll>
 
-      {/* ===== Removed Section: The Process ===== */}
       {/* <RevealOnScroll>
         <B2BHowItWorks />
       </RevealOnScroll> */}
@@ -62,7 +61,6 @@ export default function Home() {
       <BookCallCTA
         heading="One conversation. We'll know if it's a fit."
         note="30 minutes with Ehsan, founder of Skillies. We scope your vertical, your volumes, the integrations that matter, and you leave with a clear quote — not a brochure."
-        manglishLine="Malappuram-il ninnu thanne build cheyyunnu. Direct call cheyyam."
       />
       <FooterEditorial />
       <WhatsAppButton />

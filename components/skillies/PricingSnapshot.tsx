@@ -44,10 +44,7 @@ export default function PricingSnapshot({
   if (layout === "single") {
     const t = tiers[0]!;
     return (
-      <section
-        className="sk-section"
-        style={sectionBg ? { background: sectionBg } : undefined}
-      >
+      <section className="sk-section border-b border-sk-hairline overflow-hidden">
         <div className="sk-container">
           <div className="mx-auto max-w-[720px]">
             <p
@@ -113,10 +110,7 @@ export default function PricingSnapshot({
 
   // tiers layout
   return (
-    <section
-      className="sk-section"
-      style={sectionBg ? { background: sectionBg } : undefined}
-    >
+    <section className="sk-section border-b border-sk-hairline overflow-hidden">
       <div className="sk-container">
         <p
           className="sk-font-meta mb-6"
@@ -141,7 +135,7 @@ export default function PricingSnapshot({
                 border: t.featured
                   ? "1px solid var(--sk-ink)"
                   : "1px solid var(--sk-hairline)",
-                background: t.featured ? "var(--sk-cream)" : "var(--sk-cream)",
+                background: "transparent",
               }}
             >
               <p

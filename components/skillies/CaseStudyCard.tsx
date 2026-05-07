@@ -85,10 +85,7 @@ export default function CaseStudyCard({
 
   if (layout === "split" && image) {
     return (
-      <section
-        className="sk-section"
-        style={sectionBg ? { background: sectionBg } : undefined}
-      >
+      <section className="sk-section border-b border-sk-hairline overflow-hidden">
         <div className="sk-container">
           <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
@@ -108,10 +105,7 @@ export default function CaseStudyCard({
   }
 
   return (
-    <section
-      className="sk-section"
-      style={sectionBg ? { background: sectionBg } : undefined}
-    >
+    <section className="sk-section border-b border-sk-hairline overflow-hidden">
       <div className="sk-container">
         <div className="mx-auto max-w-[820px]">{Quote}</div>
       </div>

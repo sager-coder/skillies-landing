@@ -44,7 +44,7 @@ export default async function PricingPage(props: { searchParams: SearchParams })
   ) as VerticalKey;
 
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative">
       <TopNav />
 
       {/* Hero */}
@@ -95,10 +95,8 @@ export default async function PricingPage(props: { searchParams: SearchParams })
         subhead="Hire 10 callers + 2 managers in Kerala for ~₹2.5 L/month. Or ship one agent that doesn't take leaves, doesn't make data-entry errors, and remembers every customer for life."
       />
 
-      {/* Why QC, not per-message */}
       <section
         className="sk-section"
-        style={{ background: "var(--sk-cream-dark)" }}
       >
         <div className="sk-container">
           <div className="mx-auto max-w-[760px]">

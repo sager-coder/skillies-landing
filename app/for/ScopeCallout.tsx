@@ -1,90 +1,39 @@
 "use client";
 
-/**
- * /for · "Don't see your vertical?" callout.
- *
- * A dark editor-style card that reads like a JSON config + a "Run" button
- * that books a 30-min call with Ehsan. Lives next to `page.tsx` because
- * it's a page-level composition piece, not a reusable primitive.
- *
- * The cursor at the end of the last comment blinks unless the user has
- * reduced motion turned on.
- */
-
 import Link from "next/link";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 
-const EDITOR_BG = "var(--sk-ink)";
-const EDITOR_FG = "color-mix(in srgb, var(--sk-cream) 92%, transparent)";
-const EDITOR_DIM = "color-mix(in srgb, var(--sk-cream) 55%, transparent)";
+/**
+ * ScopeCallout · v5 Luxury Uplift.
+ * Transforms the "Don't see your vertical?" section into a high-end 
+ * technical showcase with dark glassmorphism and atmospheric depth.
+ */
+
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+const EDITOR_BG = "rgba(10, 10, 10, 0.85)";
 const KEYWORD = "var(--sk-red)";
 const STRING = "var(--sk-ochre)";
-const COMMENT = "color-mix(in srgb, var(--sk-cream) 45%, transparent)";
-
+const COMMENT = "rgba(255, 255, 255, 0.4)";
 const CAL_HREF = "https://cal.com/sager-zmd4kl/30min";
 
-type Line = { kind: "comment" | "code" | "blank"; tokens: TokenSpan[] };
-type TokenSpan = { text: string; color?: string; italic?: boolean };
-
-const LINES: Line[] = [
-  {
-    kind: "comment",
-    tokens: [{ text: "// Don't see your vertical?", color: COMMENT, italic: true }],
-  },
-  {
-    kind: "code",
-    tokens: [
-      { text: "const ", color: KEYWORD },
-      { text: "yourBusiness " },
-      { text: "= ", color: KEYWORD },
-      { text: "await ", color: KEYWORD },
-      { text: "skillies." },
-      { text: "scope", color: KEYWORD },
-      { text: "({" },
-    ],
-  },
-  {
-    kind: "code",
-    tokens: [
-      { text: "  audience: " },
-      { text: "\"your customers\"", color: STRING },
-      { text: "," },
-    ],
-  },
-  {
-    kind: "code",
-    tokens: [
-      { text: "  languages: " },
-      { text: "detect", color: KEYWORD },
-      { text: "()," },
-    ],
-  },
-  {
-    kind: "code",
-    tokens: [
-      { text: "  integrations: [" },
-      { text: "\"your CRM\"", color: STRING },
-      { text: ", " },
-      { text: "\"your billing\"", color: STRING },
-      { text: "]," },
-    ],
-  },
-  {
-    kind: "code",
-    tokens: [
-      { text: "  timeline: " },
-      { text: "\"2 weeks\"", color: STRING },
-    ],
-  },
-  { kind: "code", tokens: [{ text: "});" }] },
-  { kind: "blank", tokens: [] },
-  {
-    kind: "comment",
-    tokens: [
-      { text: "// → Book a 30-min call. We build.", color: COMMENT, italic: true },
-    ],
-  },
+const LINES = [
+  { tokens: [{ text: "// Don't see your vertical?", color: COMMENT, italic: true }] },
+  { tokens: [
+    { text: "const ", color: KEYWORD }, { text: "yourBusiness " },
+    { text: "= ", color: KEYWORD }, { text: "await ", color: KEYWORD },
+    { text: "skillies." }, { text: "scope", color: KEYWORD }, { text: "({" }
+  ]},
+  { tokens: [{ text: "  audience: " }, { text: "\"your customers\"", color: STRING }, { text: "," }] },
+  { tokens: [{ text: "  languages: " }, { text: "detect", color: KEYWORD }, { text: "()," }] },
+  { tokens: [
+    { text: "  integrations: [" }, { text: "\"your CRM\"", color: STRING }, 
+    { text: ", " }, { text: "\"your billing\"", color: STRING }, { text: "]," }
+  ]},
+  { tokens: [{ text: "  timeline: " }, { text: "\"2 weeks\"", color: STRING }] },
+  { tokens: [{ text: "});" }] },
+  { tokens: [{ text: "" }] },
+  { tokens: [{ text: "// → Book a 30-min call. We build.", color: COMMENT, italic: true }] },
 ];
 
 export default function ScopeCallout() {
@@ -93,287 +42,105 @@ export default function ScopeCallout() {
   const inView = useInView(ref, { amount: 0.25, once: true });
 
   return (
-    <section
-      className="sk-section"
-      style={{ background: "var(--sk-cream)", paddingTop: "2rem" }}
-    >
-      <style>{`
-        @keyframes sk-sc-blink {
-          0%, 49%   { opacity: 1; }
-          50%, 100% { opacity: 0; }
-        }
-        @keyframes sk-sc-traffic {
-          0%, 100% { opacity: 0.85; }
-          50%      { opacity: 0.55; }
-        }
-      `}</style>
-
+    <section className="relative py-24 md:py-32 overflow-hidden">
       <div className="sk-container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr)",
-            gap: "2rem",
-            alignItems: "center",
-          }}
-          className="sk-sc-grid"
-        >
-          {/* Left rail — small intro copy */}
-          <div>
-            <p
-              className="sk-font-meta"
-              style={{ color: "var(--sk-ink60)" }}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          
+          {/* Left Side: Messaging */}
+          <div className="relative z-10 max-w-xl">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="sk-font-meta text-sk-ink40 mb-6 font-black tracking-[0.2em] uppercase text-[10px]"
             >
               SCOPE A NEW VERTICAL
-            </p>
-            <h2
-              className="sk-font-section mt-3"
-              style={{
-                fontSize: "var(--sk-text-h3)",
-                color: "var(--sk-ink)",
-                lineHeight: 1.08,
-              }}
+            </motion.div>
+            
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.8, ease: EASE_OUT_EXPO }}
+              className="sk-font-section text-sk-ink sk-text-balance"
+              style={{ fontSize: "clamp(2.2rem, 4vw, 3.5rem)", lineHeight: 1.05, fontWeight: 900, letterSpacing: "-0.03em" }}
             >
-              Your vertical isn&rsquo;t in the grid?{" "}
-              <span
-                className="sk-font-display-italic"
-                style={{ color: "var(--sk-red)" }}
-              >
-                We build.
-              </span>
-            </h2>
-            <p
-              className="sk-font-body mt-4"
-              style={{
-                fontSize: "var(--sk-text-lead)",
-                color: "var(--sk-ink60)",
-                maxWidth: "44ch",
-              }}
+              Your vertical isn&rsquo;t in the grid? <br />
+              <span className="text-sk-red italic">We build.</span>
+            </motion.h2>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.7, ease: EASE_OUT_EXPO }}
+              className="sk-font-body mt-8 text-sk-ink60"
+              style={{ fontSize: "1.125rem", lineHeight: 1.6, maxWidth: "45ch" }}
             >
-              30-min scope call, then a working agent in your stack inside
-              two weeks. Same engine. Same memory. Your customers&rsquo;
-              language and your tools.
-            </p>
+              30-min scope call, then a working agent in your stack inside 
+              two weeks. Same engine. Same memory. Your customers&rsquo; language and your tools.
+            </motion.p>
           </div>
 
-          {/* Right rail — the editor card */}
-          <motion.div
-            ref={ref}
-            initial={reducedMotion ? false : { opacity: 0, y: 16 }}
-            animate={inView ? { opacity: 1, y: 0 } : undefined}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              borderRadius: "0.875rem",
-              overflow: "hidden",
-              background: EDITOR_BG,
-              border: "1px solid color-mix(in srgb, var(--sk-cream) 12%, transparent)",
-              boxShadow: "0 30px 60px -30px rgba(20,20,20,0.45)",
-            }}
-          >
-            {/* Editor titlebar */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.65rem 1rem",
-                borderBottom:
-                  "1px solid color-mix(in srgb, var(--sk-cream) 10%, transparent)",
-                background:
-                  "color-mix(in srgb, var(--sk-cream) 4%, var(--sk-ink))",
-              }}
+          {/* Right Side: The Editor Card */}
+          <div className="relative">
+            <motion.div
+              ref={ref}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: EASE_OUT_EXPO }}
+              className="relative rounded-3xl overflow-hidden shadow-[0_60px_100px_-30px_rgba(0,0,0,0.3)] border border-white/10 backdrop-blur-xl"
+              style={{ background: EDITOR_BG }}
             >
-              <TrafficLight color="#FF5F56" delay="0s" reduced={reducedMotion} />
-              <TrafficLight color="#FFBD2E" delay="0.4s" reduced={reducedMotion} />
-              <TrafficLight color="#27C93F" delay="0.8s" reduced={reducedMotion} />
-              <span
-                className="font-mono"
-                style={{
-                  marginLeft: "0.5rem",
-                  fontSize: "0.6875rem",
-                  color: EDITOR_DIM,
-                  letterSpacing: "0.04em",
-                }}
-              >
-                scope.your-vertical.ts
-              </span>
-            </div>
+              {/* Titlebar */}
+              <div className="flex items-center gap-3 px-6 py-4 bg-white/5 border-b border-white/5">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+                </div>
+                <span className="font-mono text-[10px] text-white/30 tracking-widest ml-2 uppercase">scope.your-vertical.ts</span>
+              </div>
 
-            {/* Editor body */}
-            <pre
-              className="font-mono"
-              style={{
-                margin: 0,
-                padding: "1.25rem 1rem 1.25rem 0.5rem",
-                fontSize: "0.8125rem",
-                lineHeight: 1.7,
-                color: EDITOR_FG,
-                overflowX: "auto",
-                whiteSpace: "pre",
-              }}
-            >
-              {LINES.map((line, idx) => (
-                <CodeRow
-                  key={idx}
-                  line={line}
-                  num={idx + 1}
-                  isLast={idx === LINES.length - 1}
-                  reducedMotion={reducedMotion}
-                />
-              ))}
-            </pre>
+              {/* Body */}
+              <div className="p-8 font-mono text-[13px] leading-relaxed text-white/80">
+                {LINES.map((line, idx) => (
+                  <div key={idx} className="flex gap-6">
+                    <span className="text-white/10 w-4 text-right select-none">{idx + 1}</span>
+                    <div className="flex-1">
+                      {line.tokens.map((t, i) => (
+                        <span key={i} style={{ color: t.color ?? "inherit", fontStyle: t.italic ? "italic" : "normal" }}>
+                          {t.text}
+                        </span>
+                      ))}
+                      {idx === LINES.length - 1 && <span className="inline-block ml-1 text-sk-red animate-pulse">▍</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-            {/* "Run" button row */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "1rem",
-                padding: "0.85rem 1rem",
-                borderTop:
-                  "1px solid color-mix(in srgb, var(--sk-cream) 10%, transparent)",
-                background:
-                  "color-mix(in srgb, var(--sk-cream) 3%, var(--sk-ink))",
-              }}
-            >
-              <span
-                className="font-mono"
-                style={{
-                  fontSize: "0.6875rem",
-                  color: EDITOR_DIM,
-                  letterSpacing: "0.04em",
-                }}
-              >
-                ready · press Run to book
-              </span>
-              <Link
-                href={CAL_HREF}
-                target="_blank"
-                rel="noreferrer"
-                className="font-mono inline-flex items-center"
-                style={{
-                  gap: "0.5rem",
-                  padding: "0.45rem 0.85rem",
-                  borderRadius: "0.5rem",
-                  background: "var(--sk-red)",
-                  color: "var(--sk-cream)",
-                  fontSize: "0.8125rem",
-                  fontWeight: 600,
-                  letterSpacing: "0.02em",
-                  textDecoration: "none",
-                  transition: "transform 180ms ease",
-                }}
-              >
-                <span aria-hidden="true">▶</span>
-                Run · book Ehsan
-              </Link>
-            </div>
-          </motion.div>
+              {/* Action Bar */}
+              <div className="px-6 py-4 bg-white/5 border-t border-white/5 flex items-center justify-between">
+                <span className="font-mono text-[10px] text-white/20 tracking-widest uppercase">ready · ready to deploy</span>
+                <Link
+                  href={CAL_HREF}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono inline-flex items-center gap-3 px-5 py-2 rounded-lg bg-sk-red text-white text-[13px] font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-sk-red/20"
+                >
+                  <span className="text-[10px]">▶</span> Run · book Ehsan
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Ambient Background Glows behind the card */}
+            <div className="absolute -top-20 -right-20 w-80 h-80 bg-sk-red/10 blur-[100px] -z-10 rounded-full" />
+            <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sk-ochre/5 blur-[100px] -z-10 rounded-full" />
+          </div>
+
         </div>
       </div>
-
-      <style>{`
-        @media (min-width: 900px) {
-          .sk-sc-grid {
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) !important;
-            gap: 3rem !important;
-          }
-        }
-      `}</style>
     </section>
-  );
-}
-
-/* ─────────────────────────── Sub-components ───────────────────── */
-
-function TrafficLight({
-  color,
-  delay,
-  reduced,
-}: {
-  color: string;
-  delay: string;
-  reduced: boolean;
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: "inline-block",
-        width: 10,
-        height: 10,
-        borderRadius: 999,
-        background: color,
-        animation: reduced
-          ? "none"
-          : `sk-sc-traffic 3.6s ease-in-out ${delay} infinite`,
-      }}
-    />
-  );
-}
-
-function CodeRow({
-  line,
-  num,
-  isLast,
-  reducedMotion,
-}: {
-  line: Line;
-  num: number;
-  isLast: boolean;
-  reducedMotion: boolean;
-}) {
-  return (
-    <div style={{ display: "flex", alignItems: "baseline" }}>
-      <span
-        aria-hidden="true"
-        style={{
-          display: "inline-block",
-          width: "2.25rem",
-          textAlign: "right",
-          paddingRight: "0.85rem",
-          color: "color-mix(in srgb, var(--sk-cream) 28%, transparent)",
-          fontSize: "0.6875rem",
-          flex: "0 0 auto",
-          userSelect: "none",
-        }}
-      >
-        {num}
-      </span>
-      <span style={{ display: "inline-block" }}>
-        {line.kind === "blank" ? (
-          <span> </span>
-        ) : (
-          line.tokens.map((t, i) => (
-            <span
-              key={i}
-              style={{
-                color: t.color ?? EDITOR_FG,
-                fontStyle: t.italic ? "italic" : "normal",
-              }}
-            >
-              {t.text}
-            </span>
-          ))
-        )}
-        {isLast ? (
-          <span
-            aria-hidden="true"
-            style={{
-              display: "inline-block",
-              width: "0.55ch",
-              marginLeft: "0.25em",
-              color: "var(--sk-red)",
-              animation: reducedMotion
-                ? "none"
-                : "sk-sc-blink 1.05s steps(2, start) infinite",
-            }}
-          >
-            |
-          </span>
-        ) : null}
-      </span>
-    </div>
   );
 }

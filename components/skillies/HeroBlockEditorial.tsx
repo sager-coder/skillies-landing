@@ -194,9 +194,8 @@ export default function HeroBlockEditorial({
   return (
     <motion.section
       id="hero"
-      className="relative overflow-hidden"
+      className="sk-section border-b border-sk-hairline overflow-hidden"
       style={{
-        background: "var(--sk-cream)",
         paddingTop: "clamp(64px, 9vw, 120px)",
         paddingBottom: "clamp(64px, 7vw, 96px)",
       }}

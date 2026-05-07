@@ -15,7 +15,7 @@
   --cream-dark: #F0E8D8;
   --charcoal: #2D2D2D;
   --gray: #6B7280;
-  --gray-light: #9CA3AF;
+  --gray-light: #9CA3AF;   
 
   /* Brand red */
   --red: #C62828;
@@ -50,7 +50,7 @@
 
   /* Fonts */
   --font-sans: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  --font-serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+  --font-serif: 'Inter', system-ui, -apple-system, sans-serif; /* Pointing serif alias to Inter for unified Tech look */
   --font-ml: 'Baloo Chettan 2', 'Anek Malayalam', 'Noto Sans Malayalam', 'Inter', system-ui, sans-serif;
 
   /* ─── Skillies B2B Design System (2026 pivot) ──────────────────
@@ -234,12 +234,16 @@ body {
 
 /* Font utility classes used by design bundle components */
 .font-ml { font-family: var(--font-ml); letter-spacing: -0.01em; }
-.font-serif { font-family: var(--font-serif); letter-spacing: -0.01em; }
+.font-serif { 
+  font-family: var(--font-inter), sans-serif; 
+  font-weight: 900; 
+  letter-spacing: -0.04em; 
+}
 .t-serif-italic {
-  font-family: var(--font-serif);
+  font-family: var(--font-inter), sans-serif;
   font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.015em;
+  font-weight: 900;
+  letter-spacing: -0.035em;
 }
 
 /* ─── Skillies B2B utility classes (post-pivot) ──────────────────
@@ -308,15 +312,17 @@ body {
 }
 
 /* Container */
+/* Container - Updated to match Home Hero (v3 visual uplift) */
 .sk-container {
-  max-width: 1180px;
+  max-width: 1440px;
+  width: 92%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
 }
-@media (min-width: 768px) {
-  .sk-container { padding-left: 2.5rem; padding-right: 2.5rem; }
+@media (max-width: 768px) {
+  .sk-container {
+    width: 90%; /* Slightly more margin on mobile */
+  }
 }
 
 /* Scrollbar */
@@ -984,14 +990,13 @@ html, body {
 }
 
 .sk-num-display {
-  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
-  font-weight: 600;
+  font-family: var(--font-inter), 'Inter', -apple-system, sans-serif;
+  font-weight: 900;
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum" 1, "lnum" 1;
-  letter-spacing: -0.022em;
-  line-height: 1.0;
+  font-feature-settings: "tnum" 1, "lnum" 1, "case" 1, "ss01" 1;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
   font-size: clamp(2.75rem, 5vw + 1rem, 5.5rem);
-  font-variation-settings: "opsz" 144;
 }
 
 @media (prefers-reduced-motion: reduce) {

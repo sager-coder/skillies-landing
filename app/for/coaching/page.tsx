@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function CoachingPage() {
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative">
       <TopNav />
 
       <HeroBlockEditorial

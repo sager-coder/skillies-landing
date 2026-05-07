@@ -338,7 +338,7 @@ export default function B2BHowItWorks() {
   const inView = useInView(sectionRef, { once: true, amount: 0.1 });
 
   return (
-    <section id="how-it-works" ref={sectionRef} className="sk-section sk-grain border-b border-sk-hairline">
+    <section id="how-it-works" ref={sectionRef} className="sk-section border-b border-sk-hairline">
       <div className="sk-container">
         <div className="max-w-3xl mb-24 md:mb-32">
           <motion.p 

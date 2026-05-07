@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function HajjPage() {
   return (
-    <main style={{ background: "var(--sk-cream)" }}>
+    <main className="relative">
       <TopNav />
 
       <HeroBlockEditorial
@@ -92,7 +92,7 @@ export default function HajjPage() {
         <PricingSnapshot
           layout="single"
           eyebrow="INVESTMENT"
-          sectionBg="var(--sk-hajj-ivory)"
+          
           tiers={[
             {
               name: "Hajj/Umrah · Standard",
@@ -113,7 +113,7 @@ export default function HajjPage() {
           role={copy.caseStudy.role}
           metrics={copy.caseStudy.metrics}
           verified={copy.caseStudy.verified}
-          sectionBg="var(--sk-hajj-ivory)"
+          
         />
       </RevealOnScroll>
 
