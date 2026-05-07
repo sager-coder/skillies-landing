@@ -446,16 +446,20 @@ export default function AgentFunnel() {
       </div>
 
       {/* ── Section Labels ── */}
-      <div className="absolute bottom-[-8%] left-[25%] -translate-x-1/2 whitespace-nowrap">
-        <p className="sk-font-meta text-[10px] text-sk-ink20 font-black tracking-[0.3em] uppercase">Your Market</p>
-      </div>
+      <div className="absolute bottom-[-10%] md:bottom-[-8%] left-0 w-full px-4 md:px-0 flex justify-center md:block pointer-events-none">
+        
+        <div className="hidden md:block md:absolute md:left-[25%] md:-translate-x-1/2 whitespace-nowrap">
+          <p className="sk-font-meta md:text-[10px] text-sk-ink20 font-black md:tracking-[0.3em] uppercase text-center">Your Market</p>
+        </div>
 
-      <div className="absolute bottom-[-8%] left-[50%] -translate-x-1/2 whitespace-nowrap">
-        <p className="sk-font-meta text-[10px] text-sk-red/40 font-black tracking-[0.3em] uppercase">Skillies AI Agent</p>
-      </div>
+        <div className="md:absolute md:left-[50%] md:-translate-x-1/2 whitespace-nowrap">
+          <p className="sk-font-meta text-[9px] md:text-[10px] text-sk-red/40 font-black tracking-[0.2em] md:tracking-[0.3em] uppercase text-center">Skillies AI Agent</p>
+        </div>
 
-      <div className="absolute bottom-[-8%] left-[75%] -translate-x-1/2 whitespace-nowrap">
-        <p className="sk-font-meta text-[10px] text-sk-ink20 font-black tracking-[0.3em] uppercase">Your Closers</p>
+        <div className="hidden md:block md:absolute md:left-[75%] md:-translate-x-1/2 whitespace-nowrap">
+          <p className="sk-font-meta md:text-[10px] text-sk-ink20 font-black md:tracking-[0.3em] uppercase text-center">Your Closers</p>
+        </div>
+
       </div>
     </div>
   );
