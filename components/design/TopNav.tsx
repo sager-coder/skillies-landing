@@ -71,10 +71,10 @@ export default function TopNav({
           <a
             href="/"
             aria-label="Skillies.AI — home"
-            className="transition-transform duration-300 hover:scale-[1.02] flex items-center justify-center h-6 md:h-8 overflow-hidden"
+            className="transition-transform duration-300 hover:scale-[1.02]"
             onClick={closeAnd()}
           >
-            <img src="/skillies-logo-transparent.png" alt="Skillies.AI" className="h-[70px] md:h-[120px] w-auto max-w-none object-contain pointer-events-none" />
+            <img src="/skillies-logo-transparent.png" alt="Skillies.AI" className="h-10 md:h-14 w-auto object-contain" />
           </a>
 
           <div className="hidden md:flex items-center gap-10">
