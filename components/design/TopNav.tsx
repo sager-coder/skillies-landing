@@ -74,7 +74,7 @@ export default function TopNav({
             className="relative transition-transform duration-300 hover:scale-[1.02] flex items-center h-8 md:h-10"
             onClick={closeAnd()}
           >
-            <img src="/skillies-logo-transparent.png" alt="Skillies.AI" className="h-full w-auto object-contain transform scale-[2.2] md:scale-[2.5] origin-left pointer-events-none" />
+            <img src="/skillies-logo-transparent.png" alt="Skillies.AI" className="h-full w-auto object-contain transform scale-[3.2] md:scale-[2.5] origin-left pointer-events-none" />
           </a>
 
           <div className="hidden md:flex items-center gap-10">
