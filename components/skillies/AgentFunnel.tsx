@@ -41,6 +41,7 @@ interface MarketDot {
   y: number;
   radius: number;
   opacity: number;
+  isOchre: boolean;
 }
 
 interface ConstellationLine {
@@ -76,6 +77,7 @@ function buildMarket() {
         y: MARKET_CY + Math.sin(angle + (Math.random()-0.5)*0.1) * (ring.r + (Math.random()-0.5)*15),
         radius: 1.5 + Math.random() * 2,
         opacity: 0.4 + Math.random() * 0.5,
+        isOchre: Math.random() > 0.8,
       });
     }
   });
@@ -107,6 +109,14 @@ export default function AgentFunnel() {
   const [travelers, setTravelers] = useState<Traveler[]>([]);
   const [jolts, setJolts] = useState<Record<number, boolean>>({});
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -155,9 +165,10 @@ export default function AgentFunnel() {
 
   useEffect(() => {
     if (reduced) return;
-    const interval = setInterval(spawnTraveler, 1800);
+    const intervalTime = isMobile ? 3500 : 1800; // Slower spawn rate on mobile
+    const interval = setInterval(spawnTraveler, intervalTime);
     return () => clearInterval(interval);
-  }, [spawnTraveler, reduced]);
+  }, [spawnTraveler, reduced, isMobile]);
 
   // Path Builders (Cubic Bézier for more organic "S" curves)
   const getMarketPath = (pIdx: number) => {
@@ -231,7 +242,7 @@ export default function AgentFunnel() {
               <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="var(--sk-red)" strokeWidth="0.8" strokeOpacity={l.op * 0.4} />
             ))}
             {dots.map(d => (
-              <circle key={d.id} cx={d.x} cy={d.y} r={d.radius} fill={Math.random() > 0.8 ? "var(--sk-ochre)" : "var(--sk-red)"} opacity={d.opacity * 0.8} />
+              <circle key={d.id} cx={d.x} cy={d.y} r={d.radius} fill={d.isOchre ? "var(--sk-ochre)" : "var(--sk-red)"} opacity={d.opacity * 0.8} />
             ))}
           </g>
         </motion.g>
@@ -245,9 +256,9 @@ export default function AgentFunnel() {
                 {/* Pulsing Underglow */}
                 <motion.path
                   d={path} stroke="url(#marketPathGradient)" strokeWidth="6" fill="none"
-                  animate={{ opacity: [0.08, 0.18, 0.08] }}
+                  animate={isMobile ? { opacity: 0.1 } : { opacity: [0.08, 0.18, 0.08] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
-                  style={{ filter: "blur(4px)" }}
+                  style={{ filter: isMobile ? "none" : "blur(4px)" }}
                 />
                 {/* Animated Energy Core */}
                 <motion.path
@@ -267,9 +278,9 @@ export default function AgentFunnel() {
                 {/* Pulsing Underglow */}
                 <motion.path
                   d={path} stroke="url(#teamPathGradient)" strokeWidth="6" fill="none"
-                  animate={{ opacity: [0.08, 0.18, 0.08] }}
+                  animate={isMobile ? { opacity: 0.1 } : { opacity: [0.08, 0.18, 0.08] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
-                  style={{ filter: "blur(4px)" }}
+                  style={{ filter: isMobile ? "none" : "blur(4px)" }}
                 />
                 {/* Animated Energy Core */}
                 <motion.path
@@ -306,7 +317,7 @@ export default function AgentFunnel() {
                     initial={{ offsetDistance: "0%" }}
                     animate={{ offsetDistance: "100%" }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
-                    style={{ offsetPath: `path("${getMarketPath(t.pIdx)}")`, filter: "url(#glow)" }}
+                    style={{ offsetPath: `path("${getMarketPath(t.pIdx)}")`, filter: isMobile ? "none" : "url(#glow)" }}
                   />
                   <motion.circle
                     r={3} fill="url(#travelerGradient)"
@@ -335,7 +346,7 @@ export default function AgentFunnel() {
                     initial={{ offsetDistance: "0%" }}
                     animate={{ offsetDistance: "100%" }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
-                    style={{ offsetPath: `path("${getTeamPath(t.cIdx)}")`, filter: "url(#glow)" }}
+                    style={{ offsetPath: `path("${getTeamPath(t.cIdx)}")`, filter: isMobile ? "none" : "url(#glow)" }}
                   />
                   <motion.circle
                     r={3} fill="url(#travelerGradient)"
@@ -357,7 +368,7 @@ export default function AgentFunnel() {
             <motion.circle
               key={i} r={70 + (i * 25)}
               fill="none" stroke={i === 1 ? "var(--sk-red)" : "var(--sk-ochre)"} strokeWidth="1.2" strokeOpacity={0.1 / i}
-              animate={{ scale: [1, 1.05, 1], opacity: [0.03, 0.1, 0.03] }}
+              animate={isMobile ? {} : { scale: [1, 1.05, 1], opacity: [0.03, 0.1, 0.03] }}
               transition={{ duration: 5, repeat: Infinity, delay: i * 0.7 }}
             />
           ))}

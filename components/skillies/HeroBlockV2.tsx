@@ -11,18 +11,31 @@
  */
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import AgentFunnel from "./AgentFunnel";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
 export default function HeroBlockV2() {
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
+    return () => window.removeEventListener("resize", checkIsDesktop);
+  }, []);
+
   return (
     <section 
       id="hero"
       className="relative min-h-[90vh] flex flex-col border-b border-sk-hairline" 
     >
       {/* ── Ambient Background Motion ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
         {/* Vibrant fluid red glows */}
         <motion.div 
           animate={{ 
@@ -63,14 +76,16 @@ export default function HeroBlockV2() {
             
             {/* ── Mobile-Optimized Flow (lg:hidden) ── */}
             <div className="lg:hidden mt-10 flex flex-col gap-6">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, delay: 0.3 }}
-                className="relative -mx-6 py-4"
-              >
-                <AgentFunnel />
-              </motion.div>
+              {mounted && !isDesktop && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1, delay: 0.3 }}
+                  className="relative -mx-6 py-4"
+                >
+                  <AgentFunnel />
+                </motion.div>
+              )}
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -99,9 +114,11 @@ export default function HeroBlockV2() {
 
           {/* Right Column: Visual Funnel (Desktop Only) */}
           <div className="hidden lg:block relative w-full max-w-[850px] xl:max-w-[1000px] mx-auto lg:mx-0 mt-20 lg:mt-0">
-            <div className="relative lg:-translate-x-32 lg:-translate-y-16 scale-[0.9] md:scale-110 lg:scale-[1.4] origin-center">
-              <AgentFunnel />
-            </div>
+            {mounted && isDesktop && (
+              <div className="relative lg:-translate-x-32 lg:-translate-y-16 scale-[0.9] md:scale-110 lg:scale-[1.4] origin-center">
+                <AgentFunnel />
+              </div>
+            )}
           </div>
         </div>
       </div>

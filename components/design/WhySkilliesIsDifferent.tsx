@@ -151,17 +151,26 @@ export default function WhySkilliesIsDifferent() {
         </div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 lg:gap-6">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.1 } }
+          }}
+          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 lg:gap-6"
+        >
           {FEATURES.map((f, i) => (
             <motion.article
               key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-              transition={{ 
-                duration: 0.8, 
-                delay: i * 0.1, 
-                ease: [0.16, 1, 0.3, 1] as const
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } 
+                }
               }}
               className="group relative rounded-[1.5rem] md:rounded-[3.2rem] p-4 md:p-9 transition-all duration-700 hover:shadow-[0_60px_100px_-20px_rgba(20,20,20,0.08)] bg-white border border-sk-hairline overflow-hidden flex flex-col h-full aspect-[0.75/1] md:aspect-[0.78/1] min-h-0"
             >
@@ -205,7 +214,7 @@ export default function WhySkilliesIsDifferent() {
               </div>
             </motion.article>
           ))}
-        </div>
+        </motion.div>
 
         {/* Footer Text */}
         <motion.div

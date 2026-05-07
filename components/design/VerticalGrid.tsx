@@ -175,14 +175,23 @@ export default function VerticalGrid() {
             </div>
 
             {/* Verticals Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-x-4 gap-y-10">
-              {VERTICALS.map((v, i) => (
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.05 } }
+              }}
+              className="grid grid-cols-2 sm:grid-cols-2 gap-x-4 gap-y-10"
+            >
+              {VERTICALS.map((v) => (
                 <motion.div
                   key={v.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05, duration: 0.5 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+                  }}
                 >
                   <Link href={v.href} className="group block relative">
                     <div className="flex flex-col md:flex-row items-start gap-3 md:gap-5">
@@ -219,7 +228,7 @@ export default function VerticalGrid() {
                   </Link>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
 
           {/* Right Column: WhatsApp Interactive Preview */}

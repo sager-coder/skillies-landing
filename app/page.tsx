@@ -43,12 +43,8 @@ export default function Home() {
       {/* ===== Removed Section: Economics ===== */}
       {/* <HumansVsAgent /> */}
 
-      <RevealOnScroll>
-        <WhySkilliesIsDifferent />
-      </RevealOnScroll>
-      <RevealOnScroll>
-        <VerticalGrid />
-      </RevealOnScroll>
+      <WhySkilliesIsDifferent />
+      <VerticalGrid />
 
       {/* <RevealOnScroll>
         <B2BHowItWorks />
