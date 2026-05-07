@@ -50,7 +50,7 @@ function DashboardVisual() {
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, delay: 0.6, ease: EASE_OUT_EXPO }}
-        className="absolute bottom-6 left-0 md:bottom-0 md:left-[8%] w-[65%] md:w-[58%] p-4 md:p-8 rounded-[1.25rem] md:rounded-[2rem] bg-white/90 backdrop-blur-xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] border border-white/40 z-30"
+        className="absolute bottom-2 left-0 md:bottom-0 md:left-[8%] w-[65%] md:w-[58%] p-4 md:p-8 rounded-[1.25rem] md:rounded-[2rem] bg-white/90 backdrop-blur-xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] border border-white/40 z-30"
       >
         <div className="flex items-center justify-between mb-3 md:mb-6">
           <p className="sk-font-meta text-[7px] md:text-[10px] text-sk-ink40 font-bold uppercase tracking-[0.2em]">Efficiency</p>
@@ -94,7 +94,7 @@ function DashboardVisual() {
         initial={{ opacity: 0, x: 30, y: -30, rotate: 2 }}
         animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
         transition={{ duration: 1, delay: 0.8, ease: EASE_OUT_EXPO }}
-        className="absolute top-[15%] right-0 w-[48%] md:w-[44%] p-4 md:p-6 rounded-[1.25rem] md:rounded-[2rem] bg-white shadow-[0_50px_100px_-30px_rgba(0,0,0,0.15)] border border-sk-hairline z-10"
+        className="absolute top-[38%] right-0 w-[48%] md:w-[44%] p-4 md:p-6 rounded-[1.25rem] md:rounded-[2rem] bg-white shadow-[0_50px_100px_-30px_rgba(0,0,0,0.15)] border border-sk-hairline z-10"
       >
         <p className="sk-font-meta text-[7px] md:text-[10px] text-sk-ink40 font-bold uppercase tracking-[0.2em] mb-4 md:mb-6">AI Workers</p>
         <div className="space-y-3.5 md:space-y-5">
@@ -115,7 +115,7 @@ function DashboardVisual() {
                   <p className="text-[10px] md:text-[13px] font-black text-sk-ink tabular-nums leading-none">{item.val}</p>
                   <p className={`text-[7px] md:text-[9px] font-black ${item.color} tracking-tight`}>{item.inc}</p>
                 </div>
-                <p className="text-[7px] md:text-[10px] text-sk-ink40 font-bold uppercase tracking-widest mt-0.5">{item.label}</p>
+                <p className="text-[7px] md:text-[10px] text-sk-ink40 font-black uppercase tracking-widest mt-0.5">{item.label}</p>
               </div>
             </div>
           ))}

@@ -110,7 +110,7 @@ export default function ScopeCallout() {
                     <span className="text-white/10 w-4 text-right select-none">{idx + 1}</span>
                     <div className="flex-1">
                       {line.tokens.map((t, i) => (
-                        <span key={i} style={{ color: t.color ?? "inherit", fontStyle: t.italic ? "italic" : "normal" }}>
+                        <span key={i} style={{ color: (t as any).color ?? "inherit", fontStyle: (t as any).italic ? "italic" : "normal" }}>
                           {t.text}
                         </span>
                       ))}
