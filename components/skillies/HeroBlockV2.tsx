@@ -164,7 +164,7 @@ function Headline() {
       }}
     >
       Chatbots don&rsquo;t <br />
-      <span className="text-sk-red">sell.</span> Skillies <span className="sk-font-display-italic text-sk-red">does.</span>
+      <span className="text-sk-red">sell.</span> Skillies <span className="sk-font-display-italic text-sk-red">do.</span>
     </motion.h1>
   );
 }
