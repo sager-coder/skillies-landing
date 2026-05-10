@@ -119,60 +119,82 @@ export default function AmazonKdpNicheFinderPage() {
         .kdp-section-tight { padding-top: 12px; padding-bottom: 24px; }
         .kdp-section-pull-up { padding-top: 0; }
 
+        /* Feature strip wrapper — pulled up tight under the illustration so
+           it visually anchors the bottom of the hero composition. */
+        .kdp-features-wrap {
+          margin-top: 24px;
+        }
+        @media (min-width: 768px) {
+          .kdp-features-wrap { margin-top: -8px; }
+        }
+        @media (min-width: 1280px) {
+          .kdp-features-wrap { margin-top: -32px; }
+        }
+
         /* ── Feature strip — 5 mini-cards beneath the hero ──
            Same aesthetic as the signal cards (white, tan border, soft
-           shadow, hover lift). Each card pairs a glyph with a short
-           headline + description. */
+           shadow, hover lift). Each card pairs a Fraunces glyph with a
+           bold title + muted description. */
         .kdp-features-strip {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
           gap: 14px;
         }
         .kdp-feature {
+          position: relative;
           background: #ffffff;
           border: 1.5px solid #e7dcc4;
-          border-radius: 16px;
-          padding: 22px 20px 20px;
+          border-radius: 18px;
+          padding: 26px 22px 22px;
           display: flex;
           flex-direction: column;
           gap: 4px;
-          box-shadow: 0 6px 22px rgba(40, 25, 10, 0.05);
-          transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+          box-shadow: 0 8px 28px rgba(40, 25, 10, 0.06);
+          transition: transform 0.20s ease, box-shadow 0.20s ease, border-color 0.20s ease;
+          overflow: hidden;
+        }
+        .kdp-feature::before {
+          /* Soft red corner glow on hover — same trick as signal cards */
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse 240px 160px at 100% 0%, rgba(217, 52, 43, 0.08), transparent 60%);
+          opacity: 0;
+          transition: opacity 0.20s ease;
+          pointer-events: none;
         }
         .kdp-feature:hover {
-          transform: translateY(-3px);
+          transform: translateY(-4px);
           border-color: #d9342b;
-          box-shadow: 0 16px 38px rgba(40, 25, 10, 0.10);
+          box-shadow: 0 18px 42px rgba(40, 25, 10, 0.12);
         }
+        .kdp-feature:hover::before { opacity: 1; }
         .kdp-feature-num {
           font-family: var(--font-fraunces, "Fraunces", Georgia, serif);
           font-weight: 600;
-          font-size: 32px;
+          font-size: 38px;
           line-height: 1;
           letter-spacing: -0.04em;
           color: #d9342b;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
         }
         .kdp-feature-title {
           font-weight: 800;
-          font-size: 15.5px;
+          font-size: 16px;
           line-height: 1.2;
-          letter-spacing: -0.01em;
+          letter-spacing: -0.012em;
           color: #141414;
         }
         .kdp-feature-desc {
           font-size: 13px;
           line-height: 1.5;
           color: #14141499;
+          margin-top: 2px;
         }
 
         @media (max-width: 1100px) {
           .kdp-features-strip {
             grid-template-columns: repeat(3, 1fr);
-          }
-          .kdp-feature:nth-child(4),
-          .kdp-feature:nth-child(5) {
-            /* On medium screens the last 2 cards form a centered second row */
           }
         }
         @media (max-width: 720px) {
@@ -181,9 +203,10 @@ export default function AmazonKdpNicheFinderPage() {
             gap: 10px;
           }
           .kdp-feature {
-            padding: 18px 16px 16px;
+            padding: 20px 16px 18px;
+            border-radius: 16px;
           }
-          .kdp-feature-num { font-size: 26px; }
+          .kdp-feature-num { font-size: 30px; margin-bottom: 6px; }
           .kdp-feature-title { font-size: 14px; }
           .kdp-feature-desc { font-size: 12px; }
         }
@@ -308,8 +331,10 @@ export default function AmazonKdpNicheFinderPage() {
           </div>
         </div>
 
-        {/* ── Feature strip — 4 mini-cards in the signal-card aesthetic ── */}
-        <div className="sk-container max-w-[1240px] mt-14">
+        {/* ── Feature strip — 5 mini-cards in the signal-card aesthetic.
+            Pulled tight under the illustration via .kdp-features-wrap so
+            the strip visually anchors the bottom of the hero composition. */}
+        <div className="sk-container max-w-[1240px] kdp-features-wrap">
           <div className="kdp-features-strip">
             <article className="kdp-feature">
               <div className="kdp-feature-num">●</div>
