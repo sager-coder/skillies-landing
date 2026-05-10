@@ -11,7 +11,7 @@
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
-import KdpHeroScene from "@/components/tools/KdpHeroScene";
+import KdpDiscoveryDiagram from "@/components/tools/KdpDiscoveryDiagram";
 import KdpNicheFinder from "@/components/tools/KdpNicheFinder";
 
 export const metadata: Metadata = {
@@ -113,139 +113,598 @@ export default function AmazonKdpNicheFinderPage() {
           pulled in to keep the text column legible). Mobile rules reset
           all of it so the illustration centres cleanly. */}
       <style>{`
-        /* Hero illustration sizing & lift. Now that the feature strip is
-           gone, the illustration carries the full visual weight of the
-           hero — sized big and lifted modestly so it sits next to the
-           headline copy rather than floating below it. */
-        .kdp-hero-art-inner { max-width: 920px; }
-        .kdp-hero-section { padding-bottom: 0; }
+        .kdp-hero-section { padding-bottom: 28px; }
         .kdp-after-hero { padding-top: 32px; }
         .kdp-section-tight { padding-top: 12px; padding-bottom: 24px; }
         .kdp-section-pull-up { padding-top: 0; }
 
-        @media (min-width: 768px) {
-          .kdp-hero-art {
-            transform: translateY(-50px);
-            margin-bottom: -40px;
-          }
-          .kdp-hero-art-inner { max-width: 1180px; }
-          .kdp-section-tight { padding-top: 16px; padding-bottom: 32px; }
+        /* ═══════════════════════════════════════════════════════════
+           HERO COPY (left column)
+           ═══════════════════════════════════════════════════════════ */
+        .kdp-hero-copy { padding-top: 8px; }
+
+        .kdp-hero-kicker {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 7px 14px 7px 12px;
+          border-radius: 999px;
+          background: rgba(217, 52, 43, 0.08);
+          color: #d9342b;
+          font-family: var(--font-inter, Inter, sans-serif);
+          font-size: 11.5px;
+          font-weight: 700;
+          letter-spacing: 0.10em;
+          margin-bottom: 24px;
         }
-        @media (min-width: 1280px) {
-          .kdp-hero-art {
-            transform: translateY(-70px);
-            margin-bottom: -60px;
-          }
-          .kdp-hero-art-inner { max-width: 1320px; }
-          .kdp-after-hero { padding-top: 24px; }
+        .kdp-hero-kicker-bolt {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px; height: 18px;
+          border-radius: 50%;
+          background: #d9342b;
+          color: #fff;
+          font-size: 11px;
+          font-weight: 800;
+          line-height: 1;
         }
-        @media (min-width: 1536px) {
-          .kdp-hero-art-inner { max-width: 1440px; }
+
+        .kdp-hero-h1 {
+          font-family: var(--font-inter, Inter, sans-serif);
+          font-weight: 900;
+          font-size: clamp(40px, 4.4vw, 64px);
+          line-height: 1.0;
+          letter-spacing: -0.04em;
+          color: #141414;
+          margin: 0;
+        }
+        .kdp-hero-h1-red { color: #d9342b; }
+
+        .kdp-hero-lede {
+          font-family: var(--font-inter, Inter, sans-serif);
+          font-size: 16px;
+          font-weight: 500;
+          color: #14141499;
+          line-height: 1.55;
+          margin: 22px 0 0;
+          max-width: 460px;
+        }
+        .kdp-hero-lede em {
+          font-style: normal;
+          color: #141414;
+          font-weight: 600;
+        }
+
+        .kdp-hero-ctas {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-top: 28px;
+        }
+        .kdp-hero-cta-primary {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 16px 26px;
+          border-radius: 12px;
+          background: #d9342b;
+          color: #fff;
+          font-weight: 700;
+          font-size: 15px;
+          letter-spacing: -0.005em;
+          box-shadow: 0 10px 26px rgba(217,52,43,0.30);
+          transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .kdp-hero-cta-primary:hover {
+          background: #b8291f;
+          transform: translateY(-2px);
+          box-shadow: 0 16px 34px rgba(217,52,43,0.38);
+          color: #fff;
+          text-decoration: none;
+        }
+        .kdp-hero-cta-ghost {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 16px 22px;
+          border-radius: 12px;
+          background: #ffffff;
+          border: 1.5px solid #e7dcc4;
+          color: #141414;
+          font-weight: 700;
+          font-size: 15px;
+          transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .kdp-hero-cta-ghost:hover {
+          border-color: #d9342b;
+          transform: translateY(-2px);
+          color: #141414;
+          text-decoration: none;
+        }
+        .kdp-hero-cta-play {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 22px; height: 22px;
+          border-radius: 50%;
+          background: #d9342b;
+          color: #fff;
+          font-size: 9px;
+          padding-left: 2px;
+        }
+
+        .kdp-hero-social {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-top: 32px;
+        }
+        .kdp-hero-avatars {
+          display: flex;
+        }
+        .kdp-hero-avatars > span {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px; height: 36px;
+          border-radius: 50%;
+          border: 2px solid #ffffff;
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 13px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+        .kdp-hero-avatars > span + span { margin-left: -10px; }
+        .kdp-hero-social-text {
+          font-size: 14px;
+          color: #14141499;
+        }
+        .kdp-hero-social-text strong {
+          color: #141414;
+          font-weight: 800;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           DIAGRAM (right column)
+           ═══════════════════════════════════════════════════════════ */
+        .kdp-hero-diagram-wrap {
+          position: relative;
+          width: 100%;
+        }
+        .kdp-diagram {
+          position: relative;
+          width: 100%;
+          max-width: 1000px;
+          margin-inline: auto;
+          aspect-ratio: 1000 / 720;
+        }
+        .kdp-diagram-svg {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 1;
+        }
+        .kdp-diagram-col {
+          position: absolute;
+          top: 0;
+          width: 240px;
+          height: 100%;
+          z-index: 2;
+        }
+        .kdp-diagram-col-left { left: 0; }
+        .kdp-diagram-col-right { right: 0; width: 290px; }
+
+        .kdp-col-header {
+          position: absolute;
+          top: 0;
+          left: 0;
+          font-family: var(--font-inter, Inter, sans-serif);
+        }
+        .kdp-col-header-right { right: 0; left: auto; text-align: right; }
+        .kdp-col-step {
+          font-size: 11.5px;
+          font-weight: 800;
+          color: #d9342b;
+          letter-spacing: 0.10em;
+        }
+        .kdp-col-header p {
+          font-size: 13px;
+          color: #14141499;
+          margin: 4px 0 0;
+          line-height: 1.4;
+        }
+
+        .kdp-source-card {
+          position: absolute;
+          right: 0;
+          width: 220px;
+          background: #ffffff;
+          border: 1px solid #efe5d2;
+          border-radius: 14px;
+          padding: 12px 14px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          box-shadow: 0 4px 14px rgba(40,25,10,0.06);
+          opacity: 0;
+          animation: kdp-fade-in 0.6s ease forwards;
+          font-family: var(--font-inter, Inter, sans-serif);
+        }
+        .kdp-source-icon {
+          flex-shrink: 0;
+          width: 34px; height: 34px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 9px;
+          background: #faf5eb;
+          font-size: 16px;
+        }
+        .kdp-source-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #141414;
+          line-height: 1.2;
+        }
+        .kdp-source-sub {
+          font-size: 11.5px;
+          color: #14141499;
+          margin-top: 1px;
+        }
+
+        .kdp-niche-card {
+          position: absolute;
+          left: 0;
+          width: 290px;
+          background: #ffffff;
+          border: 1px solid #efe5d2;
+          border-radius: 14px;
+          padding: 12px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          box-shadow: 0 4px 14px rgba(40,25,10,0.06);
+          opacity: 0;
+          animation: kdp-fade-in 0.6s ease forwards;
+          font-family: var(--font-inter, Inter, sans-serif);
+        }
+        .kdp-niche-thumb {
+          flex-shrink: 0;
+          width: 50px; height: 60px;
+          border-radius: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: var(--font-fraunces, "Fraunces", Georgia, serif);
+          font-size: 28px;
+          font-weight: 600;
+          color: rgba(40,25,10,0.45);
+        }
+        .kdp-niche-meta { flex: 1; min-width: 0; }
+        .kdp-niche-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #141414;
+          line-height: 1.2;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .kdp-niche-sub {
+          font-size: 11px;
+          color: #14141499;
+          margin-top: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .kdp-niche-bsr {
+          font-size: 10px;
+          color: #14141499;
+          margin-top: 4px;
+          display: flex;
+          align-items: center;
+        }
+        .kdp-niche-bars {
+          display: inline-flex;
+          gap: 1.5px;
+        }
+        .kdp-niche-bars i {
+          display: inline-block;
+          width: 4px; height: 8px;
+          background: #d9342b;
+          border-radius: 1px;
+        }
+        .kdp-niche-bars i:nth-child(1) { opacity: 1; }
+        .kdp-niche-bars i:nth-child(2) { opacity: 0.85; }
+        .kdp-niche-bars i:nth-child(3) { opacity: 0.7; }
+        .kdp-niche-bars i:nth-child(4) { opacity: 0.5; }
+        .kdp-niche-bars i:nth-child(5) { opacity: 0.3; }
+        .kdp-niche-score {
+          flex-shrink: 0;
+          text-align: center;
+        }
+        .kdp-niche-score-num {
+          width: 36px; height: 36px;
+          border-radius: 50%;
+          border: 2px solid #00a754;
+          color: #00a754;
+          font-weight: 700;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto;
+        }
+        .kdp-niche-score-label {
+          font-size: 10px;
+          font-weight: 600;
+          color: #00a754;
+          margin-top: 2px;
+        }
+
+        .kdp-view-all {
+          position: absolute;
+          bottom: -8px;
+          right: 0;
+          left: 0;
+          text-align: center;
+          color: #d9342b;
+          font-weight: 700;
+          font-size: 13px;
+        }
+        .kdp-view-all:hover { text-decoration: underline; }
+
+        .kdp-bot-rings {
+          animation: kdp-bot-rings 4s ease-in-out infinite;
+          transform-origin: 500px 370px;
+        }
+
+        .kdp-ai-card {
+          position: absolute;
+          left: 50%;
+          bottom: 6%;
+          transform: translateX(-50%);
+          background: #ffffff;
+          border: 1px solid #efe5d2;
+          border-radius: 14px;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          box-shadow: 0 6px 18px rgba(40,25,10,0.08);
+          z-index: 3;
+          font-family: var(--font-inter, Inter, sans-serif);
+        }
+        .kdp-ai-icon {
+          width: 34px; height: 34px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(217,52,43,0.10);
+          color: #d9342b;
+          border-radius: 9px;
+          font-size: 16px;
+        }
+        .kdp-ai-title {
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          color: #d9342b;
+        }
+        .kdp-ai-sub {
+          font-size: 12px;
+          color: #14141499;
+          margin-top: 1px;
+          line-height: 1.35;
+        }
+
+        @keyframes kdp-fade-in {
+          to { opacity: 1; }
+        }
+        @keyframes kdp-bot-rings {
+          0%, 100% { transform: scale(1); }
+          50%      { transform: scale(1.04); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           BOTTOM 4-FEATURE STRIP
+           ═══════════════════════════════════════════════════════════ */
+        .kdp-hero-bottomstrip {
+          margin-top: 56px;
+          background: #ffffff;
+          border: 1.5px solid #efe5d2;
+          border-radius: 22px;
+          padding: 26px 32px;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+          box-shadow: 0 10px 32px rgba(40,25,10,0.05);
+        }
+        .kdp-hero-feature {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 6px 0;
+        }
+        .kdp-hero-feature-icon {
+          flex-shrink: 0;
+          width: 48px; height: 48px;
+          background: rgba(217,52,43,0.08);
+          border-radius: 12px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .kdp-hero-feature-title {
+          font-family: var(--font-inter, Inter, sans-serif);
+          font-weight: 800;
+          font-size: 15px;
+          line-height: 1.18;
+          color: #141414;
+          letter-spacing: -0.01em;
+        }
+        .kdp-hero-feature-sub {
+          font-size: 12.5px;
+          color: #14141499;
+          margin-top: 4px;
+          font-weight: 500;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 1100px) {
+          .kdp-hero-bottomstrip {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px 24px;
+          }
+        }
+        @media (max-width: 1023px) {
+          .kdp-diagram { max-width: 760px; }
+          .kdp-diagram-col { width: 200px; }
+          .kdp-diagram-col-right { width: 240px; }
+          .kdp-source-card { width: 184px; padding: 10px 12px; }
+          .kdp-niche-card { width: 240px; padding: 10px; }
+        }
+        @media (max-width: 720px) {
+          .kdp-hero-h1 { font-size: clamp(36px, 9vw, 52px); }
+          .kdp-hero-bottomstrip {
+            grid-template-columns: 1fr;
+            padding: 22px 22px;
+            gap: 14px 0;
+          }
+          .kdp-hero-feature-icon { width: 40px; height: 40px; }
+          .kdp-diagram { display: none; }
+          .kdp-hero-diagram-wrap::after {
+            content: "Live discovery diagram opens on desktop →";
+            display: block;
+            text-align: center;
+            color: #14141466;
+            font-size: 12px;
+            font-style: italic;
+            padding: 24px 0;
+          }
         }
       `}</style>
       <TopNav />
 
       {/* ─── Hero ─── */}
-      <section className="sk-section pt-32 md:pt-32 kdp-hero-section">
-        <div className="sk-container grid md:grid-cols-[1fr_1.25fr] gap-10 items-center max-w-[1340px]">
-          <div>
+      <section className="sk-section pt-32 md:pt-28 kdp-hero-section">
+        <div className="sk-container grid lg:grid-cols-[minmax(360px,1fr)_minmax(0,1.6fr)] gap-8 items-start max-w-[1480px]">
+          {/* ── LEFT: copy column ── */}
+          <div className="kdp-hero-copy">
             <span
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-7"
-              style={{
-                color: "var(--sk-red)",
-                borderColor: "var(--sk-red)",
-                background: "rgba(255, 255, 255, 0.55)",
-              }}
+              className="kdp-hero-kicker"
             >
-              <span className="sk-font-meta text-[11px] font-bold tracking-[0.16em]">
-                ✕ HIGH-PROBABILITY KDP NICHE SIGNALS
-              </span>
+              <span className="kdp-hero-kicker-bolt">⚡</span>
+              AI BOOK NICHE DISCOVERY ENGINE
             </span>
 
-            <h1
-              className="sk-font-display"
-              style={{
-                fontSize: "var(--sk-text-display)",
-                color: "var(--sk-ink)",
-                lineHeight: 0.95,
-                letterSpacing: "-0.045em",
-              }}
-            >
-              Hunches don&apos;t sell books
-              <span style={{ color: "var(--sk-red)" }}>.</span>
+            <h1 className="kdp-hero-h1">
+              We analyze all<br />Amazon books.
               <br />
-              <span
-                className="sk-font-display-italic"
-                style={{ color: "var(--sk-red)" }}
-              >
-                Signals do
+              <span className="kdp-hero-h1-red">
+                You publish<br />proven winners.
               </span>
-              <span style={{ color: "var(--sk-red)" }}>.</span>
             </h1>
 
-            <p
-              className="sk-font-body mt-6"
-              style={{
-                fontSize: "var(--sk-text-lead)",
-                color: "var(--sk-ink)",
-                fontWeight: 500,
-                maxWidth: "60ch",
-                lineHeight: 1.5,
-              }}
-            >
-              Eight tested patterns that surface Amazon books with{" "}
-              <span
-                className="sk-font-display-italic"
-                style={{ color: "var(--sk-red)" }}
-              >
-                proven sales momentum
-              </span>{" "}
-              — bad reviews still selling, premium niches with no competition,
-              top-10k-BSR sleepers with almost no reviews. We don&apos;t find
-              you any books. We find you the ones a smart self-publisher
-              would actually bet on.
+            <p className="kdp-hero-lede">
+              Skillies AI scans millions of Amazon books, analyzes real sales
+              signals, reviews, BSR, competition and more to uncover{" "}
+              <em>high-probability book niches</em>—so you can publish with
+              confidence and win faster.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 mt-8">
-              <a
-                href={APP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-[15px] font-bold tracking-tight transition-all duration-200 shadow-[0_10px_28px_rgba(217,52,43,0.28)] hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(217,52,43,0.36)]"
-                style={{
-                  background: "var(--sk-red)",
-                  color: "var(--sk-cream)",
-                }}
-              >
-                Try one search free →
+            <div className="kdp-hero-ctas">
+              <a href="#kdp-tool" className="kdp-hero-cta-primary">
+                Find winning niches now →
               </a>
-              <a
-                href="#signals"
-                className="inline-flex items-center gap-2 px-6 py-4 rounded-full text-[14px] font-bold transition-all duration-200 hover:-translate-y-0.5"
-                style={{
-                  background: "transparent",
-                  color: "var(--sk-ink)",
-                  borderBottom: "2px solid transparent",
-                }}
-              >
-                See the 8 signals ↓
+              <a href="#signals" className="kdp-hero-cta-ghost">
+                <span className="kdp-hero-cta-play">▶</span>
+                See how it works
               </a>
+            </div>
+
+            <div className="kdp-hero-social">
+              <div className="kdp-hero-avatars" aria-hidden>
+                <span style={{ background: "linear-gradient(135deg,#f6c8a8,#d9847c)" }}>K</span>
+                <span style={{ background: "linear-gradient(135deg,#cda6e0,#8e76b8)" }}>P</span>
+                <span style={{ background: "linear-gradient(135deg,#e6b96a,#b58840)" }}>S</span>
+              </div>
+              <span className="kdp-hero-social-text">
+                Join <strong>12,847+</strong> smart publishers
+              </span>
             </div>
           </div>
 
-          {/* Hero illustration — live React/SVG scene.
-              Enlarged + dragged up + bled past the column gutter so it
-              has the same cinematic presence as the standalone tool. */}
-          <div className="flex flex-col items-center md:items-end kdp-hero-art">
-            <div
-              className="w-full kdp-hero-art-inner"
-              style={{ aspectRatio: "1600 / 900" }}
-            >
-              <KdpHeroScene />
-            </div>
+          {/* ── RIGHT: discovery diagram ── */}
+          <div className="kdp-hero-diagram-wrap">
+            <KdpDiscoveryDiagram />
           </div>
         </div>
 
+        {/* ── BOTTOM: 4-feature strip ── */}
+        <div className="sk-container max-w-[1480px]">
+          <div className="kdp-hero-bottomstrip">
+            <div className="kdp-hero-feature">
+              <div className="kdp-hero-feature-icon" style={{ color: "#d9342b" }}>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                  <path d="M12 3v3M21 12h-3M12 21v-3M3 12h3" />
+                </svg>
+              </div>
+              <div>
+                <div className="kdp-hero-feature-title">AI Analyzes</div>
+                <div className="kdp-hero-feature-title">50M+ Books</div>
+                <div className="kdp-hero-feature-sub">On Amazon.com</div>
+              </div>
+            </div>
+            <div className="kdp-hero-feature">
+              <div className="kdp-hero-feature-icon" style={{ color: "#d9342b" }}>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4.5 16.5c-1.5 1.5-2 4.5-2 4.5s3-.5 4.5-2c.85-.85.92-2.15.34-3.06" />
+                  <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+                  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+                </svg>
+              </div>
+              <div>
+                <div className="kdp-hero-feature-title">Find High-Profit</div>
+                <div className="kdp-hero-feature-title">Niches 10x Faster</div>
+                <div className="kdp-hero-feature-sub">Than Manual Research</div>
+              </div>
+            </div>
+            <div className="kdp-hero-feature">
+              <div className="kdp-hero-feature-icon" style={{ color: "#d9342b" }}>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="M9 12l2 2 4-4" />
+                </svg>
+              </div>
+              <div>
+                <div className="kdp-hero-feature-title">Proven Data.</div>
+                <div className="kdp-hero-feature-title">Real Results.</div>
+                <div className="kdp-hero-feature-sub">No Guesswork</div>
+              </div>
+            </div>
+            <div className="kdp-hero-feature">
+              <div className="kdp-hero-feature-icon" style={{ color: "#d9342b" }}>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 17l6-6 4 4 8-8" />
+                  <path d="M14 7h7v7" />
+                </svg>
+              </div>
+              <div>
+                <div className="kdp-hero-feature-title">Higher Rankings.</div>
+                <div className="kdp-hero-feature-title">More Sales.</div>
+                <div className="kdp-hero-feature-sub">Built on Proven Niches</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ─── 8 signals ─── */}
