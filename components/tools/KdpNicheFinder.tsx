@@ -21,9 +21,9 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 
 // Backend URL fallback chain:
 //   1. NEXT_PUBLIC_NICHE_API_URL — set in Vercel env for permanent host
-//   2. Hardcoded cloudflared tunnel — exposes the user's local FastAPI app
-//      to the public internet via Cloudflare's edge. Rotates if the tunnel
-//      restarts; update this constant + push to refresh.
+//   2. Hardcoded Render web service URL (the production backend host)
+//      — stable across redeploys. Update if the host ever changes (e.g. moving
+//      to Fly.io). The Vercel env var should win in production anyway.
 //   3. localhost — only used during `next dev` if the env var is unset
 const API_URL =
   process.env.NEXT_PUBLIC_NICHE_API_URL ||
