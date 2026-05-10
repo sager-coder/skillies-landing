@@ -119,42 +119,73 @@ export default function AmazonKdpNicheFinderPage() {
         .kdp-section-tight { padding-top: 12px; padding-bottom: 24px; }
         .kdp-section-pull-up { padding-top: 0; }
 
-        /* Pill-shaped value-prop chips that sit directly under the hero
-           illustration. Each pill is a one-line trust statement; together
-           they reinforce the proposition without competing with the SVG. */
-        .kdp-hero-pills {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          justify-content: center;
-          margin-top: 8px;
-          max-width: 720px;
-          margin-inline: auto;
+        /* ── Feature strip — 5 mini-cards beneath the hero ──
+           Same aesthetic as the signal cards (white, tan border, soft
+           shadow, hover lift). Each card pairs a glyph with a short
+           headline + description. */
+        .kdp-features-strip {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 14px;
         }
-        .kdp-hero-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 9px 18px;
-          border-radius: 999px;
+        .kdp-feature {
           background: #ffffff;
           border: 1.5px solid #e7dcc4;
-          color: #141414;
-          font-family: inherit;
-          font-size: 13px;
+          border-radius: 16px;
+          padding: 22px 20px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          box-shadow: 0 6px 22px rgba(40, 25, 10, 0.05);
+          transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+        }
+        .kdp-feature:hover {
+          transform: translateY(-3px);
+          border-color: #d9342b;
+          box-shadow: 0 16px 38px rgba(40, 25, 10, 0.10);
+        }
+        .kdp-feature-num {
+          font-family: var(--font-fraunces, "Fraunces", Georgia, serif);
           font-weight: 600;
-          letter-spacing: 0;
-          box-shadow: 0 4px 14px rgba(40, 25, 10, 0.06);
-          transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .kdp-hero-pill:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 18px rgba(40, 25, 10, 0.10);
-        }
-        .kdp-hero-pill .kdp-pill-glyph {
+          font-size: 32px;
+          line-height: 1;
+          letter-spacing: -0.04em;
           color: #d9342b;
-          font-size: 13px;
+          margin-bottom: 8px;
+        }
+        .kdp-feature-title {
           font-weight: 800;
+          font-size: 15.5px;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+          color: #141414;
+        }
+        .kdp-feature-desc {
+          font-size: 13px;
+          line-height: 1.5;
+          color: #14141499;
+        }
+
+        @media (max-width: 1100px) {
+          .kdp-features-strip {
+            grid-template-columns: repeat(3, 1fr);
+          }
+          .kdp-feature:nth-child(4),
+          .kdp-feature:nth-child(5) {
+            /* On medium screens the last 2 cards form a centered second row */
+          }
+        }
+        @media (max-width: 720px) {
+          .kdp-features-strip {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+          }
+          .kdp-feature {
+            padding: 18px 16px 16px;
+          }
+          .kdp-feature-num { font-size: 26px; }
+          .kdp-feature-title { font-size: 14px; }
+          .kdp-feature-desc { font-size: 12px; }
         }
 
         @media (min-width: 768px) {
@@ -237,12 +268,12 @@ export default function AmazonKdpNicheFinderPage() {
               would actually bet on.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 mt-8">
+            <div className="flex flex-wrap items-center gap-3 mt-8">
               <a
                 href={APP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-full text-[15px] font-bold tracking-tight transition-all duration-200 shadow-[0_8px_24px_rgba(217,52,43,0.22)] hover:scale-[1.02] hover:shadow-[0_12px_30px_rgba(217,52,43,0.32)]"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-[15px] font-bold tracking-tight transition-all duration-200 shadow-[0_10px_28px_rgba(217,52,43,0.28)] hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(217,52,43,0.36)]"
                 style={{
                   background: "var(--sk-red)",
                   color: "var(--sk-cream)",
@@ -252,25 +283,15 @@ export default function AmazonKdpNicheFinderPage() {
               </a>
               <a
                 href="#signals"
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-full text-[15px] font-bold transition-all duration-200 shadow-[0_6px_20px_rgba(40,25,10,0.10)] hover:shadow-[0_10px_28px_rgba(40,25,10,0.16)]"
+                className="inline-flex items-center gap-2 px-6 py-4 rounded-full text-[14px] font-bold transition-all duration-200 hover:-translate-y-0.5"
                 style={{
-                  background: "var(--sk-cream)",
+                  background: "transparent",
                   color: "var(--sk-ink)",
+                  borderBottom: "2px solid transparent",
                 }}
               >
-                See the 8 signals →
+                See the 8 signals ↓
               </a>
-            </div>
-
-            <div
-              className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[13.5px] font-medium"
-              style={{ color: "var(--sk-ink60)" }}
-            >
-              <span>★ 4.9 average customer score</span>
-              <span style={{ color: "var(--sk-red)", fontWeight: 800 }}>·</span>
-              <span>No subscription · pay per pack</span>
-              <span style={{ color: "var(--sk-red)", fontWeight: 800 }}>·</span>
-              <span>Live data, refreshed every search</span>
             </div>
           </div>
 
@@ -284,25 +305,41 @@ export default function AmazonKdpNicheFinderPage() {
             >
               <KdpHeroScene />
             </div>
+          </div>
+        </div>
 
-            {/* Value-prop pills directly under the illustration */}
-            <div className="kdp-hero-pills">
-              <span className="kdp-hero-pill">
-                <span className="kdp-pill-glyph">●</span> 1 free search · no email needed
-              </span>
-              <span className="kdp-hero-pill">
-                <span className="kdp-pill-glyph">★</span> Live Amazon data, every search
-              </span>
-              <span className="kdp-hero-pill">
-                <span className="kdp-pill-glyph">✕</span> Author-moat filter built-in
-              </span>
-              <span className="kdp-hero-pill">
-                <span className="kdp-pill-glyph">↑</span> 10 ranked results · ~50 sec
-              </span>
-              <span className="kdp-hero-pill">
-                <span className="kdp-pill-glyph">$</span> No subscription · pay per pack
-              </span>
-            </div>
+        {/* ── Feature strip — 4 mini-cards in the signal-card aesthetic ── */}
+        <div className="sk-container max-w-[1240px] mt-14">
+          <div className="kdp-features-strip">
+            <article className="kdp-feature">
+              <div className="kdp-feature-num">●</div>
+              <div className="kdp-feature-title">1 free search</div>
+              <div className="kdp-feature-desc">No email, no card. Hit the button and hunt.</div>
+            </article>
+
+            <article className="kdp-feature">
+              <div className="kdp-feature-num">★</div>
+              <div className="kdp-feature-title">Live Amazon data</div>
+              <div className="kdp-feature-desc">Every search hits the actual market — not estimates.</div>
+            </article>
+
+            <article className="kdp-feature">
+              <div className="kdp-feature-num">✕</div>
+              <div className="kdp-feature-title">Author-moat filter</div>
+              <div className="kdp-feature-desc">Drops famous-author halos. You see slots an indie can win.</div>
+            </article>
+
+            <article className="kdp-feature">
+              <div className="kdp-feature-num">↑</div>
+              <div className="kdp-feature-title">10 ranked results</div>
+              <div className="kdp-feature-desc">Top opportunities only · ~50 seconds end to end.</div>
+            </article>
+
+            <article className="kdp-feature">
+              <div className="kdp-feature-num">$</div>
+              <div className="kdp-feature-title">No subscription</div>
+              <div className="kdp-feature-desc">Pay per pack — $3.95 / search at scale. Credits never expire.</div>
+            </article>
           </div>
         </div>
       </section>
