@@ -427,10 +427,13 @@ export default function KdpDiscoveryDiagram() {
             <rect x="-40" y="-18" width="8" height="18" rx="3" fill="none" stroke="#d9342b" strokeWidth="2.6" />
             <rect x="32"  y="-18" width="8" height="18" rx="3" fill="none" stroke="#d9342b" strokeWidth="2.6" />
             <rect x="-22" y="-18" width="44" height="18" rx="3" fill="#d9342b" />
-            <ellipse cx="-9" cy="-9" rx="4" ry="5" fill="#fff" />
-            <ellipse cx="9"  cy="-9" rx="4" ry="5" fill="#fff" />
-            <circle cx="-9" cy="-9" r="2" fill="#d9342b" />
-            <circle cx="9"  cy="-9" r="2" fill="#d9342b" />
+            {/* Eye group — CSS animation closes both eyes briefly every 4.2s */}
+            <g className="kdp-bot-eyes">
+              <ellipse cx="-9" cy="-9" rx="4" ry="5" fill="#fff" />
+              <ellipse cx="9"  cy="-9" rx="4" ry="5" fill="#fff" />
+              <circle  cx="-9" cy="-9" r="2" fill="#d9342b" />
+              <circle  cx="9"  cy="-9" r="2" fill="#d9342b" />
+            </g>
             <rect x="-14" y="6" width="28" height="4" rx="1.5" fill="#d9342b" />
           </g>
           <text
