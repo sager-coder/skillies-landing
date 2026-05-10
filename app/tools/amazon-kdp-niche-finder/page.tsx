@@ -12,6 +12,7 @@ import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import KdpHeroScene from "@/components/tools/KdpHeroScene";
+import KdpNicheFinder from "@/components/tools/KdpNicheFinder";
 
 export const metadata: Metadata = {
   title:
@@ -364,16 +365,14 @@ export default function AmazonKdpNicheFinderPage() {
 
           <div className="flex flex-col items-center gap-3 mt-12">
             <a
-              href={APP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#kdp-tool"
               className="inline-flex items-center gap-2 px-7 py-4 rounded-full text-[15px] font-bold tracking-tight transition-all duration-200 shadow-[0_8px_24px_rgba(217,52,43,0.22)] hover:scale-[1.02]"
               style={{
                 background: "var(--sk-red)",
                 color: "var(--sk-cream)",
               }}
             >
-              Hunt these signals →
+              Run a hunt below ↓
             </a>
             <span
               className="text-[13.5px] font-medium"
@@ -382,6 +381,13 @@ export default function AmazonKdpNicheFinderPage() {
               Pick a signal · describe your topic · get 20 real listings.
             </span>
           </div>
+        </div>
+      </section>
+
+      {/* ─── The actual functional tool ─── */}
+      <section id="kdp-tool" className="sk-section">
+        <div className="sk-container max-w-[1100px]">
+          <KdpNicheFinder />
         </div>
       </section>
 
