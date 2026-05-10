@@ -393,36 +393,30 @@ export default function AmazonKdpNicheFinderPage() {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        .kdp-niche-sub {
-          font-size: 11px;
-          color: #14141499;
-          margin-top: 2px;
+        .kdp-niche-meta-line {
+          /* Concrete data row: $price · BSR · rating */
+          font-family: "SF Mono", ui-monospace, Menlo, monospace;
+          font-size: 10.5px;
+          color: #141414;
+          font-weight: 600;
+          margin-top: 3px;
+          letter-spacing: -0.01em;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        .kdp-niche-bsr {
-          font-size: 10px;
-          color: #14141499;
-          margin-top: 4px;
-          display: flex;
-          align-items: center;
+        .kdp-niche-niche {
+          /* Niche breadcrumb beneath the data row */
+          font-size: 10.5px;
+          color: #d9342b;
+          font-weight: 700;
+          margin-top: 3px;
+          letter-spacing: 0.02em;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          opacity: 0.85;
         }
-        .kdp-niche-bars {
-          display: inline-flex;
-          gap: 1.5px;
-        }
-        .kdp-niche-bars i {
-          display: inline-block;
-          width: 4px; height: 8px;
-          background: #d9342b;
-          border-radius: 1px;
-        }
-        .kdp-niche-bars i:nth-child(1) { opacity: 1; }
-        .kdp-niche-bars i:nth-child(2) { opacity: 0.85; }
-        .kdp-niche-bars i:nth-child(3) { opacity: 0.7; }
-        .kdp-niche-bars i:nth-child(4) { opacity: 0.5; }
-        .kdp-niche-bars i:nth-child(5) { opacity: 0.3; }
         .kdp-niche-score {
           flex-shrink: 0;
           text-align: center;
@@ -630,9 +624,9 @@ export default function AmazonKdpNicheFinderPage() {
 
             <p className="kdp-hero-lede">
               Skillies AI scans millions of Amazon books, analyzes real sales
-              signals, reviews, BSR, competition and more to uncover{" "}
-              <em>high-probability book niches</em>—so you can publish with
-              confidence and win faster.
+              signals, reviews, BSR, competition and more to surface{" "}
+              <em>the specific books winning their niches right now</em>—so
+              you know exactly what to model before you write a word.
             </p>
 
             <div className="kdp-hero-ctas">

@@ -143,23 +143,34 @@ const IconTrend = () => (
 
 // ── Inputs ──────────────────────────────────────────────────────────────────
 type Source = { icon: React.ReactNode; title: string; sub: string };
-type Niche = { letter: string; bg: string; title: string; sub: string; score: number };
+type Book = {
+  letter: string;
+  bg: string;
+  title: string;     // actual book title (not a niche name)
+  meta: string;      // price · BSR · rating — the concrete data the tool returns
+  niche: string;     // breadcrumb of which niche this book sits in
+  score: number;
+};
 
 const SOURCES: Source[] = [
-  { icon: <IconAmazon />, title: "Amazon.com",      sub: "Millions of Books" },
+  { icon: <IconAmazon />, title: "Amazon.com",       sub: "Millions of Books" },
   { icon: <IconBars />,   title: "Sales Rank (BSR)", sub: "Real-time data" },
-  { icon: <IconStar />,   title: "Reviews",         sub: "Quantity & quality" },
-  { icon: <IconTag />,    title: "Categories",      sub: "Niche mapping" },
-  { icon: <IconPerson />, title: "Competition",     sub: "Market analysis" },
-  { icon: <IconTrend />,  title: "Trends",          sub: "Growing demands" },
+  { icon: <IconStar />,   title: "Reviews",          sub: "Quantity & quality" },
+  { icon: <IconTag />,    title: "Categories",       sub: "Niche mapping" },
+  { icon: <IconPerson />, title: "Competition",      sub: "Market analysis" },
+  { icon: <IconTrend />,  title: "Trends",           sub: "Growing demands" },
 ];
 
-const NICHES: Niche[] = [
-  { letter: "M", bg: "#e7d2ad", title: "Mindfulness Journals", sub: "Low competition · High demand", score: 96 },
-  { letter: "P", bg: "#d8c19a", title: "Prayer Journals",      sub: "Low competition · High demand", score: 93 },
-  { letter: "T", bg: "#e8b97a", title: "Toddler Activity Books", sub: "Low competition · High demand", score: 92 },
-  { letter: "G", bg: "#cdbfa3", title: "Gratitude Journals",   sub: "Low competition · High demand", score: 91 },
-  { letter: "R", bg: "#c8c5b4", title: "Retirement Planning",  sub: "Low competition · High demand", score: 89 },
+// Top books our pipeline surfaces — real-looking titles with concrete
+// metrics (price · BSR · rating). The score is the Skillies opportunity
+// score (composite of BSR + reviews + author-moat). All values are
+// representative samples (not live).
+const BOOKS: Book[] = [
+  { letter: "M", bg: "#e7d2ad", title: "The Mindful Day Journal",         meta: "$14.99 · BSR 12,431 · 4.6★", niche: "Mindfulness Journals",     score: 96 },
+  { letter: "P", bg: "#d8c19a", title: "Prayers for Every Day",           meta: "$11.99 · BSR 18,205 · 4.8★", niche: "Christian Devotionals",    score: 93 },
+  { letter: "T", bg: "#e8b97a", title: "First 100 Words Toddler Workbook", meta: "$8.99 · BSR 5,872 · 4.7★",  niche: "Toddler Activity Books",   score: 92 },
+  { letter: "G", bg: "#cdbfa3", title: "The 5-Minute Gratitude Journal",  meta: "$9.99 · BSR 22,401 · 4.5★",  niche: "Gratitude Journals",       score: 91 },
+  { letter: "R", bg: "#c8c5b4", title: "Smart Retirement Roadmap 2026",   meta: "$16.99 · BSR 41,228 · 4.4★", niche: "Retirement Planning",      score: 89 },
 ];
 
 // ── SVG geometry constants ──────────────────────────────────────────────────
@@ -207,7 +218,7 @@ export default function KdpDiscoveryDiagram() {
   );
   const rightPaths = useMemo(
     () =>
-      NICHES.map((_, i) => {
+      BOOKS.map((_, i) => {
         const a = { x: BOT_X + BOT_R - 6, y: BOT_Y + (nicheY(i) + 30 - BOT_Y) * 0.15 };
         const b = { x: NCH_X, y: nicheY(i) + 30 };
         return {
@@ -256,15 +267,15 @@ export default function KdpDiscoveryDiagram() {
         ))}
       </div>
 
-      {/* ───── Niche cards (RIGHT) ───── */}
+      {/* ───── Book result cards (RIGHT) ───── */}
       <div className="kdp-diagram-col kdp-diagram-col-right">
         <div className="kdp-col-header kdp-col-header-right">
           <span className="kdp-col-step">2. SORT &amp; DELIVER</span>
-          <p>We sort the data and deliver<br />high-probability niches</p>
+          <p>We surface the actual books<br />winning their niches</p>
         </div>
-        {NICHES.map((n, i) => (
+        {BOOKS.map((b, i) => (
           <div
-            key={n.title}
+            key={b.title}
             className="kdp-niche-card"
             style={{
               top: nicheY(i),
@@ -273,22 +284,17 @@ export default function KdpDiscoveryDiagram() {
           >
             <div
               className="kdp-niche-thumb"
-              style={{ background: n.bg }}
+              style={{ background: b.bg }}
             >
-              <span>{n.letter}</span>
+              <span>{b.letter}</span>
             </div>
             <div className="kdp-niche-meta">
-              <div className="kdp-niche-title">{n.title}</div>
-              <div className="kdp-niche-sub">{n.sub}</div>
-              <div className="kdp-niche-bsr">
-                BSR Potential:&nbsp;
-                <span className="kdp-niche-bars">
-                  <i /><i /><i /><i /><i />
-                </span>
-              </div>
+              <div className="kdp-niche-title">{b.title}</div>
+              <div className="kdp-niche-meta-line">{b.meta}</div>
+              <div className="kdp-niche-niche">{b.niche}</div>
             </div>
             <div className="kdp-niche-score">
-              <div className="kdp-niche-score-num">{n.score}</div>
+              <div className="kdp-niche-score-num">{b.score}</div>
               <div className="kdp-niche-score-label">Great</div>
             </div>
           </div>
