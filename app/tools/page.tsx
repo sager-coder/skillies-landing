@@ -19,8 +19,7 @@ export const metadata: Metadata = {
     "Tools that close the gap between guess and data. Skillies builds live-data tools for self-publishers, founders, and operators — starting with the KDP Niche Finder.",
 };
 
-const NICHE_FINDER_URL =
-  process.env.NEXT_PUBLIC_NICHE_FINDER_URL || "https://niche.skillies.ai";
+const NICHE_FINDER_URL = "/tools/amazon-kdp-niche-finder";
 
 export default function ToolsPage() {
   return (
@@ -83,8 +82,6 @@ export default function ToolsPage() {
         <div className="sk-container max-w-[1180px]">
           <a
             href={NICHE_FINDER_URL}
-            target="_blank"
-            rel="noopener noreferrer"
             className="group grid md:grid-cols-[1.2fr_1fr] gap-0 bg-white rounded-2xl overflow-hidden border border-sk-hairline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(40,25,10,0.12)] hover:border-sk-red"
             style={{ borderColor: "var(--sk-hairline)" }}
           >
@@ -115,7 +112,7 @@ export default function ToolsPage() {
                   }}
                 >
                   <span className="text-[9px]">🔒</span>
-                  niche.skillies.ai
+                  skillies.ai/tools/amazon-kdp-niche-finder
                 </span>
               </div>
 
