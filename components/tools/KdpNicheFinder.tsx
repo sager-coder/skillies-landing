@@ -29,7 +29,7 @@ const API_URL =
   process.env.NEXT_PUBLIC_NICHE_API_URL ||
   (typeof window !== "undefined" && window.location.hostname === "localhost"
     ? "http://127.0.0.1:8765"
-    : "https://workplace-layout-barn-authentic.trycloudflare.com");
+    : "https://skillies-kdp-niche-finder.onrender.com");
 
 const LS_KEY = "skillies_license_code";
 
