@@ -72,23 +72,86 @@ function cubic(p0: Pt, c1: Pt, c2: Pt, p1: Pt, t: number): Pt {
   };
 }
 
+// ── Premium icon SVGs ───────────────────────────────────────────────────────
+// Custom-drawn at 28×28 viewBox, designed as a small consistent set. Match
+// the screenshot's per-category colors (orange Amazon, gray-red BSR bars,
+// black star, orange tag, gray person, red trend) so each row reads as a
+// distinct domain rather than a flat icon wall.
+const IconAmazon = () => (
+  <svg viewBox="0 0 28 28" width="20" height="20" aria-hidden>
+    <text x="14" y="18.5" textAnchor="middle" fontFamily="Inter, sans-serif"
+          fontWeight="800" fontSize="18" fill="#ff9900"
+          style={{ fontStyle: "italic" }}>a</text>
+    <path
+      d="M5 22 Q14 26 23 22"
+      fill="none" stroke="#ff9900" strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path d="M21 21.5 L23.5 22 L22 24" fill="none" stroke="#ff9900"
+          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const IconBars = () => (
+  <svg viewBox="0 0 28 28" width="20" height="20" aria-hidden>
+    <rect x="4"  y="14" width="4" height="10" rx="1" fill="#9ca3af" />
+    <rect x="10" y="10" width="4" height="14" rx="1" fill="#6b7280" />
+    <rect x="16" y="6"  width="4" height="18" rx="1" fill="#d9342b" />
+    <rect x="22" y="12" width="4" height="12" rx="1" fill="#9ca3af" />
+  </svg>
+);
+const IconStar = () => (
+  <svg viewBox="0 0 28 28" width="20" height="20" aria-hidden>
+    <path
+      d="M14 3.5 L17.2 10 L24.5 11 L19.2 16 L20.5 23 L14 19.6 L7.5 23 L8.8 16 L3.5 11 L10.8 10 Z"
+      fill="#141414"
+    />
+  </svg>
+);
+const IconTag = () => (
+  <svg viewBox="0 0 28 28" width="20" height="20" aria-hidden>
+    <path
+      d="M14.2 3 L24.8 3 L24.8 13.6 L13.6 24.8 L3 14.2 Z"
+      fill="#f5b557" stroke="#c9892a" strokeWidth="1.4" strokeLinejoin="round"
+    />
+    <circle cx="20" cy="8" r="1.8" fill="#fff" />
+  </svg>
+);
+const IconPerson = () => (
+  <svg viewBox="0 0 28 28" width="20" height="20" aria-hidden>
+    <circle cx="14" cy="9" r="4.5" fill="#9ca3af" />
+    <path
+      d="M3.5 24 Q3.5 15 14 15 Q24.5 15 24.5 24 Z"
+      fill="#9ca3af"
+    />
+  </svg>
+);
+const IconTrend = () => (
+  <svg viewBox="0 0 28 28" width="20" height="20" aria-hidden>
+    <path
+      d="M3.5 21 L10 14.5 L14 18.5 L23 9.5"
+      fill="none" stroke="#d9342b" strokeWidth="2.4"
+      strokeLinecap="round" strokeLinejoin="round"
+    />
+    <path
+      d="M19.5 9.5 L23.5 9.5 L23.5 13.5"
+      fill="none" stroke="#d9342b" strokeWidth="2.4"
+      strokeLinecap="round" strokeLinejoin="round"
+    />
+    <circle cx="14" cy="18.5" r="1.4" fill="#d9342b" />
+  </svg>
+);
+
 // ── Inputs ──────────────────────────────────────────────────────────────────
 type Source = { icon: React.ReactNode; title: string; sub: string };
 type Niche = { letter: string; bg: string; title: string; sub: string; score: number };
 
 const SOURCES: Source[] = [
-  {
-    icon: (
-      <span style={{ fontWeight: 700, color: "#ff9900", fontSize: 18 }}>a</span>
-    ),
-    title: "Amazon.com",
-    sub: "Millions of Books",
-  },
-  { icon: <span aria-hidden>📊</span>, title: "Sales Rank (BSR)", sub: "Real-time data" },
-  { icon: <span aria-hidden>★</span>, title: "Reviews", sub: "Quantity & quality" },
-  { icon: <span aria-hidden>🏷</span>, title: "Categories", sub: "Niche mapping" },
-  { icon: <span aria-hidden>👤</span>, title: "Competition", sub: "Market analysis" },
-  { icon: <span aria-hidden>📈</span>, title: "Trends", sub: "Growing demands" },
+  { icon: <IconAmazon />, title: "Amazon.com",      sub: "Millions of Books" },
+  { icon: <IconBars />,   title: "Sales Rank (BSR)", sub: "Real-time data" },
+  { icon: <IconStar />,   title: "Reviews",         sub: "Quantity & quality" },
+  { icon: <IconTag />,    title: "Categories",      sub: "Niche mapping" },
+  { icon: <IconPerson />, title: "Competition",     sub: "Market analysis" },
+  { icon: <IconTrend />,  title: "Trends",          sub: "Growing demands" },
 ];
 
 const NICHES: Niche[] = [
@@ -379,7 +442,37 @@ export default function KdpDiscoveryDiagram() {
 
       {/* ───── AI Powered Algorithm card (under the bot) ───── */}
       <div className="kdp-ai-card">
-        <span className="kdp-ai-icon">🧠</span>
+        <span className="kdp-ai-icon" aria-hidden>
+          <svg viewBox="0 0 32 32" width="22" height="22">
+            <defs>
+              <linearGradient id="kdp-brain-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"  stopColor="#f08c84" />
+                <stop offset="100%" stopColor="#d9342b" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M11 5.5 C8.2 5.5 6.2 7.4 6.2 10 C4.8 10.7 4 12 4 13.6 C4 15 4.6 16.1 5.6 16.8
+                 C5.2 17.5 5 18.3 5 19.2 C5 21.6 6.7 23.5 9 24 C9.4 25.7 10.9 27 12.7 27
+                 C14 27 15 26.3 15.5 25.4 L15.5 6.5 C15 5.7 14 5.5 13 5.5 C12.4 5.5 11.6 5.5 11 5.5 Z"
+              fill="url(#kdp-brain-grad)"
+            />
+            <path
+              d="M21 5.5 C23.8 5.5 25.8 7.4 25.8 10 C27.2 10.7 28 12 28 13.6 C28 15 27.4 16.1 26.4 16.8
+                 C26.8 17.5 27 18.3 27 19.2 C27 21.6 25.3 23.5 23 24 C22.6 25.7 21.1 27 19.3 27
+                 C18 27 17 26.3 16.5 25.4 L16.5 6.5 C17 5.7 18 5.5 19 5.5 C19.6 5.5 20.4 5.5 21 5.5 Z"
+              fill="url(#kdp-brain-grad)"
+              opacity="0.85"
+            />
+            {/* Subtle highlight line down the centre fold */}
+            <path d="M16 6 L16 26"
+                  stroke="#ffffff" strokeWidth="0.8" opacity="0.45" />
+            {/* Tiny circuit dot accents */}
+            <circle cx="9.5"  cy="13" r="0.9" fill="#ffffff" opacity="0.7" />
+            <circle cx="22.5" cy="13" r="0.9" fill="#ffffff" opacity="0.7" />
+            <circle cx="11"   cy="20" r="0.7" fill="#ffffff" opacity="0.6" />
+            <circle cx="21"   cy="20" r="0.7" fill="#ffffff" opacity="0.6" />
+          </svg>
+        </span>
         <div>
           <div className="kdp-ai-title">AI POWERED ALGORITHM</div>
           <div className="kdp-ai-sub">
