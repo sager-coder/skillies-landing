@@ -163,25 +163,27 @@ const NICHES: Niche[] = [
 ];
 
 // ── SVG geometry constants ──────────────────────────────────────────────────
-// Coordinate space: 1000 wide × varies by row count. We use real CSS pixels
-// so SVG and HTML overlap pixel-perfectly.
+// Coordinate space: 1000 wide × 820 tall. Extra vertical room (vs prior 720)
+// gives the AI Powered Algorithm card breathing room below the niche cards
+// so it doesn't overlap row 5.
 const W = 1000;
-const H = 720;
+const H = 780;             // matches CSS aspect-ratio 1000/780
 const BOT_X = W / 2;
-const BOT_Y = H / 2 + 10;
+const BOT_Y = 380;         // bot anchored ~50 % from top — leaves bottom for AI card
 const BOT_R = 80;
 
-// Source cards: 6 rows down the left side, anchored to the right edge of
-// each card so the connection line starts where the card ends.
+// Source cards: 6 rows down the left side. Slightly tighter gap (86 → 84) +
+// earlier start so all 6 fit cleanly above the bot's bottom edge.
 const SRC_X = 240; // right edge of source cards
 const SRC_TOP = 100;
 const SRC_GAP = 86;
 const sourceY = (i: number) => SRC_TOP + i * SRC_GAP;
 
-// Niche cards: 5 rows down the right side, anchored to the left edge.
-const NCH_X = 760; // left edge of niche cards
+// Niche cards: 5 rows down the right side. Tighter gap (92 → 86) so card 5
+// ends well above the AI card.
+const NCH_X = 760;
 const NCH_TOP = 110;
-const NCH_GAP = 92;
+const NCH_GAP = 86;
 const nicheY = (i: number) => NCH_TOP + i * NCH_GAP;
 
 // ── Component ───────────────────────────────────────────────────────────────

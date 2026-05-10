@@ -277,7 +277,7 @@ export default function AmazonKdpNicheFinderPage() {
           width: 100%;
           max-width: 1000px;
           margin-inline: auto;
-          aspect-ratio: 1000 / 720;
+          aspect-ratio: 1000 / 780;     /* taller than original 720 — clears AI card under niches */
         }
         .kdp-diagram-svg {
           position: absolute;
@@ -448,7 +448,9 @@ export default function AmazonKdpNicheFinderPage() {
 
         .kdp-view-all {
           position: absolute;
-          bottom: -8px;
+          /* Sits ~24 px below the last niche card (card 5 ends at y≈524) so
+             it tracks the cards instead of floating at the column bottom. */
+          top: 552px;
           right: 0;
           left: 0;
           text-align: center;
@@ -460,7 +462,7 @@ export default function AmazonKdpNicheFinderPage() {
 
         .kdp-bot-rings {
           animation: kdp-bot-rings 4s ease-in-out infinite;
-          transform-origin: 500px 370px;
+          transform-origin: 500px 380px;   /* match new BOT_Y */
         }
 
         .kdp-ai-card {
@@ -468,6 +470,13 @@ export default function AmazonKdpNicheFinderPage() {
           left: 50%;
           bottom: 6%;
           transform: translateX(-50%);
+          /* Constrain to the centre column only — diagram width minus the
+             left source col (240) and right niche col (290) and ~30 px
+             margin on each side. Prevents the card overlapping niche cards
+             on smaller diagrams. */
+          width: calc(100% - 600px);
+          max-width: 340px;
+          min-width: 260px;
           background: #ffffff;
           border: 1px solid #efe5d2;
           border-radius: 14px;
@@ -478,6 +487,13 @@ export default function AmazonKdpNicheFinderPage() {
           box-shadow: 0 6px 18px rgba(40,25,10,0.08);
           z-index: 3;
           font-family: var(--font-inter, Inter, sans-serif);
+        }
+        @media (max-width: 1023px) {
+          .kdp-ai-card {
+            width: calc(100% - 480px);  /* col widths shrink at this break */
+            max-width: 300px;
+            min-width: 240px;
+          }
         }
         .kdp-ai-icon {
           width: 34px; height: 34px;
