@@ -8,6 +8,7 @@ type Link = { href: string; label: string };
 const LINKS: Link[] = [
   { href: "/", label: "Home" },
   { href: "/for", label: "For Business" },
+  { href: "/tools", label: "Tools" },
   { href: "/pricing", label: "Pricing" },
   { href: "/skillies-school", label: "Skillies School" },
 ];
