@@ -32,6 +32,10 @@ const API_URL =
     : "https://skillies-kdp-niche-finder.onrender.com");
 
 const LS_KEY = "skillies_license_code";
+// Flag set after the visitor's first anonymous credit is consumed. Stops
+// us from auto-issuing another anonymous license if their localStorage
+// still has the flag (they have to buy / sign in to keep searching).
+const LS_FREE_USED = "skillies_free_used";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 type Pattern = {
@@ -120,6 +124,19 @@ const fmtPrice = (p: number | null | undefined) =>
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 const isValidEmail = (s: string) => EMAIL_RE.test(s.trim()) && s.trim().length <= 200;
 
+// Example prompts — concise, signal-friendly briefs that pair well with each
+// of the 8 patterns. Tap to autofill the textarea. Phrasing kept tight so the
+// AI parser produces sharp filters.
+type ExamplePrompt = { label: string; brief: string; suggestPattern?: string };
+const EXAMPLE_PROMPTS: ExamplePrompt[] = [
+  { label: "ADHD cookbooks for kids",        brief: "ADHD cookbook for kids, paperback, premium price under $35", suggestPattern: "premium_low_competition" },
+  { label: "Spanish self-help",              brief: "Spanish-language self-help on boundary-setting, paperback or Kindle, low competition" },
+  { label: "2026 NFL draft guides",          brief: "2026 NFL draft guides, paperback, year-stamped annual",       suggestPattern: "year_stamped_annuals" },
+  { label: "Bad-reviewed reference guides",  brief: "Reference guides on tax filing for small businesses with bad reviews still selling", suggestPattern: "complete_guide_low_rated" },
+  { label: "Hidden 5-star gardening books",  brief: "Gardening books for beginners with 4.5-star ratings but few reviews", suggestPattern: "high_rated_sleepers" },
+  { label: "Activity journals for adults",   brief: "Adult mindfulness journals and gratitude trackers, low-content paperback", suggestPattern: "low_content_selling" },
+];
+
 // ── Component ───────────────────────────────────────────────────────────────
 export default function KdpNicheFinder() {
   // ── Patterns / tiers / license ──
@@ -145,7 +162,10 @@ export default function KdpNicheFinder() {
 
   // ── Auth + redeem state ──
   type AuthTab = "signup" | "signin" | "buy" | "code";
-  const [authTab, setAuthTab] = useState<AuthTab>("signup");
+  // Default to the Buy Credits tab — sign-up no longer gates the first
+  // search (anonymous license is auto-issued), so the only thing visitors
+  // need from this panel after their free search is to pay for more.
+  const [authTab, setAuthTab] = useState<AuthTab>("buy");
   const [signupEmail, setSignupEmail] = useState("");
   const [signinEmail, setSigninEmail] = useState("");
   const [restoreCode, setRestoreCode] = useState("");
@@ -183,7 +203,9 @@ export default function KdpNicheFinder() {
           });
         }
       }
-      // Restore license from localStorage
+      // Restore license from localStorage. If none AND the visitor has
+      // never used a free search before, auto-issue an anonymous license
+      // behind the scenes — frictionless first-touch search, no email gate.
       if (!cancelled) {
         const saved = localStorage.getItem(LS_KEY);
         if (saved) {
@@ -199,6 +221,23 @@ export default function KdpNicheFinder() {
             }
           } catch {
             /* ignore */
+          }
+        } else if (!localStorage.getItem(LS_FREE_USED)) {
+          // First-time visitor → quietly issue 1-credit anonymous license
+          try {
+            const r = await fetch(`${API_URL}/api/license/start-anonymous`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+            if (r.ok) {
+              const data = await r.json();
+              if (!cancelled) {
+                localStorage.setItem(LS_KEY, data.license.code);
+                setLicense(data.license);
+              }
+            }
+          } catch {
+            /* ignore — they'll see the sign-up gate instead */
           }
         }
       }
@@ -489,6 +528,11 @@ export default function KdpNicheFinder() {
       const data: SearchResponse = await r.json();
       if (typeof data.credits_remaining === "number") {
         setLicense({ ...license, credits_remaining: data.credits_remaining });
+        // First free search consumed → mark it so we don't auto-issue
+        // another anonymous license. Visitor must buy a pack now.
+        if (data.credits_remaining === 0 && !license.email) {
+          localStorage.setItem(LS_FREE_USED, "1");
+        }
       }
       setResults(data);
       if (data.filters_used?.interpretation) {
@@ -667,6 +711,43 @@ export default function KdpNicheFinder() {
           box-shadow: 0 14px 38px rgba(201, 162, 78, 0.20);
         }
         @keyframes kdp-spin { to { transform: rotate(360deg); } }
+
+        /* Example-prompt chips below the topic textarea */
+        .kdp-tool :global(.kdp-examples) {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 7px;
+          margin-top: 10px;
+        }
+        .kdp-tool :global(.kdp-examples-label) {
+          font-size: 12px;
+          font-weight: 600;
+          color: #14141499;
+          letter-spacing: 0.04em;
+          margin-right: 4px;
+        }
+        .kdp-tool :global(.kdp-chip) {
+          font-family: inherit;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #3d5a3d;
+          background: #faf5eb;
+          border: 1px solid #d6cdb9;
+          border-radius: 999px;
+          padding: 6px 12px;
+          cursor: pointer;
+          transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.05s;
+          white-space: nowrap;
+        }
+        .kdp-tool :global(.kdp-chip:hover) {
+          background: #ffffff;
+          border-color: #d9342b;
+          color: #d9342b;
+        }
+        .kdp-tool :global(.kdp-chip:active) {
+          transform: scale(0.97);
+        }
       `}</style>
 
       {/* ─── Status banner ─── */}
@@ -1072,6 +1153,22 @@ export default function KdpNicheFinder() {
               placeholder="e.g. Spanish-language self-help on boundary-setting · ADHD cookbooks for kids · year-stamped 2026 NFL guides"
               className="kdp-textarea"
             />
+            <div className="kdp-examples">
+              <span className="kdp-examples-label">Try one:</span>
+              {EXAMPLE_PROMPTS.map((ex) => (
+                <button
+                  key={ex.label}
+                  type="button"
+                  className="kdp-chip"
+                  onClick={() => {
+                    setDescription(ex.brief);
+                    if (ex.suggestPattern) setPattern(ex.suggestPattern);
+                  }}
+                >
+                  {ex.label}
+                </button>
+              ))}
+            </div>
           </label>
 
           <label className="block mb-7">
