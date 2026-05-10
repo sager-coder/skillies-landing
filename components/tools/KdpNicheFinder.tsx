@@ -19,8 +19,17 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 
+// Backend URL fallback chain:
+//   1. NEXT_PUBLIC_NICHE_API_URL — set in Vercel env for permanent host
+//   2. Hardcoded cloudflared tunnel — exposes the user's local FastAPI app
+//      to the public internet via Cloudflare's edge. Rotates if the tunnel
+//      restarts; update this constant + push to refresh.
+//   3. localhost — only used during `next dev` if the env var is unset
 const API_URL =
-  process.env.NEXT_PUBLIC_NICHE_API_URL || "http://127.0.0.1:8765";
+  process.env.NEXT_PUBLIC_NICHE_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8765"
+    : "https://workplace-layout-barn-authentic.trycloudflare.com");
 
 const LS_KEY = "skillies_license_code";
 
