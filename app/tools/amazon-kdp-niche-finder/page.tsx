@@ -109,11 +109,30 @@ const SIGNALS: Array<{
 export default function AmazonKdpNicheFinderPage() {
   return (
     <main className="relative">
+      {/* Hero-art sizing: dragged up, enlarged, bled past the column.
+          Mobile rules reset all of it so the illustration centres cleanly. */}
+      <style>{`
+        .kdp-hero-art-inner { max-width: 760px; }
+        @media (min-width: 768px) {
+          .kdp-hero-art {
+            transform: translate(40px, -90px);
+            margin-bottom: -70px;
+          }
+          .kdp-hero-art-inner { max-width: 1080px; }
+        }
+        @media (min-width: 1280px) {
+          .kdp-hero-art {
+            transform: translate(60px, -110px);
+            margin-bottom: -90px;
+          }
+          .kdp-hero-art-inner { max-width: 1180px; }
+        }
+      `}</style>
       <TopNav />
 
       {/* ─── Hero ─── */}
-      <section className="sk-section pt-32 md:pt-40">
-        <div className="sk-container grid md:grid-cols-[1fr_1.1fr] gap-12 items-center">
+      <section className="sk-section pt-32 md:pt-32 pb-0 md:pb-0">
+        <div className="sk-container grid md:grid-cols-[1fr_1.4fr] gap-12 items-center max-w-[1380px]">
           <div>
             <span
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-7"
@@ -209,10 +228,12 @@ export default function AmazonKdpNicheFinderPage() {
             </div>
           </div>
 
-          {/* Hero illustration — live React/SVG scene */}
-          <div className="flex justify-center md:justify-end">
+          {/* Hero illustration — live React/SVG scene.
+              Enlarged + dragged up + bled past the column gutter so it
+              has the same cinematic presence as the standalone tool. */}
+          <div className="flex justify-center md:justify-end kdp-hero-art">
             <div
-              className="w-full max-w-[680px]"
+              className="w-full kdp-hero-art-inner"
               style={{ aspectRatio: "1600 / 900" }}
             >
               <KdpHeroScene />
