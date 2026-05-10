@@ -11,6 +11,7 @@
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
+import KdpHeroScene from "@/components/tools/KdpHeroScene";
 
 export const metadata: Metadata = {
   title:
@@ -207,20 +208,14 @@ export default function AmazonKdpNicheFinderPage() {
             </div>
           </div>
 
-          {/* Hero illustration */}
+          {/* Hero illustration — live React/SVG scene */}
           <div className="flex justify-center md:justify-end">
-            <img
-              src="/tools/kdp-niche-finder.webp"
-              alt="Skillies AI filtering Amazon books to surface profitable KDP niches"
-              width={1672}
-              height={941}
-              className="w-full max-w-[640px] h-auto"
-              style={{
-                filter: "drop-shadow(0 22px 50px rgba(40, 20, 10, 0.10))",
-              }}
-              loading="eager"
-              decoding="async"
-            />
+            <div
+              className="w-full max-w-[680px]"
+              style={{ aspectRatio: "1600 / 900" }}
+            >
+              <KdpHeroScene />
+            </div>
           </div>
         </div>
       </section>

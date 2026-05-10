@@ -12,6 +12,7 @@
 import type { Metadata } from "next";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
+import KdpHeroScene from "@/components/tools/KdpHeroScene";
 
 export const metadata: Metadata = {
   title: "Tools · Skillies AI",
@@ -117,19 +118,12 @@ export default function ToolsPage() {
               </div>
 
               <div className="flex-1 flex items-center justify-center p-6 md:p-10 relative overflow-hidden">
-                <img
-                  src="/tools/kdp-niche-finder.webp"
-                  alt="Skillies AI filtering Amazon books to surface profitable KDP niches"
-                  width={1672}
-                  height={941}
-                  className="w-full max-w-[540px] h-auto"
-                  style={{
-                    filter:
-                      "drop-shadow(0 14px 38px rgba(40, 25, 10, 0.10))",
-                  }}
-                  loading="lazy"
-                  decoding="async"
-                />
+                <div
+                  className="w-full max-w-[560px]"
+                  style={{ aspectRatio: "1600 / 900" }}
+                >
+                  <KdpHeroScene />
+                </div>
 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 flex items-center justify-center bg-sk-cream/55 opacity-0 group-hover:opacity-100 transition-opacity duration-200 backdrop-blur-[2px]">
