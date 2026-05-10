@@ -225,7 +225,7 @@ export default function KdpNicheFinder() {
         } else if (!localStorage.getItem(LS_FREE_USED)) {
           // First-time visitor → quietly issue 1-credit anonymous license
           try {
-            const r = await fetch(`${API_URL}/api/license/start-anonymous`, {
+            const r = await fetch(`${API_URL}/api/start-anonymous`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
             });
