@@ -109,30 +109,34 @@ const SIGNALS: Array<{
 export default function AmazonKdpNicheFinderPage() {
   return (
     <main className="relative">
-      {/* Hero-art sizing: dragged up, enlarged, bled past the column.
-          Mobile rules reset all of it so the illustration centres cleanly. */}
+      {/* Hero-art sizing: enlarged, slightly lifted (no horizontal shift —
+          pulled in to keep the text column legible). Mobile rules reset
+          all of it so the illustration centres cleanly. */}
       <style>{`
         .kdp-hero-art-inner { max-width: 760px; }
+        .kdp-hero-section { padding-bottom: 0; }
+        .kdp-after-hero { padding-top: 28px; }
         @media (min-width: 768px) {
           .kdp-hero-art {
-            transform: translate(40px, -90px);
-            margin-bottom: -70px;
+            transform: translateY(-40px);
+            margin-bottom: -30px;
           }
-          .kdp-hero-art-inner { max-width: 1080px; }
+          .kdp-hero-art-inner { max-width: 920px; }
         }
         @media (min-width: 1280px) {
           .kdp-hero-art {
-            transform: translate(60px, -110px);
-            margin-bottom: -90px;
+            transform: translateY(-60px);
+            margin-bottom: -50px;
           }
-          .kdp-hero-art-inner { max-width: 1180px; }
+          .kdp-hero-art-inner { max-width: 1040px; }
+          .kdp-after-hero { padding-top: 16px; }
         }
       `}</style>
       <TopNav />
 
       {/* ─── Hero ─── */}
-      <section className="sk-section pt-32 md:pt-32 pb-0 md:pb-0">
-        <div className="sk-container grid md:grid-cols-[1fr_1.4fr] gap-12 items-center max-w-[1380px]">
+      <section className="sk-section pt-32 md:pt-32 kdp-hero-section">
+        <div className="sk-container grid md:grid-cols-[1fr_1.25fr] gap-10 items-center max-w-[1340px]">
           <div>
             <span
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-7"
@@ -243,7 +247,7 @@ export default function AmazonKdpNicheFinderPage() {
       </section>
 
       {/* ─── 8 signals ─── */}
-      <section id="signals" className="sk-section">
+      <section id="signals" className="sk-section kdp-after-hero">
         <div className="sk-container">
           <div className="text-center mb-14">
             <span

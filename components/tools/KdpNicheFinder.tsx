@@ -107,6 +107,10 @@ const fmtNumber = (n: number | null | undefined) =>
 const fmtPrice = (p: number | null | undefined) =>
   p == null ? "—" : `$${Number(p).toFixed(2)}`;
 
+// Pragmatic email validator — same regex the backend uses.
+const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+const isValidEmail = (s: string) => EMAIL_RE.test(s.trim()) && s.trim().length <= 200;
+
 // ── Component ───────────────────────────────────────────────────────────────
 export default function KdpNicheFinder() {
   // ── Patterns / tiers / license ──
@@ -130,10 +134,12 @@ export default function KdpNicheFinder() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchResponse | null>(null);
 
-  // ── Free-redeem state ──
-  const [freeEmail, setFreeEmail] = useState("");
+  // ── Auth + redeem state ──
+  type AuthTab = "signup" | "signin" | "buy" | "code";
+  const [authTab, setAuthTab] = useState<AuthTab>("signup");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signinEmail, setSigninEmail] = useState("");
   const [restoreCode, setRestoreCode] = useState("");
-  const [showRestore, setShowRestore] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
 
   const paypalLoadedRef = useRef(false);
@@ -200,11 +206,17 @@ export default function KdpNicheFinder() {
       "Or describe the signal in your own words above."
     : "Or describe the signal in your own words above.";
 
-  // ── Free-tier redeem ──────────────────────────────────────────────────────
-  const onFreeSubmit = async (e: React.FormEvent) => {
+  // ── Sign up (free-tier redeem) ────────────────────────────────────────────
+  const onSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const email = freeEmail.trim();
-    if (!email) return;
+    const email = signupEmail.trim();
+    if (!isValidEmail(email)) {
+      setStatus({
+        kind: "error",
+        message: "Please enter a valid email address (e.g. you@domain.com).",
+      });
+      return;
+    }
     setStatus(null);
     try {
       const r = await fetch(`${API_URL}/api/license/redeem-free`, {
@@ -226,7 +238,46 @@ export default function KdpNicheFinder() {
     } catch (err) {
       setStatus({
         kind: "error",
-        message: `Free redeem failed: ${(err as Error).message}`,
+        message: `Sign-up failed: ${(err as Error).message}`,
+      });
+    }
+  };
+
+  // ── Sign in by email ──────────────────────────────────────────────────────
+  const onSignInSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = signinEmail.trim();
+    if (!isValidEmail(email)) {
+      setStatus({
+        kind: "error",
+        message: "Please enter a valid email address.",
+      });
+      return;
+    }
+    setStatus(null);
+    try {
+      const r = await fetch(`${API_URL}/api/license/find-by-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        throw new Error(e.detail || `HTTP ${r.status}`);
+      }
+      const data = await r.json();
+      localStorage.setItem(LS_KEY, data.license.code);
+      setLicense(data.license);
+      setStatus({
+        kind: "info",
+        message: `Welcome back. ${data.license.credits_remaining} ${
+          data.license.credits_remaining === 1 ? "search" : "searches"
+        } remaining on this account.`,
+      });
+    } catch (err) {
+      setStatus({
+        kind: "error",
+        message: `Sign-in failed: ${(err as Error).message}`,
       });
     }
   };
@@ -360,16 +411,21 @@ export default function KdpNicheFinder() {
     [],
   );
 
-  // Render PayPal buttons once tiers + clientId arrive AND we don't have a license yet
+  // Render PayPal buttons once tiers + clientId arrive AND we don't have a
+  // license yet AND the user is on the "Buy credits" tab (the mount divs
+  // only exist then).
   useEffect(() => {
-    if (!paypalClientId || license) return;
+    if (!paypalClientId || license || authTab !== "buy") return;
     (async () => {
       await ensurePayPal();
-      ["single", "pack10", "pack20"].forEach((t) =>
-        renderPayPalButton(`pp-${t}`, t),
-      );
+      // Wait one tick so the divs from the Buy-tab render are in the DOM.
+      requestAnimationFrame(() => {
+        ["single", "pack10", "pack20"].forEach((t) =>
+          renderPayPalButton(`pp-${t}`, t),
+        );
+      });
     })();
-  }, [paypalClientId, license, ensurePayPal, renderPayPalButton]);
+  }, [paypalClientId, license, authTab, ensurePayPal, renderPayPalButton]);
 
   // Render top-up PayPal buttons when the panel opens
   useEffect(() => {
@@ -497,7 +553,7 @@ export default function KdpNicheFinder() {
               <h2
                 className="sk-font-display"
                 style={{
-                  fontSize: "clamp(30px, 4vw, 48px)",
+                  fontSize: "clamp(28px, 3.6vw, 44px)",
                   lineHeight: 0.98,
                   letterSpacing: "-0.04em",
                   color: "var(--sk-ink)",
@@ -519,117 +575,226 @@ export default function KdpNicheFinder() {
               <p
                 className="sk-font-body"
                 style={{
-                  fontSize: 16,
+                  fontSize: 15,
                   color: "var(--sk-ink60)",
                   margin: "0 auto",
-                  maxWidth: "640px",
+                  maxWidth: "620px",
                 }}
               >
-                One free search to start. Top up only when you want more — no
-                subscription, no auto-renewal.
+                One free search to start. Sign in if you&apos;ve used Skillies
+                before, or buy a credit pack — no subscription, no auto-renewal.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-              {/* Free */}
-              <article
-                className="rounded-xl border p-7 flex flex-col gap-3.5 bg-white relative"
-                style={{ borderColor: "var(--sk-hairline)" }}
+            {/* Tab bar */}
+            <div
+              className="flex flex-wrap gap-1 p-1 rounded-full mx-auto mb-6 max-w-[640px]"
+              style={{ background: "rgba(0,0,0,0.04)", border: "1px solid var(--sk-hairline)" }}
+            >
+              {([
+                ["signup", "Sign up · free search"],
+                ["signin", "Sign in"],
+                ["buy", "Buy credits"],
+                ["code", "License code"],
+              ] as Array<[AuthTab, string]>).map(([k, label]) => (
+                <button
+                  key={k}
+                  onClick={() => { setAuthTab(k); setStatus(null); }}
+                  className="flex-1 rounded-full px-4 py-2 text-[13px] font-bold transition-all"
+                  style={
+                    authTab === k
+                      ? { background: "var(--sk-ink)", color: "var(--sk-cream)" }
+                      : { background: "transparent", color: "var(--sk-ink60)" }
+                  }
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* ── Sign up tab ── */}
+            {authTab === "signup" && (
+              <div
+                className="rounded-2xl p-7 md:p-8 bg-white max-w-[520px] mx-auto"
+                style={{ border: "1px solid var(--sk-hairline)", boxShadow: "0 12px 36px rgba(40,25,10,0.06)" }}
               >
-                <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Free</div>
-                <div className="text-[24px] font-bold leading-tight" style={{ color: "var(--sk-ink)" }}>Try one search.</div>
-                <div className="text-[36px] font-semibold leading-none" style={{ color: "var(--sk-red, #c62828)", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
-                  $0 <span className="text-[12px] font-medium" style={{ color: "var(--sk-ink60)", letterSpacing: 0 }}>· first search free</span>
+                <div className="flex items-baseline justify-between mb-1">
+                  <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>New here</div>
+                  <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>1 free search · no card</div>
                 </div>
-                <form onSubmit={onFreeSubmit} className="flex flex-col gap-2">
+                <div
+                  className="sk-font-display-italic mb-5"
+                  style={{ fontSize: 32, color: "var(--sk-ink)", letterSpacing: "-0.025em", lineHeight: 1 }}
+                >
+                  Get your first search free.
+                </div>
+                <form onSubmit={onSignUpSubmit} className="flex flex-col gap-2.5">
                   <input
                     type="email"
                     required
-                    value={freeEmail}
-                    onChange={(e) => setFreeEmail(e.target.value)}
-                    placeholder="your@email.com"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                    placeholder="you@domain.com"
                     autoComplete="email"
-                    className="rounded border px-3.5 py-2.5 text-[15px]"
+                    className="rounded-md border px-4 py-3 text-[15px]"
                     style={{ borderColor: "var(--sk-hairline)", background: "var(--sk-cream)" }}
                   />
                   <button
                     type="submit"
-                    className="rounded px-4 py-3 text-[14px] font-bold"
-                    style={{ background: "#5b7b5b", color: "#fff" }}
+                    className="rounded-full px-6 py-3.5 text-[14px] font-bold transition-all"
+                    style={{
+                      background: "var(--sk-red, #c62828)",
+                      color: "#fff",
+                      boxShadow: "0 6px 18px rgba(198,40,40,0.22)",
+                    }}
                   >
                     Get my free search →
                   </button>
                 </form>
-                <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>One free search per email. No card required.</div>
-              </article>
-
-              {/* Single $10 */}
-              <article className="rounded-xl border p-7 flex flex-col gap-3.5 bg-white relative" style={{ borderColor: "var(--sk-hairline)" }}>
-                <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>One-off</div>
-                <div className="text-[24px] font-bold leading-tight" style={{ color: "var(--sk-ink)" }}>1 search</div>
-                <div className="text-[36px] font-semibold leading-none" style={{ color: "var(--sk-red, #c62828)", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
-                  $10 <span className="text-[12px] font-medium" style={{ color: "var(--sk-ink60)", letterSpacing: 0 }}>· single search</span>
+                <div className="text-[12px] mt-3" style={{ color: "var(--sk-ink40)" }}>
+                  One free search per email. We never spam.
                 </div>
-                <div id="pp-single" className="min-h-[48px]" />
-                <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>No expiry · License code emailed instantly</div>
-              </article>
+              </div>
+            )}
 
-              {/* Pack 10 $50 */}
-              <article className="rounded-xl border p-7 flex flex-col gap-3.5 bg-white relative" style={{ borderColor: "var(--sk-hairline)" }}>
-                <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Starter</div>
-                <div className="text-[24px] font-bold leading-tight" style={{ color: "var(--sk-ink)" }}>10 searches</div>
-                <div className="text-[36px] font-semibold leading-none" style={{ color: "var(--sk-red, #c62828)", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
-                  $50 <span className="text-[12px] font-medium" style={{ color: "var(--sk-ink60)", letterSpacing: 0 }}>· $5 per search</span>
-                </div>
-                <div id="pp-pack10" className="min-h-[48px]" />
-                <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>No expiry · License code emailed instantly</div>
-              </article>
-
-              {/* Pack 20 $79 — recommended */}
-              <article
-                className="rounded-xl border-2 p-7 flex flex-col gap-3.5 bg-white relative"
-                style={{ borderColor: "var(--sk-gold, #c9a24e)", boxShadow: "0 12px 36px rgba(201, 162, 78, 0.18)" }}
+            {/* ── Sign in tab ── */}
+            {authTab === "signin" && (
+              <div
+                className="rounded-2xl p-7 md:p-8 bg-white max-w-[520px] mx-auto"
+                style={{ border: "1px solid var(--sk-hairline)", boxShadow: "0 12px 36px rgba(40,25,10,0.06)" }}
               >
-                <span
-                  className="absolute top-[-12px] right-4 px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-[0.18em]"
-                  style={{ background: "var(--sk-gold, #c9a24e)", color: "var(--sk-ink)" }}
-                >
-                  Best value · save 60%
-                </span>
-                <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Pro</div>
-                <div className="text-[24px] font-bold leading-tight" style={{ color: "var(--sk-ink)" }}>20 searches</div>
-                <div className="text-[36px] font-semibold leading-none" style={{ color: "var(--sk-red, #c62828)", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
-                  $79 <span className="text-[12px] font-medium" style={{ color: "var(--sk-ink60)", letterSpacing: 0 }}>· $3.95 per search</span>
+                <div className="flex items-baseline justify-between mb-1">
+                  <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Returning</div>
+                  <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>Recover your existing license</div>
                 </div>
-                <div id="pp-pack20" className="min-h-[48px]" />
-                <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>No expiry · License code emailed instantly</div>
-              </article>
-            </div>
-
-            {/* Restore */}
-            <details className="mt-5 text-[14px]" style={{ color: "var(--sk-ink60)" }} open={showRestore} onToggle={(e) => setShowRestore((e.target as HTMLDetailsElement).open)}>
-              <summary className="cursor-pointer underline" style={{ color: "var(--sk-red, #c62828)" }}>
-                I already have a license code
-              </summary>
-              <form onSubmit={onRestoreSubmit} className="flex gap-2 mt-3">
-                <input
-                  type="text"
-                  value={restoreCode}
-                  onChange={(e) => setRestoreCode(e.target.value)}
-                  placeholder="sk-…"
-                  autoComplete="off"
-                  className="flex-1 rounded border px-3.5 py-2.5 text-[14px] font-mono"
-                  style={{ borderColor: "var(--sk-hairline)" }}
-                />
-                <button
-                  type="submit"
-                  className="rounded px-4 py-2.5 text-[14px] font-bold"
-                  style={{ background: "var(--sk-ink)", color: "#fff" }}
+                <div
+                  className="sk-font-display-italic mb-5"
+                  style={{ fontSize: 32, color: "var(--sk-ink)", letterSpacing: "-0.025em", lineHeight: 1 }}
                 >
-                  Restore
-                </button>
-              </form>
-            </details>
+                  Welcome back.
+                </div>
+                <form onSubmit={onSignInSubmit} className="flex flex-col gap-2.5">
+                  <input
+                    type="email"
+                    required
+                    value={signinEmail}
+                    onChange={(e) => setSigninEmail(e.target.value)}
+                    placeholder="The email you signed up / paid with"
+                    autoComplete="email"
+                    className="rounded-md border px-4 py-3 text-[15px]"
+                    style={{ borderColor: "var(--sk-hairline)", background: "var(--sk-cream)" }}
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-full px-6 py-3.5 text-[14px] font-bold transition-all"
+                    style={{
+                      background: "var(--sk-ink)",
+                      color: "#fff",
+                      boxShadow: "0 6px 18px rgba(40,25,10,0.16)",
+                    }}
+                  >
+                    Sign in →
+                  </button>
+                </form>
+                <div className="text-[12px] mt-3" style={{ color: "var(--sk-ink40)" }}>
+                  We look up the license attached to your email and restore it
+                  on this device. No password needed for this build.
+                </div>
+              </div>
+            )}
+
+            {/* ── Buy credits tab ── */}
+            {authTab === "buy" && (
+              <>
+                {!paypalClientId && (
+                  <div
+                    className="rounded-lg p-5 mb-6 max-w-[640px] mx-auto text-center text-[14px]"
+                    style={{ background: "rgba(198,40,40,0.06)", border: "1px solid rgba(198,40,40,0.18)", color: "var(--sk-red, #c62828)" }}
+                  >
+                    PayPal isn&apos;t reachable right now — the niche-finder
+                    backend is offline. Use the free tab to start, or come
+                    back in a moment.
+                  </div>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  {/* Single */}
+                  <article className="rounded-xl border p-7 flex flex-col gap-3.5 bg-white relative" style={{ borderColor: "var(--sk-hairline)" }}>
+                    <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>One-off</div>
+                    <div className="text-[22px] font-bold leading-tight" style={{ color: "var(--sk-ink)" }}>1 search</div>
+                    <div className="text-[34px] font-semibold leading-none" style={{ color: "var(--sk-red, #c62828)", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
+                      $10 <span className="text-[12px] font-medium" style={{ color: "var(--sk-ink60)", letterSpacing: 0 }}>· single</span>
+                    </div>
+                    <div id="pp-single" className="min-h-[48px]" />
+                    <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>No expiry · code emailed instantly</div>
+                  </article>
+
+                  {/* Pack 10 */}
+                  <article className="rounded-xl border p-7 flex flex-col gap-3.5 bg-white relative" style={{ borderColor: "var(--sk-hairline)" }}>
+                    <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Starter</div>
+                    <div className="text-[22px] font-bold leading-tight" style={{ color: "var(--sk-ink)" }}>10 searches</div>
+                    <div className="text-[34px] font-semibold leading-none" style={{ color: "var(--sk-red, #c62828)", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
+                      $50 <span className="text-[12px] font-medium" style={{ color: "var(--sk-ink60)", letterSpacing: 0 }}>· $5/each</span>
+                    </div>
+                    <div id="pp-pack10" className="min-h-[48px]" />
+                    <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>No expiry · code emailed instantly</div>
+                  </article>
+
+                  {/* Pack 20 — recommended */}
+                  <article
+                    className="rounded-xl border-2 p-7 flex flex-col gap-3.5 bg-white relative"
+                    style={{ borderColor: "var(--sk-gold, #c9a24e)", boxShadow: "0 12px 36px rgba(201, 162, 78, 0.18)" }}
+                  >
+                    <span
+                      className="absolute top-[-12px] right-4 px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-[0.18em]"
+                      style={{ background: "var(--sk-gold, #c9a24e)", color: "var(--sk-ink)" }}
+                    >
+                      Best · save 60%
+                    </span>
+                    <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Pro</div>
+                    <div className="text-[22px] font-bold leading-tight" style={{ color: "var(--sk-ink)" }}>20 searches</div>
+                    <div className="text-[34px] font-semibold leading-none" style={{ color: "var(--sk-red, #c62828)", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
+                      $79 <span className="text-[12px] font-medium" style={{ color: "var(--sk-ink60)", letterSpacing: 0 }}>· $3.95/each</span>
+                    </div>
+                    <div id="pp-pack20" className="min-h-[48px]" />
+                    <div className="text-[12px]" style={{ color: "var(--sk-ink40)" }}>No expiry · code emailed instantly</div>
+                  </article>
+                </div>
+              </>
+            )}
+
+            {/* ── License code tab ── */}
+            {authTab === "code" && (
+              <div
+                className="rounded-2xl p-7 md:p-8 bg-white max-w-[520px] mx-auto"
+                style={{ border: "1px solid var(--sk-hairline)", boxShadow: "0 12px 36px rgba(40,25,10,0.06)" }}
+              >
+                <div className="text-[11px] font-bold tracking-[0.22em] uppercase mb-1" style={{ color: "#3d5a3d" }}>Have a code?</div>
+                <div
+                  className="sk-font-display-italic mb-5"
+                  style={{ fontSize: 32, color: "var(--sk-ink)", letterSpacing: "-0.025em", lineHeight: 1 }}
+                >
+                  Paste it to restore.
+                </div>
+                <form onSubmit={onRestoreSubmit} className="flex flex-col gap-2.5">
+                  <input
+                    type="text"
+                    value={restoreCode}
+                    onChange={(e) => setRestoreCode(e.target.value)}
+                    placeholder="sk-…"
+                    autoComplete="off"
+                    className="rounded-md border px-4 py-3 text-[14px] font-mono"
+                    style={{ borderColor: "var(--sk-hairline)", background: "var(--sk-cream)" }}
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-full px-6 py-3.5 text-[14px] font-bold"
+                    style={{ background: "var(--sk-ink)", color: "#fff" }}
+                  >
+                    Restore →
+                  </button>
+                </form>
+              </div>
+            )}
           </>
         )}
 
