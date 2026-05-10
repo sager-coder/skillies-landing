@@ -116,12 +116,18 @@ export default function AmazonKdpNicheFinderPage() {
         .kdp-hero-art-inner { max-width: 760px; }
         .kdp-hero-section { padding-bottom: 0; }
         .kdp-after-hero { padding-top: 28px; }
+        /* Trim sk-section padding under the signals + above the tool so
+           there isn't a giant cream void between the "Run a hunt below"
+           CTA and the search form. */
+        .kdp-section-tight { padding-top: 12px; padding-bottom: 24px; }
+        .kdp-section-pull-up { padding-top: 0; }
         @media (min-width: 768px) {
           .kdp-hero-art {
             transform: translateY(-40px);
             margin-bottom: -30px;
           }
           .kdp-hero-art-inner { max-width: 920px; }
+          .kdp-section-tight { padding-top: 16px; padding-bottom: 32px; }
         }
         @media (min-width: 1280px) {
           .kdp-hero-art {
@@ -247,7 +253,7 @@ export default function AmazonKdpNicheFinderPage() {
       </section>
 
       {/* ─── 8 signals ─── */}
-      <section id="signals" className="sk-section kdp-after-hero">
+      <section id="signals" className="sk-section kdp-after-hero kdp-section-tight">
         <div className="sk-container">
           <div className="text-center mb-14">
             <span
@@ -388,7 +394,7 @@ export default function AmazonKdpNicheFinderPage() {
             ))}
           </div>
 
-          <div className="flex flex-col items-center gap-3 mt-12">
+          <div className="flex flex-col items-center gap-3 mt-8">
             <a
               href="#kdp-tool"
               className="inline-flex items-center gap-2 px-7 py-4 rounded-full text-[15px] font-bold tracking-tight transition-all duration-200 shadow-[0_8px_24px_rgba(217,52,43,0.22)] hover:scale-[1.02]"
@@ -403,14 +409,14 @@ export default function AmazonKdpNicheFinderPage() {
               className="text-[13.5px] font-medium"
               style={{ color: "var(--sk-ink60)" }}
             >
-              Pick a signal · describe your topic · get 20 real listings.
+              Pick a signal · describe your topic · get 10 real listings.
             </span>
           </div>
         </div>
       </section>
 
       {/* ─── The actual functional tool ─── */}
-      <section id="kdp-tool" className="sk-section">
+      <section id="kdp-tool" className="sk-section kdp-section-pull-up">
         <div className="sk-container max-w-[1100px]">
           <KdpNicheFinder />
         </div>
