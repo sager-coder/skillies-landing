@@ -565,6 +565,100 @@ export default function KdpNicheFinder() {
           design tokens (--sk-hairline at 10 % opacity, --sk-ink60 at 60 %)
           are too subtle for form chrome — bump everything to readable. */}
       <style jsx>{`
+        /* ═══════════════════════════════════════════════════════════════
+           Skillies KDP Niche Finder · component-scoped design system
+           ═══════════════════════════════════════════════════════════════
+           Colors mirror the parent skillies.ai brand tokens. Form chrome,
+           cards, and chips inherit a single visual grammar — soft tan
+           border, generous padding, dashed separator + monospace stat
+           footer pattern (matches the signal-card aesthetic the user
+           explicitly liked). Mobile rules at the bottom. */
+
+        /* ── Card primitive ────────────────────────────────────────── */
+        .kdp-tool :global(.kdp-card) {
+          position: relative;
+          background: #ffffff;
+          border: 1.5px solid #e7dcc4;
+          border-radius: 18px;
+          padding: 28px;
+          box-shadow: 0 8px 28px rgba(40, 25, 10, 0.06);
+          transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+        }
+        .kdp-tool :global(.kdp-card-hover):hover {
+          border-color: #d9342b;
+          box-shadow: 0 18px 44px rgba(40, 25, 10, 0.10);
+          transform: translateY(-2px);
+        }
+
+        /* Dashed separator + monospace stat footer (signal-card pattern) */
+        .kdp-tool :global(.kdp-card-stat) {
+          margin-top: 14px;
+          padding-top: 14px;
+          border-top: 1px dashed #e7dcc4;
+          font-family: "SF Mono", ui-monospace, Menlo, monospace;
+          font-size: 12px;
+          color: #14141499;
+          letter-spacing: -0.005em;
+          line-height: 1.5;
+        }
+
+        /* Eyebrow pill (semantic colors) */
+        .kdp-tool :global(.kdp-eyebrow-pill) {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.10em;
+          text-transform: uppercase;
+          line-height: 1;
+        }
+        .kdp-tool :global(.kdp-eyebrow-red) {
+          background: rgba(217, 52, 43, 0.09);
+          color: #d9342b;
+        }
+        .kdp-tool :global(.kdp-eyebrow-green) {
+          background: rgba(0, 167, 84, 0.10);
+          color: #00a754;
+        }
+        .kdp-tool :global(.kdp-eyebrow-gold) {
+          background: rgba(201, 162, 78, 0.16);
+          color: #8a6a1f;
+        }
+        .kdp-tool :global(.kdp-eyebrow-ink) {
+          background: rgba(20, 20, 20, 0.06);
+          color: #141414;
+        }
+
+        /* Card title — bold, all-caps, charcoal (mirrors signal cards) */
+        .kdp-tool :global(.kdp-card-title) {
+          font-family: inherit;
+          font-weight: 800;
+          font-size: 19px;
+          line-height: 1.18;
+          letter-spacing: -0.012em;
+          color: #141414;
+          margin: 6px 0 4px;
+        }
+
+        /* Card body — muted, italic accents allowed */
+        .kdp-tool :global(.kdp-card-body) {
+          font-size: 14.5px;
+          line-height: 1.55;
+          color: #14141499;
+          margin: 0;
+        }
+        .kdp-tool :global(.kdp-card-body em) {
+          font-family: "Instrument Serif", Georgia, serif;
+          font-style: italic;
+          font-weight: 600;
+          color: #141414;
+          font-size: 1.06em;
+        }
+
+        /* ── Form fields ───────────────────────────────────────────── */
         .kdp-tool :global(.kdp-input),
         .kdp-tool :global(.kdp-select),
         .kdp-tool :global(.kdp-textarea) {
@@ -575,13 +669,13 @@ export default function KdpNicheFinder() {
           color: #141414;
           background: #ffffff;
           border: 1.5px solid #d6cdb9;
-          border-radius: 8px;
+          border-radius: 10px;
           outline: none;
           transition: border-color 0.15s, box-shadow 0.15s;
           -webkit-appearance: none;
           appearance: none;
         }
-        .kdp-tool :global(.kdp-textarea) { resize: vertical; min-height: 92px; }
+        .kdp-tool :global(.kdp-textarea) { resize: vertical; min-height: 96px; line-height: 1.5; }
         .kdp-tool :global(.kdp-select) {
           background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='none' stroke='%23141414' stroke-width='2' d='M1 1l5 5 5-5'/></svg>");
           background-repeat: no-repeat;
@@ -594,9 +688,19 @@ export default function KdpNicheFinder() {
         .kdp-tool :global(.kdp-select:focus),
         .kdp-tool :global(.kdp-textarea:focus) {
           border-color: #d9342b;
-          box-shadow: 0 0 0 4px rgba(217, 52, 43, 0.14);
+          box-shadow: 0 0 0 4px rgba(217, 52, 43, 0.13);
         }
-        /* Tabs */
+        .kdp-tool :global(.kdp-field-label) {
+          display: block;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #3d5a3d;
+          margin-bottom: 8px;
+        }
+
+        /* ── Tabs ──────────────────────────────────────────────────── */
         .kdp-tabs {
           display: flex;
           flex-wrap: wrap;
@@ -623,96 +727,106 @@ export default function KdpNicheFinder() {
           transition: background 0.15s, color 0.15s;
           white-space: nowrap;
         }
-        .kdp-tab:hover { color: #141414; background: rgba(255, 255, 255, 0.6); }
+        .kdp-tab:hover { color: #141414; background: rgba(255, 255, 255, 0.7); }
         .kdp-tab[data-active="true"] {
           background: #141414;
           color: #faf5eb;
           box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
         }
-        /* Buttons — pill primary / pill ghost */
-        .kdp-tool :global(.kdp-btn-primary) {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          width: 100%;
-          padding: 14px 24px;
-          border-radius: 999px;
-          font-size: 14.5px;
-          font-weight: 700;
-          font-family: inherit;
-          color: #ffffff;
-          background: #d9342b;
-          border: none;
-          cursor: pointer;
-          transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
-          box-shadow: 0 8px 22px rgba(217, 52, 43, 0.24);
-        }
-        .kdp-tool :global(.kdp-btn-primary:hover) {
-          background: #b8291f;
-          box-shadow: 0 12px 28px rgba(217, 52, 43, 0.32);
-          transform: translateY(-1px);
-        }
-        .kdp-tool :global(.kdp-btn-primary:disabled) {
-          background: #9ca3af;
-          box-shadow: none;
-          cursor: not-allowed;
-        }
+
+        /* ── Buttons ───────────────────────────────────────────────── */
+        .kdp-tool :global(.kdp-btn-primary),
         .kdp-tool :global(.kdp-btn-ink) {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
           width: 100%;
-          padding: 14px 24px;
+          padding: 15px 26px;
           border-radius: 999px;
           font-size: 14.5px;
           font-weight: 700;
           font-family: inherit;
-          color: #faf5eb;
-          background: #141414;
+          letter-spacing: 0;
           border: none;
           cursor: pointer;
-          transition: background 0.15s, transform 0.05s;
+          transition: background 0.15s, transform 0.06s, box-shadow 0.15s;
+        }
+        .kdp-tool :global(.kdp-btn-primary) {
+          color: #ffffff;
+          background: #d9342b;
+          box-shadow: 0 8px 22px rgba(217, 52, 43, 0.26);
+        }
+        .kdp-tool :global(.kdp-btn-primary:hover) {
+          background: #b8291f;
+          box-shadow: 0 12px 28px rgba(217, 52, 43, 0.34);
+          transform: translateY(-1px);
+        }
+        .kdp-tool :global(.kdp-btn-primary:active) { transform: translateY(0) scale(0.99); }
+        .kdp-tool :global(.kdp-btn-primary:disabled) {
+          background: #9ca3af;
+          box-shadow: none;
+          cursor: not-allowed;
+          transform: none;
+        }
+        .kdp-tool :global(.kdp-btn-ink) {
+          color: #faf5eb;
+          background: #141414;
           box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
         }
         .kdp-tool :global(.kdp-btn-ink:hover) {
           background: #2d2d2d;
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
           transform: translateY(-1px);
         }
-        /* Auth card */
-        .kdp-tool :global(.kdp-auth-card) {
-          max-width: 540px;
-          margin: 0 auto;
-          padding: 32px;
-          border-radius: 18px;
-          background: #ffffff;
-          border: 1.5px solid #e7dcc4;
-          box-shadow: 0 18px 48px rgba(40, 25, 10, 0.08);
-        }
-        @media (max-width: 640px) {
-          .kdp-tool :global(.kdp-auth-card) { padding: 24px; }
-          .kdp-tabs { gap: 2px; padding: 4px; }
-          .kdp-tab { padding: 9px 10px; font-size: 12px; }
-        }
-        /* Tier card */
+
+        /* ── Tier cards (Buy Credits) ─────────────────────────────── */
         .kdp-tool :global(.kdp-tier) {
-          padding: 26px 22px;
-          border-radius: 16px;
+          position: relative;
+          padding: 28px 26px 24px;
+          border-radius: 18px;
           background: #ffffff;
           border: 1.5px solid #e7dcc4;
           display: flex;
           flex-direction: column;
-          gap: 12px;
-          position: relative;
+          gap: 10px;
+          box-shadow: 0 8px 28px rgba(40, 25, 10, 0.06);
+          transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+        }
+        .kdp-tool :global(.kdp-tier:hover) {
+          transform: translateY(-3px);
+          box-shadow: 0 18px 44px rgba(40, 25, 10, 0.10);
         }
         .kdp-tool :global(.kdp-tier-pro) {
           border: 2px solid #c9a24e;
-          box-shadow: 0 14px 38px rgba(201, 162, 78, 0.20);
+          box-shadow: 0 14px 38px rgba(201, 162, 78, 0.22);
         }
-        @keyframes kdp-spin { to { transform: rotate(360deg); } }
+        .kdp-tool :global(.kdp-tier-pro:hover) {
+          box-shadow: 0 22px 50px rgba(201, 162, 78, 0.28);
+        }
 
-        /* Example-prompt chips below the topic textarea */
+        /* ── Auth card ─────────────────────────────────────────────── */
+        .kdp-tool :global(.kdp-auth-card) {
+          max-width: 540px;
+          margin: 0 auto;
+          padding: 36px;
+          border-radius: 20px;
+          background: #ffffff;
+          border: 1.5px solid #e7dcc4;
+          box-shadow: 0 22px 56px rgba(40, 25, 10, 0.09);
+        }
+        .kdp-tool :global(.kdp-auth-card-headline) {
+          font-family: "Instrument Serif", Georgia, serif;
+          font-style: italic;
+          font-weight: 400;
+          font-size: 34px;
+          line-height: 1;
+          letter-spacing: -0.025em;
+          color: #141414;
+          margin: 6px 0 18px;
+        }
+
+        /* ── Example-prompt chips ──────────────────────────────────── */
         .kdp-tool :global(.kdp-examples) {
           display: flex;
           flex-wrap: wrap;
@@ -722,10 +836,11 @@ export default function KdpNicheFinder() {
         }
         .kdp-tool :global(.kdp-examples-label) {
           font-size: 12px;
-          font-weight: 600;
+          font-weight: 700;
           color: #14141499;
-          letter-spacing: 0.04em;
-          margin-right: 4px;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          margin-right: 6px;
         }
         .kdp-tool :global(.kdp-chip) {
           font-family: inherit;
@@ -735,7 +850,7 @@ export default function KdpNicheFinder() {
           background: #faf5eb;
           border: 1px solid #d6cdb9;
           border-radius: 999px;
-          padding: 6px 12px;
+          padding: 7px 13px;
           cursor: pointer;
           transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.05s;
           white-space: nowrap;
@@ -745,8 +860,61 @@ export default function KdpNicheFinder() {
           border-color: #d9342b;
           color: #d9342b;
         }
-        .kdp-tool :global(.kdp-chip:active) {
-          transform: scale(0.97);
+        .kdp-tool :global(.kdp-chip:active) { transform: scale(0.97); }
+
+        /* ── Spinner ──────────────────────────────────────────────── */
+        @keyframes kdp-spin { to { transform: rotate(360deg); } }
+
+        /* ═══════════════════════════════════════════════════════════
+           Mobile audit — comprehensive responsive rules
+           ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 640px) {
+          .kdp-tool :global(.kdp-card) { padding: 22px; border-radius: 16px; }
+          .kdp-tool :global(.kdp-auth-card) { padding: 24px; border-radius: 18px; }
+          .kdp-tool :global(.kdp-auth-card-headline) { font-size: 28px; }
+          .kdp-tool :global(.kdp-tier) { padding: 22px 20px 20px; border-radius: 16px; }
+          .kdp-tool :global(.kdp-card-title) { font-size: 17px; }
+          .kdp-tool :global(.kdp-card-body) { font-size: 14px; }
+          .kdp-tool :global(.kdp-input),
+          .kdp-tool :global(.kdp-select),
+          .kdp-tool :global(.kdp-textarea) {
+            padding: 13px 14px;
+            font-size: 16px;  /* iOS Safari: prevents zoom-on-focus when ≥16px */
+          }
+          .kdp-tool :global(.kdp-btn-primary),
+          .kdp-tool :global(.kdp-btn-ink) {
+            padding: 14px 22px;
+            font-size: 14.5px;
+          }
+          .kdp-tabs {
+            gap: 2px;
+            padding: 4px;
+          }
+          .kdp-tab {
+            padding: 10px 12px;
+            font-size: 12px;
+            letter-spacing: -0.01em;
+          }
+          .kdp-tool :global(.kdp-examples-label) { width: 100%; margin-bottom: 2px; }
+          .kdp-tool :global(.kdp-chip) {
+            padding: 7px 12px;
+            font-size: 12px;
+          }
+          .kdp-tool :global(.kdp-card-stat) {
+            font-size: 11px;
+            line-height: 1.55;
+          }
+          .kdp-tool :global(.kdp-eyebrow-pill) {
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            padding: 4px 10px;
+          }
+        }
+
+        /* Very small screens (iPhone SE / 375px) — tabs need a row break */
+        @media (max-width: 380px) {
+          .kdp-tabs { flex-wrap: wrap; }
+          .kdp-tab { flex: 1 1 calc(50% - 4px); }
         }
       `}</style>
 
@@ -852,14 +1020,11 @@ export default function KdpNicheFinder() {
             {/* ── Sign up tab ── */}
             {authTab === "signup" && (
               <div className="kdp-auth-card">
-                <div className="flex items-baseline justify-between mb-1">
-                  <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>New here</div>
-                  <div className="text-[12px]" style={{ color: "#14141466" }}>1 free search · no card</div>
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                  <span className="kdp-eyebrow-pill kdp-eyebrow-green">New here</span>
+                  <span className="text-[12px] font-medium" style={{ color: "#14141466" }}>1 free search · no card</span>
                 </div>
-                <div
-                  className="sk-font-display-italic mb-5"
-                  style={{ fontSize: 32, color: "#141414", letterSpacing: "-0.025em", lineHeight: 1 }}
-                >
+                <div className="kdp-auth-card-headline">
                   Get your first search free.
                 </div>
                 <form onSubmit={onSignUpSubmit} className="flex flex-col gap-3">
@@ -876,8 +1041,8 @@ export default function KdpNicheFinder() {
                     Get my free search →
                   </button>
                 </form>
-                <div className="text-[12px] mt-3" style={{ color: "#14141466" }}>
-                  One free search per email. We never spam.
+                <div className="kdp-card-stat">
+                  One free search per email · we never spam · unsubscribe is one click
                 </div>
               </div>
             )}
@@ -885,14 +1050,11 @@ export default function KdpNicheFinder() {
             {/* ── Sign in tab ── */}
             {authTab === "signin" && (
               <div className="kdp-auth-card">
-                <div className="flex items-baseline justify-between mb-1">
-                  <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Returning</div>
-                  <div className="text-[12px]" style={{ color: "#14141466" }}>Recover your existing license</div>
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                  <span className="kdp-eyebrow-pill kdp-eyebrow-ink">Returning</span>
+                  <span className="text-[12px] font-medium" style={{ color: "#14141466" }}>Recover by email</span>
                 </div>
-                <div
-                  className="sk-font-display-italic mb-5"
-                  style={{ fontSize: 32, color: "#141414", letterSpacing: "-0.025em", lineHeight: 1 }}
-                >
+                <div className="kdp-auth-card-headline">
                   Welcome back.
                 </div>
                 <form onSubmit={onSignInSubmit} className="flex flex-col gap-3">
@@ -909,9 +1071,8 @@ export default function KdpNicheFinder() {
                     Sign in →
                   </button>
                 </form>
-                <div className="text-[12px] mt-3" style={{ color: "#14141466" }}>
-                  We look up the license attached to your email and restore it
-                  on this device. No password needed for this build.
+                <div className="kdp-card-stat">
+                  We look up the license attached to your email and restore it on this device · no password needed
                 </div>
               </div>
             )}
@@ -931,43 +1092,92 @@ export default function KdpNicheFinder() {
                   </div>
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {/* Single */}
+                  {/* ── Single $10 ── */}
                   <article className="kdp-tier">
-                    <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>One-off</div>
-                    <div className="text-[22px] font-bold leading-tight" style={{ color: "#141414" }}>1 search</div>
-                    <div className="text-[34px] font-semibold leading-none" style={{ color: "#d9342b", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
-                      $10 <span className="text-[12px] font-medium" style={{ color: "#14141499", letterSpacing: 0 }}>· single</span>
+                    <span className="kdp-eyebrow-pill kdp-eyebrow-red">One-off</span>
+                    <div
+                      className="leading-none"
+                      style={{
+                        fontFamily: "var(--font-fraunces, 'Fraunces', serif)",
+                        fontSize: 44,
+                        fontWeight: 600,
+                        letterSpacing: "-0.04em",
+                        color: "#d9342b",
+                        marginTop: 4,
+                      }}
+                    >
+                      $10
                     </div>
-                    <div id="pp-single" className="min-h-[48px]" />
-                    <div className="text-[12px]" style={{ color: "#14141466" }}>No expiry · code emailed instantly</div>
+                    <h3 className="kdp-card-title">1 search</h3>
+                    <p className="kdp-card-body">
+                      Pay once, hunt one signal. No commitment.
+                    </p>
+                    <div id="pp-single" className="min-h-[48px] mt-2" />
+                    <div className="kdp-card-stat">
+                      No expiry · License code emailed instantly · $10 / search
+                    </div>
                   </article>
 
-                  {/* Pack 10 */}
+                  {/* ── Pack 10 $50 ── */}
                   <article className="kdp-tier">
-                    <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Starter</div>
-                    <div className="text-[22px] font-bold leading-tight" style={{ color: "#141414" }}>10 searches</div>
-                    <div className="text-[34px] font-semibold leading-none" style={{ color: "#d9342b", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
-                      $50 <span className="text-[12px] font-medium" style={{ color: "#14141499", letterSpacing: 0 }}>· $5/each</span>
+                    <span className="kdp-eyebrow-pill kdp-eyebrow-green">Starter</span>
+                    <div
+                      className="leading-none"
+                      style={{
+                        fontFamily: "var(--font-fraunces, 'Fraunces', serif)",
+                        fontSize: 44,
+                        fontWeight: 600,
+                        letterSpacing: "-0.04em",
+                        color: "#d9342b",
+                        marginTop: 4,
+                      }}
+                    >
+                      $50
                     </div>
-                    <div id="pp-pack10" className="min-h-[48px]" />
-                    <div className="text-[12px]" style={{ color: "#14141466" }}>No expiry · code emailed instantly</div>
+                    <h3 className="kdp-card-title">10 searches</h3>
+                    <p className="kdp-card-body">
+                      Best for indie authors testing <em>a handful</em> of niches.
+                    </p>
+                    <div id="pp-pack10" className="min-h-[48px] mt-2" />
+                    <div className="kdp-card-stat">
+                      No expiry · License code emailed instantly · $5 / search
+                    </div>
                   </article>
 
-                  {/* Pack 20 — recommended */}
+                  {/* ── Pack 20 $79 — recommended ── */}
                   <article className="kdp-tier kdp-tier-pro">
                     <span
-                      className="absolute top-[-12px] right-4 px-2.5 py-1 rounded text-[10px] font-extrabold uppercase tracking-[0.18em]"
-                      style={{ background: "#c9a24e", color: "#141414" }}
+                      className="absolute top-[-12px] right-4 px-2.5 py-1.5 rounded-md text-[10px] font-extrabold uppercase tracking-[0.18em]"
+                      style={{
+                        background: "#c9a24e",
+                        color: "#141414",
+                        boxShadow: "0 4px 12px rgba(201, 162, 78, 0.32)",
+                      }}
                     >
-                      Best · save 60%
+                      Best · save 60 %
                     </span>
-                    <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: "#3d5a3d" }}>Pro</div>
-                    <div className="text-[22px] font-bold leading-tight" style={{ color: "#141414" }}>20 searches</div>
-                    <div className="text-[34px] font-semibold leading-none" style={{ color: "#d9342b", letterSpacing: "-0.03em", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>
-                      $79 <span className="text-[12px] font-medium" style={{ color: "#14141499", letterSpacing: 0 }}>· $3.95/each</span>
+                    <span className="kdp-eyebrow-pill kdp-eyebrow-gold">Pro</span>
+                    <div
+                      className="leading-none"
+                      style={{
+                        fontFamily: "var(--font-fraunces, 'Fraunces', serif)",
+                        fontSize: 44,
+                        fontWeight: 600,
+                        letterSpacing: "-0.04em",
+                        color: "#d9342b",
+                        marginTop: 4,
+                      }}
+                    >
+                      $79
                     </div>
-                    <div id="pp-pack20" className="min-h-[48px]" />
-                    <div className="text-[12px]" style={{ color: "#14141466" }}>No expiry · code emailed instantly</div>
+                    <h3 className="kdp-card-title">20 searches</h3>
+                    <p className="kdp-card-body">
+                      Best value — <em>save 60 %</em> vs single. For serious KDP research.
+                    </p>
+                    <div id="pp-pack20" className="min-h-[48px] mt-2" />
+                    <div className="kdp-card-stat">
+                      No expiry · License code emailed instantly · $3.95 / search
+                    </div>
                   </article>
                 </div>
               </>
@@ -976,11 +1186,11 @@ export default function KdpNicheFinder() {
             {/* ── License code tab ── */}
             {authTab === "code" && (
               <div className="kdp-auth-card">
-                <div className="text-[11px] font-bold tracking-[0.22em] uppercase mb-1" style={{ color: "#3d5a3d" }}>Have a code?</div>
-                <div
-                  className="sk-font-display-italic mb-5"
-                  style={{ fontSize: 32, color: "#141414", letterSpacing: "-0.025em", lineHeight: 1 }}
-                >
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                  <span className="kdp-eyebrow-pill kdp-eyebrow-ink">Have a code?</span>
+                  <span className="text-[12px] font-medium" style={{ color: "#14141466" }}>Switching devices</span>
+                </div>
+                <div className="kdp-auth-card-headline">
                   Paste it to restore.
                 </div>
                 <form onSubmit={onRestoreSubmit} className="flex flex-col gap-3">
@@ -1120,9 +1330,9 @@ export default function KdpNicheFinder() {
             boxShadow: "0 18px 48px rgba(40, 25, 10, 0.08)",
           }}
         >
-          <label className="block mb-5">
-            <span className="block text-[12px] font-bold tracking-[0.18em] uppercase mb-2" style={{ color: "#3d5a3d" }}>
-              1. Pick the signal you want to hunt
+          <label className="block mb-6">
+            <span className="kdp-field-label">
+              1 · Pick the signal you want to hunt
             </span>
             <select
               value={pattern}
@@ -1136,14 +1346,14 @@ export default function KdpNicheFinder() {
                 </option>
               ))}
             </select>
-            <span className="block text-[13px] italic mt-1.5" style={{ color: "#14141499" }}>
+            <span className="block text-[13px] italic mt-2" style={{ color: "#14141499" }}>
               {patternHelp}
             </span>
           </label>
 
-          <label className="block mb-5">
-            <span className="block text-[12px] font-bold tracking-[0.18em] uppercase mb-2" style={{ color: "#3d5a3d" }}>
-              2. What&apos;s the topic / niche?
+          <label className="block mb-6">
+            <span className="kdp-field-label">
+              2 · What&apos;s the topic / niche?
             </span>
             <textarea
               required
@@ -1154,7 +1364,7 @@ export default function KdpNicheFinder() {
               className="kdp-textarea"
             />
             <div className="kdp-examples">
-              <span className="kdp-examples-label">Try one:</span>
+              <span className="kdp-examples-label">Try one</span>
               {EXAMPLE_PROMPTS.map((ex) => (
                 <button
                   key={ex.label}
@@ -1172,14 +1382,15 @@ export default function KdpNicheFinder() {
           </label>
 
           <label className="block mb-7">
-            <span className="block text-[12px] font-bold tracking-[0.18em] uppercase mb-2" style={{ color: "#3d5a3d" }}>
-              3. Format <span className="text-[11px] tracking-[0.06em] ml-1" style={{ color: "#14141466" }}>(optional)</span>
+            <span className="kdp-field-label">
+              3 · Format
+              <span className="ml-2 normal-case tracking-normal text-[11px] font-medium" style={{ color: "#14141466" }}>(optional)</span>
             </span>
             <select
               value={format}
               onChange={(e) => setFormat(e.target.value)}
               className="kdp-select"
-              style={{ maxWidth: 320 }}
+              style={{ maxWidth: 360 }}
             >
               <option value="all">All formats</option>
               <option value="paperback">Paperback</option>
@@ -1193,7 +1404,7 @@ export default function KdpNicheFinder() {
             type="submit"
             disabled={loading}
             className="kdp-btn-primary"
-            style={{ padding: "16px 28px", fontSize: 16 }}
+            style={{ padding: "17px 30px", fontSize: 16 }}
           >
             {loading ? (
               <>
