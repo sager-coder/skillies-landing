@@ -113,28 +113,64 @@ export default function AmazonKdpNicheFinderPage() {
           pulled in to keep the text column legible). Mobile rules reset
           all of it so the illustration centres cleanly. */}
       <style>{`
-        .kdp-hero-art-inner { max-width: 760px; }
+        .kdp-hero-art-inner { max-width: 880px; }
         .kdp-hero-section { padding-bottom: 0; }
         .kdp-after-hero { padding-top: 28px; }
-        /* Trim sk-section padding under the signals + above the tool so
-           there isn't a giant cream void between the "Run a hunt below"
-           CTA and the search form. */
         .kdp-section-tight { padding-top: 12px; padding-bottom: 24px; }
         .kdp-section-pull-up { padding-top: 0; }
-        @media (min-width: 768px) {
-          .kdp-hero-art {
-            transform: translateY(-40px);
-            margin-bottom: -30px;
-          }
-          .kdp-hero-art-inner { max-width: 920px; }
-          .kdp-section-tight { padding-top: 16px; padding-bottom: 32px; }
+
+        /* Pill-shaped value-prop chips that sit directly under the hero
+           illustration. Each pill is a one-line trust statement; together
+           they reinforce the proposition without competing with the SVG. */
+        .kdp-hero-pills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+          margin-top: 8px;
+          max-width: 720px;
+          margin-inline: auto;
         }
-        @media (min-width: 1280px) {
+        .kdp-hero-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 9px 18px;
+          border-radius: 999px;
+          background: #ffffff;
+          border: 1.5px solid #e7dcc4;
+          color: #141414;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 0;
+          box-shadow: 0 4px 14px rgba(40, 25, 10, 0.06);
+          transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .kdp-hero-pill:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(40, 25, 10, 0.10);
+        }
+        .kdp-hero-pill .kdp-pill-glyph {
+          color: #d9342b;
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        @media (min-width: 768px) {
           .kdp-hero-art {
             transform: translateY(-60px);
             margin-bottom: -50px;
           }
-          .kdp-hero-art-inner { max-width: 1040px; }
+          .kdp-hero-art-inner { max-width: 1080px; }
+          .kdp-section-tight { padding-top: 16px; padding-bottom: 32px; }
+        }
+        @media (min-width: 1280px) {
+          .kdp-hero-art {
+            transform: translateY(-90px);
+            margin-bottom: -80px;
+          }
+          .kdp-hero-art-inner { max-width: 1200px; }
           .kdp-after-hero { padding-top: 16px; }
         }
       `}</style>
@@ -241,12 +277,31 @@ export default function AmazonKdpNicheFinderPage() {
           {/* Hero illustration — live React/SVG scene.
               Enlarged + dragged up + bled past the column gutter so it
               has the same cinematic presence as the standalone tool. */}
-          <div className="flex justify-center md:justify-end kdp-hero-art">
+          <div className="flex flex-col items-center md:items-end kdp-hero-art">
             <div
               className="w-full kdp-hero-art-inner"
               style={{ aspectRatio: "1600 / 900" }}
             >
               <KdpHeroScene />
+            </div>
+
+            {/* Value-prop pills directly under the illustration */}
+            <div className="kdp-hero-pills">
+              <span className="kdp-hero-pill">
+                <span className="kdp-pill-glyph">●</span> 1 free search · no email needed
+              </span>
+              <span className="kdp-hero-pill">
+                <span className="kdp-pill-glyph">★</span> Live Amazon data, every search
+              </span>
+              <span className="kdp-hero-pill">
+                <span className="kdp-pill-glyph">✕</span> Author-moat filter built-in
+              </span>
+              <span className="kdp-hero-pill">
+                <span className="kdp-pill-glyph">↑</span> 10 ranked results · ~50 sec
+              </span>
+              <span className="kdp-hero-pill">
+                <span className="kdp-pill-glyph">$</span> No subscription · pay per pack
+              </span>
             </div>
           </div>
         </div>
