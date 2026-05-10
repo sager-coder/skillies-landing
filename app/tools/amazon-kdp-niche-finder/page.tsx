@@ -113,119 +113,34 @@ export default function AmazonKdpNicheFinderPage() {
           pulled in to keep the text column legible). Mobile rules reset
           all of it so the illustration centres cleanly. */}
       <style>{`
-        .kdp-hero-art-inner { max-width: 880px; }
+        /* Hero illustration sizing & lift. Now that the feature strip is
+           gone, the illustration carries the full visual weight of the
+           hero — sized big and lifted modestly so it sits next to the
+           headline copy rather than floating below it. */
+        .kdp-hero-art-inner { max-width: 920px; }
         .kdp-hero-section { padding-bottom: 0; }
-        .kdp-after-hero { padding-top: 28px; }
+        .kdp-after-hero { padding-top: 32px; }
         .kdp-section-tight { padding-top: 12px; padding-bottom: 24px; }
         .kdp-section-pull-up { padding-top: 0; }
 
-        /* Feature strip wrapper — pulled up tight under the illustration so
-           it visually anchors the bottom of the hero composition. */
-        .kdp-features-wrap {
-          margin-top: 24px;
-        }
-        @media (min-width: 768px) {
-          .kdp-features-wrap { margin-top: -8px; }
-        }
-        @media (min-width: 1280px) {
-          .kdp-features-wrap { margin-top: -32px; }
-        }
-
-        /* ── Feature strip — 5 mini-cards beneath the hero ──
-           Same aesthetic as the signal cards (white, tan border, soft
-           shadow, hover lift). Each card pairs a Fraunces glyph with a
-           bold title + muted description. */
-        .kdp-features-strip {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 14px;
-        }
-        .kdp-feature {
-          position: relative;
-          background: #ffffff;
-          border: 1.5px solid #e7dcc4;
-          border-radius: 18px;
-          padding: 26px 22px 22px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          box-shadow: 0 8px 28px rgba(40, 25, 10, 0.06);
-          transition: transform 0.20s ease, box-shadow 0.20s ease, border-color 0.20s ease;
-          overflow: hidden;
-        }
-        .kdp-feature::before {
-          /* Soft red corner glow on hover — same trick as signal cards */
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(ellipse 240px 160px at 100% 0%, rgba(217, 52, 43, 0.08), transparent 60%);
-          opacity: 0;
-          transition: opacity 0.20s ease;
-          pointer-events: none;
-        }
-        .kdp-feature:hover {
-          transform: translateY(-4px);
-          border-color: #d9342b;
-          box-shadow: 0 18px 42px rgba(40, 25, 10, 0.12);
-        }
-        .kdp-feature:hover::before { opacity: 1; }
-        .kdp-feature-num {
-          font-family: var(--font-fraunces, "Fraunces", Georgia, serif);
-          font-weight: 600;
-          font-size: 38px;
-          line-height: 1;
-          letter-spacing: -0.04em;
-          color: #d9342b;
-          margin-bottom: 10px;
-        }
-        .kdp-feature-title {
-          font-weight: 800;
-          font-size: 16px;
-          line-height: 1.2;
-          letter-spacing: -0.012em;
-          color: #141414;
-        }
-        .kdp-feature-desc {
-          font-size: 13px;
-          line-height: 1.5;
-          color: #14141499;
-          margin-top: 2px;
-        }
-
-        @media (max-width: 1100px) {
-          .kdp-features-strip {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-        @media (max-width: 720px) {
-          .kdp-features-strip {
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-          }
-          .kdp-feature {
-            padding: 20px 16px 18px;
-            border-radius: 16px;
-          }
-          .kdp-feature-num { font-size: 30px; margin-bottom: 6px; }
-          .kdp-feature-title { font-size: 14px; }
-          .kdp-feature-desc { font-size: 12px; }
-        }
-
         @media (min-width: 768px) {
           .kdp-hero-art {
-            transform: translateY(-60px);
-            margin-bottom: -50px;
+            transform: translateY(-50px);
+            margin-bottom: -40px;
           }
-          .kdp-hero-art-inner { max-width: 1080px; }
+          .kdp-hero-art-inner { max-width: 1180px; }
           .kdp-section-tight { padding-top: 16px; padding-bottom: 32px; }
         }
         @media (min-width: 1280px) {
           .kdp-hero-art {
-            transform: translateY(-90px);
-            margin-bottom: -80px;
+            transform: translateY(-70px);
+            margin-bottom: -60px;
           }
-          .kdp-hero-art-inner { max-width: 1200px; }
-          .kdp-after-hero { padding-top: 16px; }
+          .kdp-hero-art-inner { max-width: 1320px; }
+          .kdp-after-hero { padding-top: 24px; }
+        }
+        @media (min-width: 1536px) {
+          .kdp-hero-art-inner { max-width: 1440px; }
         }
       `}</style>
       <TopNav />
@@ -256,7 +171,7 @@ export default function AmazonKdpNicheFinderPage() {
                 letterSpacing: "-0.045em",
               }}
             >
-              Hunches don&apos;t sell
+              Hunches don&apos;t sell books
               <span style={{ color: "var(--sk-red)" }}>.</span>
               <br />
               <span
@@ -331,42 +246,6 @@ export default function AmazonKdpNicheFinderPage() {
           </div>
         </div>
 
-        {/* ── Feature strip — 5 mini-cards in the signal-card aesthetic.
-            Pulled tight under the illustration via .kdp-features-wrap so
-            the strip visually anchors the bottom of the hero composition. */}
-        <div className="sk-container max-w-[1240px] kdp-features-wrap">
-          <div className="kdp-features-strip">
-            <article className="kdp-feature">
-              <div className="kdp-feature-num">●</div>
-              <div className="kdp-feature-title">1 free search</div>
-              <div className="kdp-feature-desc">No email, no card. Hit the button and hunt.</div>
-            </article>
-
-            <article className="kdp-feature">
-              <div className="kdp-feature-num">★</div>
-              <div className="kdp-feature-title">Live Amazon data</div>
-              <div className="kdp-feature-desc">Every search hits the actual market — not estimates.</div>
-            </article>
-
-            <article className="kdp-feature">
-              <div className="kdp-feature-num">✕</div>
-              <div className="kdp-feature-title">Author-moat filter</div>
-              <div className="kdp-feature-desc">Drops famous-author halos. You see slots an indie can win.</div>
-            </article>
-
-            <article className="kdp-feature">
-              <div className="kdp-feature-num">↑</div>
-              <div className="kdp-feature-title">10 ranked results</div>
-              <div className="kdp-feature-desc">Top opportunities only · ~50 seconds end to end.</div>
-            </article>
-
-            <article className="kdp-feature">
-              <div className="kdp-feature-num">$</div>
-              <div className="kdp-feature-title">No subscription</div>
-              <div className="kdp-feature-desc">Pay per pack — $3.95 / search at scale. Credits never expire.</div>
-            </article>
-          </div>
-        </div>
       </section>
 
       {/* ─── 8 signals ─── */}
