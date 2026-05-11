@@ -521,18 +521,17 @@ export default function AmazonKdpNicheFinderPage() {
         }
 
         /* ── Bot eye blink ──────────────────────────────────────────
-           Both eyes close together for ~150 ms every 4.2 s. The
-           transform-origin uses fill-box so the eyes squeeze toward
-           their own bbox centre regardless of the parent bot's
-           dynamic breathing scale. */
+           Both eyes close together briefly every 1 s. transform-box:
+           fill-box keeps the squeeze centred regardless of the parent
+           bot's dynamic breathing scale. */
         .kdp-bot-eyes {
           transform-box: fill-box;
           transform-origin: center;
-          animation: kdp-blink 4.2s ease-in-out infinite;
+          animation: kdp-blink 1s ease-in-out infinite;
         }
         @keyframes kdp-blink {
-          0%, 92%, 100% { transform: scaleY(1); }
-          94%, 96%      { transform: scaleY(0.08); }
+          0%, 82%, 100% { transform: scaleY(1); }
+          90%, 94%      { transform: scaleY(0.08); }
         }
 
         /* ═══════════════════════════════════════════════════════════
