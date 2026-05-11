@@ -1112,7 +1112,7 @@ export default function KdpNicheFinder() {
                 <div className="kdp-auth-card-headline">
                   {otpStep === "request"
                     ? "Continue with your email."
-                    : "Enter the 6-digit code."}
+                    : "Enter the code we sent."}
                 </div>
 
                 {otpStep === "request" && (
@@ -1153,9 +1153,9 @@ export default function KdpNicheFinder() {
                         required
                         value={otpCode}
                         onChange={(e) =>
-                          setOtpCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
+                          setOtpCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 10))
                         }
-                        placeholder="123456"
+                        placeholder="••••••"
                         className="kdp-input"
                         disabled={otpVerifying}
                         style={{
@@ -1164,7 +1164,7 @@ export default function KdpNicheFinder() {
                           fontSize: 18,
                           textAlign: "center",
                         }}
-                        maxLength={6}
+                        maxLength={10}
                       />
                       <button
                         type="submit"
