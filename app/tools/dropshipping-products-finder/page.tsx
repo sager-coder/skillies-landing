@@ -31,9 +31,9 @@ const PATTERNS: Array<{
     eyebrow: "Hated · still bought",
     title: "Bad reviews — still selling",
     blurb:
-      "Under 3.5★ but still moving units. Buyers are settling for trash because nothing better is on page one.",
+      "Under 4★ but still moving units. Buyers are settling for mediocre because nothing better is on page one.",
     blurbItalic: "You private-label better.",
-    stat: "Under 3.5★ · BSR ≤ 50,000 · 10–2,000 reviews",
+    stat: "Under 4★ · BSR ≤ 50,000 · 10–2,000 reviews",
   },
   {
     num: "02",
