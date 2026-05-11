@@ -686,38 +686,71 @@ export default function KdpNicheFinder() {
           margin-bottom: 8px;
         }
 
-        /* ── Tabs ──────────────────────────────────────────────────── */
+        /* ── Tabs ── flat underline style, editorial ─────────────────── */
         .kdp-tabs {
           display: flex;
-          flex-wrap: wrap;
-          gap: 4px;
-          padding: 5px;
-          border-radius: 999px;
-          background: #f0e8d8;
-          border: 1.5px solid #d6cdb9;
-          max-width: 680px;
+          gap: 0;
+          border-bottom: 1.5px solid #e7dcc4;
+          max-width: 540px;
           margin: 0 auto 28px;
         }
         .kdp-tab {
           flex: 1 1 auto;
           min-width: 0;
-          padding: 10px 14px;
-          border-radius: 999px;
+          padding: 14px 12px 14px;
           font-size: 13px;
-          font-weight: 700;
+          font-weight: 600;
           font-family: inherit;
           background: transparent;
-          color: #14141499;
+          color: #14141477;
           border: none;
+          border-bottom: 2px solid transparent;
+          margin-bottom: -1.5px;
           cursor: pointer;
-          transition: background 0.15s, color 0.15s;
+          transition: color 0.15s, border-color 0.15s;
           white-space: nowrap;
+          text-align: center;
         }
-        .kdp-tab:hover { color: #141414; background: rgba(255, 255, 255, 0.7); }
+        .kdp-tab:hover { color: #141414; }
         .kdp-tab[data-active="true"] {
-          background: #141414;
-          color: #faf5eb;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+          color: #d9342b;
+          border-bottom-color: #d9342b;
+          font-weight: 700;
+        }
+
+        /* ── Auth card hint ── replaces monospace stat in auth context ── */
+        .kdp-tool :global(.kdp-auth-hint) {
+          margin: 16px 0 0;
+          padding-top: 14px;
+          border-top: 1px solid #efe6d4;
+          font-size: 13px;
+          line-height: 1.55;
+          color: #14141480;
+        }
+        .kdp-tool :global(.kdp-auth-hint em) {
+          font-family: "Instrument Serif", Georgia, serif;
+          font-style: italic;
+          color: #141414;
+          font-size: 1.04em;
+        }
+
+        /* ── Auth form ── email + button row on desktop ──────────────── */
+        .kdp-tool :global(.kdp-auth-form) {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        @media (min-width: 640px) {
+          .kdp-tool :global(.kdp-auth-form) {
+            flex-direction: row;
+            align-items: stretch;
+          }
+          .kdp-tool :global(.kdp-auth-form > .kdp-input) { flex: 1 1 auto; }
+          .kdp-tool :global(.kdp-auth-form > .kdp-btn-primary) {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 14px 28px;
+          }
         }
 
         /* ── Buttons ───────────────────────────────────────────────── */
@@ -872,14 +905,10 @@ export default function KdpNicheFinder() {
             padding: 14px 22px;
             font-size: 14.5px;
           }
-          .kdp-tabs {
-            gap: 2px;
-            padding: 4px;
-          }
           .kdp-tab {
-            padding: 10px 12px;
-            font-size: 12px;
-            letter-spacing: -0.01em;
+            padding: 12px 8px;
+            font-size: 12.5px;
+            letter-spacing: -0.005em;
           }
           .kdp-tool :global(.kdp-examples-label) { width: 100%; margin-bottom: 2px; }
           .kdp-tool :global(.kdp-chip) {
@@ -897,11 +926,6 @@ export default function KdpNicheFinder() {
           }
         }
 
-        /* Very small screens (iPhone SE / 375px) — tabs need a row break */
-        @media (max-width: 380px) {
-          .kdp-tabs { flex-wrap: wrap; }
-          .kdp-tab { flex: 1 1 calc(50% - 4px); }
-        }
       `}</style>
 
       {/* ─── Status banner ─── */}
@@ -986,7 +1010,7 @@ export default function KdpNicheFinder() {
             {/* Tab bar */}
             <div className="kdp-tabs">
               {([
-                ["email", "Continue with email"],
+                ["email", "Email"],
                 ["buy", "Buy credits"],
                 ["code", "License code"],
               ] as Array<[AuthTab, string]>).map(([k, label]) => (
@@ -1005,14 +1029,13 @@ export default function KdpNicheFinder() {
             {/* ── Email tab (signup + signin unified) ── */}
             {authTab === "email" && (
               <div className="kdp-auth-card">
-                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                  <span className="kdp-eyebrow-pill kdp-eyebrow-green">Free first search · no card</span>
-                  <span className="text-[12px] font-medium" style={{ color: "#14141466" }}>Returning? Same email signs you back in</span>
+                <div className="mb-3">
+                  <span className="kdp-eyebrow-pill kdp-eyebrow-green">Sign in or sign up · same input</span>
                 </div>
                 <div className="kdp-auth-card-headline">
                   Continue with your email.
                 </div>
-                <form onSubmit={onEmailSubmit} className="flex flex-col gap-3">
+                <form onSubmit={onEmailSubmit} className="kdp-auth-form">
                   <input
                     type="email"
                     required
@@ -1026,9 +1049,10 @@ export default function KdpNicheFinder() {
                     Continue →
                   </button>
                 </form>
-                <div className="kdp-card-stat">
-                  New email → 1 free search · Returning email → your existing license restored on this device · no password
-                </div>
+                <p className="kdp-auth-hint">
+                  <em>New here?</em> Your first search is free, no card needed.{" "}
+                  <em>Returning?</em> The same email restores your existing license on this device — no password.
+                </p>
               </div>
             )}
 
