@@ -144,9 +144,7 @@ function DraftStamp() {
         opacity: 0.35,
         lineHeight: 1,
         pointerEvents: "none",
-        fontFamily: "'Instrument Serif', Georgia, serif",
-        fontStyle: "italic",
-        textShadow: "0 2px 0 rgba(255,255,255,0.3)",
+        fontFamily: "'Space Grotesk', system-ui, sans-serif",textShadow: "0 2px 0 rgba(255,255,255,0.3)",
       }}
     >
       DRAFT 0.3
@@ -228,9 +226,7 @@ function CourseRow({ c, i }: { c: Course; i: number }) {
       {/* Number */}
       <div
         style={{
-          fontFamily: "'Instrument Serif', serif",
-          fontStyle: "italic",
-          fontSize: 26,
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 26,
           color: "#9CA3AF",
           lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
@@ -254,9 +250,7 @@ function CourseRow({ c, i }: { c: Course; i: number }) {
         </h3>
         <p
           style={{
-            fontFamily: "'Instrument Serif', serif",
-            fontStyle: "italic",
-            fontSize: 14,
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 14,
             color: accent,
             margin: 0,
             lineHeight: 1.4,
@@ -372,8 +366,7 @@ export default function CoursesConstruction() {
             The campus is{" "}
             <em
               style={{
-                fontFamily: "'Instrument Serif', Georgia, serif",
-                fontStyle: "italic",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
                 color: "#C62828",
                 fontWeight: 400,
               }}
@@ -448,9 +441,7 @@ export default function CoursesConstruction() {
             </div>
             <p
               style={{
-                fontFamily: "'Instrument Serif', serif",
-                fontStyle: "italic",
-                fontSize: 22,
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 22,
                 color: "#1A1A1A",
                 margin: 0,
                 lineHeight: 1.4,
@@ -496,9 +487,7 @@ export default function CoursesConstruction() {
             </div>
             <span
               style={{
-                fontFamily: "'Instrument Serif', serif",
-                fontStyle: "italic",
-                fontSize: 15,
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 15,
                 color: "#9CA3AF",
               }}
             >
@@ -507,7 +496,7 @@ export default function CoursesConstruction() {
           </div>
           <h2
             style={{
-              fontFamily: "'Instrument Serif', serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
               fontWeight: 400,
               fontSize: "clamp(36px, 4.5vw, 60px)",
               letterSpacing: "-0.02em",
@@ -518,7 +507,7 @@ export default function CoursesConstruction() {
             }}
           >
             Nine courses, in various states of being{" "}
-            <em style={{ fontStyle: "italic", color: "#C62828" }}>ready.</em>
+            <em style={{ color: "#C62828" }}>ready.</em>
           </h2>
 
           {/* Table header */}
@@ -563,9 +552,7 @@ export default function CoursesConstruction() {
           >
             <div
               style={{
-                fontFamily: "'Instrument Serif', serif",
-                fontStyle: "italic",
-                fontSize: 16,
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 16,
                 color: "#9CA3AF",
                 maxWidth: 520,
                 lineHeight: 1.5,

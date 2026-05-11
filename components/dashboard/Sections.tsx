@@ -227,7 +227,7 @@ export function StatsRow() {
           </div>
           <div
             style={{
-              fontFamily: "'Instrument Serif', serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
               fontSize: 32,
               fontWeight: 400,
               color: s.accent ? accentColors[s.accent] : "#1A1A1A",
@@ -296,9 +296,7 @@ export function RoyaltiesChart() {
         </div>
         <div
           style={{
-            fontFamily: "'Instrument Serif', serif",
-            fontStyle: "italic",
-            fontSize: 16,
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 16,
             color: "#C62828",
           }}
         >
@@ -523,10 +521,8 @@ export function NextPayoutCard() {
         <Kicker tone="green-light">Amazon payout</Kicker>
         <h3
           style={{
-            fontFamily: "'Instrument Serif', serif",
-            fontSize: 44,
-            fontStyle: "italic",
-            fontWeight: 400,
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: 44,fontWeight: 400,
             letterSpacing: "-0.02em",
             margin: "12px 0 6px",
             lineHeight: 0.95,

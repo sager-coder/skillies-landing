@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Link = { href: string; label: string };
 
@@ -33,6 +34,12 @@ export default function TopNav({
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  // null = not yet known; true/false = resolved. Server-rendered HTML
+  // is always `null` (no SSR auth check), so the very first paint shows
+  // neither Sign in nor Logout — then the useEffect below resolves it
+  // within a few ms on the client.
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -40,6 +47,99 @@ export default function TopNav({
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Auth state, with a two-stage resolution:
+  //   1. Synchronous cookie probe — sets the button immediately based
+  //      on whether the Supabase auth-token cookie exists. May be a
+  //      slight false positive (stale cookie pre-rotation) but only
+  //      for a few ms before the async check below corrects it.
+  //   2. Async `getUser()` — authoritative; also fetches is_admin.
+  //
+  // Subscribed to auth-state changes so logout / fresh sign-in flips
+  // the button without a page reload.
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = createSupabaseBrowserClient();
+
+    // 1. Synchronous cookie probe
+    try {
+      if (typeof document !== "undefined") {
+        const hasToken = document.cookie
+          .split(";")
+          .map((c) => c.trim())
+          .some((c) => /^sb-[^=]*-auth-token/i.test(c));
+        if (hasToken) setSignedIn(true);
+      }
+    } catch {
+      /* swallow */
+    }
+
+    // 2. Async resolution
+    const sync = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (cancelled) return;
+        if (!user) {
+          setSignedIn(false);
+          setIsAdmin(false);
+          return;
+        }
+        setSignedIn(true);
+        const { data } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (!cancelled) setIsAdmin(!!data?.is_admin);
+      } catch {
+        if (!cancelled) setSignedIn(false);
+      }
+    };
+
+    sync();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => sync());
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  const onLogout = async () => {
+    // The default signOut() makes a network call to Supabase's
+    // /auth/v1/logout to invalidate the refresh token server-side. In
+    // some environments that call hangs indefinitely (slow Supabase,
+    // odd CORS, etc.), and because the redirect lives inside a finally
+    // block AFTER `await`, the page never navigates. Two safeguards:
+    //   1. Use `scope: 'local'` — skips the network call entirely and
+    //      just clears the local session/cookie via the storage adapter.
+    //   2. Race it against a hard 1.5s timeout. If even the local clear
+    //      hangs we still proceed to the manual cookie wipe + redirect.
+    try {
+      const supabase = createSupabaseBrowserClient();
+      await Promise.race([
+        supabase.auth.signOut({ scope: "local" }),
+        new Promise<void>((resolve) => setTimeout(resolve, 1500)),
+      ]);
+    } catch {
+      /* swallow — fall through to manual clear */
+    }
+    // Belt-and-braces: explicitly expire any Supabase auth cookies.
+    try {
+      for (const part of document.cookie.split(";")) {
+        const name = part.trim().split("=")[0];
+        if (name && name.startsWith("sb-")) {
+          document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        }
+      }
+    } catch {
+      /* swallow */
+    }
+    // Hard reload to the login page so server components re-render
+    // with the cleared session cookie.
+    window.location.href = "/login";
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -89,15 +189,42 @@ export default function TopNav({
                 {l.label}
               </a>
             ))}
+            {isAdmin && (
+              <a
+                href="/admin"
+                className="sk-font-meta text-[12px] font-semibold tracking-[0.1em] text-sk-red opacity-80 transition-all duration-300 hover:opacity-100"
+              >
+                Admin
+              </a>
+            )}
           </div>
 
           <div className="flex items-center gap-6">
-            <a
-              href="/login"
-              className="hidden lg:block sk-font-meta text-[12px] font-semibold tracking-[0.1em] text-sk-ink opacity-50 transition-all duration-300 hover:opacity-100"
-            >
-              Sign in
-            </a>
+            {signedIn === false && (
+              <a
+                href="/login"
+                className="hidden lg:block sk-font-meta text-[12px] font-semibold tracking-[0.1em] text-sk-ink opacity-60 transition-all duration-300 hover:opacity-100"
+              >
+                Sign in
+              </a>
+            )}
+            {signedIn === true && (
+              <>
+                <a
+                  href="/student"
+                  className="hidden lg:block sk-font-meta text-[12px] font-semibold tracking-[0.1em] text-sk-ink opacity-60 transition-all duration-300 hover:opacity-100"
+                >
+                  Dashboard
+                </a>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  className="hidden lg:block sk-font-meta text-[12px] font-semibold tracking-[0.1em] text-sk-red opacity-80 transition-all duration-300 hover:opacity-100 cursor-pointer bg-transparent border-none p-0 m-0"
+                >
+                  Logout
+                </button>
+              </>
+            )}
             <a
               href={cta.href}
               target={cta.href.startsWith("http") ? "_blank" : undefined}
@@ -109,7 +236,7 @@ export default function TopNav({
 
             <button
               type="button"
-              className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border border-sk-hairline bg-sk-cream/50"
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border border-sk-hairline bg-sk-cream/50 cursor-pointer"
               onClick={() => setOpen(!open)}
             >
               <div className="relative w-5 h-4">
@@ -154,24 +281,72 @@ export default function TopNav({
                   <span className="text-sk-red text-2xl">→</span>
                 </motion.a>
               ))}
+              {isAdmin && (
+                <motion.a
+                  href="/admin"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 + LINKS.length * 0.05 }}
+                  onClick={closeAnd()}
+                  className="flex items-center justify-between py-6 border-b border-sk-hairline"
+                >
+                  <span className="sk-font-display text-4xl text-sk-red">Admin</span>
+                  <span className="text-sk-red text-2xl">→</span>
+                </motion.a>
+              )}
               
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 className="mt-auto space-y-4"
               >
-                <a
-                  href="/login"
-                  onClick={closeAnd()}
-                  className="flex items-center justify-between p-6 bg-white/50 border border-sk-hairline rounded-2xl"
-                >
-                  <span className="sk-font-meta font-bold">Sign in · Portal</span>
-                  <span>→</span>
-                </a>
+                {signedIn === false && (
+                  <>
+                    <a
+                      href="/signup"
+                      onClick={closeAnd()}
+                      className="flex items-center justify-between p-6 bg-sk-red text-sk-cream rounded-2xl shadow-xl"
+                    >
+                      <span className="sk-font-meta font-bold">Sign up</span>
+                      <span>→</span>
+                    </a>
+                    <a
+                      href="/login"
+                      onClick={closeAnd()}
+                      className="flex items-center justify-between p-6 bg-white/50 border border-sk-hairline rounded-2xl"
+                    >
+                      <span className="sk-font-meta font-bold">Sign in</span>
+                      <span>→</span>
+                    </a>
+                  </>
+                )}
+                {signedIn === true && (
+                  <>
+                    <a
+                      href="/student"
+                      onClick={closeAnd()}
+                      className="flex items-center justify-between p-6 bg-white/50 border border-sk-hairline rounded-2xl"
+                    >
+                      <span className="sk-font-meta font-bold">My Dashboard</span>
+                      <span>→</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
+                        onLogout();
+                      }}
+                      className="w-full flex items-center justify-between p-6 bg-sk-red text-sk-cream rounded-2xl shadow-xl cursor-pointer border-none"
+                    >
+                      <span className="sk-font-meta font-bold">Logout</span>
+                      <span>↗</span>
+                    </button>
+                  </>
+                )}
                 <a
                   href={cta.href}
-                  className="flex items-center justify-between p-6 bg-sk-red text-sk-cream rounded-2xl shadow-xl"
+                  className="flex items-center justify-between p-6 bg-sk-cream border border-sk-hairline rounded-2xl"
                 >
                   <span className="sk-font-meta font-bold">Book a call</span>
                   <span>↗</span>

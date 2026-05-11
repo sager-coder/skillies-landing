@@ -97,7 +97,7 @@ export default function AdminResetDevicePanel() {
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="+91 80899 41131"
+          placeholder="+91XXXXXXXXXX"
           required
           style={{
             flex: "1 1 220px",

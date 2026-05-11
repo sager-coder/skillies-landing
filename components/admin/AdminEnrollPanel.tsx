@@ -69,7 +69,7 @@ export default function AdminEnrollPanel() {
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+91 80899 41131"
+              placeholder="+91XXXXXXXXXX"
               required
               style={inputStyle}
             />
@@ -78,7 +78,7 @@ export default function AdminEnrollPanel() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Shamseera M."
+              placeholder="Student's full name"
               style={inputStyle}
             />
           </Field>

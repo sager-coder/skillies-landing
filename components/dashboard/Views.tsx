@@ -231,10 +231,8 @@ function RoyaltiesTable() {
                   style={{
                     padding: "14px 0",
                     color: "#1A1A1A",
-                    fontFamily: "'Instrument Serif', serif",
-                    fontSize: 20,
-                    fontStyle: "italic",
-                    fontVariantNumeric: "tabular-nums",
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontSize: 20,fontVariantNumeric: "tabular-nums",
                     borderBottom: "1px solid #F0E8D8",
                   }}
                 >
@@ -373,9 +371,7 @@ function RoyaltyStatsRow() {
           </div>
           <div
             style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontStyle: "italic",
-              fontSize: 32,
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 32,
               color: "#1A1A1A",
               letterSpacing: "-0.02em",
               margin: "10px 0 2px",
@@ -434,9 +430,7 @@ export function RoyaltiesView() {
                   >
                     <span
                       style={{
-                        fontFamily: "'Instrument Serif', serif",
-                        fontStyle: "italic",
-                        fontSize: 22,
+                        fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 22,
                         color: "#C9A24E",
                         lineHeight: 1,
                       }}
@@ -460,9 +454,7 @@ export function RoyaltiesView() {
                     </div>
                     <div
                       style={{
-                        fontFamily: "'Instrument Serif', serif",
-                        fontStyle: "italic",
-                        fontSize: 18,
+                        fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 18,
                         color: "#1A1A1A",
                         fontVariantNumeric: "tabular-nums",
                       }}
@@ -658,9 +650,7 @@ function BookTile({ b }: { b: BookRecord }) {
         </div>
         <div
           style={{
-            fontFamily: "'Instrument Serif', serif",
-            fontStyle: "italic",
-            fontSize: 11,
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 11,
             lineHeight: 1.1,
             letterSpacing: "-0.01em",
           }}
@@ -671,10 +661,8 @@ function BookTile({ b }: { b: BookRecord }) {
       <div style={{ padding: "10px 12px" }}>
         <div
           style={{
-            fontFamily: "'Instrument Serif', serif",
-            fontSize: 16,
-            fontStyle: "italic",
-            color: "#1A1A1A",
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: 16,color: "#1A1A1A",
             lineHeight: 1,
             fontVariantNumeric: "tabular-nums",
           }}
@@ -937,9 +925,7 @@ export function EtsyView() {
               </div>
               <div
                 style={{
-                  fontFamily: "'Instrument Serif', serif",
-                  fontStyle: "italic",
-                  fontSize: 32,
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 32,
                   color: "#1F3A2E",
                   letterSpacing: "-0.02em",
                   margin: "10px 0 2px",
@@ -1012,9 +998,7 @@ export function EtsyView() {
                   </div>
                   <div
                     style={{
-                      fontFamily: "'Instrument Serif', serif",
-                      fontStyle: "italic",
-                      fontSize: 18,
+                      fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 18,
                       color: "#1F3A2E",
                     }}
                   >
@@ -1050,9 +1034,7 @@ export function EtsyView() {
             </div>
             <p
               style={{
-                fontFamily: "'Instrument Serif', serif",
-                fontStyle: "italic",
-                fontSize: 18,
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 18,
                 color: "#1A1A1A",
                 lineHeight: 1.45,
                 margin: 0,
@@ -1167,9 +1149,7 @@ function StudentCard({ s }: { s: Student }) {
 
       <div
         style={{
-          fontFamily: "'Instrument Serif', serif",
-          fontStyle: "italic",
-          fontSize: 15,
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 15,
           color: "#6B7280",
           lineHeight: 1.4,
           margin: "0 0 14px",
@@ -1201,9 +1181,7 @@ function StudentCard({ s }: { s: Student }) {
           </div>
           <div
             style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontStyle: "italic",
-              fontSize: 22,
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 22,
               color: "#1A1A1A",
             }}
           >
@@ -1224,9 +1202,7 @@ function StudentCard({ s }: { s: Student }) {
           </div>
           <div
             style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontStyle: "italic",
-              fontSize: 22,
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 22,
               color: s.booksLive > 0 ? "#5B7B5B" : "#9CA3AF",
             }}
           >
@@ -1325,10 +1301,8 @@ export function FoundingBatchView() {
               </div>
               <div
                 style={{
-                  fontFamily: "'Instrument Serif', serif",
-                  fontSize: 32,
-                  fontStyle: "italic",
-                  letterSpacing: "-0.02em",
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                  fontSize: 32,letterSpacing: "-0.02em",
                   margin: "0 0 6px",
                 }}
               >
@@ -1687,9 +1661,7 @@ export function CalendarView() {
           <Panel title="The honest math">
             <p
               style={{
-                fontFamily: "'Instrument Serif', serif",
-                fontStyle: "italic",
-                fontSize: 18,
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 18,
                 color: "#1A1A1A",
                 lineHeight: 1.5,
                 margin: 0,

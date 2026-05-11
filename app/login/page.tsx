@@ -3,6 +3,13 @@
 import React, { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Wordmark, Grain } from "@/components/design/Primitives";
+import { COUNTRIES, DEFAULT_COUNTRY } from "@/lib/country-codes";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+
+// Admins now sign in via the standard phone+password form with the
+// password set by scripts/set-admin-password.mjs. The /api/dev/admin-login
+// route remains as an emergency password-reset (NODE_ENV-guarded) but
+// is no longer wired into this page.
 
 function LoginShell({ children }: { children: React.ReactNode }) {
   return (
@@ -43,37 +50,58 @@ function LoginShell({ children }: { children: React.ReactNode }) {
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") || "/skillies-school";
-  const locked = params.get("locked") === "1";
+  // next may be null — claimDeviceAndRedirect resolves a role-aware
+  // default (/admin for admins, /student otherwise) when missing.
+  const next = params.get("next");
 
-  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState(DEFAULT_COUNTRY.code);
+  const [national, setNational] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  const selectedCountry =
+    COUNTRIES.find((c) => c.code === countryCode) || DEFAULT_COUNTRY;
+  const fullPhone = selectedCountry.dial + national;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
+    if (national.length < 6) {
+      setErr("Enter a valid phone number.");
+      return;
+    }
+    if (password.length < 1) {
+      setErr("Enter your password.");
+      return;
+    }
     setBusy(true);
     try {
-      const res = await fetch("/api/auth/send-otp", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ phone }),
+      // Standard sign-in: phone + password.
+      const supabase = createSupabaseBrowserClient();
+      const { error, data } = await supabase.auth.signInWithPassword({
+        phone: fullPhone,
+        password,
       });
-      const data = (await res.json()) as {
-        ok?: boolean;
-        phone?: string;
-        error?: string;
-      };
-      if (!res.ok || !data.ok || !data.phone) {
-        throw new Error(data.error || "Couldn't send code. Try again.");
-      }
-      router.push(
-        `/login/verify?phone=${encodeURIComponent(data.phone)}&next=${encodeURIComponent(next)}`,
-      );
+      if (error) throw error;
+      const user = data.user;
+      if (!user) throw new Error("Sign-in returned no session.");
+
+      // Bind device + redirect. Same path the old OTP-verify took.
+      await claimDeviceAndRedirect(next, router);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Something went wrong. Try again.";
-      setErr(msg);
+      const msg = e instanceof Error ? e.message : "Couldn't sign in.";
+      // Friendlier messages for the most common Supabase Auth errors.
+      if (/phone.*not.*confirm/i.test(msg)) {
+        setErr(
+          "This number hasn't been verified yet. Finish signing up at /signup, or contact support if your phone number is already correct.",
+        );
+      } else if (/invalid.*(login|credentials|password)/i.test(msg)) {
+        setErr("Wrong phone or password. Try again.");
+      } else {
+        setErr(msg);
+      }
     } finally {
       setBusy(false);
     }
@@ -91,12 +119,12 @@ function LoginForm() {
           color: "#C62828",
         }}
       >
-        Sign in · Founding batch
+        Sign in
       </div>
       <h1
         style={{
           margin: "10px 0 8px",
-          fontFamily: "'Instrument Serif', Georgia, serif",
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
           fontWeight: 400,
           fontSize: "clamp(36px, 5vw, 52px)",
           letterSpacing: "-0.02em",
@@ -104,36 +132,17 @@ function LoginForm() {
           lineHeight: 1.05,
         }}
       >
-        Enter your <em style={{ fontStyle: "italic", color: "#C62828" }}>WhatsApp number.</em>
+        Welcome <em style={{ color: "#C62828" }}>back.</em>
       </h1>
 
-      {locked && (
-        <div
-          style={{
-            marginTop: 16,
-            padding: "14px 16px",
-            background: "rgba(201,162,78,0.10)",
-            border: "1px solid rgba(201,162,78,0.35)",
-            borderRadius: 12,
-            fontSize: 13,
-            lineHeight: 1.55,
-            color: "#8a6a1f",
-          }}
+<p style={{ fontSize: 15, color: "#6B7280", margin: "16px 0 24px", lineHeight: 1.6 }}>
+        New to Skillies?{" "}
+        <a
+          href={`/signup${next ? `?next=${encodeURIComponent(next)}` : ""}`}
+          style={{ color: "#C62828", fontWeight: 600 }}
         >
-          <b>This account is locked to another device.</b> Skillies.AI
-          courses are one-device-per-student to keep them affordable —
-          if you&rsquo;ve genuinely lost or switched phones,{" "}
-          <a
-            href="mailto:ehsan@skillies.ai?subject=Device%20reset%20%E2%80%94%20skillies.ai&body=Hi%20Ehsan%2C%20I%20need%20to%20reset%20my%20device%20on%20skillies.ai.%20My%20phone%20number%20is%20"
-            style={{ color: "#8a6a1f", fontWeight: 700 }}
-          >
-            email Ehsan
-          </a>{" "}
-          and he&rsquo;ll unlock it for you.
-        </div>
-      )}
-      <p style={{ fontSize: 15, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
-        We’ll text you a one-time code. The number you used to enrol with Ehsan.
+          Create an account →
+        </a>
       </p>
 
       <form onSubmit={onSubmit}>
@@ -150,34 +159,159 @@ function LoginForm() {
         >
           Phone number
         </label>
-        <input
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="+91 80899 41131"
-          disabled={busy}
+        <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+          <div style={{ position: "relative", flex: "0 0 auto" }}>
+            <div
+              style={{
+                pointerEvents: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "14px 30px 14px 14px",
+                fontSize: 18,
+                border: "1.5px solid #F0E8D8",
+                borderRadius: 12,
+                color: "#1A1A1A",
+                background: "#FAF5EB",
+                fontFamily: "ui-monospace, Menlo, monospace",
+                fontVariantNumeric: "tabular-nums",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span aria-hidden>{selectedCountry.flag}</span>
+              <span style={{ fontWeight: 700 }}>{selectedCountry.dial}</span>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  position: "absolute",
+                  right: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  opacity: 0.5,
+                }}
+                aria-hidden
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+            <select
+              aria-label="Country"
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
+              disabled={busy}
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: 0,
+                width: "100%",
+                height: "100%",
+                cursor: busy ? "wait" : "pointer",
+                fontSize: 16,
+              }}
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.flag} {c.name} ({c.dial})
+                </option>
+              ))}
+            </select>
+          </div>
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel-national"
+            value={national}
+            onChange={(e) =>
+              setNational(e.target.value.replace(/\D/g, "").slice(0, 15))
+            }
+            placeholder="Mobile number"
+            disabled={busy}
+            style={{
+              flex: "1 1 auto",
+              minWidth: 0,
+              padding: "14px 16px",
+              fontSize: 18,
+              border: "1.5px solid #F0E8D8",
+              borderRadius: 12,
+              outline: "none",
+              fontFamily: "ui-monospace, Menlo, monospace",
+              fontVariantNumeric: "tabular-nums",
+              color: "#1A1A1A",
+              background: "#FAF5EB",
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#C62828")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "#F0E8D8")}
+          />
+        </div>
+
+        <label
           style={{
-            width: "100%",
-            padding: "14px 16px",
-            fontSize: 18,
-            border: "1.5px solid #F0E8D8",
-            borderRadius: 12,
-            outline: "none",
-            fontFamily: "ui-monospace, Menlo, monospace",
-            fontVariantNumeric: "tabular-nums",
-            color: "#1A1A1A",
-            background: "#FAF5EB",
+            display: "block",
+            marginTop: 18,
+            fontSize: 11,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            color: "#9CA3AF",
+            marginBottom: 8,
           }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = "#C62828")}
-          onBlur={(e) => (e.currentTarget.style.borderColor = "#F0E8D8")}
-        />
+        >
+          Password
+        </label>
+        <div style={{ position: "relative" }}>
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Your password"
+            autoComplete="current-password"
+            disabled={busy}
+            style={{
+              width: "100%",
+              padding: "14px 56px 14px 16px",
+              fontSize: 18,
+              border: "1.5px solid #F0E8D8",
+              borderRadius: 12,
+              outline: "none",
+              color: "#1A1A1A",
+              background: "#FAF5EB",
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#C62828")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "#F0E8D8")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((s) => !s)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            style={{
+              position: "absolute",
+              right: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "transparent",
+              border: "none",
+              color: "#6B7280",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              padding: "6px 8px",
+            }}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
 
         {err && (
           <div
             style={{
-              marginTop: 12,
+              marginTop: 14,
               padding: "10px 14px",
               background: "rgba(198,40,40,0.08)",
               border: "1px solid rgba(198,40,40,0.25)",
@@ -193,7 +327,7 @@ function LoginForm() {
 
         <button
           type="submit"
-          disabled={busy || phone.length < 6}
+          disabled={busy || national.length < 6}
           style={{
             width: "100%",
             marginTop: 18,
@@ -206,53 +340,95 @@ function LoginForm() {
             borderRadius: 999,
             cursor: busy ? "wait" : "pointer",
             boxShadow: "0 12px 30px rgba(198,40,40,0.22)",
-            opacity: phone.length < 6 ? 0.5 : 1,
+            opacity: national.length < 6 ? 0.5 : 1,
           }}
         >
-          {busy ? "Sending code…" : "Send one-time code"}
+          {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
-
-      <div
-        style={{
-          marginTop: 24,
-          paddingTop: 20,
-          borderTop: "1px dashed rgba(26,26,26,0.10)",
-          fontSize: 13,
-          color: "#6B7280",
-          lineHeight: 1.6,
-        }}
-      >
-        Not enrolled yet?{" "}
-        <a
-          href="/skillies-school"
-          style={{ color: "#C62828", fontWeight: 600 }}
-        >
-          See the Skillies School page →
-        </a>
-      </div>
     </>
   );
+}
+
+/**
+ * After a successful sign-in (any path), this binds the device cookie
+ * and resolves the role-aware default destination. Centralised so the
+ * password and dev-admin paths share exactly the same post-auth logic.
+ */
+async function claimDeviceAndRedirect(
+  rawNext: string | null,
+  router: ReturnType<typeof useRouter>,
+): Promise<void> {
+  // Device id is per-browser; persistent so subsequent logins from the
+  // same browser stay bound to the same device.
+  let deviceId: string | null = null;
+  try {
+    deviceId = window.localStorage.getItem("skillies_device_id");
+    if (!deviceId) {
+      deviceId =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : String(Date.now()) + "-" + Math.random().toString(36).slice(2);
+      window.localStorage.setItem("skillies_device_id", deviceId);
+    }
+  } catch {
+    deviceId =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : String(Date.now()) + "-" + Math.random().toString(36).slice(2);
+  }
+  // Best-effort device-claim. The endpoint is currently a no-op (one-
+  // device enforcement is disabled), so we never expect a 403 here.
+  // Kept so the cookie still gets stamped and the call path stays in
+  // place for an easy future re-enable.
+  await fetch("/api/auth/claim-device", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ deviceId }),
+  }).catch(() => {});
+
+  // Role-aware default destination.
+  let destination = rawNext;
+  if (!destination) {
+    const supabase = createSupabaseBrowserClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", user.id)
+        .maybeSingle();
+      destination = profile?.is_admin ? "/admin" : "/student";
+    } else {
+      destination = "/student";
+    }
+  }
+  router.push(destination);
 }
 
 function LoginFallback() {
   return (
     <>
       <div style={{ marginTop: 28, height: 14 }} />
+      {[0, 1].map((i) => (
+        <div
+          key={i}
+          style={{
+            height: 56,
+            background: "rgba(26,26,26,0.04)",
+            borderRadius: 12,
+            marginTop: 12,
+          }}
+        />
+      ))}
       <div
         style={{
           height: 56,
           background: "rgba(26,26,26,0.04)",
-          borderRadius: 8,
-          marginTop: 12,
-        }}
-      />
-      <div
-        style={{
-          height: 56,
-          background: "rgba(26,26,26,0.04)",
-          borderRadius: 12,
-          marginTop: 28,
+          borderRadius: 999,
+          marginTop: 18,
         }}
       />
     </>

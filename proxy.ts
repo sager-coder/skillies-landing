@@ -51,28 +51,26 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // One-device-per-account enforcement. Only on /learn — /admin has its
-  // own server-side gate and admins are exempt from the lock anyway.
-  if (user && path.startsWith("/learn")) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("bound_device_id, is_admin")
-      .eq("id", user.id)
-      .single();
+  // ── One-device-per-account enforcement is DISABLED ─────────────────
+  // The DB columns (`profiles.bound_device_id`, `device_bound_at`) and
+  // the `/api/auth/claim-device` endpoint still exist, but the middleware
+  // no longer redirects to /login?locked=1 on a device mismatch. Flip
+  // this feature back on by uncommenting the block in git history.
+  // ───────────────────────────────────────────────────────────────────
 
-    if (profile?.bound_device_id && !profile?.is_admin) {
-      const cookie = req.cookies.get("skillies_device")?.value;
-      if (!cookie || cookie !== profile.bound_device_id) {
-        const lockUrl = new URL("/login", req.url);
-        lockUrl.searchParams.set("locked", "1");
-        return NextResponse.redirect(lockUrl);
-      }
-    }
-  }
-
-  // Already-logged-in users hitting /login → bounce to /learn
+  // Already-logged-in users hitting /login → bounce to their dashboard.
+  // Admins default to /admin, everyone else to /student. /learn is a
+  // dynamic route with no index page, so we never use it as default.
   if (path === "/login" && user) {
-    const next = req.nextUrl.searchParams.get("next") || "/learn";
+    let next = req.nextUrl.searchParams.get("next");
+    if (!next) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", user.id)
+        .maybeSingle();
+      next = profile?.is_admin ? "/admin" : "/student";
+    }
     return NextResponse.redirect(new URL(next, req.url));
   }
 

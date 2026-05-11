@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  createSupabaseServerClient,
-  createSupabaseAdminClient,
-} from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
@@ -12,21 +9,21 @@ export const DEVICE_COOKIE = "skillies_device";
 type Body = { deviceId?: string };
 
 /**
- * Claim-or-match the current user's device.
+ * Device-claim — currently a NO-OP (one-device-per-account enforcement
+ * is disabled; see proxy.ts for the related stub).
  *
- * Called once from /login/verify after a successful OTP. The client
- * generates (or re-reads from localStorage) a UUID, posts it here, and:
+ * The endpoint still:
+ *   - verifies the caller is signed in (cheap, server-side cookie read)
+ *   - validates the deviceId shape (defends against junk client state)
+ *   - sets the `skillies_device` cookie so the client side keeps the
+ *     same persistent device id across sessions
  *
- *   - If the profile has no bound device yet → we stamp this one on it
- *     (first login, first device is the bound one, forever).
- *   - If the profile's bound device === this one → nothing changes in
- *     the DB, we just (re)issue the httpOnly cookie so the proxy can
- *     verify on every later request.
- *   - If they differ → 403 locked. The client then signs out so the
- *     attacker/second-device session doesn't stay alive.
+ * It does NOT:
+ *   - write `bound_device_id` / `device_bound_at` in profiles
+ *   - 403 on a device mismatch
  *
- * Admins can clear `bound_device_id` via /api/admin/reset-device to
- * give a student a legitimate second chance (new phone, lost device).
+ * To re-enable enforcement, restore the admin-DB read + bound_device_id
+ * comparison block from git history and uncomment the proxy.ts check.
  */
 export async function POST(req: Request) {
   const supabase = await createSupabaseServerClient();
@@ -45,47 +42,8 @@ export async function POST(req: Request) {
   }
 
   const deviceId = (body.deviceId || "").trim();
-  // crypto.randomUUID() is 36 chars with dashes; allow 20–60 so we aren't
-  // brittle to a slightly different generator later.
   if (!/^[a-zA-Z0-9-]{20,60}$/.test(deviceId)) {
     return NextResponse.json({ error: "Invalid device id." }, { status: 400 });
-  }
-
-  const admin = createSupabaseAdminClient();
-  const { data: profile, error } = await admin
-    .from("profiles")
-    .select("bound_device_id, is_admin")
-    .eq("id", user.id)
-    .single();
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  // Admins are exempt — they can log in from any device without stamping
-  // a binding. We still issue the cookie so the browser has one, but we
-  // don't write `bound_device_id`, so the proxy never locks them out.
-  if (!profile?.is_admin) {
-    if (!profile?.bound_device_id) {
-      const { error: updErr } = await admin
-        .from("profiles")
-        .update({
-          bound_device_id: deviceId,
-          device_bound_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
-      if (updErr) {
-        return NextResponse.json({ error: updErr.message }, { status: 500 });
-      }
-    } else if (profile.bound_device_id !== deviceId) {
-      return NextResponse.json(
-        {
-          error: "locked",
-          message:
-            "This account is locked to another device. WhatsApp Ehsan if you genuinely need a reset.",
-        },
-        { status: 403 },
-      );
-    }
   }
 
   const res = NextResponse.json({ ok: true });

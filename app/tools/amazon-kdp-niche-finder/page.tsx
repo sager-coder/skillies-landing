@@ -378,7 +378,7 @@ export default function AmazonKdpNicheFinderPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: var(--font-fraunces, "Fraunces", Georgia, serif);
+          font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
           font-size: 28px;
           font-weight: 600;
           color: rgba(40,25,10,0.45);

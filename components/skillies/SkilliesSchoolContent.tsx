@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
+import type { ReactNode } from "react";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
@@ -57,7 +57,17 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-export default function SkilliesSchoolContent() {
+export default function SkilliesSchoolContent({
+  coursesSlot,
+}: {
+  /**
+   * Pre-rendered courses catalog section (server-fetched in the parent
+   * page). Slotted between the financial-proof block and the
+   * "What you actually learn" modules so visitors see the actual
+   * products right after the proof.
+   */
+  coursesSlot?: ReactNode;
+} = {}) {
   return (
     <main className="relative min-h-screen overflow-hidden" style={{ background: "var(--sk-cream)" }}>
       {/* ── Ambient Background Motion (Home Vibe) ── */}
@@ -163,6 +173,9 @@ export default function SkilliesSchoolContent() {
           </div>
         </div>
       </section>
+
+      {/* Courses catalog — slotted in by the page server component */}
+      {coursesSlot}
 
       {/* What's inside */}
       <section className="sk-section relative">

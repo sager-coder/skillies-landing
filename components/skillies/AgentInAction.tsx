@@ -319,7 +319,7 @@ function PanelHeader({ vertical }: { vertical: Vertical }) {
         style={{
           background: vertical.accent,
           color: vertical.accentInk,
-          fontFamily: "var(--font-fraunces), Georgia, serif",
+          fontFamily: "var(--font-space-grotesk), Georgia, serif",
           fontWeight: 700,
           fontSize: "1.1rem",
         }}

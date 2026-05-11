@@ -192,7 +192,7 @@ export default async function VentureNavigatorDemoPage({
             </p>
             <h1
               style={{
-                fontFamily: "'Instrument Serif', serif",
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
                 fontSize: "clamp(36px, 5vw, 58px)",
                 lineHeight: 1.04,
                 fontWeight: 400,
@@ -457,7 +457,7 @@ export default async function VentureNavigatorDemoPage({
           </p>
           <h3
             style={{
-              fontFamily: "'Instrument Serif', serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
               fontSize: "clamp(28px, 4vw, 42px)",
               fontWeight: 400,
               margin: "0 0 16px",
@@ -567,7 +567,7 @@ function SectionHeader({
       </p>
       <h2
         style={{
-          fontFamily: "'Instrument Serif', serif",
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
           fontSize: "clamp(26px, 3.4vw, 38px)",
           lineHeight: 1.1,
           fontWeight: 400,
@@ -610,7 +610,7 @@ function Stat({ n, sub }: { n: string; sub: string }) {
         style={{
           fontSize: 26,
           fontWeight: 700,
-          fontFamily: "'Instrument Serif', serif",
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
           color: INK,
           lineHeight: 1.0,
           letterSpacing: "-0.01em",

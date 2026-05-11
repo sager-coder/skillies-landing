@@ -121,9 +121,7 @@ export default function AgentLanguageWidget() {
 
       <h3
         style={{
-          fontFamily: "'Instrument Serif', Georgia, serif",
-          fontStyle: "italic",
-          fontSize: "clamp(28px, 4vw, 42px)",
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: "clamp(28px, 4vw, 42px)",
           fontWeight: 400,
           margin: "0 0 12px",
           color: COLOR.ink,

@@ -64,7 +64,7 @@ export default function VerticalDemoLayout({ config }: { config: VerticalDemoCon
           <Link
             href="/"
             style={{
-              fontFamily: "var(--font-fraunces), Georgia, serif",
+              fontFamily: "var(--font-space-grotesk), Georgia, serif",
               fontSize: 18,
               fontWeight: 600,
               letterSpacing: "-0.02em",

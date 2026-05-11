@@ -236,6 +236,51 @@ join public.courses c on c.id = e.course_id
 where e.user_id = auth.uid();
 
 
--- ---------------------------------------------------------------
+-- ===========================================================
+-- Skillies School v2 · Catalog metadata
+--   Added 2026-05 to support the public courses page + admin
+--   course CRUD. Idempotent; safe to re-run.
+-- ===========================================================
+
+alter table public.courses add column if not exists thumbnail_url      text;
+alter table public.courses add column if not exists mentor_name        text;
+alter table public.courses add column if not exists duration_label     text;     -- e.g. "50 days", "8 weeks"
+alter table public.courses add column if not exists short_description  text;     -- one-liner for cards
+alter table public.courses add column if not exists is_published       boolean not null default true;
+alter table public.courses add column if not exists sort_order         int     not null default 0;
+
+-- Backfill mentor + duration on the seeded flagship row, only if blank.
+update public.courses
+   set mentor_name    = coalesce(mentor_name,    'Ehsan Sager'),
+       duration_label = coalesce(duration_label, '50 days'),
+       short_description = coalesce(
+         short_description,
+         'Ship your first book to Amazon in 50 days. Stack 60 by the end.'
+       )
+ where id = 'kdp-mastery';
+
+
+-- ===========================================================
+-- Skillies School v3 · Profile completion fields
+--   Added 2026-05 to support the "complete your details" step
+--   after phone-OTP signup. Idempotent; safe to re-run.
+-- ===========================================================
+
+alter table public.profiles add column if not exists first_name text;
+alter table public.profiles add column if not exists last_name  text;
+
+
+-- ===========================================================
+-- Skillies School v4 · Admin moderation
+--   `blocked` lets admins suspend a student account without
+--   deleting it. Enforcement is in application code (e.g.
+--   middleware or login gate) — column alone doesn't lock anyone.
+-- ===========================================================
+
+alter table public.profiles
+  add column if not exists blocked boolean not null default false;
+
+
+-- ===========================================================
 -- Done. Visit Settings → API to grab the URL + keys.
--- ---------------------------------------------------------------
+-- ===========================================================

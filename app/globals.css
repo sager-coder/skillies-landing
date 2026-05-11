@@ -941,7 +941,7 @@ html, body {
 }
 
 .sk-pull-quote {
-  font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
   font-style: italic;
   font-weight: 500;
   font-size: clamp(1.5rem, 1.5vw + 1rem, 2.25rem);
@@ -1010,27 +1010,30 @@ html, body {
   .sk-divider-asymmetric { transform: scaleX(1) !important; }
 }
 
-/* ─── Editorial typography · Instrument Serif as warmth layer ────────
+/* ─── Editorial typography · Fraunces as warmth layer ────────
    Fraunces handles big display headlines. Inter handles UI + dense
-   meta text. Instrument Serif is the missing editorial-warmth voice
+   meta text. Fraunces is the missing editorial-warmth voice
    for sub-heads, pull quotes, and intermediate body emphasis. */
 
 .sk-font-editorial {
-  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
   font-style: normal;
   font-weight: 400;
   letter-spacing: -0.005em;
   line-height: 1.35;
 }
+/* Class name kept for backwards-compat with markup that still imports it,
+   but the italic style was dropped at the user's request — now renders as
+   upright Fraunces, matching the rest of the editorial family. */
 .sk-font-editorial-italic {
-  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
+  font-style: normal;
   font-weight: 400;
   letter-spacing: -0.005em;
 }
 .sk-font-pullquote {
-  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
+  font-style: normal;
   font-weight: 400;
   font-size: clamp(1.5rem, 1.5vw + 1rem, 2.25rem);
   line-height: 1.3;
@@ -1039,15 +1042,15 @@ html, body {
   max-width: 26ch;
 }
 .sk-font-eyebrow-serif {
-  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
+  font-style: normal;
   font-weight: 400;
   font-size: 0.9375rem;
   color: var(--sk-ink60);
   letter-spacing: 0;
 }
 .sk-font-subhead-serif {
-  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: clamp(1.125rem, 0.5vw + 1rem, 1.375rem);
@@ -1058,7 +1061,7 @@ html, body {
 
 /* When body text needs serif warmth (e.g., founder's note, opinion blocks). */
 .sk-font-body-serif {
-  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
   font-weight: 400;
   font-size: 1rem;
   line-height: 1.65;

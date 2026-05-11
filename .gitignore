@@ -40,3 +40,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# editor / agent local state
+.claude/settings.local.json
+
+# legacy/backup files kept around during refactors
+*.bak
+**/_legacy/
+
+# machine-specific upload + course state (absolute paths, in-progress UIDs)
+scripts/course-files.json
+scripts/course-uploads.json

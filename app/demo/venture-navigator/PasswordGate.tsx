@@ -130,7 +130,7 @@ export default function PasswordGate({
 
         <h1
           style={{
-            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
             fontSize: 32,
             fontWeight: 400,
             lineHeight: 1.1,

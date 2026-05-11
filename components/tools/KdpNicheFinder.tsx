@@ -651,7 +651,7 @@ export default function KdpNicheFinder() {
           margin: 0;
         }
         .kdp-tool :global(.kdp-card-body em) {
-          font-family: "Instrument Serif", Georgia, serif;
+          font-family: "Space Grotesk", system-ui, sans-serif;
           font-style: italic;
           font-weight: 600;
           color: #141414;
@@ -816,7 +816,7 @@ export default function KdpNicheFinder() {
           box-shadow: 0 22px 56px rgba(40, 25, 10, 0.09);
         }
         .kdp-tool :global(.kdp-auth-card-headline) {
-          font-family: "Instrument Serif", Georgia, serif;
+          font-family: "Space Grotesk", system-ui, sans-serif;
           font-style: italic;
           font-weight: 400;
           font-size: 34px;
@@ -1098,7 +1098,7 @@ export default function KdpNicheFinder() {
                     <div
                       className="leading-none"
                       style={{
-                        fontFamily: "var(--font-fraunces, 'Fraunces', serif)",
+                        fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
                         fontSize: 44,
                         fontWeight: 600,
                         letterSpacing: "-0.04em",
@@ -1124,7 +1124,7 @@ export default function KdpNicheFinder() {
                     <div
                       className="leading-none"
                       style={{
-                        fontFamily: "var(--font-fraunces, 'Fraunces', serif)",
+                        fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
                         fontSize: 44,
                         fontWeight: 600,
                         letterSpacing: "-0.04em",
@@ -1160,7 +1160,7 @@ export default function KdpNicheFinder() {
                     <div
                       className="leading-none"
                       style={{
-                        fontFamily: "var(--font-fraunces, 'Fraunces', serif)",
+                        fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
                         fontSize: 44,
                         fontWeight: 600,
                         letterSpacing: "-0.04em",
@@ -1262,17 +1262,17 @@ export default function KdpNicheFinder() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-4">
                 <article className="rounded-xl border p-6 bg-white" style={{ borderColor: "var(--sk-hairline)" }}>
                   <div className="text-[11px] font-bold tracking-[0.22em] uppercase mb-2" style={{ color: "#3d5a3d" }}>Add 1 search</div>
-                  <div className="text-[28px] font-semibold mb-3" style={{ color: "var(--sk-red, #c62828)", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>$10</div>
+                  <div className="text-[28px] font-semibold mb-3" style={{ color: "var(--sk-red, #c62828)", fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif" }}>$10</div>
                   <div id="pp-single-topup" className="min-h-[48px]" />
                 </article>
                 <article className="rounded-xl border p-6 bg-white" style={{ borderColor: "var(--sk-hairline)" }}>
                   <div className="text-[11px] font-bold tracking-[0.22em] uppercase mb-2" style={{ color: "#3d5a3d" }}>Add 10 searches</div>
-                  <div className="text-[28px] font-semibold mb-3" style={{ color: "var(--sk-red, #c62828)", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>$50</div>
+                  <div className="text-[28px] font-semibold mb-3" style={{ color: "var(--sk-red, #c62828)", fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif" }}>$50</div>
                   <div id="pp-pack10-topup" className="min-h-[48px]" />
                 </article>
                 <article className="rounded-xl border p-6 bg-white" style={{ borderColor: "var(--sk-hairline)" }}>
                   <div className="text-[11px] font-bold tracking-[0.22em] uppercase mb-2" style={{ color: "#3d5a3d" }}>Add 20 searches</div>
-                  <div className="text-[28px] font-semibold mb-3" style={{ color: "var(--sk-red, #c62828)", fontFamily: "var(--font-fraunces, 'Fraunces', serif)" }}>$79</div>
+                  <div className="text-[28px] font-semibold mb-3" style={{ color: "var(--sk-red, #c62828)", fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif" }}>$79</div>
                   <div id="pp-pack20-topup" className="min-h-[48px]" />
                 </article>
               </div>
@@ -1495,7 +1495,7 @@ export default function KdpNicheFinder() {
                   <div
                     className="text-center"
                     style={{
-                      fontFamily: "var(--font-fraunces, 'Fraunces', serif)",
+                      fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
                       fontWeight: 600,
                       fontSize: 44,
                       color: "var(--sk-red, #c62828)",
@@ -1522,9 +1522,7 @@ export default function KdpNicheFinder() {
                   <div className="flex flex-col gap-1.5 items-end">
                     <div
                       style={{
-                        fontFamily: "var(--font-instrument-serif, 'Instrument Serif', serif)",
-                        fontStyle: "italic",
-                        fontSize: 28,
+                        fontFamily: "var(--font-instrument-serif, 'Space Grotesk', system-ui, sans-serif)",fontSize: 28,
                         color: "#2d4a3a",
                         letterSpacing: "-0.02em",
                       }}

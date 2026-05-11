@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces, Instrument_Serif } from "next/font/google";
+import { Inter, Fraunces, Instrument_Serif, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/MetaPixel";
 import JsonLd from "@/components/JsonLd";
@@ -23,6 +23,13 @@ const instrumentSerif = Instrument_Serif({
   style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-instrument-serif",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  // variable axis covers 300–700
   display: "swap",
 });
 
@@ -96,7 +103,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${inter.variable} ${fraunces.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col relative isolate">
         <GlobalBackground />

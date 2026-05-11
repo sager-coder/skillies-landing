@@ -44,7 +44,7 @@ function VerifyForm() {
   const router = useRouter();
   const params = useSearchParams();
   const phone = params.get("phone") || "";
-  const next = params.get("next") || "/skillies-school";
+  const rawNext = params.get("next");
 
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -110,7 +110,33 @@ function VerifyForm() {
         throw new Error(body.error || "Couldn't bind this device.");
       }
 
-      router.push(next);
+      // First-time signup gate + role-aware default landing.
+      //
+      // - If the profile is missing first_name or email, route through
+      //   /signup/details first.
+      // - Else: honour ?next= when provided; otherwise admins land on
+      //   /admin and everyone else lands on /student.
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      let destination = rawNext || "/student";
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name, email, is_admin")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (!profile?.first_name || !profile?.email) {
+          router.push(
+            `/signup/details?next=${encodeURIComponent(destination)}`,
+          );
+          return;
+        }
+        // Admin auto-routing when no explicit ?next= was provided.
+        if (!rawNext && profile?.is_admin) destination = "/admin";
+      }
+
+      router.push(destination);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Verification failed.";
       setErr(msg);
@@ -155,7 +181,7 @@ function VerifyForm() {
       <h1
         style={{
           margin: "10px 0 8px",
-          fontFamily: "'Instrument Serif', Georgia, serif",
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
           fontWeight: 400,
           fontSize: "clamp(36px, 5vw, 52px)",
           letterSpacing: "-0.02em",
@@ -163,7 +189,7 @@ function VerifyForm() {
           lineHeight: 1.05,
         }}
       >
-        Enter the <em style={{ fontStyle: "italic", color: "#C62828" }}>6-digit code.</em>
+        Enter the <em style={{ color: "#C62828" }}>6-digit code.</em>
       </h1>
       <p style={{ fontSize: 15, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
         Just sent it to your WhatsApp number. Takes 10–30 seconds.

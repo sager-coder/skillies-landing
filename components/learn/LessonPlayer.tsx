@@ -120,9 +120,7 @@ export default function LessonPlayer({
           </div>
           <div
             style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
-              fontStyle: "italic",
-              fontSize: "clamp(28px, 4vw, 44px)",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: "clamp(28px, 4vw, 44px)",
               lineHeight: 1.15,
               color: "#FAF5EB",
               maxWidth: 540,

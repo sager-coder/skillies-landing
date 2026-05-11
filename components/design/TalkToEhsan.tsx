@@ -205,7 +205,7 @@ export default function TalkToEhsan({
           </div>
           <h3
             style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
               fontWeight: 400,
               fontSize: "clamp(30px, 3.8vw, 52px)",
               letterSpacing: "-0.02em",
@@ -279,9 +279,7 @@ export default function TalkToEhsan({
               <div
                 style={{
                   fontSize: 13,
-                  fontFamily: "'Instrument Serif', serif",
-                  fontStyle: "italic",
-                  color: dark
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",color: dark
                     ? "rgba(255,255,255,0.65)"
                     : "#6B7280",
                   lineHeight: 1.4,
@@ -340,9 +338,7 @@ export default function TalkToEhsan({
         >
           <div
             style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontStyle: "italic",
-              fontSize: 28,
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",fontSize: 28,
               color: dark ? "#FAF5EB" : "#1A1A1A",
               lineHeight: 1,
               marginBottom: 8,

@@ -62,7 +62,7 @@ export default function DemoPage() {
         {/* ── HEADLINE ─────────────────────────────────────────── */}
         <h1
           style={{
-            fontFamily: "'Instrument Serif', serif",
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
             fontSize: "clamp(38px, 6vw, 64px)",
             lineHeight: 1.05,
             fontWeight: 400,
@@ -365,7 +365,7 @@ export default function DemoPage() {
           </p>
           <h3
             style={{
-              fontFamily: "'Instrument Serif', serif",
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
               fontSize: "clamp(28px, 4vw, 40px)",
               fontWeight: 400,
               margin: "0 0 16px",
