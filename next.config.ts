@@ -68,8 +68,12 @@ const nextConfig: NextConfig = {
       { source: "/mentorship/:path*", destination: "/skillies-school", permanent: true },
       { source: "/courses", destination: "/skillies-school", permanent: true },
       { source: "/courses/:path*", destination: "/skillies-school", permanent: true },
-      { source: "/learn", destination: "/skillies-school", permanent: true },
-      { source: "/learn/:path*", destination: "/skillies-school", permanent: true },
+      // NOTE: /learn/:path* used to redirect to /skillies-school back when
+      // consumer LMS routes were retired in the 2026-05 B2B pivot. The
+      // LMS has since been rebuilt under /learn/[courseId] — keeping the
+      // redirect here would 308 every lesson page back to the marketing
+      // site, so it's deliberately gone. Restore only if you're retiring
+      // /learn again.
       { source: "/services", destination: "/for", permanent: true },
       { source: "/services/:path*", destination: "/for", permanent: true },
       // Instagram auto-DM PDF deliveries · the old /playbook and

@@ -20,11 +20,14 @@ async function requireAdmin() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not signed in.", status: 401 } as const;
-  const { data: profile } = await supabase
+  // See sibling routes — service-role is_admin read avoids the post-OTP
+  // RLS race that intermittently 403s real admins.
+  const admin = createSupabaseAdminClient();
+  const { data: profile } = await admin
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
   if (!profile?.is_admin) return { error: "Admin only.", status: 403 } as const;
   return { user, adminId: user.id } as const;
 }

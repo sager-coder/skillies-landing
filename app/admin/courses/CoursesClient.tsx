@@ -362,6 +362,31 @@ export default function CoursesClient() {
                     </td>
                     <td style={tdStyle}>
                       <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                        <a
+                          href={`/admin/courses/${encodeURIComponent(c.id)}`}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "6px 10px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#0A0A0A",
+                            background: "rgba(198,40,40,0.10)",
+                            border: "1px solid rgba(198,40,40,0.20)",
+                            borderRadius: 8,
+                            textDecoration: "none",
+                            transition: "background 160ms ease",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.background = "rgba(198,40,40,0.16)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.background = "rgba(198,40,40,0.10)")
+                          }
+                        >
+                          Manage
+                        </a>
                         <Button size="sm" variant="secondary" onClick={() => setEditing(c)}>
                           Edit
                         </Button>

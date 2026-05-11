@@ -22,11 +22,17 @@ async function requireAdmin() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not signed in.", status: 401 } as const;
-  const { data: profile } = await supabase
+  // Use service-role for the is_admin read. The user-JWT path is
+  // subject to RLS and can intermittently return null right after a
+  // fresh sign-in (cookie propagation timing), which would 403 real
+  // admins. Service-role is safe here because we've already verified
+  // the caller is authenticated.
+  const admin = createSupabaseAdminClient();
+  const { data: profile } = await admin
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
   if (!profile?.is_admin) return { error: "Admin only.", status: 403 } as const;
   return { user } as const;
 }
@@ -41,11 +47,17 @@ export async function GET(req: Request) {
   const limit = Math.min(Number(searchParams.get("limit") || 100), 500);
 
   const admin = createSupabaseAdminClient();
+
+  // The `blocked` column was added in a separate migration; some
+  // databases may not have it yet. Try with it first, fall back to a
+  // query without it (and force blocked=false in the response) so the
+  // page still renders pre-migration.
+  const FULL = "id, phone, first_name, last_name, full_name, email, is_admin, blocked, bound_device_id, device_bound_at, created_at";
+  const FALLBACK = "id, phone, first_name, last_name, full_name, email, is_admin, bound_device_id, device_bound_at, created_at";
+  let usingFullSelect = true;
   let query = admin
     .from("profiles")
-    .select(
-      "id, phone, first_name, last_name, full_name, email, is_admin, blocked, bound_device_id, device_bound_at, created_at",
-    )
+    .select(FULL)
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -57,7 +69,27 @@ export async function GET(req: Request) {
     );
   }
 
-  const { data: profiles, error } = await query;
+  let { data: profiles, error } = await query;
+  if (error && /blocked/i.test(error.message || "")) {
+    // Column missing — retry without it. Records will be treated as
+    // blocked=false until the migration is applied.
+    usingFullSelect = false;
+    let fallbackQuery = admin
+      .from("profiles")
+      .select(FALLBACK)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (q) {
+      const safe = q.replace(/[%,]/g, "");
+      fallbackQuery = fallbackQuery.or(
+        `phone.ilike.%${safe}%,full_name.ilike.%${safe}%,email.ilike.%${safe}%`,
+      );
+    }
+    const fb = await fallbackQuery;
+    // Cast — fallback rows are missing `blocked`, we patch it in below.
+    profiles = (fb.data as typeof profiles) || null;
+    error = fb.error;
+  }
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -87,6 +119,9 @@ export async function GET(req: Request) {
 
   const result = (profiles || []).map((p) => ({
     ...p,
+    // Ensure `blocked` is always present in the response, even on
+    // databases that don't have the column yet.
+    blocked: usingFullSelect ? (p as { blocked?: boolean }).blocked === true : false,
     enrollments: byUser.get(p.id) || [],
   }));
   return NextResponse.json({ students: result });

@@ -18,11 +18,17 @@ async function requireAdmin() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not signed in.", status: 401 } as const;
-  const { data: profile } = await supabase
+  // Use service-role for the is_admin read. The user-JWT path is
+  // subject to RLS and can intermittently return null right after a
+  // fresh sign-in (cookie propagation timing), which would 403 real
+  // admins. Service-role is safe here because we've already verified
+  // the caller is authenticated.
+  const admin = createSupabaseAdminClient();
+  const { data: profile } = await admin
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
   if (!profile?.is_admin) return { error: "Admin only.", status: 403 } as const;
   return { user } as const;
 }
