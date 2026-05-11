@@ -129,12 +129,11 @@ const isValidEmail = (s: string) => EMAIL_RE.test(s.trim()) && s.trim().length <
 // AI parser produces sharp filters.
 type ExamplePrompt = { label: string; brief: string; suggestPattern?: string };
 const EXAMPLE_PROMPTS: ExamplePrompt[] = [
-  { label: "ADHD cookbooks for kids",        brief: "ADHD cookbook for kids, paperback, premium price under $35", suggestPattern: "premium_low_competition" },
-  { label: "Spanish self-help",              brief: "Spanish-language self-help on boundary-setting, paperback or Kindle, low competition" },
-  { label: "2026 NFL draft guides",          brief: "2026 NFL draft guides, paperback, year-stamped annual",       suggestPattern: "year_stamped_annuals" },
+  { label: "Adult coloring books",           brief: "Adult coloring books, paperback, 80-120 pages, low-content",                   suggestPattern: "low_content_selling" },
   { label: "Bad-reviewed reference guides",  brief: "Reference guides on tax filing for small businesses with bad reviews still selling", suggestPattern: "complete_guide_low_rated" },
-  { label: "Hidden 5-star gardening books",  brief: "Gardening books for beginners with 4.5-star ratings but few reviews", suggestPattern: "high_rated_sleepers" },
-  { label: "Activity journals for adults",   brief: "Adult mindfulness journals and gratitude trackers, low-content paperback", suggestPattern: "low_content_selling" },
+  { label: "Hidden 5-star gardening books",  brief: "Gardening books for beginners with 4.5-star ratings but few reviews",          suggestPattern: "high_rated_sleepers" },
+  { label: "Activity journals for adults",   brief: "Adult mindfulness journals and gratitude trackers, low-content paperback",     suggestPattern: "low_content_selling" },
+  { label: "Beginner sourdough cookbooks",   brief: "Sourdough baking cookbooks for beginners, paperback, premium price",           suggestPattern: "premium_low_competition" },
 ];
 
 // ── Component ───────────────────────────────────────────────────────────────
@@ -161,13 +160,12 @@ export default function KdpNicheFinder() {
   const [results, setResults] = useState<SearchResponse | null>(null);
 
   // ── Auth + redeem state ──
-  type AuthTab = "signup" | "signin" | "buy" | "code";
+  type AuthTab = "email" | "buy" | "code";
   // Default to the Buy Credits tab — sign-up no longer gates the first
   // search (anonymous license is auto-issued), so the only thing visitors
   // need from this panel after their free search is to pay for more.
-  const [authTab, setAuthTab] = useState<AuthTab>("buy");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signinEmail, setSigninEmail] = useState("");
+  const [authTab, setAuthTab] = useState<AuthTab>("email");
+  const [email, setEmail] = useState("");
   const [restoreCode, setRestoreCode] = useState("");
   const [showTopUp, setShowTopUp] = useState(false);
 
@@ -254,11 +252,14 @@ export default function KdpNicheFinder() {
       "Or describe the signal in your own words above."
     : "Or describe the signal in your own words above.";
 
-  // ── Sign up (free-tier redeem) ────────────────────────────────────────────
-  const onSignUpSubmit = async (e: React.FormEvent) => {
+  // ── Continue with email — auto-detects returning vs new ──────────────────
+  // Try find-by-email first; on 404, fall back to redeem-free (which gives
+  // a 1-credit free license to a new email). One input, no "did I sign up
+  // already?" decision for the user.
+  const onEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const email = signupEmail.trim();
-    if (!isValidEmail(email)) {
+    const trimmed = email.trim();
+    if (!isValidEmail(trimmed)) {
       setStatus({
         kind: "error",
         message: "Please enter a valid email address (e.g. you@domain.com).",
@@ -267,16 +268,34 @@ export default function KdpNicheFinder() {
     }
     setStatus(null);
     try {
-      const r = await fetch(`${API_URL}/api/license/redeem-free`, {
+      const find = await fetch(`${API_URL}/api/license/find-by-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: trimmed }),
       });
-      if (!r.ok) {
-        const e = await r.json().catch(() => ({}));
-        throw new Error(e.detail || `HTTP ${r.status}`);
+      if (find.ok) {
+        const data = await find.json();
+        localStorage.setItem(LS_KEY, data.license.code);
+        setLicense(data.license);
+        setStatus({
+          kind: "info",
+          message: `Welcome back. ${data.license.credits_remaining} ${
+            data.license.credits_remaining === 1 ? "search" : "searches"
+          } remaining on this account.`,
+        });
+        return;
       }
-      const data = await r.json();
+      // No existing license for this email → issue a free one.
+      const redeem = await fetch(`${API_URL}/api/license/redeem-free`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmed }),
+      });
+      if (!redeem.ok) {
+        const err = await redeem.json().catch(() => ({}));
+        throw new Error(err.detail || `HTTP ${redeem.status}`);
+      }
+      const data = await redeem.json();
       localStorage.setItem(LS_KEY, data.license.code);
       setLicense(data.license);
       setStatus({
@@ -286,46 +305,7 @@ export default function KdpNicheFinder() {
     } catch (err) {
       setStatus({
         kind: "error",
-        message: `Sign-up failed: ${(err as Error).message}`,
-      });
-    }
-  };
-
-  // ── Sign in by email ──────────────────────────────────────────────────────
-  const onSignInSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const email = signinEmail.trim();
-    if (!isValidEmail(email)) {
-      setStatus({
-        kind: "error",
-        message: "Please enter a valid email address.",
-      });
-      return;
-    }
-    setStatus(null);
-    try {
-      const r = await fetch(`${API_URL}/api/license/find-by-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (!r.ok) {
-        const e = await r.json().catch(() => ({}));
-        throw new Error(e.detail || `HTTP ${r.status}`);
-      }
-      const data = await r.json();
-      localStorage.setItem(LS_KEY, data.license.code);
-      setLicense(data.license);
-      setStatus({
-        kind: "info",
-        message: `Welcome back. ${data.license.credits_remaining} ${
-          data.license.credits_remaining === 1 ? "search" : "searches"
-        } remaining on this account.`,
-      });
-    } catch (err) {
-      setStatus({
-        kind: "error",
-        message: `Sign-in failed: ${(err as Error).message}`,
+        message: `Couldn't continue: ${(err as Error).message}`,
       });
     }
   };
@@ -475,14 +455,20 @@ export default function KdpNicheFinder() {
     })();
   }, [paypalClientId, license, authTab, ensurePayPal, renderPayPalButton]);
 
-  // Render top-up PayPal buttons when the panel opens
+  // Render top-up PayPal buttons when the panel is showing.
+  // Auto-expand when the user has run out of credits so they never have to
+  // click a "Top up" button just to see the prices.
   useEffect(() => {
-    if (!showTopUp || !license) return;
+    if (!license) return;
+    const panelVisible = showTopUp || license.credits_remaining === 0;
+    if (!panelVisible) return;
     (async () => {
       await ensurePayPal();
-      ["single", "pack10", "pack20"].forEach((t) =>
-        renderPayPalButton(`pp-${t}-topup`, t),
-      );
+      requestAnimationFrame(() => {
+        ["single", "pack10", "pack20"].forEach((t) =>
+          renderPayPalButton(`pp-${t}-topup`, t),
+        );
+      });
     })();
   }, [showTopUp, license, ensurePayPal, renderPayPalButton]);
 
@@ -1000,8 +986,7 @@ export default function KdpNicheFinder() {
             {/* Tab bar */}
             <div className="kdp-tabs">
               {([
-                ["signup", "Sign up"],
-                ["signin", "Sign in"],
+                ["email", "Continue with email"],
                 ["buy", "Buy credits"],
                 ["code", "License code"],
               ] as Array<[AuthTab, string]>).map(([k, label]) => (
@@ -1017,62 +1002,32 @@ export default function KdpNicheFinder() {
               ))}
             </div>
 
-            {/* ── Sign up tab ── */}
-            {authTab === "signup" && (
+            {/* ── Email tab (signup + signin unified) ── */}
+            {authTab === "email" && (
               <div className="kdp-auth-card">
                 <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                  <span className="kdp-eyebrow-pill kdp-eyebrow-green">New here</span>
-                  <span className="text-[12px] font-medium" style={{ color: "#14141466" }}>1 free search · no card</span>
+                  <span className="kdp-eyebrow-pill kdp-eyebrow-green">Free first search · no card</span>
+                  <span className="text-[12px] font-medium" style={{ color: "#14141466" }}>Returning? Same email signs you back in</span>
                 </div>
                 <div className="kdp-auth-card-headline">
-                  Get your first search free.
+                  Continue with your email.
                 </div>
-                <form onSubmit={onSignUpSubmit} className="flex flex-col gap-3">
+                <form onSubmit={onEmailSubmit} className="flex flex-col gap-3">
                   <input
                     type="email"
                     required
-                    value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@domain.com"
                     autoComplete="email"
                     className="kdp-input"
                   />
                   <button type="submit" className="kdp-btn-primary">
-                    Get my free search →
+                    Continue →
                   </button>
                 </form>
                 <div className="kdp-card-stat">
-                  One free search per email · we never spam · unsubscribe is one click
-                </div>
-              </div>
-            )}
-
-            {/* ── Sign in tab ── */}
-            {authTab === "signin" && (
-              <div className="kdp-auth-card">
-                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                  <span className="kdp-eyebrow-pill kdp-eyebrow-ink">Returning</span>
-                  <span className="text-[12px] font-medium" style={{ color: "#14141466" }}>Recover by email</span>
-                </div>
-                <div className="kdp-auth-card-headline">
-                  Welcome back.
-                </div>
-                <form onSubmit={onSignInSubmit} className="flex flex-col gap-3">
-                  <input
-                    type="email"
-                    required
-                    value={signinEmail}
-                    onChange={(e) => setSigninEmail(e.target.value)}
-                    placeholder="The email you signed up / paid with"
-                    autoComplete="email"
-                    className="kdp-input"
-                  />
-                  <button type="submit" className="kdp-btn-ink">
-                    Sign in →
-                  </button>
-                </form>
-                <div className="kdp-card-stat">
-                  We look up the license attached to your email and restore it on this device · no password needed
+                  New email → 1 free search · Returning email → your existing license restored on this device · no password
                 </div>
               </div>
             )}
@@ -1239,14 +1194,16 @@ export default function KdpNicheFinder() {
                 </div>
               </div>
               <div className="flex gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setShowTopUp((v) => !v)}
-                  className="rounded-full px-5 py-2.5 text-[13px] font-bold transition-all"
-                  style={{ color: "#fff", background: "#3d5a3d", border: "1.5px solid #3d5a3d", boxShadow: "0 4px 12px rgba(61,90,61,0.20)" }}
-                >
-                  Top up credits
-                </button>
+                {license.credits_remaining > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowTopUp((v) => !v)}
+                    className="rounded-full px-5 py-2.5 text-[13px] font-bold transition-all"
+                    style={{ color: "#fff", background: "#3d5a3d", border: "1.5px solid #3d5a3d", boxShadow: "0 4px 12px rgba(61,90,61,0.20)" }}
+                  >
+                    {showTopUp ? "Hide top-up" : "Top up credits"}
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={onSignOut}
@@ -1258,7 +1215,7 @@ export default function KdpNicheFinder() {
               </div>
             </div>
 
-            {showTopUp && (
+            {(showTopUp || license.credits_remaining === 0) && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-4">
                 <article className="rounded-xl border p-6 bg-white" style={{ borderColor: "var(--sk-hairline)" }}>
                   <div className="text-[11px] font-bold tracking-[0.22em] uppercase mb-2" style={{ color: "#3d5a3d" }}>Add 1 search</div>
@@ -1360,7 +1317,7 @@ export default function KdpNicheFinder() {
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Spanish-language self-help on boundary-setting · ADHD cookbooks for kids · year-stamped 2026 NFL guides"
+              placeholder="e.g. Adult coloring books · Beginner sourdough cookbooks · 4.5-star gardening books with few reviews"
               className="kdp-textarea"
             />
             <div className="kdp-examples">
