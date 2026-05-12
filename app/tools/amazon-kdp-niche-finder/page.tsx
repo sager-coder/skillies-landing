@@ -600,29 +600,20 @@ export default function AmazonKdpNicheFinderPage() {
 
           /* ───────────────────────────────────────────────────────────
              Mobile diagram — same desktop side-by-side layout, just
-             scaled down. All positions + widths are percentage-based
-             already (see the base rules above), so this block only
-             needs to shrink the *content* of each card so it fits the
-             narrow columns:
-               - Source column ≈ 24 % of viewport (~86 px on a 360 px
-                 phone) → icon shrinks 34→22, padding 12→6, title 13→9.
-               - Niche column ≈ 29 % (~104 px) → thumb 50×60 → 28×34,
-                 score 36 → 24, title 13 → 9, padding 12 → 6.
-             We deliberately HIDE the subtitle/sub rows and the niche
-             breadcrumb at the smallest size — the desktop narrative
-             ("Millions of Books", "Real-time data", "Mindfulness
-             Journals", etc.) doesn't fit at 86 px wide, and trying to
-             squeeze them in becomes microcopy soup. The titles + score
-             are what carry the message.
+             scaled down. We strip mobile content aggressively because
+             at ~95 px column width any text past the title is just
+             ellipsis soup. What's kept on mobile:
+                 Source card  → icon + title
+                 Niche card   → thumb + score number
+                 AI card      → title only
+             Everything else (subtitles, meta line, niche breadcrumb,
+             "Great" score label, AI card subtitle) is hidden so the
+             remaining content can render at a readable size.
              ─────────────────────────────────────────────────────────── */
 
-          /* Column headers — keep just the step label ("1. ANALYZE",
-             "2. SORT & DELIVER") on mobile. The narrative subtitle
-             ("We scan & analyze all Amazon books", etc.) wraps onto
-             3-4 lines in an 86 px column and gets visually swallowed
-             by the first card at top:12.82 %, so we hide it.
-             Step label is forced single-line so "SORT & DELIVER"
-             doesn't break to two rows. */
+          /* Column headers — keep just the step label. The narrative
+             paragraph subtitle is hidden so the first card at
+             top:12.82 % doesn't visually swallow it. */
           .kdp-col-step {
             font-size: 9px;
             letter-spacing: 0.04em;
@@ -630,9 +621,18 @@ export default function AmazonKdpNicheFinderPage() {
           }
           .kdp-col-header p { display: none; }
 
+          /* Hide everything truncation murders at this width. */
+          .kdp-source-sub,
+          .kdp-niche-title,
+          .kdp-niche-meta-line,
+          .kdp-niche-niche,
+          .kdp-niche-score-label,
+          .kdp-ai-sub { display: none; }
+
+          /* Source card — icon + title only, tight packing. */
           .kdp-source-card {
             width: 96%;
-            padding: 6px 7px;
+            padding: 5px 6px;
             gap: 6px;
             border-radius: 8px;
           }
@@ -646,50 +646,34 @@ export default function AmazonKdpNicheFinderPage() {
             font-size: 9.5px;
             line-height: 1.15;
           }
-          .kdp-source-sub {
-            font-size: 7.5px;
-            line-height: 1.2;
-            /* Subtitle is the first thing to go at really narrow widths
-               (see < 380 px below) — keeps the card readable. */
-          }
 
+          /* Niche card — thumb + score badge. The meta column collapses
+             to zero width since its children are display:none, so the
+             score sits right next to the thumb. */
           .kdp-niche-card {
-            padding: 6px;
+            padding: 5px;
             gap: 6px;
             border-radius: 8px;
+            justify-content: space-between;
           }
           .kdp-niche-thumb {
-            width: 28px;
-            height: 34px;
-            font-size: 14px;
+            width: 26px;
+            height: 32px;
+            font-size: 13px;
             border-radius: 3px;
           }
-          .kdp-niche-title {
-            font-size: 9px;
-            line-height: 1.15;
-            /* Leave the desktop nowrap/ellipsis intact — at 9 px the
-               title stays on a single truncated line which reads
-               better than wrap-soup in a 60 px content column. */
-          }
-          .kdp-niche-meta-line {
-            font-size: 7.5px;
-            margin-top: 1px;
-          }
-          .kdp-niche-niche {
-            font-size: 7.5px;
-            margin-top: 1px;
-          }
+          .kdp-niche-meta { display: none; }   /* its kids are all hidden */
           .kdp-niche-score-num {
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             font-size: 10px;
             border-width: 1.5px;
           }
-          .kdp-niche-score-label { font-size: 8px; }
 
+          /* AI card — title only. */
           .kdp-ai-card {
             width: 36%;
-            max-width: 220px;
+            max-width: 200px;
             padding: 7px 9px;
             gap: 6px;
             border-radius: 9px;
@@ -700,13 +684,14 @@ export default function AmazonKdpNicheFinderPage() {
             border-radius: 6px;
           }
           .kdp-ai-icon svg { width: 14px; height: 14px; }
-          .kdp-ai-title { font-size: 8px; letter-spacing: 0.05em; }
-          .kdp-ai-sub   { font-size: 8.5px; line-height: 1.25; }
+          .kdp-ai-title {
+            font-size: 9px;
+            letter-spacing: 0.04em;
+            line-height: 1.2;
+          }
 
-          /* View-all link — slightly lower so it clears the compressed
-             last niche card. Allow wrapping at this width: "View all
-             proven niches →" is wider than the ~95 px niche column,
-             so we let it break to 2 lines rather than clip off-screen. */
+          /* View-all link — positioned below the (now-shorter) niche
+             stack, two-line wrap allowed. */
           .kdp-view-all {
             top: 80%;
             font-size: 9px;
@@ -714,16 +699,45 @@ export default function AmazonKdpNicheFinderPage() {
           }
         }
 
-        /* Very narrow phones (< 380 px) — drop subtitle + niche
-           breadcrumb. The card body is so thin at this width that
-           keeping them just produces unreadable smear. Title + score
-           still carry the meaning. */
+        /* Very narrow phones (< 380 px). The desktop SRC_GAP/NCH_GAP
+           constants give cards a 11 % vertical step (86 / 780). On a
+           225 px-tall diagram that's only 25 px between card tops, so
+           anything taller than ~24 px overlaps the next card. We pull
+           padding + thumb + score down further so the cards fit. */
         @media (max-width: 379px) {
-          .kdp-source-sub,
-          .kdp-niche-niche { display: none; }
-          .kdp-source-card { padding: 5px 6px; }
-          .kdp-niche-card  { padding: 5px; }
-          .kdp-niche-thumb { width: 24px; height: 30px; font-size: 12px; }
+          .kdp-source-card {
+            padding: 3px 5px;
+            border-radius: 6px;
+            gap: 5px;
+          }
+          .kdp-source-icon { width: 18px; height: 18px; }
+          .kdp-source-icon svg { width: 12px; height: 12px; }
+          .kdp-source-title { font-size: 9px; }
+
+          .kdp-niche-card {
+            padding: 3px;
+            border-radius: 6px;
+            gap: 5px;
+          }
+          .kdp-niche-thumb {
+            width: 22px;
+            height: 26px;
+            font-size: 11px;
+          }
+          .kdp-niche-score-num {
+            width: 22px;
+            height: 22px;
+            font-size: 9px;
+            border-width: 1.4px;
+          }
+
+          .kdp-ai-card {
+            padding: 5px 7px;
+            max-width: 170px;
+          }
+          .kdp-ai-title { font-size: 8px; }
+
+          .kdp-view-all { font-size: 8.5px; }
         }
       `}</style>
       <TopNav />
