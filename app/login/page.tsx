@@ -1,15 +1,27 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Wordmark, Grain } from "@/components/design/Primitives";
-import { COUNTRIES, DEFAULT_COUNTRY } from "@/lib/country-codes";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-// Admins now sign in via the standard phone+password form with the
-// password set by scripts/set-admin-password.mjs. The /api/dev/admin-login
-// route remains as an emergency password-reset (NODE_ENV-guarded) but
-// is no longer wired into this page.
+/**
+ * /login — sitewide sign-in (email OTP only).
+ *
+ * One auth surface for everything on skillies.ai: students hitting course
+ * content, tool users hitting the niche finder, admins. All sign in with
+ * email, all get verified via Supabase email OTP sent through our Resend
+ * SMTP (mail.skillies.ai → Skillies-branded subject + sender).
+ *
+ * After verifyOtp succeeds, `claimDeviceAndRedirect` runs the device-claim
+ * call (currently a no-op on the server — one-device enforcement is
+ * disabled — but the call path is kept so re-enabling it later only needs
+ * a server-side toggle) and resolves the role-aware destination.
+ *
+ * Phone + password is gone. Existing phone-only Supabase users need an
+ * email added to their profile before they can sign in here; admin can do
+ * that one-time in the Supabase dashboard.
+ */
 
 function LoginShell({ children }: { children: React.ReactNode }) {
   return (
@@ -47,6 +59,8 @@ function LoginShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -54,54 +68,86 @@ function LoginForm() {
   // default (/admin for admins, /student otherwise) when missing.
   const next = params.get("next");
 
-  const [countryCode, setCountryCode] = useState(DEFAULT_COUNTRY.code);
-  const [national, setNational] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [step, setStep] = useState<"request" | "verify">("request");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
 
-  const selectedCountry =
-    COUNTRIES.find((c) => c.code === countryCode) || DEFAULT_COUNTRY;
-  const fullPhone = selectedCountry.dial + national;
+  // Already signed in (Supabase session cookie present)? Skip the form
+  // entirely and run the same post-auth path the verify step would.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const supabase = createSupabaseBrowserClient();
+        const { data } = await supabase.auth.getSession();
+        if (!cancelled && data.session?.access_token) {
+          await claimDeviceAndRedirect(next, router);
+        }
+      } catch {
+        /* env vars missing → user just signs in normally */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [router, next]);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSend = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
-    if (national.length < 6) {
-      setErr("Enter a valid phone number.");
-      return;
-    }
-    if (password.length < 1) {
-      setErr("Enter your password.");
+    setInfo(null);
+    if (!EMAIL_RE.test(email)) {
+      setErr("Enter a valid email address.");
       return;
     }
     setBusy(true);
     try {
-      // Standard sign-in: phone + password.
+      const res = await fetch("/api/auth/send-email-otp", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        email?: string;
+        error?: string;
+      };
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Couldn't send code.");
+      }
+      setStep("verify");
+      setInfo(`Code sent to ${email}. Check your inbox (and spam folder).`);
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : "Something went wrong.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr(null);
+    if (code.length < 4) {
+      setErr("Enter the code from your email.");
+      return;
+    }
+    setBusy(true);
+    try {
       const supabase = createSupabaseBrowserClient();
-      const { error, data } = await supabase.auth.signInWithPassword({
-        phone: fullPhone,
-        password,
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: code,
+        type: "email",
       });
       if (error) throw error;
-      const user = data.user;
-      if (!user) throw new Error("Sign-in returned no session.");
-
-      // Bind device + redirect. Same path the old OTP-verify took.
+      // Bind the device cookie + redirect (role-aware destination).
+      // Same post-auth path the old phone+password flow used.
       await claimDeviceAndRedirect(next, router);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Couldn't sign in.";
-      // Friendlier messages for the most common Supabase Auth errors.
-      if (/phone.*not.*confirm/i.test(msg)) {
-        setErr(
-          "This number hasn't been verified yet. Finish signing up at /signup, or contact support if your phone number is already correct.",
-        );
-      } else if (/invalid.*(login|credentials|password)/i.test(msg)) {
-        setErr("Wrong phone or password. Try again.");
-      } else {
-        setErr(msg);
-      }
+      setErr(e instanceof Error ? e.message : "Verification failed.");
     } finally {
       setBusy(false);
     }
@@ -124,7 +170,7 @@ function LoginForm() {
       <h1
         style={{
           margin: "10px 0 8px",
-          fontFamily: "'Space Grotesk', system-ui, sans-serif",
+          fontFamily: "'Instrument Serif', Georgia, serif",
           fontWeight: 400,
           fontSize: "clamp(36px, 5vw, 52px)",
           letterSpacing: "-0.02em",
@@ -132,236 +178,147 @@ function LoginForm() {
           lineHeight: 1.05,
         }}
       >
-        Welcome <em style={{ color: "#C62828" }}>back.</em>
+        {step === "request" ? (
+          <>
+            Continue with your{" "}
+            <em style={{ fontStyle: "italic", color: "#C62828" }}>email.</em>
+          </>
+        ) : (
+          <>
+            Enter the{" "}
+            <em style={{ fontStyle: "italic", color: "#C62828" }}>code</em> we sent.
+          </>
+        )}
       </h1>
-
-<p style={{ fontSize: 15, color: "#6B7280", margin: "16px 0 24px", lineHeight: 1.6 }}>
-        New to Skillies?{" "}
-        <a
-          href={`/signup${next ? `?next=${encodeURIComponent(next)}` : ""}`}
-          style={{ color: "#C62828", fontWeight: 600 }}
-        >
-          Create an account →
-        </a>
+      <p style={{ fontSize: 15, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
+        {step === "request"
+          ? "Same email signs you in across every Skillies tool and course. New email? Your first search is free."
+          : `Code sent to ${email}. Type it below to finish signing in.`}
       </p>
 
-      <form onSubmit={onSubmit}>
-        <label
-          style={{
-            display: "block",
-            fontSize: 11,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            fontWeight: 700,
-            color: "#9CA3AF",
-            marginBottom: 8,
-          }}
-        >
-          Phone number
-        </label>
-        <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
-          <div style={{ position: "relative", flex: "0 0 auto" }}>
-            <div
-              style={{
-                pointerEvents: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "14px 30px 14px 14px",
-                fontSize: 18,
-                border: "1.5px solid #F0E8D8",
-                borderRadius: 12,
-                color: "#1A1A1A",
-                background: "#FAF5EB",
-                fontFamily: "ui-monospace, Menlo, monospace",
-                fontVariantNumeric: "tabular-nums",
-                whiteSpace: "nowrap",
-              }}
-            >
-              <span aria-hidden>{selectedCountry.flag}</span>
-              <span style={{ fontWeight: 700 }}>{selectedCountry.dial}</span>
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{
-                  position: "absolute",
-                  right: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  opacity: 0.5,
-                }}
-                aria-hidden
-              >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </div>
-            <select
-              aria-label="Country"
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value)}
-              disabled={busy}
-              style={{
-                position: "absolute",
-                inset: 0,
-                opacity: 0,
-                width: "100%",
-                height: "100%",
-                cursor: busy ? "wait" : "pointer",
-                fontSize: 16,
-              }}
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.flag} {c.name} ({c.dial})
-                </option>
-              ))}
-            </select>
-          </div>
+      {step === "request" && (
+        <form onSubmit={onSend}>
+          <label
+            style={{
+              display: "block",
+              fontSize: 11,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              color: "#9CA3AF",
+              marginBottom: 8,
+            }}
+          >
+            Email
+          </label>
           <input
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel-national"
-            value={national}
-            onChange={(e) =>
-              setNational(e.target.value.replace(/\D/g, "").slice(0, 15))
-            }
-            placeholder="Mobile number"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@domain.com"
             disabled={busy}
             style={{
-              flex: "1 1 auto",
-              minWidth: 0,
+              width: "100%",
               padding: "14px 16px",
               fontSize: 18,
               border: "1.5px solid #F0E8D8",
               borderRadius: 12,
               outline: "none",
               fontFamily: "ui-monospace, Menlo, monospace",
-              fontVariantNumeric: "tabular-nums",
               color: "#1A1A1A",
               background: "#FAF5EB",
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "#C62828")}
             onBlur={(e) => (e.currentTarget.style.borderColor = "#F0E8D8")}
           />
-        </div>
+          {err && <ErrorBox text={err} />}
+          <button
+            type="submit"
+            disabled={busy || !EMAIL_RE.test(email)}
+            style={primaryBtn(busy, !EMAIL_RE.test(email))}
+          >
+            {busy ? "Sending code…" : "Send one-time code"}
+          </button>
+        </form>
+      )}
 
-        <label
-          style={{
-            display: "block",
-            marginTop: 18,
-            fontSize: 11,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            fontWeight: 700,
-            color: "#9CA3AF",
-            marginBottom: 8,
-          }}
-        >
-          Password
-        </label>
-        <div style={{ position: "relative" }}>
+      {step === "verify" && (
+        <form onSubmit={onVerify}>
+          <label
+            style={{
+              display: "block",
+              fontSize: 11,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              color: "#9CA3AF",
+              marginBottom: 8,
+            }}
+          >
+            Code
+          </label>
           <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Your password"
-            autoComplete="current-password"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            value={code}
+            onChange={(e) =>
+              setCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 10))
+            }
+            placeholder="••••••"
             disabled={busy}
+            maxLength={10}
             style={{
               width: "100%",
-              padding: "14px 56px 14px 16px",
-              fontSize: 18,
+              padding: "14px 16px",
+              fontSize: 22,
+              letterSpacing: "0.4em",
+              textAlign: "center",
               border: "1.5px solid #F0E8D8",
               borderRadius: 12,
               outline: "none",
+              fontFamily: "ui-monospace, Menlo, monospace",
               color: "#1A1A1A",
               background: "#FAF5EB",
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "#C62828")}
             onBlur={(e) => (e.currentTarget.style.borderColor = "#F0E8D8")}
           />
+          {info && !err && <InfoBox text={info} />}
+          {err && <ErrorBox text={err} />}
+          <button
+            type="submit"
+            disabled={busy || code.length < 4}
+            style={primaryBtn(busy, code.length < 4)}
+          >
+            {busy ? "Verifying…" : "Verify and continue"}
+          </button>
           <button
             type="button"
-            onClick={() => setShowPassword((s) => !s)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
+            onClick={() => {
+              setStep("request");
+              setCode("");
+              setErr(null);
+              setInfo(null);
+            }}
             style={{
-              position: "absolute",
-              right: 8,
-              top: "50%",
-              transform: "translateY(-50%)",
+              marginTop: 12,
+              width: "100%",
+              padding: "10px",
               background: "transparent",
               border: "none",
               color: "#6B7280",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              padding: "6px 8px",
-            }}
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
-        </div>
-
-        {err && (
-          <div
-            style={{
-              marginTop: 14,
-              padding: "10px 14px",
-              background: "rgba(198,40,40,0.08)",
-              border: "1px solid rgba(198,40,40,0.25)",
-              borderRadius: 10,
               fontSize: 13,
-              color: "#C62828",
-              lineHeight: 1.45,
+              cursor: "pointer",
+              textDecoration: "underline",
             }}
           >
-            {err}
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={busy || national.length < 6}
-          style={{
-            width: "100%",
-            marginTop: 18,
-            padding: "14px 24px",
-            background: busy ? "#8B1A1A" : "#C62828",
-            color: "white",
-            fontSize: 16,
-            fontWeight: 700,
-            border: "none",
-            borderRadius: 999,
-            cursor: busy ? "wait" : "pointer",
-            boxShadow: "0 12px 30px rgba(198,40,40,0.22)",
-            opacity: national.length < 6 ? 0.5 : 1,
-          }}
-        >
-          {busy ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
-
-      <div
-        style={{
-          marginTop: 24,
-          paddingTop: 20,
-          borderTop: "1px dashed rgba(26,26,26,0.10)",
-          fontSize: 13,
-          color: "#6B7280",
-          lineHeight: 1.6,
-        }}
-      >
-        Using a Skillies tool (Niche Finder, etc.)?{" "}
-        <a href="/signin" style={{ color: "#C62828", fontWeight: 600 }}>
-          Sign in with email →
-        </a>
-      </div>
+            Use a different email
+          </button>
+        </form>
+      )}
     </>
   );
 }
@@ -422,6 +379,61 @@ async function claimDeviceAndRedirect(
     }
   }
   router.push(destination);
+}
+
+function primaryBtn(busy: boolean, disabled: boolean): React.CSSProperties {
+  return {
+    width: "100%",
+    marginTop: 18,
+    padding: "14px 24px",
+    background: busy ? "#8B1A1A" : "#C62828",
+    color: "white",
+    fontSize: 16,
+    fontWeight: 700,
+    border: "none",
+    borderRadius: 999,
+    cursor: busy ? "wait" : "pointer",
+    boxShadow: "0 12px 30px rgba(198,40,40,0.22)",
+    opacity: disabled ? 0.5 : 1,
+  };
+}
+
+function ErrorBox({ text }: { text: string }) {
+  return (
+    <div
+      style={{
+        marginTop: 14,
+        padding: "10px 14px",
+        background: "rgba(198,40,40,0.08)",
+        border: "1px solid rgba(198,40,40,0.25)",
+        borderRadius: 10,
+        fontSize: 13,
+        color: "#C62828",
+        lineHeight: 1.45,
+      }}
+    >
+      {text}
+    </div>
+  );
+}
+
+function InfoBox({ text }: { text: string }) {
+  return (
+    <div
+      style={{
+        marginTop: 14,
+        padding: "10px 14px",
+        background: "rgba(0,167,84,0.08)",
+        border: "1px solid rgba(0,167,84,0.25)",
+        borderRadius: 10,
+        fontSize: 13,
+        color: "#00a754",
+        lineHeight: 1.45,
+      }}
+    >
+      {text}
+    </div>
+  );
 }
 
 function LoginFallback() {

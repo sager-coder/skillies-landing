@@ -1025,7 +1025,7 @@ export default function KdpNicheFinder() {
                   Continue with your email.
                 </div>
                 <a
-                  href="/signin?next=/tools/amazon-kdp-niche-finder"
+                  href="/login?next=/tools/amazon-kdp-niche-finder"
                   className="kdp-btn-primary"
                   style={{ textDecoration: "none", display: "inline-flex", marginTop: 4 }}
                 >
