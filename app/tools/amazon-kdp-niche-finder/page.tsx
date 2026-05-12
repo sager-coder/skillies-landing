@@ -594,6 +594,9 @@ export default function AmazonKdpNicheFinderPage() {
           .kdp-source-card { width: 184px; padding: 10px 12px; }
           .kdp-niche-card { width: 240px; padding: 10px; }
         }
+        /* Mobile bot is hidden by default; mobile breakpoint flips it on. */
+        .kdp-mobile-bot { display: none; }
+
         @media (max-width: 720px) {
           .kdp-hero-h1 { font-size: clamp(36px, 9vw, 52px); }
           .kdp-hero-bottomstrip {
@@ -602,15 +605,137 @@ export default function AmazonKdpNicheFinderPage() {
             gap: 14px 0;
           }
           .kdp-hero-feature-icon { width: 40px; height: 40px; }
-          .kdp-diagram { display: none; }
-          .kdp-hero-diagram-wrap::after {
-            content: "Live discovery diagram opens on desktop →";
+
+          /* ───────────────────────────────────────────────────────────
+             Mobile funnel layout.
+             Desktop draws this as two absolutely-positioned columns
+             with an SVG wiring them through a centred bot. None of that
+             fits a 360 px viewport, so we:
+               1. Hide the desktop SVG entirely (geometry doesn't map)
+               2. Reset every absolutely-positioned card to static flow
+               3. Re-flow .kdp-diagram as a single flex column with the
+                  source stack → bot → AI card → niche stack reading top
+                  to bottom (flex 'order' overrides DOM order).
+               4. Insert subtle ▼ chevrons between sections via ::before
+                  so the funnel narrative still reads visually.
+             ─────────────────────────────────────────────────────────── */
+          .kdp-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            aspect-ratio: auto;
+            max-width: 420px;
+            padding: 0;
+            gap: 18px;
+          }
+          .kdp-diagram-svg { display: none; }
+
+          .kdp-diagram-col,
+          .kdp-diagram-col-left,
+          .kdp-diagram-col-right {
+            position: static;
+            width: 100%;
+            height: auto;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .kdp-diagram-col-left  { order: 1; }
+          .kdp-mobile-bot        { order: 2; }
+          .kdp-ai-card           { order: 3; }
+          .kdp-diagram-col-right { order: 4; }
+
+          /* Section headers: centre them above their card stack. */
+          .kdp-col-header,
+          .kdp-col-header-right {
+            position: static;
+            text-align: center;
+            margin-bottom: 6px;
+            right: auto;
+            left: auto;
+          }
+          .kdp-col-header p {
+            margin: 4px auto 0;
+            font-size: 13px;
+          }
+          /* Leave the <br/> intact on mobile — removing it merged
+             "analyze" + "all" with no separating space because the
+             desktop markup uses "analyze<br/>all" (no trailing
+             space). The natural two-line wrap reads fine narrow. */
+
+          /* Cards: full width, static. The inline JS top-style from
+             KdpDiscoveryDiagram (each card positions itself absolutely
+             on desktop) is neutralised below with top:auto !important
+             so cards just flow naturally. */
+          .kdp-source-card,
+          .kdp-niche-card {
+            position: static;
+            top: auto !important;
+            right: auto;
+            left: auto;
+            width: 100%;
+            max-width: none;
+            padding: 12px 14px;
+            opacity: 1;            /* skip the fade-in choreography on mobile */
+            animation: none;
+          }
+          /* Niche-card text can wrap on narrow screens — kill the
+             single-line ellipsis it uses on desktop. */
+          .kdp-niche-title,
+          .kdp-niche-meta-line,
+          .kdp-niche-niche {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+          }
+
+          /* Mobile bot — show it, give it some breathing room. */
+          .kdp-mobile-bot {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 0;
+          }
+
+          /* AI card — static block, centre-aligned text/icon, full width. */
+          .kdp-ai-card {
+            position: static;
+            transform: none;
+            width: 100%;
+            max-width: none;
+            min-width: 0;
+            justify-content: center;
+            text-align: left;
+            bottom: auto;
+            left: auto;
+          }
+
+          /* View-all link — falls under the niche stack naturally. */
+          .kdp-view-all {
+            position: static;
+            top: auto;
+            margin-top: 12px;
+          }
+
+          /* Funnel chevrons between sections. ::before on the bot wrap
+             points down from sources → bot; ::before on the right column
+             points down from AI card → niches. Keeps the analyze →
+             deliver narrative even without the dotted SVG. */
+          .kdp-mobile-bot::before,
+          .kdp-diagram-col-right::before {
+            content: "▼";
             display: block;
             text-align: center;
-            color: #14141466;
-            font-size: 12px;
-            font-style: italic;
-            padding: 24px 0;
+            color: rgba(217,52,43,0.45);
+            font-size: 14px;
+            line-height: 1;
+            margin-bottom: 12px;
+            animation: kdp-mobile-chevron 1.6s ease-in-out infinite;
+          }
+          @keyframes kdp-mobile-chevron {
+            0%, 100% { transform: translateY(0); opacity: 0.45; }
+            50%      { transform: translateY(3px); opacity: 0.9; }
           }
         }
       `}</style>

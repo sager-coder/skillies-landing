@@ -451,6 +451,48 @@ export default function KdpDiscoveryDiagram() {
         </g>
       </svg>
 
+      {/* ───── MOBILE bot ─────
+          The desktop bot lives inside the SVG above, which we hide on
+          mobile (the absolute geometry doesn't translate to a narrow
+          viewport). Here we render a smaller inline-SVG bot that
+          shows ONLY below 720 px, between the source stack and the
+          AI card. Same robot, same colors — just sized for thumb
+          scrolling instead of widescreen. */}
+      <div className="kdp-mobile-bot" aria-hidden>
+        <svg viewBox="0 0 160 160" width="120" height="120">
+          {/* concentric ambient rings */}
+          <circle cx="80" cy="80" r="74" fill="none" stroke="rgba(217,52,43,0.10)" strokeWidth="1.5" strokeDasharray="3 6" />
+          <circle cx="80" cy="80" r="60" fill="rgba(217,52,43,0.06)" />
+          <circle cx="80" cy="80" r="48" fill="rgba(217,52,43,0.10)" />
+          {/* the bot — same construction as the desktop one, shifted into a 160x160 box */}
+          <g transform="translate(80,80) scale(0.85)">
+            <circle r="40" fill="#ffffff" stroke="rgba(217,52,43,0.20)" strokeWidth="1.5" />
+            <circle r="34" fill="none" stroke="rgba(217,52,43,0.12)" strokeDasharray="2 5" strokeWidth="1.2" />
+            <g transform="translate(0,-3)">
+              <line x1="0" y1="-23" x2="0" y2="-16" stroke="#d9342b" strokeWidth="2.6" strokeLinecap="round" />
+              <circle cx="0" cy="-25" r="3" fill="#d9342b" />
+              <rect x="-16" y="-15" width="32" height="22" rx="6" fill="#ffffff" stroke="#d9342b" strokeWidth="2.4" />
+              <rect x="-20" y="-9"  width="4"  height="9" rx="1.5" fill="none" stroke="#d9342b" strokeWidth="2.2" />
+              <rect x="16"  y="-9"  width="4"  height="9" rx="1.5" fill="none" stroke="#d9342b" strokeWidth="2.2" />
+              <rect x="-11" y="-9"  width="22" height="9" rx="1.5" fill="#d9342b" />
+              <g className="kdp-bot-eyes">
+                <ellipse cx="-4.5" cy="-4.5" rx="2" ry="2.5" fill="#fff" />
+                <ellipse cx="4.5"  cy="-4.5" rx="2" ry="2.5" fill="#fff" />
+                <circle  cx="-4.5" cy="-4.5" r="1" fill="#d9342b" />
+                <circle  cx="4.5"  cy="-4.5" r="1" fill="#d9342b" />
+              </g>
+              <rect x="-7" y="3" width="14" height="2" rx="1" fill="#d9342b" />
+            </g>
+            <text x="0" y="34" textAnchor="middle"
+                  fontFamily="Inter, system-ui, sans-serif"
+                  fontWeight="700" fontSize="9"
+                  letterSpacing="-0.02em" fill="#d9342b">
+              skillies.ai
+            </text>
+          </g>
+        </svg>
+      </div>
+
       {/* ───── AI Powered Algorithm card (under the bot) ───── */}
       <div className="kdp-ai-card">
         <span className="kdp-ai-icon" aria-hidden>
