@@ -228,35 +228,41 @@ export default function KdpNicheFinder() {
         let licenseSet = false;
         if (supabase) {
           try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.access_token) {
-              if (!cancelled) {
+            // Use getUser() first — it waits for full session hydration from
+            // cookies (getSession() can return null on cold mount even when a
+            // valid session cookie is set, especially with @supabase/ssr).
+            // Once getUser succeeds we know there's a session to read.
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user && !cancelled) {
+              const { data: { session } } = await supabase.auth.getSession();
+              const accessToken = session?.access_token;
+              if (accessToken) {
                 setStatus({
                   kind: "info",
-                  message: "Welcome back. Connecting your license…",
+                  message: `Welcome back, ${user.email || "signed-in user"}. Connecting your license…`,
                 });
-              }
-              const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ access_token: session.access_token }),
-              });
-              if (r.ok) {
-                const data = await r.json();
-                if (!cancelled) {
-                  localStorage.setItem(LS_KEY, data.license.code);
-                  setLicense(data.license);
-                  setStatus(null);
-                  licenseSet = true;
+                const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ access_token: accessToken }),
+                });
+                if (r.ok) {
+                  const data = await r.json();
+                  if (!cancelled) {
+                    localStorage.setItem(LS_KEY, data.license.code);
+                    setLicense(data.license);
+                    setStatus(null);
+                    licenseSet = true;
+                  }
+                } else if (!cancelled) {
+                  const err = await r.json().catch(() => ({}));
+                  setStatus({
+                    kind: "error",
+                    message: `Signed in as ${user.email}, but couldn't connect your license: ${
+                      err.detail || `HTTP ${r.status}`
+                    }. Refresh, or sign out and back in.`,
+                  });
                 }
-              } else if (!cancelled) {
-                const err = await r.json().catch(() => ({}));
-                setStatus({
-                  kind: "error",
-                  message: `Signed in, but couldn't connect your license: ${
-                    err.detail || `HTTP ${r.status}`
-                  }. Refresh, or sign out and back in.`,
-                });
               }
             }
           } catch {
