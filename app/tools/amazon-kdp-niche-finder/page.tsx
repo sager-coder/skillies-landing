@@ -611,6 +611,31 @@ export default function AmazonKdpNicheFinderPage() {
              remaining content can render at a readable size.
              ─────────────────────────────────────────────────────────── */
 
+          /* Widen the source/niche columns on mobile so card edges
+             sit closer to the bot. The SVG paths still anchor at
+             SRC_X=240 / NCH_X=760 (24 % / 76 % of viewBox) — the
+             portion of each bezier between the path endpoint and the
+             card edge passes UNDER the card (cards are z-index 2,
+             SVG is z-index 1) so the dashed/particle stream visually
+             emerges from the card's edge. Net effect: same dotted
+             flow toward the bot, just less empty horizontal gap.
+                 Source col: 24 % → 32 %
+                 Niche col:  29 % → 35 % */
+          .kdp-diagram-col-left  { width: 32%; }
+          .kdp-diagram-col-right { width: 35%; }
+
+          /* Tighten the bot's ambient rings on mobile.
+             Desktop has 3 concentric rings at viewBox radii 140 / 112 /
+             96 (BOT_R=80 plus 60 / 32 / 16). At desktop scale that's a
+             ~40 px aura around the bot, which on phone reads as a big
+             empty disc. Pull them in to 100 / 92 / 86 so the rings
+             hug the bot instead of bleeding outward.
+             CSS attribute selector 'r' overrides the SVG attribute
+             (Chrome 81+ / Safari 14+ / FF 76+). */
+          .kdp-bot-rings circle:nth-child(1) { r: 100; }
+          .kdp-bot-rings circle:nth-child(2) { r: 92; }
+          .kdp-bot-rings circle:nth-child(3) { r: 86; }
+
           /* Column headers — keep just the step label. The narrative
              paragraph subtitle is hidden so the first card at
              top:12.82 % doesn't visually swallow it. */
@@ -670,11 +695,13 @@ export default function AmazonKdpNicheFinderPage() {
             border-width: 1.5px;
           }
 
-          /* AI card — title only. */
+          /* AI card — title only. Narrower than desktop because the
+             columns expand on mobile (32 % + 35 %), leaving only ~33 %
+             centre band for the AI card without overlap. */
           .kdp-ai-card {
-            width: 36%;
-            max-width: 200px;
-            padding: 7px 9px;
+            width: 30%;
+            max-width: 170px;
+            padding: 6px 8px;
             gap: 6px;
             border-radius: 9px;
           }
