@@ -426,7 +426,18 @@ export default function KdpDiscoveryDiagram() {
         >
           <circle r={BOT_R} fill="#ffffff" stroke="rgba(217,52,43,0.20)" strokeWidth="1.5" />
           <circle r={BOT_R - 6} fill="none" stroke="rgba(217,52,43,0.12)" strokeDasharray="2 5" strokeWidth="1.2" />
-          <g transform="translate(0,-6)">
+          {/* Head group transform notes:
+                scale(1.18) — beefs up the head ~18 % so it fills the
+                  circle better; the original was reading small against
+                  the BOT_R=80 white disc.
+                translate(0, 9) — shifts the head down to recentre.
+                  The head's geometric bounds run y=-55 (antenna top)
+                  to y=10 (mouth bottom). After scale + translate that
+                  becomes y=-56 to y=21, geometric centre y=-17.5,
+                  which sits comfortably above the "skillies.ai" text
+                  (at y=62) and leaves antenna clearance to the top
+                  of the circle (y=-80). */}
+          <g transform="translate(0,9) scale(1.18)">
             <line x1="0" y1="-46" x2="0" y2="-32" stroke="#d9342b" strokeWidth="2.6" strokeLinecap="round" />
             <circle cx="0" cy="-50" r="5" fill="#d9342b" />
             <rect x="-32" y="-30" width="64" height="44" rx="11" fill="#ffffff" stroke="#d9342b" strokeWidth="3" />
