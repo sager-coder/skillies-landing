@@ -288,14 +288,18 @@ export default function AmazonKdpNicheFinderPage() {
           z-index: 1;
         }
         .kdp-diagram-col {
+          /* Columns + their cards are percentage-sized so the whole
+             layout scales smoothly from 1000 px down to phone widths
+             — same visual at every scale, just smaller text and
+             padding via the compact-mobile @media block below. */
           position: absolute;
           top: 0;
-          width: 240px;
+          width: 24%;           /* 240/1000 — anchors the line endpoints in the SVG (SRC_X=240) */
           height: 100%;
           z-index: 2;
         }
         .kdp-diagram-col-left { left: 0; }
-        .kdp-diagram-col-right { right: 0; width: 290px; }
+        .kdp-diagram-col-right { right: 0; width: 29%; /* 290/1000 — NCH_X=760 */ }
 
         .kdp-col-header {
           position: absolute;
@@ -320,7 +324,10 @@ export default function AmazonKdpNicheFinderPage() {
         .kdp-source-card {
           position: absolute;
           right: 0;
-          width: 220px;
+          /* Slightly inset from the column right edge so the source-→-bot
+             path (which anchors at SRC_X=240 in viewBox units, i.e. the
+             column's right edge) emerges from a visible card edge. */
+          width: 92%;            /* 220/240 of column */
           background: #ffffff;
           border: 1px solid #efe5d2;
           border-radius: 14px;
@@ -358,7 +365,10 @@ export default function AmazonKdpNicheFinderPage() {
         .kdp-niche-card {
           position: absolute;
           left: 0;
-          width: 290px;
+          /* Fills the right column (NCH_X=760 → column at right: 0,
+             width: 29% (=290 in viewBox units)). Path endpoint aligns
+             with the card's left edge. */
+          width: 100%;
           background: #ffffff;
           border: 1px solid #efe5d2;
           border-radius: 14px;
@@ -442,9 +452,9 @@ export default function AmazonKdpNicheFinderPage() {
 
         .kdp-view-all {
           position: absolute;
-          /* Sits ~24 px below the last niche card (card 5 ends at y≈524) so
-             it tracks the cards instead of floating at the column bottom. */
-          top: 552px;
+          /* Sits ~24 px below the last niche card. 552/780 ≈ 70.77% —
+             percentage so the link tracks the cards through every scale. */
+          top: 70.77%;
           right: 0;
           left: 0;
           text-align: center;
@@ -464,13 +474,12 @@ export default function AmazonKdpNicheFinderPage() {
           left: 50%;
           bottom: 6%;
           transform: translateX(-50%);
-          /* Constrain to the centre column only — diagram width minus the
-             left source col (240) and right niche col (290) and ~30 px
-             margin on each side. Prevents the card overlapping niche cards
-             on smaller diagrams. */
-          width: calc(100% - 600px);
+          /* Centre band only — diagram is 100%, columns claim 24% + 29% =
+             53%, leaving 47% in the middle. The AI card takes 38% which
+             slots in with ~4–5% breathing room either side. Percentage
+             keeps it the same proportion at every diagram scale. */
+          width: 38%;
           max-width: 340px;
-          min-width: 260px;
           background: #ffffff;
           border: 1px solid #efe5d2;
           border-radius: 14px;
@@ -481,13 +490,6 @@ export default function AmazonKdpNicheFinderPage() {
           box-shadow: 0 6px 18px rgba(40,25,10,0.08);
           z-index: 3;
           font-family: var(--font-inter, Inter, sans-serif);
-        }
-        @media (max-width: 1023px) {
-          .kdp-ai-card {
-            width: calc(100% - 480px);  /* col widths shrink at this break */
-            max-width: 300px;
-            min-width: 240px;
-          }
         }
         .kdp-ai-icon {
           width: 34px; height: 34px;
@@ -587,16 +589,6 @@ export default function AmazonKdpNicheFinderPage() {
             gap: 20px 24px;
           }
         }
-        @media (max-width: 1023px) {
-          .kdp-diagram { max-width: 760px; }
-          .kdp-diagram-col { width: 200px; }
-          .kdp-diagram-col-right { width: 240px; }
-          .kdp-source-card { width: 184px; padding: 10px 12px; }
-          .kdp-niche-card { width: 240px; padding: 10px; }
-        }
-        /* Mobile bot is hidden by default; mobile breakpoint flips it on. */
-        .kdp-mobile-bot { display: none; }
-
         @media (max-width: 720px) {
           .kdp-hero-h1 { font-size: clamp(36px, 9vw, 52px); }
           .kdp-hero-bottomstrip {
@@ -607,137 +599,131 @@ export default function AmazonKdpNicheFinderPage() {
           .kdp-hero-feature-icon { width: 40px; height: 40px; }
 
           /* ───────────────────────────────────────────────────────────
-             Mobile funnel layout.
-             Desktop draws this as two absolutely-positioned columns
-             with an SVG wiring them through a centred bot. None of that
-             fits a 360 px viewport, so we:
-               1. Hide the desktop SVG entirely (geometry doesn't map)
-               2. Reset every absolutely-positioned card to static flow
-               3. Re-flow .kdp-diagram as a single flex column with the
-                  source stack → bot → AI card → niche stack reading top
-                  to bottom (flex 'order' overrides DOM order).
-               4. Insert subtle ▼ chevrons between sections via ::before
-                  so the funnel narrative still reads visually.
+             Mobile diagram — same desktop side-by-side layout, just
+             scaled down. All positions + widths are percentage-based
+             already (see the base rules above), so this block only
+             needs to shrink the *content* of each card so it fits the
+             narrow columns:
+               - Source column ≈ 24 % of viewport (~86 px on a 360 px
+                 phone) → icon shrinks 34→22, padding 12→6, title 13→9.
+               - Niche column ≈ 29 % (~104 px) → thumb 50×60 → 28×34,
+                 score 36 → 24, title 13 → 9, padding 12 → 6.
+             We deliberately HIDE the subtitle/sub rows and the niche
+             breadcrumb at the smallest size — the desktop narrative
+             ("Millions of Books", "Real-time data", "Mindfulness
+             Journals", etc.) doesn't fit at 86 px wide, and trying to
+             squeeze them in becomes microcopy soup. The titles + score
+             are what carry the message.
              ─────────────────────────────────────────────────────────── */
-          .kdp-diagram {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            aspect-ratio: auto;
-            max-width: 420px;
-            padding: 0;
-            gap: 18px;
-          }
-          .kdp-diagram-svg { display: none; }
 
-          .kdp-diagram-col,
-          .kdp-diagram-col-left,
-          .kdp-diagram-col-right {
-            position: static;
-            width: 100%;
-            height: auto;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+          /* Column headers — keep just the step label ("1. ANALYZE",
+             "2. SORT & DELIVER") on mobile. The narrative subtitle
+             ("We scan & analyze all Amazon books", etc.) wraps onto
+             3-4 lines in an 86 px column and gets visually swallowed
+             by the first card at top:12.82 %, so we hide it.
+             Step label is forced single-line so "SORT & DELIVER"
+             doesn't break to two rows. */
+          .kdp-col-step {
+            font-size: 9px;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
           }
-          .kdp-diagram-col-left  { order: 1; }
-          .kdp-mobile-bot        { order: 2; }
-          .kdp-ai-card           { order: 3; }
-          .kdp-diagram-col-right { order: 4; }
+          .kdp-col-header p { display: none; }
 
-          /* Section headers: centre them above their card stack. */
-          .kdp-col-header,
-          .kdp-col-header-right {
-            position: static;
-            text-align: center;
-            margin-bottom: 6px;
-            right: auto;
-            left: auto;
+          .kdp-source-card {
+            width: 96%;
+            padding: 6px 7px;
+            gap: 6px;
+            border-radius: 8px;
           }
-          .kdp-col-header p {
-            margin: 4px auto 0;
-            font-size: 13px;
+          .kdp-source-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
           }
-          /* Leave the <br/> intact on mobile — removing it merged
-             "analyze" + "all" with no separating space because the
-             desktop markup uses "analyze<br/>all" (no trailing
-             space). The natural two-line wrap reads fine narrow. */
+          .kdp-source-icon svg { width: 14px; height: 14px; }
+          .kdp-source-title {
+            font-size: 9.5px;
+            line-height: 1.15;
+          }
+          .kdp-source-sub {
+            font-size: 7.5px;
+            line-height: 1.2;
+            /* Subtitle is the first thing to go at really narrow widths
+               (see < 380 px below) — keeps the card readable. */
+          }
 
-          /* Cards: full width, static. The inline JS top-style from
-             KdpDiscoveryDiagram (each card positions itself absolutely
-             on desktop) is neutralised below with top:auto !important
-             so cards just flow naturally. */
-          .kdp-source-card,
           .kdp-niche-card {
-            position: static;
-            top: auto !important;
-            right: auto;
-            left: auto;
-            width: 100%;
-            max-width: none;
-            padding: 12px 14px;
-            opacity: 1;            /* skip the fade-in choreography on mobile */
-            animation: none;
+            padding: 6px;
+            gap: 6px;
+            border-radius: 8px;
           }
-          /* Niche-card text can wrap on narrow screens — kill the
-             single-line ellipsis it uses on desktop. */
-          .kdp-niche-title,
-          .kdp-niche-meta-line,
-          .kdp-niche-niche {
-            white-space: normal;
-            overflow: visible;
-            text-overflow: clip;
-          }
-
-          /* Mobile bot — show it, give it some breathing room.
-             The SVG inside carries its own fan-in / fan-out particle
-             streams, so no chevron ::before is needed above. */
-          .kdp-mobile-bot {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0;
-          }
-
-          /* AI card — static block, centre-aligned text/icon, full width. */
-          .kdp-ai-card {
-            position: static;
-            transform: none;
-            width: 100%;
-            max-width: none;
-            min-width: 0;
-            justify-content: center;
-            text-align: left;
-            bottom: auto;
-            left: auto;
-          }
-
-          /* View-all link — falls under the niche stack naturally. */
-          .kdp-view-all {
-            position: static;
-            top: auto;
-            margin-top: 12px;
-          }
-
-          /* Only ONE static chevron now — between the AI card and the
-             "2. SORT & DELIVER" section. The fan-in / fan-out particle
-             streams already do this job for the bot region, but the AI
-             card → niche stack gap still needs a visual baton-pass. */
-          .kdp-diagram-col-right::before {
-            content: "▼";
-            display: block;
-            text-align: center;
-            color: rgba(217,52,43,0.45);
+          .kdp-niche-thumb {
+            width: 28px;
+            height: 34px;
             font-size: 14px;
-            line-height: 1;
-            margin-bottom: 12px;
-            animation: kdp-mobile-chevron 1.6s ease-in-out infinite;
+            border-radius: 3px;
           }
-          @keyframes kdp-mobile-chevron {
-            0%, 100% { transform: translateY(0); opacity: 0.45; }
-            50%      { transform: translateY(3px); opacity: 0.9; }
+          .kdp-niche-title {
+            font-size: 9px;
+            line-height: 1.15;
+            /* Leave the desktop nowrap/ellipsis intact — at 9 px the
+               title stays on a single truncated line which reads
+               better than wrap-soup in a 60 px content column. */
           }
+          .kdp-niche-meta-line {
+            font-size: 7.5px;
+            margin-top: 1px;
+          }
+          .kdp-niche-niche {
+            font-size: 7.5px;
+            margin-top: 1px;
+          }
+          .kdp-niche-score-num {
+            width: 24px;
+            height: 24px;
+            font-size: 10px;
+            border-width: 1.5px;
+          }
+          .kdp-niche-score-label { font-size: 8px; }
+
+          .kdp-ai-card {
+            width: 36%;
+            max-width: 220px;
+            padding: 7px 9px;
+            gap: 6px;
+            border-radius: 9px;
+          }
+          .kdp-ai-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+          }
+          .kdp-ai-icon svg { width: 14px; height: 14px; }
+          .kdp-ai-title { font-size: 8px; letter-spacing: 0.05em; }
+          .kdp-ai-sub   { font-size: 8.5px; line-height: 1.25; }
+
+          /* View-all link — slightly lower so it clears the compressed
+             last niche card. Allow wrapping at this width: "View all
+             proven niches →" is wider than the ~95 px niche column,
+             so we let it break to 2 lines rather than clip off-screen. */
+          .kdp-view-all {
+            top: 80%;
+            font-size: 9px;
+            line-height: 1.25;
+          }
+        }
+
+        /* Very narrow phones (< 380 px) — drop subtitle + niche
+           breadcrumb. The card body is so thin at this width that
+           keeping them just produces unreadable smear. Title + score
+           still carry the meaning. */
+        @media (max-width: 379px) {
+          .kdp-source-sub,
+          .kdp-niche-niche { display: none; }
+          .kdp-source-card { padding: 5px 6px; }
+          .kdp-niche-card  { padding: 5px; }
+          .kdp-niche-thumb { width: 24px; height: 30px; font-size: 12px; }
         }
       `}</style>
       <TopNav />

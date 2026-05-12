@@ -188,7 +188,12 @@ const BOT_R = 80;
 const SRC_X = 240; // right edge of source cards
 const SRC_TOP = 100;
 const SRC_GAP = 86;
+// SVG path geometry uses pixel-based y (sourceY/nicheY) so the bezier
+// endpoints match the cards. The HTML cards themselves position via a
+// percentage of the diagram's height so the layout scales with the
+// container — same visual at 1000 px and at 360 px.
 const sourceY = (i: number) => SRC_TOP + i * SRC_GAP;
+const sourceYPct = (i: number) => `${(sourceY(i) / H) * 100}%`;
 
 // Niche cards: 5 rows down the right side. Tighter gap (92 → 86) so card 5
 // ends well above the AI card.
@@ -196,6 +201,7 @@ const NCH_X = 760;
 const NCH_TOP = 110;
 const NCH_GAP = 86;
 const nicheY = (i: number) => NCH_TOP + i * NCH_GAP;
+const nicheYPct = (i: number) => `${(nicheY(i) / H) * 100}%`;
 
 // ── Component ───────────────────────────────────────────────────────────────
 export default function KdpDiscoveryDiagram() {
@@ -254,7 +260,7 @@ export default function KdpDiscoveryDiagram() {
             key={s.title}
             className="kdp-source-card"
             style={{
-              top: sourceY(i),
+              top: sourceYPct(i),
               animationDelay: `${i * 0.08}s`,
             }}
           >
@@ -278,7 +284,7 @@ export default function KdpDiscoveryDiagram() {
             key={b.title}
             className="kdp-niche-card"
             style={{
-              top: nicheY(i),
+              top: nicheYPct(i),
               animationDelay: `${0.4 + i * 0.10}s`,
             }}
           >
@@ -450,122 +456,6 @@ export default function KdpDiscoveryDiagram() {
           </text>
         </g>
       </svg>
-
-      {/* ───── MOBILE bot + animated funnel ─────
-          The desktop bot + dotted bezier wiring lives inside the SVG
-          above, which we hide on mobile (the absolute 1000×780
-          geometry doesn't translate to 360 px). Here we render a
-          dedicated mobile SVG that shows ONLY below 720 px:
-            - 6 source streams fan IN from the top edge to the bot
-            - 5 result streams fan OUT from the bot to the bottom edge
-            - 3 staggered traveling particles per stream
-            - Same robot in the centre
-          Particles use SMIL <animateMotion> rather than the useClock
-          state-driven approach the desktop uses, so the animation
-          runs entirely in the renderer without re-rendering React on
-          every frame — cheaper on phones. */}
-      <div className="kdp-mobile-bot" aria-hidden>
-        <svg
-          viewBox="0 0 280 320"
-          preserveAspectRatio="xMidYMid meet"
-          width="100%"
-          style={{ maxWidth: 280, height: "auto" }}
-        >
-          {/* concentric ambient rings around the bot */}
-          <circle cx="140" cy="160" r="68" fill="none" stroke="rgba(217,52,43,0.10)" strokeWidth="1.2" strokeDasharray="3 6" />
-          <circle cx="140" cy="160" r="52" fill="rgba(217,52,43,0.06)" />
-          <circle cx="140" cy="160" r="42" fill="rgba(217,52,43,0.10)" />
-
-          {/* ── Incoming source streams ──
-              6 lines coming in from the top edge, fanning down into
-              the bot's top edge. Each is a quadratic bezier — straight
-              from the top, curving inward as they approach the bot.
-              X positions spread evenly across the 280-wide viewBox. */}
-          {[40, 80, 120, 160, 200, 240].map((sx, i) => {
-            const d = `M ${sx} 10 Q ${sx} 80, 140 122`;
-            return (
-              <g key={`min-${i}`}>
-                <path
-                  d={d}
-                  stroke="rgba(217,52,43,0.32)"
-                  strokeWidth="1"
-                  fill="none"
-                  strokeDasharray="2 5"
-                />
-                {[0, 0.4, 0.8].map((delay, k) => (
-                  <circle key={k} r="2.5" fill="#d9342b">
-                    <animateMotion
-                      dur="2.4s"
-                      begin={`${i * 0.18 + delay}s`}
-                      repeatCount="indefinite"
-                      path={d}
-                    />
-                  </circle>
-                ))}
-              </g>
-            );
-          })}
-
-          {/* The bot in the centre. Same construction as the desktop
-              version, just shifted into the 280×320 coordinate space
-              at (140, 160). */}
-          <g transform="translate(140,160) scale(0.85)">
-            <circle r="40" fill="#ffffff" stroke="rgba(217,52,43,0.20)" strokeWidth="1.5" />
-            <circle r="34" fill="none" stroke="rgba(217,52,43,0.12)" strokeDasharray="2 5" strokeWidth="1.2" />
-            <g transform="translate(0,-3)">
-              <line x1="0" y1="-23" x2="0" y2="-16" stroke="#d9342b" strokeWidth="2.6" strokeLinecap="round" />
-              <circle cx="0" cy="-25" r="3" fill="#d9342b" />
-              <rect x="-16" y="-15" width="32" height="22" rx="6" fill="#ffffff" stroke="#d9342b" strokeWidth="2.4" />
-              <rect x="-20" y="-9"  width="4"  height="9" rx="1.5" fill="none" stroke="#d9342b" strokeWidth="2.2" />
-              <rect x="16"  y="-9"  width="4"  height="9" rx="1.5" fill="none" stroke="#d9342b" strokeWidth="2.2" />
-              <rect x="-11" y="-9"  width="22" height="9" rx="1.5" fill="#d9342b" />
-              <g className="kdp-bot-eyes">
-                <ellipse cx="-4.5" cy="-4.5" rx="2" ry="2.5" fill="#fff" />
-                <ellipse cx="4.5"  cy="-4.5" rx="2" ry="2.5" fill="#fff" />
-                <circle  cx="-4.5" cy="-4.5" r="1" fill="#d9342b" />
-                <circle  cx="4.5"  cy="-4.5" r="1" fill="#d9342b" />
-              </g>
-              <rect x="-7" y="3" width="14" height="2" rx="1" fill="#d9342b" />
-            </g>
-            <text x="0" y="34" textAnchor="middle"
-                  fontFamily="Inter, system-ui, sans-serif"
-                  fontWeight="700" fontSize="9"
-                  letterSpacing="-0.02em" fill="#d9342b">
-              skillies.ai
-            </text>
-          </g>
-
-          {/* ── Outgoing niche streams ──
-              5 lines fanning out from the bot's bottom edge to the
-              bottom of the viewBox, each terminating at a different
-              X. Same staggered 3-particle stream as the incoming
-              side, offset in time so the eye reads incoming first. */}
-          {[50, 95, 140, 185, 230].map((sx, i) => {
-            const d = `M 140 198 Q 140 250, ${sx} 310`;
-            return (
-              <g key={`mout-${i}`}>
-                <path
-                  d={d}
-                  stroke="rgba(217,52,43,0.32)"
-                  strokeWidth="1"
-                  fill="none"
-                  strokeDasharray="2 5"
-                />
-                {[0, 0.4, 0.8].map((delay, k) => (
-                  <circle key={k} r="2.5" fill="#d9342b">
-                    <animateMotion
-                      dur="2.4s"
-                      begin={`${1.2 + i * 0.18 + delay}s`}
-                      repeatCount="indefinite"
-                      path={d}
-                    />
-                  </circle>
-                ))}
-              </g>
-            );
-          })}
-        </svg>
-      </div>
 
       {/* ───── AI Powered Algorithm card (under the bot) ───── */}
       <div className="kdp-ai-card">
