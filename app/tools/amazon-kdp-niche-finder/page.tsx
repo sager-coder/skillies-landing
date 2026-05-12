@@ -646,9 +646,10 @@ export default function AmazonKdpNicheFinderPage() {
           }
           .kdp-col-header p { display: none; }
 
-          /* Hide everything truncation murders at this width. */
+          /* Hide content that doesn't survive truncation at this
+             width. We KEEP .kdp-niche-title so each result card has
+             real text — empty thumb+score cards looked broken. */
           .kdp-source-sub,
-          .kdp-niche-title,
           .kdp-niche-meta-line,
           .kdp-niche-niche,
           .kdp-niche-score-label,
@@ -672,26 +673,41 @@ export default function AmazonKdpNicheFinderPage() {
             line-height: 1.15;
           }
 
-          /* Niche card — thumb + score badge. The meta column collapses
-             to zero width since its children are display:none, so the
-             score sits right next to the thumb. */
+          /* Niche card — thumb + truncated title + score badge.
+             The title uses 2-line clamp so longer titles read as
+             "The Mindful Day…" rather than an empty meta column. */
           .kdp-niche-card {
-            padding: 5px;
-            gap: 6px;
+            padding: 5px 6px;
+            gap: 5px;
             border-radius: 8px;
-            justify-content: space-between;
           }
           .kdp-niche-thumb {
-            width: 26px;
-            height: 32px;
-            font-size: 13px;
+            width: 22px;
+            height: 28px;
+            font-size: 11px;
             border-radius: 3px;
           }
-          .kdp-niche-meta { display: none; }   /* its kids are all hidden */
+          .kdp-niche-meta {
+            flex: 1;
+            min-width: 0;
+          }
+          .kdp-niche-title {
+            font-size: 9.5px;
+            line-height: 1.18;
+            font-weight: 700;
+            /* 2-line clamp — fits "The Mindful Day" with ellipsis on
+               line 2 in the ~40 px wide meta column. Override the
+               desktop nowrap/single-line ellipsis. */
+            white-space: normal;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
           .kdp-niche-score-num {
-            width: 26px;
-            height: 26px;
-            font-size: 10px;
+            width: 22px;
+            height: 22px;
+            font-size: 9px;
             border-width: 1.5px;
           }
 
@@ -742,19 +758,23 @@ export default function AmazonKdpNicheFinderPage() {
           .kdp-source-title { font-size: 9px; }
 
           .kdp-niche-card {
-            padding: 3px;
+            padding: 4px 5px;
             border-radius: 6px;
-            gap: 5px;
+            gap: 4px;
           }
           .kdp-niche-thumb {
-            width: 22px;
-            height: 26px;
-            font-size: 11px;
+            width: 20px;
+            height: 24px;
+            font-size: 10px;
+          }
+          .kdp-niche-title {
+            font-size: 8.5px;
+            line-height: 1.15;
           }
           .kdp-niche-score-num {
-            width: 22px;
-            height: 22px;
-            font-size: 9px;
+            width: 20px;
+            height: 20px;
+            font-size: 8.5px;
             border-width: 1.4px;
           }
 
