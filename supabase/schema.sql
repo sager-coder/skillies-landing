@@ -24,13 +24,16 @@ alter table public.profiles add column if not exists device_bound_at timestamptz
 
 alter table public.profiles enable row level security;
 
+-- NOTE: the previous "profiles_select_own_or_admin" policy ORed in an
+-- EXISTS on profiles itself, which Postgres treated as recursive and
+-- rejected with 42P17. All admin reads of profiles happen via the
+-- service-role client in our route handlers, which bypasses RLS — so
+-- the admin clause is dead weight here and was removed.
 drop policy if exists "profiles_select_own_or_admin" on public.profiles;
-create policy "profiles_select_own_or_admin"
+drop policy if exists "profiles_select_own"          on public.profiles;
+create policy "profiles_select_own"
   on public.profiles for select
-  using (
-    auth.uid() = id
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
-  );
+  using (auth.uid() = id);
 
 drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own"
@@ -88,12 +91,11 @@ create policy "courses_public_select"
   on public.courses for select
   using (true);
 
--- Only admins can write
+-- Admin writes happen via the service-role client in our API routes
+-- (which bypasses RLS), so we deliberately do NOT define an admin
+-- write policy here. Previous versions did and triggered an infinite
+-- recursion through the profiles policy (42P17). Drop any stale one.
 drop policy if exists "courses_admin_write" on public.courses;
-create policy "courses_admin_write"
-  on public.courses for all
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
 
 -- Seed: the flagship course
 insert into public.courses (id, title, description, total_lessons, status)
@@ -125,21 +127,17 @@ create table if not exists public.enrollments (
 
 alter table public.enrollments enable row level security;
 
--- Students see only their own enrollments
+-- Students see only their own enrollments. Admin reads go through
+-- service-role so the admin clause was removed (triggered 42P17).
 drop policy if exists "enrollments_select_own_or_admin" on public.enrollments;
-create policy "enrollments_select_own_or_admin"
+drop policy if exists "enrollments_select_own"          on public.enrollments;
+create policy "enrollments_select_own"
   on public.enrollments for select
-  using (
-    auth.uid() = user_id
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
-  );
+  using (auth.uid() = user_id);
 
--- Only admins can grant / revoke (until Razorpay webhook is wired)
+-- Admin grants/revokes happen via service-role in the API routes —
+-- no RLS policy needed (and the previous one caused recursion).
 drop policy if exists "enrollments_admin_write" on public.enrollments;
-create policy "enrollments_admin_write"
-  on public.enrollments for all
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
 
 
 -- ---------------------------------------------------------------
@@ -160,27 +158,23 @@ create table if not exists public.lessons (
 
 alter table public.lessons enable row level security;
 
--- Students see lessons only if they're enrolled in the course
+-- Students see lessons only if they're enrolled in the course. Admin
+-- previews go through service-role in the /learn page server code, so
+-- the admin OR-branch (which triggered 42P17) has been removed.
 drop policy if exists "lessons_enrolled_select" on public.lessons;
 create policy "lessons_enrolled_select"
   on public.lessons for select
   using (
     is_published = true
-    and (
-      exists (
-        select 1 from public.enrollments e
-        where e.user_id = auth.uid()
-          and e.course_id = lessons.course_id
-      )
-      or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
+    and exists (
+      select 1 from public.enrollments e
+      where e.user_id = auth.uid()
+        and e.course_id = lessons.course_id
     )
   );
 
+-- Admin writes go through service-role. Drop any stale recursive policy.
 drop policy if exists "lessons_admin_write" on public.lessons;
-create policy "lessons_admin_write"
-  on public.lessons for all
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true));
 
 
 -- ---------------------------------------------------------------
@@ -198,17 +192,14 @@ create table if not exists public.lesson_progress (
 
 alter table public.lesson_progress enable row level security;
 
+-- Students manage their own progress. Admin reads happen via service-role
+-- so the admin clause (which caused 42P17 recursion) is removed.
 drop policy if exists "progress_own_or_admin" on public.lesson_progress;
-create policy "progress_own_or_admin"
+drop policy if exists "progress_own"          on public.lesson_progress;
+create policy "progress_own"
   on public.lesson_progress for all
-  using (
-    auth.uid() = user_id
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
-  )
-  with check (
-    auth.uid() = user_id
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
-  );
+  using       (auth.uid() = user_id)
+  with check  (auth.uid() = user_id);
 
 
 -- ---------------------------------------------------------------
@@ -279,6 +270,61 @@ alter table public.profiles add column if not exists last_name  text;
 
 alter table public.profiles
   add column if not exists blocked boolean not null default false;
+
+
+-- ===========================================================
+-- Skillies School v5 · Video protection
+--   Added 2026-05 alongside the Cloudflare Stream hardening
+--   pass: signed-URL tokens, audit log, one-active-session-per-
+--   user enforcement.  Idempotent; safe to re-run.
+--
+--   Two tables:
+--     1. video_access_log  → every stream-token mint, for forensics
+--        when a leaked recording surfaces.
+--     2. video_sessions    → one row per (user, browser tab). The
+--        /api/learn/session-heartbeat route uses it to kick older
+--        tabs when the same user opens a new one.
+-- ===========================================================
+
+create table if not exists public.video_access_log (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references public.profiles(id) on delete cascade,
+  lesson_id   uuid not null references public.lessons(id)  on delete cascade,
+  course_id   text          references public.courses(id)  on delete set null,
+  session_id  uuid,
+  ip          text,
+  user_agent  text,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists video_access_log_user_idx
+  on public.video_access_log(user_id, created_at desc);
+create index if not exists video_access_log_lesson_idx
+  on public.video_access_log(lesson_id, created_at desc);
+
+alter table public.video_access_log enable row level security;
+-- Writes happen via service-role from the route handler. No RLS
+-- policies needed (and exposing the log to students by accident
+-- would defeat the point).
+
+create table if not exists public.video_sessions (
+  -- session_id is generated client-side (crypto.randomUUID()) and is
+  -- the natural unique key. Don't use a serial — multiple Vercel
+  -- function instances can race on inserts otherwise.
+  session_id    uuid primary key,
+  user_id       uuid not null references public.profiles(id) on delete cascade,
+  lesson_id     uuid          references public.lessons(id)  on delete set null,
+  started_at    timestamptz not null default now(),
+  last_seen_at  timestamptz not null default now(),
+  ended_at      timestamptz,
+  ended_reason  text         check (ended_reason in ('kicked-newer','tab-closed','expired') or ended_reason is null)
+);
+
+create index if not exists video_sessions_user_live_idx
+  on public.video_sessions(user_id, ended_at, last_seen_at desc);
+
+alter table public.video_sessions enable row level security;
+-- Same rationale — only service-role touches this table.
 
 
 -- ===========================================================

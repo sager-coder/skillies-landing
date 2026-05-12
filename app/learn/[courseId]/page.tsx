@@ -48,7 +48,7 @@ export default async function LearnCoursePage({
   ] = await Promise.all([
     admin
       .from("profiles")
-      .select("phone, is_admin, full_name")
+      .select("phone, email, is_admin, full_name, first_name")
       .eq("id", user.id)
       .maybeSingle(),
     admin
@@ -93,7 +93,16 @@ export default async function LearnCoursePage({
     (progress || []).filter((p) => p.completed).map((p) => p.lesson_id),
   );
 
-  const watermark = profile?.phone ? maskPhone(profile.phone) : "STUDENT";
+  // Watermark is what gets burned into any screen recording — make it
+  // identifying enough that we can trace a leak back to one account.
+  // Format: "<maskedPhone> · <email>" (e.g. "•••• 4373 · ehsan@x.com").
+  // Falls back gracefully if any field is null.
+  const watermark = buildWatermark({
+    phone: profile?.phone ?? null,
+    email: profile?.email ?? null,
+    firstName: profile?.first_name ?? null,
+    userId: user.id,
+  });
 
   return (
     <main
@@ -152,7 +161,7 @@ export default async function LearnCoursePage({
           {activeLesson ? (
             <>
               <LessonPlayer
-                videoId={activeLesson.video_id || null}
+                hasVideo={!!activeLesson.video_id}
                 lessonId={activeLesson.id}
                 title={activeLesson.title}
                 watermark={watermark}
@@ -366,4 +375,28 @@ function maskPhone(phone: string): string {
   const digits = phone.replace(/\D/g, "");
   if (digits.length <= 4) return phone;
   return "•••• " + digits.slice(-4);
+}
+
+/**
+ * Compose the watermark string the player overlays on the video. Two
+ * goals: (1) identify the account if a recording surfaces, (2) stay
+ * short enough not to clutter the frame.
+ *
+ * Order of preference for the second segment: email > first name > a
+ * shortened user_id slice. Phone is always shown masked when present.
+ */
+function buildWatermark({
+  phone,
+  email,
+  firstName,
+  userId,
+}: {
+  phone: string | null;
+  email: string | null;
+  firstName: string | null;
+  userId: string;
+}): string {
+  const left = phone ? maskPhone(phone) : null;
+  const right = email || firstName || userId.slice(0, 8);
+  return left ? `${left} · ${right}` : right;
 }

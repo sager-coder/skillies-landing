@@ -26,9 +26,25 @@ const SECURITY_HEADERS = [
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   },
+  // XFO is the legacy header — kept for older webviews. The CSP
+  // frame-ancestors directive below is what actually enforces this
+  // policy on modern browsers (and matters for the Stream hardening
+  // pass: nobody else can iframe our /learn pages around the player).
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // CSP — minimal, only frame-ancestors. We deliberately don't define
+  // default-src / script-src here because the inline-style-heavy
+  // design system would need 'unsafe-inline' (defeats the point) and
+  // a mis-scoped script-src would break the embedded Cloudflare
+  // Stream iframe in production. Note: this directive is the modern
+  // equivalent of XFO; together they cover modern + legacy browsers.
+  // We frame OUT (load Cloudflare's iframe inside our pages) so
+  // 'none' here doesn't break the player.
+  {
+    key: "Content-Security-Policy",
+    value: "frame-ancestors 'none'",
+  },
   {
     key: "Permissions-Policy",
     value:
@@ -37,9 +53,28 @@ const SECURITY_HEADERS = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
 ];
 
+// Stricter headers for the gated learn surface — both the HTML pages
+// (/learn/*) and the playback APIs (/api/learn/*). We add hard
+// no-store cache directives so a leaked URL with a session cookie
+// can't be re-served from a shared proxy / CDN cache.
+const LEARN_HEADERS = [
+  ...SECURITY_HEADERS,
+  { key: "Cache-Control", value: "private, no-store, max-age=0" },
+];
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
+      // Tighter set first — Next applies headers from the first matching
+      // entry, so /learn/* and /api/learn/* get the stricter Cache-Control.
+      {
+        source: "/learn/:path*",
+        headers: LEARN_HEADERS,
+      },
+      {
+        source: "/api/learn/:path*",
+        headers: LEARN_HEADERS,
+      },
       {
         source: "/:path*",
         headers: SECURITY_HEADERS,
