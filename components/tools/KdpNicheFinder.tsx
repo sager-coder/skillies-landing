@@ -130,6 +130,7 @@ const isValidEmail = (s: string) => EMAIL_RE.test(s.trim()) && s.trim().length <
 // AI parser produces sharp filters.
 type ExamplePrompt = { label: string; brief: string; suggestPattern?: string };
 const EXAMPLE_PROMPTS: ExamplePrompt[] = [
+  { label: "All books · any topic",          brief: "Any book in any niche — surface the highest-probability opportunities the signal turns up, no topic constraint" },
   { label: "Adult coloring books",           brief: "Adult coloring books, paperback, 80-120 pages, low-content",                   suggestPattern: "low_content_selling" },
   { label: "Bad-reviewed reference guides",  brief: "Reference guides on tax filing for small businesses with bad reviews still selling", suggestPattern: "complete_guide_low_rated" },
   { label: "Hidden 5-star gardening books",  brief: "Gardening books for beginners with 4.5-star ratings but few reviews",          suggestPattern: "high_rated_sleepers" },
@@ -815,6 +816,59 @@ export default function KdpNicheFinder() {
           transform: translateY(-1px);
         }
 
+        /* ── Result cards ── responsive grid: stacked on mobile, 3-col on tablet+ */
+        .kdp-tool :global(.kdp-result-card) {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .kdp-tool :global(.kdp-result-header) {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          gap: 12px;
+        }
+        .kdp-tool :global(.kdp-result-rank) {
+          font-size: 36px;
+        }
+        .kdp-tool :global(.kdp-result-price-mobile) {
+          display: block;
+        }
+        .kdp-tool :global(.kdp-result-aside) {
+          display: none;
+        }
+        .kdp-tool :global(.kdp-result-cta-mobile) {
+          display: inline-block;
+          margin-top: 14px;
+        }
+        @media (min-width: 640px) {
+          .kdp-tool :global(.kdp-result-card) {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            gap: 20px;
+            align-items: center;
+          }
+          .kdp-tool :global(.kdp-result-header) {
+            display: contents;
+          }
+          .kdp-tool :global(.kdp-result-rank) {
+            font-size: 44px;
+            text-align: center;
+          }
+          .kdp-tool :global(.kdp-result-price-mobile) {
+            display: none;
+          }
+          .kdp-tool :global(.kdp-result-aside) {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+          }
+          .kdp-tool :global(.kdp-result-cta-mobile) {
+            display: none;
+          }
+        }
+
         /* ── Tier cards (Buy Credits) ─────────────────────────────── */
         .kdp-tool :global(.kdp-tier) {
           position: relative;
@@ -1474,45 +1528,71 @@ export default function KdpNicheFinder() {
               return (
                 <article
                   key={b.asin || i}
-                  className="rounded-md p-5 md:p-6 bg-white grid gap-5 transition-all duration-100"
+                  className="kdp-result-card rounded-md p-5 md:p-6 bg-white transition-all duration-100"
                   style={{
                     border: "1px solid var(--sk-hairline)",
                     borderLeft: "4px solid var(--sk-gold, #c9a24e)",
-                    gridTemplateColumns: "60px 1fr auto",
-                    alignItems: "center",
                   }}
                 >
-                  <div
-                    className="text-center"
-                    style={{
-                      fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
-                      fontWeight: 600,
-                      fontSize: 44,
-                      color: "var(--sk-red, #c62828)",
-                      letterSpacing: "-0.04em",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
+                  {/* Mobile (default): rank inline with price as a header row.
+                      Desktop (sm+): rank as a column to the left of content. */}
+                  <div className="kdp-result-header">
+                    <div
+                      className="kdp-result-rank"
+                      style={{
+                        fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
+                        fontWeight: 600,
+                        letterSpacing: "-0.04em",
+                        lineHeight: 1,
+                        color: "var(--sk-red, #c62828)",
+                      }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <div className="kdp-result-price-mobile">
+                      <div
+                        style={{
+                          fontFamily: "var(--font-instrument-serif, 'Space Grotesk', system-ui, sans-serif)",
+                          fontSize: 24,
+                          color: "#2d4a3a",
+                          letterSpacing: "-0.02em",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {fmtPrice(b.price_usd)}
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div className="text-[18px] font-semibold mb-1.5" style={{ color: "var(--sk-ink)" }}>
+                  <div className="kdp-result-body" style={{ minWidth: 0 }}>
+                    <div className="text-[16px] sm:text-[18px] font-semibold mb-1.5" style={{ color: "var(--sk-ink)", lineHeight: 1.3, wordBreak: "break-word" }}>
                       {b.title || "(untitled)"}
                     </div>
-                    <div className="text-[14px] mb-3" style={{ color: "var(--sk-ink60)" }}>
-                      {b.author || "—"} · {b.binding || "—"} · {b.primary_category || ""}
+                    <div className="text-[13px] sm:text-[14px] mb-3" style={{ color: "var(--sk-ink60)" }}>
+                      {b.author || "—"} · {b.binding || "—"}{b.primary_category ? ` · ${b.primary_category}` : ""}
                     </div>
-                    <div className="flex flex-wrap gap-4 text-[13px]" style={{ color: "var(--sk-ink60)" }}>
+                    <div className="flex flex-wrap gap-x-4 gap-y-2 text-[12px] sm:text-[13px]" style={{ color: "var(--sk-ink60)" }}>
                       <div>Rating <strong style={{ color: "var(--sk-ink)", marginLeft: 4 }}>{stars}</strong></div>
                       <div>Reviews <strong style={{ color: "var(--sk-ink)", marginLeft: 4 }}>{fmtNumber(b.review_count)}</strong></div>
-                      <div>BSR (1-year avg) <strong style={{ color: "var(--sk-ink)", marginLeft: 4 }}>{fmtNumber(bsr)}</strong></div>
-                      <div>Pub date <strong style={{ color: "var(--sk-ink)", marginLeft: 4 }}>{b.publication_date || "—"}</strong></div>
+                      <div>BSR (1y) <strong style={{ color: "var(--sk-ink)", marginLeft: 4 }}>{fmtNumber(bsr)}</strong></div>
+                      <div>Pub <strong style={{ color: "var(--sk-ink)", marginLeft: 4 }}>{b.publication_date || "—"}</strong></div>
                     </div>
+                    {b.amazon_url && (
+                      <a
+                        href={b.amazon_url}
+                        target="_blank"
+                        rel="noopener"
+                        className="kdp-result-cta-mobile text-[13px] font-bold tracking-[0.16em] uppercase"
+                        style={{ color: "var(--sk-red, #c62828)" }}
+                      >
+                        View on Amazon →
+                      </a>
+                    )}
                   </div>
-                  <div className="flex flex-col gap-1.5 items-end">
+                  <div className="kdp-result-aside">
                     <div
                       style={{
-                        fontFamily: "var(--font-instrument-serif, 'Space Grotesk', system-ui, sans-serif)",fontSize: 28,
+                        fontFamily: "var(--font-instrument-serif, 'Space Grotesk', system-ui, sans-serif)",
+                        fontSize: 28,
                         color: "#2d4a3a",
                         letterSpacing: "-0.02em",
                       }}
