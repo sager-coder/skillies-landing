@@ -690,12 +690,14 @@ export default function AmazonKdpNicheFinderPage() {
             text-overflow: clip;
           }
 
-          /* Mobile bot — show it, give it some breathing room. */
+          /* Mobile bot — show it, give it some breathing room.
+             The SVG inside carries its own fan-in / fan-out particle
+             streams, so no chevron ::before is needed above. */
           .kdp-mobile-bot {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 4px 0;
+            padding: 0;
           }
 
           /* AI card — static block, centre-aligned text/icon, full width. */
@@ -718,11 +720,10 @@ export default function AmazonKdpNicheFinderPage() {
             margin-top: 12px;
           }
 
-          /* Funnel chevrons between sections. ::before on the bot wrap
-             points down from sources → bot; ::before on the right column
-             points down from AI card → niches. Keeps the analyze →
-             deliver narrative even without the dotted SVG. */
-          .kdp-mobile-bot::before,
+          /* Only ONE static chevron now — between the AI card and the
+             "2. SORT & DELIVER" section. The fan-in / fan-out particle
+             streams already do this job for the bot region, but the AI
+             card → niche stack gap still needs a visual baton-pass. */
           .kdp-diagram-col-right::before {
             content: "▼";
             display: block;

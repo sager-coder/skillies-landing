@@ -451,21 +451,65 @@ export default function KdpDiscoveryDiagram() {
         </g>
       </svg>
 
-      {/* ───── MOBILE bot ─────
-          The desktop bot lives inside the SVG above, which we hide on
-          mobile (the absolute geometry doesn't translate to a narrow
-          viewport). Here we render a smaller inline-SVG bot that
-          shows ONLY below 720 px, between the source stack and the
-          AI card. Same robot, same colors — just sized for thumb
-          scrolling instead of widescreen. */}
+      {/* ───── MOBILE bot + animated funnel ─────
+          The desktop bot + dotted bezier wiring lives inside the SVG
+          above, which we hide on mobile (the absolute 1000×780
+          geometry doesn't translate to 360 px). Here we render a
+          dedicated mobile SVG that shows ONLY below 720 px:
+            - 6 source streams fan IN from the top edge to the bot
+            - 5 result streams fan OUT from the bot to the bottom edge
+            - 3 staggered traveling particles per stream
+            - Same robot in the centre
+          Particles use SMIL <animateMotion> rather than the useClock
+          state-driven approach the desktop uses, so the animation
+          runs entirely in the renderer without re-rendering React on
+          every frame — cheaper on phones. */}
       <div className="kdp-mobile-bot" aria-hidden>
-        <svg viewBox="0 0 160 160" width="120" height="120">
-          {/* concentric ambient rings */}
-          <circle cx="80" cy="80" r="74" fill="none" stroke="rgba(217,52,43,0.10)" strokeWidth="1.5" strokeDasharray="3 6" />
-          <circle cx="80" cy="80" r="60" fill="rgba(217,52,43,0.06)" />
-          <circle cx="80" cy="80" r="48" fill="rgba(217,52,43,0.10)" />
-          {/* the bot — same construction as the desktop one, shifted into a 160x160 box */}
-          <g transform="translate(80,80) scale(0.85)">
+        <svg
+          viewBox="0 0 280 320"
+          preserveAspectRatio="xMidYMid meet"
+          width="100%"
+          style={{ maxWidth: 280, height: "auto" }}
+        >
+          {/* concentric ambient rings around the bot */}
+          <circle cx="140" cy="160" r="68" fill="none" stroke="rgba(217,52,43,0.10)" strokeWidth="1.2" strokeDasharray="3 6" />
+          <circle cx="140" cy="160" r="52" fill="rgba(217,52,43,0.06)" />
+          <circle cx="140" cy="160" r="42" fill="rgba(217,52,43,0.10)" />
+
+          {/* ── Incoming source streams ──
+              6 lines coming in from the top edge, fanning down into
+              the bot's top edge. Each is a quadratic bezier — straight
+              from the top, curving inward as they approach the bot.
+              X positions spread evenly across the 280-wide viewBox. */}
+          {[40, 80, 120, 160, 200, 240].map((sx, i) => {
+            const d = `M ${sx} 10 Q ${sx} 80, 140 122`;
+            return (
+              <g key={`min-${i}`}>
+                <path
+                  d={d}
+                  stroke="rgba(217,52,43,0.32)"
+                  strokeWidth="1"
+                  fill="none"
+                  strokeDasharray="2 5"
+                />
+                {[0, 0.4, 0.8].map((delay, k) => (
+                  <circle key={k} r="2.5" fill="#d9342b">
+                    <animateMotion
+                      dur="2.4s"
+                      begin={`${i * 0.18 + delay}s`}
+                      repeatCount="indefinite"
+                      path={d}
+                    />
+                  </circle>
+                ))}
+              </g>
+            );
+          })}
+
+          {/* The bot in the centre. Same construction as the desktop
+              version, just shifted into the 280×320 coordinate space
+              at (140, 160). */}
+          <g transform="translate(140,160) scale(0.85)">
             <circle r="40" fill="#ffffff" stroke="rgba(217,52,43,0.20)" strokeWidth="1.5" />
             <circle r="34" fill="none" stroke="rgba(217,52,43,0.12)" strokeDasharray="2 5" strokeWidth="1.2" />
             <g transform="translate(0,-3)">
@@ -490,6 +534,36 @@ export default function KdpDiscoveryDiagram() {
               skillies.ai
             </text>
           </g>
+
+          {/* ── Outgoing niche streams ──
+              5 lines fanning out from the bot's bottom edge to the
+              bottom of the viewBox, each terminating at a different
+              X. Same staggered 3-particle stream as the incoming
+              side, offset in time so the eye reads incoming first. */}
+          {[50, 95, 140, 185, 230].map((sx, i) => {
+            const d = `M 140 198 Q 140 250, ${sx} 310`;
+            return (
+              <g key={`mout-${i}`}>
+                <path
+                  d={d}
+                  stroke="rgba(217,52,43,0.32)"
+                  strokeWidth="1"
+                  fill="none"
+                  strokeDasharray="2 5"
+                />
+                {[0, 0.4, 0.8].map((delay, k) => (
+                  <circle key={k} r="2.5" fill="#d9342b">
+                    <animateMotion
+                      dur="2.4s"
+                      begin={`${1.2 + i * 0.18 + delay}s`}
+                      repeatCount="indefinite"
+                      path={d}
+                    />
+                  </circle>
+                ))}
+              </g>
+            );
+          })}
         </svg>
       </div>
 
