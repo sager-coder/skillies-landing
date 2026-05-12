@@ -28,6 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
     })),
     { url: `${base}/skillies-school`, priority: 0.6, lastModified: now },
+    { url: `${base}/guides`, priority: 0.7, lastModified: now },
     { url: `${base}/privacy`, priority: 0.2 },
     { url: `${base}/terms`, priority: 0.2 },
     { url: `${base}/refund`, priority: 0.2 },

@@ -37,9 +37,9 @@ const SIGNALS: Array<{
     num: "01",
     eyebrow: "Starving niche",
     title: "Bad reviews — still selling",
-    blurb: "Under 3.5★ but still moving units. The market wants better and is paying for trash.",
+    blurb: "Under 4★ but still moving units. The market wants better and is paying for mediocre.",
     blurbItalic: "You ship better.",
-    stat: "Under 3.5★ · BSR ≤ 200,000 · 5+ reviews",
+    stat: "Under 4★ · BSR ≤ 200,000 · 5+ reviews",
   },
   {
     num: "02",
@@ -102,7 +102,7 @@ const SIGNALS: Array<{
     blurb: "Reference guides with bad reviews that still sell —",
     blurbItalic: "no better option exists",
     blurbTail: ". Build the better option.",
-    stat: '"Complete Guide" · ≤ 3.5★ · ≤ 100 reviews',
+    stat: '"Complete Guide" · ≤ 4★ · ≤ 100 reviews',
   },
 ];
 
