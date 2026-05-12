@@ -655,36 +655,45 @@ export default function AmazonKdpNicheFinderPage() {
           .kdp-niche-score-label,
           .kdp-ai-sub { display: none; }
 
+          /* Card height budget on mobile is set by the JS step
+             between consecutive cards: SRC_GAP/NCH_GAP = 86 viewBox
+             units = 11.03 % of the diagram height. On a 254 px-tall
+             diagram (326 px wide × 1000:780 aspect) that's ~28 px
+             per step. Card height ≤ ~22 px gives a visible 6-8 px
+             gap between cards; anything taller overlaps the next.
+             So thumbs / icons / scores all sized ≤ 20 px and the
+             niche title uses a 1-line ellipsis. */
+
           /* Source card — icon + title only, tight packing. */
           .kdp-source-card {
             width: 96%;
-            padding: 5px 6px;
+            padding: 3px 6px;
             gap: 6px;
-            border-radius: 8px;
+            border-radius: 7px;
           }
           .kdp-source-icon {
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
           }
-          .kdp-source-icon svg { width: 14px; height: 14px; }
+          .kdp-source-icon svg { width: 13px; height: 13px; }
           .kdp-source-title {
             font-size: 9.5px;
             line-height: 1.15;
           }
 
-          /* Niche card — thumb + truncated title + score badge.
-             The title uses 2-line clamp so longer titles read as
-             "The Mindful Day…" rather than an empty meta column. */
+          /* Niche card — thumb + truncated title + score. 1-line
+             title with ellipsis keeps the card ≤ 22 px tall so the
+             6-8 px gap between cards is visible. */
           .kdp-niche-card {
-            padding: 5px 6px;
+            padding: 3px 5px;
             gap: 5px;
-            border-radius: 8px;
+            border-radius: 7px;
           }
           .kdp-niche-thumb {
-            width: 22px;
-            height: 28px;
-            font-size: 11px;
+            width: 18px;
+            height: 22px;
+            font-size: 10px;
             border-radius: 3px;
           }
           .kdp-niche-meta {
@@ -693,20 +702,20 @@ export default function AmazonKdpNicheFinderPage() {
           }
           .kdp-niche-title {
             font-size: 9.5px;
-            line-height: 1.18;
+            line-height: 1.2;
             font-weight: 700;
-            /* 2-line clamp — fits "The Mindful Day" with ellipsis on
-               line 2 in the ~40 px wide meta column. Override the
-               desktop nowrap/single-line ellipsis. */
-            white-space: normal;
+            /* Single-line truncate: "The Mindful Day…" reads as
+               "The Mindf…" — meaningful preview, fits one row of
+               the ≤22 px card. Override the desktop 2-line clamp. */
+            white-space: nowrap;
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            display: block;
+            -webkit-line-clamp: unset;
           }
           .kdp-niche-score-num {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             font-size: 9px;
             border-width: 1.5px;
           }
