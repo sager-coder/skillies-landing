@@ -166,18 +166,10 @@ export default function KdpNicheFinder() {
   // search (anonymous license is auto-issued), so the only thing visitors
   // need from this panel after their free search is to pay for more.
   const [authTab, setAuthTab] = useState<AuthTab>("email");
-  const [email, setEmail] = useState("");
-  // OTP state — "request" = waiting for email + Send code,
-  // "verify" = waiting for the 6-digit code from the user's inbox.
-  const [otpStep, setOtpStep] = useState<"request" | "verify">("request");
-  const [otpCode, setOtpCode] = useState("");
-  const [otpSending, setOtpSending] = useState(false);
-  const [otpVerifying, setOtpVerifying] = useState(false);
 
-  // Lazy Supabase browser client — only constructed when the email tab is
-  // actually used so the OTP endpoint stays optional in dev / for self-hosters
-  // who don't run Supabase. If the env vars aren't set, this throws and the
-  // surrounding try/catch surfaces a friendly error.
+  // Lazy Supabase browser client — used here only to read the sitewide
+  // session on mount and exchange it for a license. Actual OTP send /
+  // verify happens at /signin (the sitewide tool sign-in page).
   const supabase = useMemo(() => {
     try {
       return createSupabaseBrowserClient();
@@ -220,10 +212,16 @@ export default function KdpNicheFinder() {
           });
         }
       }
-      // Restore license from localStorage. If none AND the visitor has
-      // never used a free search before, auto-issue an anonymous license
-      // behind the scenes — frictionless first-touch search, no email gate.
+      // License resolution chain on page load:
+      //   1. localStorage has a saved code → restore (paid licenses, anon
+      //      licenses from prior sessions)
+      //   2. Sitewide Supabase session present (user signed in at /signin) →
+      //      exchange access_token for matching license, or mint a fresh
+      //      1-credit free one for a new email
+      //   3. First-touch visitor with no past free-use flag → quietly issue
+      //      an anonymous 1-credit license so they can try once
       if (!cancelled) {
+        let licenseSet = false;
         const saved = localStorage.getItem(LS_KEY);
         if (saved) {
           try {
@@ -232,15 +230,40 @@ export default function KdpNicheFinder() {
             );
             if (r.ok) {
               const data = await r.json();
-              if (!cancelled) setLicense(data);
+              if (!cancelled) {
+                setLicense(data);
+                licenseSet = true;
+              }
             } else {
               localStorage.removeItem(LS_KEY);
             }
           } catch {
             /* ignore */
           }
-        } else if (!localStorage.getItem(LS_FREE_USED)) {
-          // First-time visitor → quietly issue 1-credit anonymous license
+        }
+        if (!cancelled && !licenseSet && supabase) {
+          try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+              const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ access_token: session.access_token }),
+              });
+              if (r.ok) {
+                const data = await r.json();
+                if (!cancelled) {
+                  localStorage.setItem(LS_KEY, data.license.code);
+                  setLicense(data.license);
+                  licenseSet = true;
+                }
+              }
+            }
+          } catch {
+            /* ignore — fall through to anonymous fallback */
+          }
+        }
+        if (!cancelled && !licenseSet && !localStorage.getItem(LS_FREE_USED)) {
           try {
             const r = await fetch(`${API_URL}/api/start-anonymous`, {
               method: "POST",
@@ -271,117 +294,10 @@ export default function KdpNicheFinder() {
       "Or describe the signal in your own words above."
     : "Or describe the signal in your own words above.";
 
-  // ── Email OTP step 1: send the code ──────────────────────────────────────
-  // Asks Supabase to email a 6-digit code to the address. shouldCreateUser
-  // is true because we want to support brand-new emails (their first search
-  // is free, granted on the backend after we verify they own the inbox).
-  const onSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = email.trim();
-    if (!isValidEmail(trimmed)) {
-      setStatus({
-        kind: "error",
-        message: "Please enter a valid email address (e.g. you@domain.com).",
-      });
-      return;
-    }
-    if (!supabase) {
-      setStatus({
-        kind: "error",
-        message: "Email verification isn't configured. Use License code or Buy credits.",
-      });
-      return;
-    }
-    setStatus(null);
-    setOtpSending(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: trimmed,
-        options: { shouldCreateUser: true },
-      });
-      if (error) throw new Error(error.message);
-      setOtpStep("verify");
-      setStatus({
-        kind: "info",
-        message: `We sent a 6-digit code to ${trimmed}. Check your inbox (and spam folder).`,
-      });
-    } catch (err) {
-      setStatus({
-        kind: "error",
-        message: `Couldn't send code: ${(err as Error).message}`,
-      });
-    } finally {
-      setOtpSending(false);
-    }
-  };
-
-  // ── Email OTP step 2: verify the code and exchange for a license ─────────
-  // After verifyOtp succeeds we have a Supabase session whose access_token
-  // proves the user owns the email. We hand that to the FastAPI backend,
-  // which re-verifies it against Supabase /auth/v1/user and then returns
-  // the matching license (or creates a fresh 1-credit free one).
-  const onVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedEmail = email.trim();
-    const code = otpCode.trim();
-    if (code.length < 4) {
-      setStatus({
-        kind: "error",
-        message: "Enter the 6-digit code from your email.",
-      });
-      return;
-    }
-    if (!supabase) return;
-    setStatus(null);
-    setOtpVerifying(true);
-    try {
-      const { data: vdata, error: verr } = await supabase.auth.verifyOtp({
-        email: trimmedEmail,
-        token: code,
-        type: "email",
-      });
-      if (verr) throw new Error(verr.message);
-      const accessToken = vdata.session?.access_token;
-      if (!accessToken) throw new Error("Verification didn't return a session.");
-
-      const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ access_token: accessToken }),
-      });
-      if (!r.ok) {
-        const err = await r.json().catch(() => ({}));
-        throw new Error(err.detail || `HTTP ${r.status}`);
-      }
-      const data = await r.json();
-      localStorage.setItem(LS_KEY, data.license.code);
-      setLicense(data.license);
-      setOtpStep("request");
-      setOtpCode("");
-      setStatus({
-        kind: "info",
-        message: data.was_new
-          ? `Email verified — free license issued. You have ${data.license.credits_remaining} search credit.`
-          : `Welcome back. ${data.license.credits_remaining} ${
-              data.license.credits_remaining === 1 ? "search" : "searches"
-            } remaining on this account.`,
-      });
-    } catch (err) {
-      setStatus({
-        kind: "error",
-        message: `Verification failed: ${(err as Error).message}`,
-      });
-    } finally {
-      setOtpVerifying(false);
-    }
-  };
-
-  // Back-link from the verify step to re-enter / change email.
-  const onResetOtp = () => {
-    setOtpStep("request");
-    setOtpCode("");
-    setStatus(null);
-  };
+  // The email-OTP send / verify flow now lives at the sitewide /signin
+  // page. The Email tab here just bounces users there; on return the boot
+  // effect above picks up the Supabase session and exchanges it for a
+  // license via /api/license/auth-email-continue.
 
   // ── License restore ──
   const onRestoreSubmit = async (e: React.FormEvent) => {
@@ -1099,95 +1015,26 @@ export default function KdpNicheFinder() {
               ))}
             </div>
 
-            {/* ── Email tab (signup + signin unified, OTP-verified) ── */}
+            {/* ── Email tab → bounce to sitewide /signin ── */}
             {authTab === "email" && (
               <div className="kdp-auth-card">
                 <div className="mb-3">
-                  <span className="kdp-eyebrow-pill kdp-eyebrow-green">
-                    {otpStep === "request"
-                      ? "Sign in or sign up · same input"
-                      : `Step 2 of 2 · code sent`}
-                  </span>
+                  <span className="kdp-eyebrow-pill kdp-eyebrow-green">Sign in or sign up · same input</span>
                 </div>
                 <div className="kdp-auth-card-headline">
-                  {otpStep === "request"
-                    ? "Continue with your email."
-                    : "Enter the code we sent."}
+                  Continue with your email.
                 </div>
-
-                {otpStep === "request" && (
-                  <>
-                    <form onSubmit={onSendOtp} className="kdp-auth-form">
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@domain.com"
-                        autoComplete="email"
-                        className="kdp-input"
-                        disabled={otpSending}
-                      />
-                      <button
-                        type="submit"
-                        className="kdp-btn-primary"
-                        disabled={otpSending}
-                      >
-                        {otpSending ? "Sending…" : "Send code →"}
-                      </button>
-                    </form>
-                    <p className="kdp-auth-hint">
-                      <em>New here?</em> Your first search is free, no card needed.{" "}
-                      <em>Returning?</em> The same email restores your existing license — no password.
-                    </p>
-                  </>
-                )}
-
-                {otpStep === "verify" && (
-                  <>
-                    <form onSubmit={onVerifyOtp} className="kdp-auth-form">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="one-time-code"
-                        required
-                        value={otpCode}
-                        onChange={(e) =>
-                          setOtpCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 10))
-                        }
-                        placeholder="••••••"
-                        className="kdp-input"
-                        disabled={otpVerifying}
-                        style={{
-                          letterSpacing: "0.4em",
-                          fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                          fontSize: 18,
-                          textAlign: "center",
-                        }}
-                        maxLength={10}
-                      />
-                      <button
-                        type="submit"
-                        className="kdp-btn-primary"
-                        disabled={otpVerifying || otpCode.length < 4}
-                      >
-                        {otpVerifying ? "Verifying…" : "Verify →"}
-                      </button>
-                    </form>
-                    <p className="kdp-auth-hint">
-                      Code sent to <em>{email}</em>. Check spam if you don&apos;t see it within a minute.{" "}
-                      <button
-                        type="button"
-                        onClick={onResetOtp}
-                        className="underline"
-                        style={{ background: "transparent", border: "none", padding: 0, color: "inherit", cursor: "pointer", font: "inherit" }}
-                      >
-                        Use a different email
-                      </button>
-                      .
-                    </p>
-                  </>
-                )}
+                <a
+                  href="/signin?next=/tools/amazon-kdp-niche-finder"
+                  className="kdp-btn-primary"
+                  style={{ textDecoration: "none", display: "inline-flex", marginTop: 4 }}
+                >
+                  Continue with email →
+                </a>
+                <p className="kdp-auth-hint">
+                  We use one sign-in across every Skillies tool. <em>New here?</em> Your first search is free, no card needed.{" "}
+                  <em>Returning?</em> The same email restores your existing license — no password.
+                </p>
               </div>
             )}
 

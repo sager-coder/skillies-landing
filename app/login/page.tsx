@@ -346,6 +346,22 @@ function LoginForm() {
           {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
+
+      <div
+        style={{
+          marginTop: 24,
+          paddingTop: 20,
+          borderTop: "1px dashed rgba(26,26,26,0.10)",
+          fontSize: 13,
+          color: "#6B7280",
+          lineHeight: 1.6,
+        }}
+      >
+        Using a Skillies tool (Niche Finder, etc.)?{" "}
+        <a href="/signin" style={{ color: "#C62828", fontWeight: 600 }}>
+          Sign in with email →
+        </a>
+      </div>
     </>
   );
 }
