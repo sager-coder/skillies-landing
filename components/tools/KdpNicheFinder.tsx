@@ -212,39 +212,30 @@ export default function KdpNicheFinder() {
           });
         }
       }
-      // License resolution chain on page load:
-      //   1. localStorage has a saved code → restore (paid licenses, anon
-      //      licenses from prior sessions)
-      //   2. Sitewide Supabase session present (user signed in at /signin) →
+      // License resolution chain on page load. The Supabase session check
+      // runs FIRST because a signed-in user's email is the most authoritative
+      // identity we have — any stale localStorage code from a prior anonymous
+      // session would otherwise mask their email-linked license.
+      //
+      //   1. Sitewide Supabase session present (user signed in at /login) →
       //      exchange access_token for matching license, or mint a fresh
-      //      1-credit free one for a new email
-      //   3. First-touch visitor with no past free-use flag → quietly issue
-      //      an anonymous 1-credit license so they can try once
+      //      1-credit free one if their email is new to this tool.
+      //   2. Else localStorage has a saved code → restore (anonymous PayPal
+      //      licenses, or returning visitors who haven't signed in yet).
+      //   3. Else first-touch visitor with no past free-use flag → quietly
+      //      issue an anonymous 1-credit license so they can try once.
       if (!cancelled) {
         let licenseSet = false;
-        const saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            const r = await fetch(
-              `${API_URL}/api/license/${encodeURIComponent(saved)}`,
-            );
-            if (r.ok) {
-              const data = await r.json();
-              if (!cancelled) {
-                setLicense(data);
-                licenseSet = true;
-              }
-            } else {
-              localStorage.removeItem(LS_KEY);
-            }
-          } catch {
-            /* ignore */
-          }
-        }
-        if (!cancelled && !licenseSet && supabase) {
+        if (supabase) {
           try {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.access_token) {
+              if (!cancelled) {
+                setStatus({
+                  kind: "info",
+                  message: "Welcome back. Connecting your license…",
+                });
+              }
               const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -255,12 +246,42 @@ export default function KdpNicheFinder() {
                 if (!cancelled) {
                   localStorage.setItem(LS_KEY, data.license.code);
                   setLicense(data.license);
+                  setStatus(null);
                   licenseSet = true;
                 }
+              } else if (!cancelled) {
+                const err = await r.json().catch(() => ({}));
+                setStatus({
+                  kind: "error",
+                  message: `Signed in, but couldn't connect your license: ${
+                    err.detail || `HTTP ${r.status}`
+                  }. Refresh, or sign out and back in.`,
+                });
               }
             }
           } catch {
-            /* ignore — fall through to anonymous fallback */
+            /* network error — fall through to localStorage path */
+          }
+        }
+        if (!cancelled && !licenseSet) {
+          const saved = localStorage.getItem(LS_KEY);
+          if (saved) {
+            try {
+              const r = await fetch(
+                `${API_URL}/api/license/${encodeURIComponent(saved)}`,
+              );
+              if (r.ok) {
+                const data = await r.json();
+                if (!cancelled) {
+                  setLicense(data);
+                  licenseSet = true;
+                }
+              } else {
+                localStorage.removeItem(LS_KEY);
+              }
+            } catch {
+              /* ignore */
+            }
           }
         }
         if (!cancelled && !licenseSet && !localStorage.getItem(LS_FREE_USED)) {

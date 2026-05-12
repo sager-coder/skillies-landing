@@ -360,8 +360,25 @@ async function claimDeviceAndRedirect(
     body: JSON.stringify({ deviceId }),
   }).catch(() => {});
 
-  // Role-aware default destination.
-  let destination = rawNext;
+  // Destination resolution chain (most specific → least):
+  //   1. ?next= param passed to /login from a tool's "Sign in with email"
+  //      button or a course gate.
+  //   2. document.referrer if it's same-origin and not the login page
+  //      itself — sends the user back to whatever page they were on when
+  //      they clicked Sign In in the top nav.
+  //   3. Role-aware default: /admin for admins, /student otherwise.
+  let destination: string | null = rawNext;
+  if (!destination && typeof window !== "undefined") {
+    const ref = document.referrer;
+    if (
+      ref &&
+      ref.startsWith(window.location.origin) &&
+      !ref.includes("/login") &&
+      !ref.includes("/signup")
+    ) {
+      destination = ref.slice(window.location.origin.length) || "/";
+    }
+  }
   if (!destination) {
     const supabase = createSupabaseBrowserClient();
     const {
