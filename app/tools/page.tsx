@@ -23,6 +23,88 @@ export const metadata: Metadata = {
 const NICHE_FINDER_URL = "/tools/amazon-kdp-niche-finder";
 const DROPSHIPPING_FINDER_URL = "/tools/dropshipping-products-finder";
 
+const SIGNALS: Array<{
+  num: string;
+  eyebrow: string;
+  title: string;
+  blurb: string;
+  blurbItalic: string;
+  blurbTail?: string;
+  stat: string;
+}> = [
+  {
+    num: "01",
+    eyebrow: "Starving niche",
+    title: "Bad reviews — still selling",
+    blurb: "Under 4★ but still moving units. The market wants better and is paying for mediocre.",
+    blurbItalic: "You ship better.",
+    stat: "Under 4★ · BSR ≤ 200,000 · 5+ reviews",
+  },
+  {
+    num: "02",
+    eyebrow: "High revenue",
+    title: "Premium price · low competition",
+    blurb: "Books at $20+ with under 10 reviews",
+    blurbItalic: "still selling",
+    blurbTail: ". High revenue per sale, weak incumbent.",
+    stat: "≥ $20 · BSR ≤ 150,000 · ≤ 10 reviews",
+  },
+  {
+    num: "03",
+    eyebrow: "Viral sleeper",
+    title: "Top 10k BSR · almost no reviews",
+    blurb: "Sales rank under 10,000 with",
+    blurbItalic: "under 10 reviews",
+    blurbTail: ". Pure no-moat opportunity — the book is winning on cover and category alone.",
+    stat: "BSR ≤ 10,000 · ≤ 10 reviews · ≥ $10",
+  },
+  {
+    num: "04",
+    eyebrow: "Evergreen",
+    title: "Historical bestseller · few reviews",
+    blurb: "Steady year-long sales, under 20 reviews.",
+    blurbItalic: "Underserved evergreen markets",
+    blurbTail: " with proven 365-day demand.",
+    stat: "365-day BSR ≤ 100,000 · ≤ 20 reviews",
+  },
+  {
+    num: "05",
+    eyebrow: "Fast to ship",
+    title: "Low-content book selling fast",
+    blurb: "50–150 page paperbacks (journals, activity books, trackers)",
+    blurbItalic: "moving real volume",
+    blurbTail: ". Days to produce, weeks to publish.",
+    stat: "Paperback · $5–$15 · BSR ≤ 100,000",
+  },
+  {
+    num: "06",
+    eyebrow: "Quality + obscurity",
+    title: "Hidden 5-star gem",
+    blurb: "Rated 4.5★+ with under 10 reviews. Readers",
+    blurbItalic: "love it",
+    blurbTail: " — discovery hasn't caught up yet.",
+    stat: "≥ 4.5★ · 3–9 reviews · BSR ≤ 100,000",
+  },
+  {
+    num: "07",
+    eyebrow: "Yearly refresh",
+    title: "Year-stamped annual",
+    blurb: "Sports drafts, game guides, atlases, regulatory updates —",
+    blurbItalic: "refreshes every year",
+    blurbTail: ". Last year's incumbents are obsolete by January.",
+    stat: '"2026" in title · BSR ≤ 200,000 · ≤ 50 reviews',
+  },
+  {
+    num: "08",
+    eyebrow: "Displaceable",
+    title: '"Complete Guide" · low-rated',
+    blurb: "Reference guides with bad reviews that still sell —",
+    blurbItalic: "no better option exists",
+    blurbTail: ". Build the better option.",
+    stat: '"Complete Guide" · ≤ 4★ · ≤ 100 reviews',
+  },
+];
+
 export default function ToolsPage() {
   return (
     <main className="relative">
@@ -487,6 +569,169 @@ export default function ToolsPage() {
               </span>
             </div>
           </a>
+        </div>
+      </section>
+
+      {/* ─── 8 signals ─── */}
+      <section id="signals" className="sk-section" style={{ background: "var(--sk-cream)" }}>
+        <div className="sk-container pt-12 pb-16">
+          <div className="text-center mb-14">
+            <span
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6"
+              style={{
+                color: "var(--sk-red)",
+                borderColor: "var(--sk-red)",
+                background: "rgba(255, 255, 255, 0.55)",
+              }}
+            >
+              <span className="sk-font-meta text-[11px] font-bold tracking-[0.16em]">
+                ✕ THE 8 HIGH-PROBABILITY SIGNALS
+              </span>
+            </span>
+
+            <h2
+              className="sk-font-display mx-auto max-w-[20ch]"
+              style={{
+                fontSize: "clamp(36px, 4.6vw, 60px)",
+                lineHeight: 0.98,
+                letterSpacing: "-0.04em",
+                color: "var(--sk-ink)",
+              }}
+            >
+              We don&apos;t find books
+              <span style={{ color: "var(--sk-red)" }}>.</span>{" "}
+              <span
+                className="sk-font-display-italic"
+                style={{ color: "var(--sk-red)" }}
+              >
+                We find bets that already work
+              </span>
+              <span style={{ color: "var(--sk-red)" }}>.</span>
+            </h2>
+
+            <p
+              className="sk-font-body mt-5 mx-auto max-w-[70ch]"
+              style={{
+                fontSize: "var(--sk-text-lead)",
+                color: "var(--sk-ink)",
+                fontWeight: 500,
+              }}
+            >
+              Every signal below is a pattern Amazon&apos;s data already proves
+              works. Pick one, describe your topic, get back twenty real
+              listings{" "}
+              <span
+                className="sk-font-display-italic"
+                style={{ color: "var(--sk-red)" }}
+              >
+                already selling
+              </span>{" "}
+              against that exact pattern.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[18px]">
+            {SIGNALS.map((s) => (
+              <article
+                key={s.num}
+                className="relative bg-white rounded-2xl border p-7 flex flex-col gap-2.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(40,25,10,0.10)]"
+                style={{
+                  borderColor: "var(--sk-hairline)",
+                }}
+              >
+                <div
+                  className="sk-font-display"
+                  style={{
+                    fontSize: 38,
+                    fontWeight: 600,
+                    color: "var(--sk-red)",
+                    letterSpacing: "-0.05em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {s.num}
+                </div>
+
+                <div className="-mt-0.5">
+                  <span
+                    className="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold tracking-[0.08em] uppercase"
+                    style={{
+                      background: "rgba(217,52,43,0.08)",
+                      color: "var(--sk-red)",
+                    }}
+                  >
+                    {s.eyebrow}
+                  </span>
+                </div>
+
+                <h3
+                  className="sk-font-meta"
+                  style={{
+                    fontWeight: 800,
+                    fontSize: 19,
+                    lineHeight: 1.15,
+                    letterSpacing: "-0.02em",
+                    color: "var(--sk-ink)",
+                    margin: "4px 0 2px",
+                  }}
+                >
+                  {s.title}
+                </h3>
+
+                <p
+                  className="sk-font-body flex-grow"
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: "var(--sk-ink60)",
+                    lineHeight: 1.5,
+                    margin: 0,
+                  }}
+                >
+                  {s.blurb}{" "}
+                  <span
+                    className="sk-font-display-italic"
+                    style={{
+                      color: "var(--sk-ink)",
+                      fontSize: "1.05em",
+                    }}
+                  >
+                    {s.blurbItalic}
+                  </span>
+                  {s.blurbTail}
+                </p>
+
+                <div
+                  className="mt-2.5 pt-3 border-t border-dashed font-mono text-[11.5px]"
+                  style={{
+                    borderColor: "var(--sk-hairline)",
+                    color: "var(--sk-ink40)",
+                  }}
+                >
+                  {s.stat}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="flex flex-col items-center gap-3 mt-12">
+            <a
+              href={NICHE_FINDER_URL}
+              className="inline-flex items-center gap-2 px-7 py-4 rounded-full text-[15px] font-bold tracking-tight transition-all duration-200 shadow-[0_8px_24px_rgba(217,52,43,0.22)] hover:scale-[1.02]"
+              style={{
+                background: "var(--sk-red)",
+                color: "var(--sk-cream)",
+              }}
+            >
+              Run a hunt →
+            </a>
+            <span
+              className="text-[13.5px] font-medium"
+              style={{ color: "var(--sk-ink60)" }}
+            >
+              Pick a signal · describe your topic · get 10 real listings.
+            </span>
+          </div>
         </div>
       </section>
 

@@ -913,6 +913,13 @@ export default function AmazonKdpNicheFinderPage() {
         </div>
       </section>
 
+      {/* ─── The actual functional tool ─── */}
+      <section id="kdp-tool" className="sk-section kdp-section-pull-up">
+        <div className="sk-container max-w-[1100px]">
+          <KdpNicheFinder />
+        </div>
+      </section>
+
       {/* ─── 8 signals ─── */}
       <section id="signals" className="sk-section kdp-after-hero kdp-section-tight">
         <div className="sk-container">
@@ -1064,7 +1071,7 @@ export default function AmazonKdpNicheFinderPage() {
                 color: "var(--sk-cream)",
               }}
             >
-              Run a hunt below ↓
+              Run a hunt ↑
             </a>
             <span
               className="text-[13.5px] font-medium"
@@ -1073,13 +1080,6 @@ export default function AmazonKdpNicheFinderPage() {
               Pick a signal · describe your topic · get 10 real listings.
             </span>
           </div>
-        </div>
-      </section>
-
-      {/* ─── The actual functional tool ─── */}
-      <section id="kdp-tool" className="sk-section kdp-section-pull-up">
-        <div className="sk-container max-w-[1100px]">
-          <KdpNicheFinder />
         </div>
       </section>
 

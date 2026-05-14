@@ -1024,6 +1024,153 @@ export default function KdpNicheFinder() {
         </div>
       )}
 
+      {/* ─── Search form ─── */}
+      <section className="mb-16">
+        <div className="text-center mb-7">
+          <span
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-5"
+            style={{
+              color: "var(--sk-red, #c62828)",
+              borderColor: "var(--sk-red, #c62828)",
+              background: "rgba(255,255,255,0.55)",
+            }}
+          >
+            <span className="sk-font-meta text-[11px] font-bold tracking-[0.16em]">
+              ✕ RUN A SEARCH
+            </span>
+          </span>
+          <h2
+            className="sk-font-display"
+            style={{
+              fontSize: "clamp(28px, 3.4vw, 44px)",
+              lineHeight: 0.98,
+              letterSpacing: "-0.035em",
+              color: "var(--sk-ink)",
+              margin: "0 0 8px",
+              fontWeight: 900,
+            }}
+          >
+            Pick a signal
+            <span style={{ color: "var(--sk-red, #c62828)" }}>.</span>{" "}
+            <span
+              className="sk-font-display-italic"
+              style={{ color: "var(--sk-red, #c62828)" }}
+            >
+              Describe your topic
+            </span>
+            <span style={{ color: "var(--sk-red, #c62828)" }}>.</span>
+          </h2>
+          <p style={{ fontSize: 15, color: "var(--sk-ink60)", margin: 0 }}>
+            The signal is the bet. Your topic narrows where to look.
+          </p>
+        </div>
+
+        <form
+          onSubmit={onSubmit}
+          className="rounded-2xl p-7 md:p-9 bg-white"
+          style={{
+            border: "1.5px solid #e7dcc4",
+            boxShadow: "0 18px 48px rgba(40, 25, 10, 0.08)",
+          }}
+        >
+          <label className="block mb-6">
+            <span className="kdp-field-label">
+              1 · Pick the signal you want to hunt
+            </span>
+            <select
+              value={pattern}
+              onChange={(e) => setPattern(e.target.value)}
+              className="kdp-select"
+            >
+              <option value="">— let the AI pick from my description —</option>
+              {patterns.map((p) => (
+                <option key={p.name} value={p.name}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+            <span className="block text-[13px] italic mt-2" style={{ color: "#14141499" }}>
+              {patternHelp}
+            </span>
+          </label>
+
+          <label className="block mb-6">
+            <span className="kdp-field-label">
+              2 · What&apos;s the topic / niche?
+            </span>
+            <textarea
+              required
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="e.g. Adult coloring books · Beginner sourdough cookbooks · 4.5-star gardening books with few reviews"
+              className="kdp-textarea"
+            />
+            <div className="kdp-examples">
+              <span className="kdp-examples-label">Try one</span>
+              {EXAMPLE_PROMPTS.map((ex) => (
+                <button
+                  key={ex.label}
+                  type="button"
+                  className="kdp-chip"
+                  onClick={() => {
+                    setDescription(ex.brief);
+                    if (ex.suggestPattern) setPattern(ex.suggestPattern);
+                  }}
+                >
+                  {ex.label}
+                </button>
+              ))}
+            </div>
+          </label>
+
+          <label className="block mb-7">
+            <span className="kdp-field-label">
+              3 · Format
+              <span className="ml-2 normal-case tracking-normal text-[11px] font-medium" style={{ color: "#14141466" }}>(optional)</span>
+            </span>
+            <select
+              value={format}
+              onChange={(e) => setFormat(e.target.value)}
+              className="kdp-select"
+              style={{ maxWidth: 360 }}
+            >
+              <option value="all">All formats</option>
+              <option value="paperback">Paperback</option>
+              <option value="hardcover">Hardcover</option>
+              <option value="kindle">Kindle eBook</option>
+              <option value="audiobook">Audiobook</option>
+            </select>
+          </label>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="kdp-btn-primary"
+            style={{ padding: "17px 30px", fontSize: 16 }}
+          >
+            {loading ? (
+              <>
+                Hunting Amazon live data…
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 16,
+                    height: 16,
+                    borderRadius: "50%",
+                    border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "#fff",
+                    animation: "kdp-spin 0.8s linear infinite",
+                  }}
+                />
+              </>
+            ) : (
+              "Hunt this signal"
+            )}
+          </button>
+        </form>
+      </section>
+
       {/* ─── License panel ─── */}
       <section id="license-panel" className="mb-12">
         {!license && (
@@ -1323,153 +1470,6 @@ export default function KdpNicheFinder() {
             )}
           </>
         )}
-      </section>
-
-      {/* ─── Search form ─── */}
-      <section className="mb-16">
-        <div className="text-center mb-7">
-          <span
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-5"
-            style={{
-              color: "var(--sk-red, #c62828)",
-              borderColor: "var(--sk-red, #c62828)",
-              background: "rgba(255,255,255,0.55)",
-            }}
-          >
-            <span className="sk-font-meta text-[11px] font-bold tracking-[0.16em]">
-              ✕ RUN A SEARCH
-            </span>
-          </span>
-          <h2
-            className="sk-font-display"
-            style={{
-              fontSize: "clamp(28px, 3.4vw, 44px)",
-              lineHeight: 0.98,
-              letterSpacing: "-0.035em",
-              color: "var(--sk-ink)",
-              margin: "0 0 8px",
-              fontWeight: 900,
-            }}
-          >
-            Pick a signal
-            <span style={{ color: "var(--sk-red, #c62828)" }}>.</span>{" "}
-            <span
-              className="sk-font-display-italic"
-              style={{ color: "var(--sk-red, #c62828)" }}
-            >
-              Describe your topic
-            </span>
-            <span style={{ color: "var(--sk-red, #c62828)" }}>.</span>
-          </h2>
-          <p style={{ fontSize: 15, color: "var(--sk-ink60)", margin: 0 }}>
-            The signal is the bet. Your topic narrows where to look.
-          </p>
-        </div>
-
-        <form
-          onSubmit={onSubmit}
-          className="rounded-2xl p-7 md:p-9 bg-white"
-          style={{
-            border: "1.5px solid #e7dcc4",
-            boxShadow: "0 18px 48px rgba(40, 25, 10, 0.08)",
-          }}
-        >
-          <label className="block mb-6">
-            <span className="kdp-field-label">
-              1 · Pick the signal you want to hunt
-            </span>
-            <select
-              value={pattern}
-              onChange={(e) => setPattern(e.target.value)}
-              className="kdp-select"
-            >
-              <option value="">— let the AI pick from my description —</option>
-              {patterns.map((p) => (
-                <option key={p.name} value={p.name}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
-            <span className="block text-[13px] italic mt-2" style={{ color: "#14141499" }}>
-              {patternHelp}
-            </span>
-          </label>
-
-          <label className="block mb-6">
-            <span className="kdp-field-label">
-              2 · What&apos;s the topic / niche?
-            </span>
-            <textarea
-              required
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Adult coloring books · Beginner sourdough cookbooks · 4.5-star gardening books with few reviews"
-              className="kdp-textarea"
-            />
-            <div className="kdp-examples">
-              <span className="kdp-examples-label">Try one</span>
-              {EXAMPLE_PROMPTS.map((ex) => (
-                <button
-                  key={ex.label}
-                  type="button"
-                  className="kdp-chip"
-                  onClick={() => {
-                    setDescription(ex.brief);
-                    if (ex.suggestPattern) setPattern(ex.suggestPattern);
-                  }}
-                >
-                  {ex.label}
-                </button>
-              ))}
-            </div>
-          </label>
-
-          <label className="block mb-7">
-            <span className="kdp-field-label">
-              3 · Format
-              <span className="ml-2 normal-case tracking-normal text-[11px] font-medium" style={{ color: "#14141466" }}>(optional)</span>
-            </span>
-            <select
-              value={format}
-              onChange={(e) => setFormat(e.target.value)}
-              className="kdp-select"
-              style={{ maxWidth: 360 }}
-            >
-              <option value="all">All formats</option>
-              <option value="paperback">Paperback</option>
-              <option value="hardcover">Hardcover</option>
-              <option value="kindle">Kindle eBook</option>
-              <option value="audiobook">Audiobook</option>
-            </select>
-          </label>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="kdp-btn-primary"
-            style={{ padding: "17px 30px", fontSize: 16 }}
-          >
-            {loading ? (
-              <>
-                Hunting Amazon live data…
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: 16,
-                    height: 16,
-                    borderRadius: "50%",
-                    border: "2px solid rgba(255,255,255,0.3)",
-                    borderTopColor: "#fff",
-                    animation: "kdp-spin 0.8s linear infinite",
-                  }}
-                />
-              </>
-            ) : (
-              "Hunt this signal"
-            )}
-          </button>
-        </form>
       </section>
 
       {/* ─── Results ─── */}
