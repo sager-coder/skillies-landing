@@ -389,6 +389,7 @@ export default function KdpNicheFinder() {
       const el = document.getElementById(mountId);
       if (!el || !window.paypal) return;
       if (paypalMountedRef.current.has(mountId)) return;
+      paypalMountedRef.current.add(mountId);
       el.innerHTML = "";
       window.paypal
         .Buttons({
@@ -451,7 +452,6 @@ export default function KdpNicheFinder() {
           },
         })
         .render(`#${mountId}`);
-      paypalMountedRef.current.add(mountId);
     },
     [],
   );
@@ -470,6 +470,11 @@ export default function KdpNicheFinder() {
         );
       });
     })();
+    return () => {
+      ["single", "pack10", "pack20"].forEach((t) =>
+        paypalMountedRef.current.delete(`pp-${t}`),
+      );
+    };
   }, [paypalClientId, license, authTab, ensurePayPal, renderPayPalButton]);
 
   // Render top-up PayPal buttons when the panel is showing.
@@ -487,6 +492,11 @@ export default function KdpNicheFinder() {
         );
       });
     })();
+    return () => {
+      ["single", "pack10", "pack20"].forEach((t) =>
+        paypalMountedRef.current.delete(`pp-${t}-topup`),
+      );
+    };
   }, [showTopUp, license, ensurePayPal, renderPayPalButton]);
 
   // ── Search ────────────────────────────────────────────────────────────────
