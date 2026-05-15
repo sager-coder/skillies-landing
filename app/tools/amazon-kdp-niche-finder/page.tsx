@@ -590,7 +590,28 @@ export default function AmazonKdpNicheFinderPage() {
           }
         }
         @media (max-width: 720px) {
-          .kdp-hero-h1 { font-size: clamp(36px, 9vw, 52px); }
+          /* ─────────────────────────────────────────────────────────────
+             Phone: surface the actual tool ~1.5 screens higher.
+             The hero's right-column diagram is, per the diagram notes
+             above, "ellipsis soup" at phone width — and the 4-feature
+             strip restates value props the #signals section already
+             covers. Both are decorative on mobile, so collapse them and
+             tighten the hero chrome. Desktop (≥721px) is unaffected.
+             ───────────────────────────────────────────────────────────── */
+          .kdp-hero-section {
+            padding-top: 88px !important;   /* was pt-32 = 128px */
+            padding-bottom: 4px;
+          }
+          .kdp-hero-copy { padding-top: 0; }
+          .kdp-hero-kicker { margin-bottom: 14px; }
+          .kdp-hero-lede { margin-top: 14px; }
+          .kdp-hero-ctas { margin-top: 18px; }
+          .kdp-hero-social { margin-top: 18px; }
+          .kdp-hero-diagram-wrap { display: none; }
+          .kdp-hero-bottomstrip { display: none; }
+          .kdp-after-hero { padding-top: 16px; }
+
+          .kdp-hero-h1 { font-size: clamp(33px, 8.4vw, 46px); }
           .kdp-hero-bottomstrip {
             grid-template-columns: 1fr;
             padding: 22px 22px;

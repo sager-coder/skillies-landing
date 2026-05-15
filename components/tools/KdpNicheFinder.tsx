@@ -11,7 +11,9 @@
  *   GET  /api/patterns                    — 8 opportunity-pattern presets
  *   GET  /api/tiers                       — pricing + paypal_client_id
  *   GET  /api/license/:code               — restore an existing license
- *   POST /api/license/redeem-free         — issue a 1-search free license
+ *   POST /api/start-anonymous             — issue a 1-search free license
+ *   POST /api/license/auth-email-continue — exchange a Supabase session
+ *                                           for the email's license
  *   POST /api/checkout/create-order       — create a PayPal order (sandbox/live)
  *   POST /api/checkout/capture-order      — verify capture + issue license
  *   POST /api/search                      — run a search; consumes 1 credit
@@ -163,14 +165,14 @@ export default function KdpNicheFinder() {
 
   // ── Auth + redeem state ──
   type AuthTab = "email" | "buy" | "code";
-  // Default to the Buy Credits tab — sign-up no longer gates the first
-  // search (anonymous license is auto-issued), so the only thing visitors
-  // need from this panel after their free search is to pay for more.
+  // Default to the Email tab — it's the path returning users need (their
+  // email restores an existing license) and where the "first search is
+  // free" message lives for newcomers.
   const [authTab, setAuthTab] = useState<AuthTab>("email");
 
   // Lazy Supabase browser client — used here only to read the sitewide
   // session on mount and exchange it for a license. Actual OTP send /
-  // verify happens at /signin (the sitewide tool sign-in page).
+  // verify happens at /login (the sitewide email-OTP sign-in page).
   const supabase = useMemo(() => {
     try {
       return createSupabaseBrowserClient();
@@ -240,7 +242,7 @@ export default function KdpNicheFinder() {
               if (accessToken) {
                 setStatus({
                   kind: "info",
-                  message: `Welcome back, ${user.email || "signed-in user"}. Connecting your license…`,
+                  message: `Signed in as ${user.email || "your account"}. Connecting your license…`,
                 });
                 const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
                   method: "POST",
@@ -322,7 +324,7 @@ export default function KdpNicheFinder() {
       "Or describe the signal in your own words above."
     : "Or describe the signal in your own words above.";
 
-  // The email-OTP send / verify flow now lives at the sitewide /signin
+  // The email-OTP send / verify flow now lives at the sitewide /login
   // page. The Email tab here just bounces users there; on return the boot
   // effect above picks up the Supabase session and exchanges it for a
   // license via /api/license/auth-email-continue.
@@ -1501,6 +1503,47 @@ export default function KdpNicheFinder() {
               {results.books.length} shown · {results.candidates_found} candidates analysed
             </div>
           </div>
+
+          {/* Out-of-credits upsell — shown right where the user is most
+              engaged (just got results) when their balance hit zero. This
+              is the conversion moment: scroll them to the top-up tiers,
+              which auto-expand at 0 credits. */}
+          {(!license || license.credits_remaining <= 0) && (
+            <div
+              className="rounded-2xl px-6 py-5 mb-6 flex flex-wrap items-center justify-between gap-4"
+              style={{
+                background: "linear-gradient(135deg, rgba(217,52,43,0.08), rgba(201,162,78,0.10))",
+                border: "1.5px solid rgba(217,52,43,0.22)",
+              }}
+            >
+              <div style={{ minWidth: 0 }}>
+                <div
+                  className="sk-font-display-italic"
+                  style={{ fontSize: 22, color: "#141414", letterSpacing: "-0.02em", lineHeight: 1.15 }}
+                >
+                  That was your free search.
+                </div>
+                <div className="text-[14px] mt-1" style={{ color: "#14141499", lineHeight: 1.5 }}>
+                  Like what you see? Keep hunting from{" "}
+                  <strong style={{ color: "#141414" }}>$3.95 / search</strong> — no subscription, no auto-renewal.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!license) setAuthTab("buy");
+                  else setShowTopUp(true);
+                  document
+                    .getElementById("license-panel")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="kdp-btn-primary"
+                style={{ width: "auto", padding: "13px 26px", whiteSpace: "nowrap" }}
+              >
+                Get more searches →
+              </button>
+            </div>
+          )}
 
           {/* Filter summary */}
           {results.filters_used && (
