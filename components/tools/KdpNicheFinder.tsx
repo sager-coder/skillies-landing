@@ -289,27 +289,43 @@ export default function KdpNicheFinder() {
       if (!cancelled) {
         let licenseSet = false;
 
-        // Acquire the sitewide session token. The Supabase browser client
-        // SHOULD give it to us via getUser()/getSession(), but with
-        // @supabase/ssr it frequently returns null on this tool's cold
-        // mount even though a valid auth cookie is present — which left
-        // signed-in users stuck on the email gate in a refresh loop.
-        // So: try the client, then fall back to reading the cookie
-        // directly. The token is re-verified server-side regardless.
-        let accessToken: string | null = null;
-        if (supabase) {
+        // Acquire the sitewide session token.
+        //
+        // The auth cookie is read FIRST and synchronously. The
+        // @supabase/ssr browser client's getUser()/getSession() is
+        // unreliable on this tool's cold mount — it can return null, or
+        // (worse) hang indefinitely on the GoTrue /user round-trip. The
+        // original code awaited it before anything else, so when it hung,
+        // the boot never reached the cookie fallback OR the localStorage /
+        // anonymous paths — signed-in users were dead-locked on the email
+        // gate in a refresh loop. The cookie is the reliable source of
+        // truth; the token is re-verified server-side regardless, so this
+        // grants no trust by itself.
+        let accessToken: string | null = readSupabaseAccessTokenFromCookie();
+
+        // Only consult the (flaky) client if the cookie gave us nothing,
+        // and never let it block the boot — race it against a short
+        // timeout so a hung getUser() can't freeze license resolution.
+        if (!accessToken && supabase) {
           try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-              const { data: { session } } = await supabase.auth.getSession();
-              accessToken = session?.access_token || null;
-            }
+            const withTimeout = <T,>(p: Promise<T>, ms: number) =>
+              Promise.race([
+                p,
+                new Promise<null>((res) => setTimeout(() => res(null), ms)),
+              ]);
+            const got = await withTimeout(
+              (async () => {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return null;
+                const { data: { session } } = await supabase.auth.getSession();
+                return session?.access_token || null;
+              })(),
+              4000,
+            );
+            if (got) accessToken = got;
           } catch {
-            /* ignore — cookie fallback below */
+            /* ignore — localStorage / anonymous chain below carries on */
           }
-        }
-        if (!accessToken) {
-          accessToken = readSupabaseAccessTokenFromCookie();
         }
 
         if (accessToken && !cancelled) {
