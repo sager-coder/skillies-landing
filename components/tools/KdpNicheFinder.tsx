@@ -127,6 +127,65 @@ const fmtPrice = (p: number | null | undefined) =>
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 const isValidEmail = (s: string) => EMAIL_RE.test(s.trim()) && s.trim().length <= 200;
 
+/**
+ * Read the Supabase access token straight from the auth cookie.
+ *
+ * @supabase/ssr stores the sitewide session in a cookie named
+ * `sb-<projectref>-auth-token` whose value is `base64-<base64 of the
+ * session JSON>` (chunked into `.0`/`.1`/… when it exceeds ~3 KB). The
+ * browser Supabase client is *supposed* to hydrate this, but on a cold
+ * client mount of this tool it frequently returns null from getUser()/
+ * getSession() even though the cookie is present and valid — which left
+ * signed-in users stuck on the email gate in a refresh loop.
+ *
+ * The cookie is not HttpOnly (set by @supabase/ssr for client reads), so
+ * we parse it ourselves as a reliable fallback source of truth. The
+ * extracted token is still verified server-side by
+ * /api/license/auth-email-continue (hits Supabase /auth/v1/user), so
+ * reading the cookie here grants no trust on its own.
+ */
+function readSupabaseAccessTokenFromCookie(): string | null {
+  try {
+    if (typeof document === "undefined") return null;
+    const parts = document.cookie.split(";").map((c) => c.trim());
+    const names = parts.map((c) => c.slice(0, c.indexOf("=")));
+    // Base cookie is `sb-<ref>-auth-token`; chunked variant adds `.0`.
+    const baseName = names.find((n) => /^sb-.*-auth-token$/.test(n));
+    const chunkZero = names.find((n) => /^sb-.*-auth-token\.0$/.test(n));
+    if (!baseName && !chunkZero) return null;
+
+    let raw = "";
+    if (chunkZero) {
+      const root = chunkZero.replace(/\.0$/, "");
+      for (let i = 0; ; i++) {
+        const pref = `${root}.${i}=`;
+        const ck = parts.find((c) => c.startsWith(pref));
+        if (!ck) break;
+        raw += decodeURIComponent(ck.slice(pref.length));
+      }
+    } else if (baseName) {
+      const pref = `${baseName}=`;
+      const ck = parts.find((c) => c.startsWith(pref));
+      if (!ck) return null;
+      raw = decodeURIComponent(ck.slice(pref.length));
+    }
+    if (!raw) return null;
+
+    const b64 = raw.replace(/^base64-/, "");
+    const json = JSON.parse(atob(b64)) as {
+      access_token?: string;
+      expires_at?: number;
+      user?: { email?: string };
+    };
+    if (!json?.access_token) return null;
+    // Drop obviously-expired tokens; the server re-verifies anyway.
+    if (json.expires_at && json.expires_at * 1000 < Date.now()) return null;
+    return json.access_token;
+  } catch {
+    return null;
+  }
+}
+
 // Example prompts — concise, signal-friendly briefs that pair well with each
 // of the 8 patterns. Tap to autofill the textarea. Phrasing kept tight so the
 // AI parser produces sharp filters.
@@ -229,43 +288,62 @@ export default function KdpNicheFinder() {
       //      issue an anonymous 1-credit license so they can try once.
       if (!cancelled) {
         let licenseSet = false;
+
+        // Acquire the sitewide session token. The Supabase browser client
+        // SHOULD give it to us via getUser()/getSession(), but with
+        // @supabase/ssr it frequently returns null on this tool's cold
+        // mount even though a valid auth cookie is present — which left
+        // signed-in users stuck on the email gate in a refresh loop.
+        // So: try the client, then fall back to reading the cookie
+        // directly. The token is re-verified server-side regardless.
+        let accessToken: string | null = null;
         if (supabase) {
           try {
-            // Use getUser() first — it waits for full session hydration from
-            // cookies (getSession() can return null on cold mount even when a
-            // valid session cookie is set, especially with @supabase/ssr).
-            // Once getUser succeeds we know there's a session to read.
             const { data: { user } } = await supabase.auth.getUser();
-            if (user && !cancelled) {
+            if (user) {
               const { data: { session } } = await supabase.auth.getSession();
-              const accessToken = session?.access_token;
-              if (accessToken) {
+              accessToken = session?.access_token || null;
+            }
+          } catch {
+            /* ignore — cookie fallback below */
+          }
+        }
+        if (!accessToken) {
+          accessToken = readSupabaseAccessTokenFromCookie();
+        }
+
+        if (accessToken && !cancelled) {
+          setStatus({
+            kind: "info",
+            message: "Connecting your Skillies account…",
+          });
+          try {
+            const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ access_token: accessToken }),
+            });
+            if (r.ok) {
+              const data = await r.json();
+              if (!cancelled) {
+                localStorage.setItem(LS_KEY, data.license.code);
+                setLicense(data.license);
+                setStatus(null);
+                licenseSet = true;
+              }
+            } else if (!cancelled) {
+              // 401/403 ⇒ token expired/invalid: stay silent and let the
+              // localStorage / anonymous chain below carry the user — far
+              // better than dead-ending them on a scary error. Only
+              // surface non-auth failures (those won't self-resolve).
+              if (r.status !== 401 && r.status !== 403) {
+                const err = await r.json().catch(() => ({}));
                 setStatus({
-                  kind: "info",
-                  message: `Signed in as ${user.email || "your account"}. Connecting your license…`,
+                  kind: "error",
+                  message: `Couldn't connect your license: ${
+                    err.detail || `HTTP ${r.status}`
+                  }. Refresh, or sign out and back in.`,
                 });
-                const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ access_token: accessToken }),
-                });
-                if (r.ok) {
-                  const data = await r.json();
-                  if (!cancelled) {
-                    localStorage.setItem(LS_KEY, data.license.code);
-                    setLicense(data.license);
-                    setStatus(null);
-                    licenseSet = true;
-                  }
-                } else if (!cancelled) {
-                  const err = await r.json().catch(() => ({}));
-                  setStatus({
-                    kind: "error",
-                    message: `Signed in as ${user.email}, but couldn't connect your license: ${
-                      err.detail || `HTTP ${r.status}`
-                    }. Refresh, or sign out and back in.`,
-                  });
-                }
               }
             }
           } catch {
