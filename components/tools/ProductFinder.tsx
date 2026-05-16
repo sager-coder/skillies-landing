@@ -59,6 +59,17 @@ type Product = {
   primary_category?: string;
   amazon_url?: string;
   match_reason?: string;
+  action?: string;
+};
+type PastSearch = {
+  id: number;
+  description: string;
+  preset?: string;
+  tool?: string;
+  candidates_found?: number;
+  books_returned?: number;
+  results?: Product[];
+  created_at: number;
 };
 type SearchResponse = {
   filters_used: { interpretation?: string } & Record<string, unknown>;
@@ -67,6 +78,7 @@ type SearchResponse = {
   credits_remaining?: number;
   message?: string;
   error?: string;
+  search_id?: number | null;
 };
 
 declare global {
@@ -131,6 +143,41 @@ const fmtUSD = (p: number | null | undefined) =>
   p == null ? "—" : `$${Number(p).toFixed(2)}`;
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat("en-IN").format(n)}`;
 
+// Alibaba search link from the product title's first strong words — the
+// buyer's literal next step (where to source it).
+const sourceLink = (title?: string) => {
+  const q = (title || "")
+    .replace(/[^a-zA-Z0-9 ]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 2)
+    .slice(0, 4)
+    .join(" ");
+  return `https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(q)}`;
+};
+
+function toCSV(rows: Product[]): string {
+  const cols: [string, (b: Product) => string | number | undefined][] = [
+    ["Title", (b) => b.title],
+    ["Brand", (b) => b.brand || "(no-name)"],
+    ["Price USD", (b) => b.price_usd],
+    ["Rating", (b) => b.rating],
+    ["Reviews", (b) => b.review_count],
+    ["US BSR", (b) => b.avg365_bsr ?? b.avg90_bsr],
+    ["Category", (b) => b.primary_category],
+    ["Why", (b) => b.match_reason],
+    ["Next move", (b) => b.action],
+    ["Amazon", (b) => b.amazon_url],
+  ];
+  const esc = (v: unknown) => {
+    const s = v == null ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return [
+    cols.map((c) => c[0]).join(","),
+    ...rows.map((b) => cols.map((c) => esc(c[1](b))).join(",")),
+  ].join("\n");
+}
+
 type ExamplePrompt = { label: string; brief: string };
 const EXAMPLES: ExamplePrompt[] = [
   { label: "Kitchen gadgets, no-name brands", brief: "Kitchen gadgets selling well in the US with no famous brand and mediocre reviews — the classic 'market wants a better version' import play" },
@@ -170,8 +217,31 @@ export default function ProductFinder() {
   const [showTopUp, setShowTopUp] = useState(false);
   const [buyEmail, setBuyEmail] = useState("");
   const [buyingTier, setBuyingTier] = useState<string | null>(null);
+  const [searchId, setSearchId] = useState<number | null>(null);
+  const [pastSearches, setPastSearches] = useState<PastSearch[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [refineText, setRefineText] = useState("");
+  const [refining, setRefining] = useState(false);
 
   const rzpLoadedRef = useRef(false);
+
+  // B) Past searches — a paid search is a durable asset, revisitable free.
+  // Declared before the boot effect that references it (const isn't hoisted).
+  const loadHistory = useCallback(async (code: string) => {
+    try {
+      const r = await fetch(
+        `${API_URL}/api/searches?tool=products&license_code=${encodeURIComponent(code)}`,
+      );
+      if (r.ok) {
+        const d = await r.json();
+        setPastSearches(
+          (d.searches || []).filter((s: PastSearch) => (s.results || []).length),
+        );
+      }
+    } catch {
+      /* non-fatal */
+    }
+  }, []);
 
   // ── Boot: tiers + license resolution ──────────────────────────────────────
   useEffect(() => {
@@ -264,6 +334,11 @@ export default function ProductFinder() {
       cancelled = true;
     };
   }, []);
+
+  // Load "Your past searches" whenever we have a license.
+  useEffect(() => {
+    if (license?.code) loadHistory(license.code);
+  }, [license?.code, loadHistory]);
 
   // ── Razorpay loader ───────────────────────────────────────────────────────
   const ensureRazorpay = useCallback(async () => {
@@ -392,6 +467,57 @@ export default function ProductFinder() {
     if (!confirm("Remove the license code from this browser? Save it first if you want to restore later.")) return;
     localStorage.removeItem(LS_KEY);
     setLicense(null);
+    setPastSearches([]);
+  };
+
+  const openPast = (s: PastSearch) => {
+    setResults({
+      filters_used: {},
+      candidates_found: s.candidates_found || 0,
+      books: s.results || [],
+    });
+    setSearchId(s.id);
+    setShowHistory(false);
+    setStatus({ kind: "info", message: "Showing a past search — no credit used." });
+    setTimeout(
+      () => document.getElementById("pf-results")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      60,
+    );
+  };
+
+  // D) Free in-session refine — re-rank the stored candidate pool with a
+  // tweak. No credit, no Keepa.
+  const doRefine = async () => {
+    if (!license || !searchId || refineText.trim().length < 2) return;
+    setRefining(true);
+    setStatus(null);
+    try {
+      const r = await fetch(`${API_URL}/api/refine`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          license_code: license.code,
+          search_id: searchId,
+          instruction: refineText.trim(),
+          tool: "products",
+        }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        throw new Error(e.detail || `HTTP ${r.status}`);
+      }
+      const d = await r.json();
+      setResults((prev) =>
+        prev
+          ? { ...prev, books: d.books || [], candidates_found: d.candidates_found ?? prev.candidates_found }
+          : { filters_used: {}, candidates_found: d.candidates_found || 0, books: d.books || [] },
+      );
+      setStatus({ kind: "info", message: "Refined for free — no credit used." });
+    } catch (err) {
+      setStatus({ kind: "error", message: `Couldn't refine: ${(err as Error).message}` });
+    } finally {
+      setRefining(false);
+    }
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -435,6 +561,9 @@ export default function ProductFinder() {
         if (d.credits_remaining === 0) localStorage.setItem(LS_FREE_USED, "1");
       }
       setResults(d);
+      setSearchId(d.search_id ?? null);
+      setRefineText("");
+      loadHistory(license.code);
       if (d.filters_used?.interpretation) {
         setStatus({ kind: "info", message: `How we read it: ${d.filters_used.interpretation}` });
       }
@@ -879,6 +1008,44 @@ export default function ProductFinder() {
         )}
       </section>
 
+      {/* ── B) Your past searches (revisit free) ── */}
+      {pastSearches.length > 0 && (
+        <section className="mb-10">
+          <button
+            type="button"
+            onClick={() => setShowHistory((v) => !v)}
+            className="w-full flex items-center justify-between rounded-xl px-5 py-3.5"
+            style={{ background: "#fff", border: "1.5px solid #e7dcc4", cursor: "pointer" }}
+          >
+            <span className="text-[13px] font-bold tracking-[0.14em] uppercase" style={{ color: "#3d5a3d" }}>
+              Your past searches ({pastSearches.length}) · revisit free
+            </span>
+            <span style={{ color: "#6b7280" }}>{showHistory ? "▲" : "▼"}</span>
+          </button>
+          {showHistory && (
+            <div className="mt-3 grid gap-2">
+              {pastSearches.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => openPast(s)}
+                  className="text-left rounded-lg px-4 py-3 flex items-center justify-between gap-4"
+                  style={{ background: "#fff", border: "1px solid rgba(20,20,20,0.1)", cursor: "pointer" }}
+                >
+                  <span className="text-[14px]" style={{ color: "#141414", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {s.description}
+                  </span>
+                  <span className="text-[12px] shrink-0" style={{ color: "#6b7280" }}>
+                    {(s.results || []).length} results ·{" "}
+                    {new Date((s.created_at || 0) * 1000).toLocaleDateString()}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       {/* ── Results ── */}
       {results && (
         <section id="pf-results" className="mb-12">
@@ -886,10 +1053,74 @@ export default function ProductFinder() {
             <h2 style={{ fontSize: 30, color: "#141414", letterSpacing: "-0.03em", margin: 0, fontWeight: 800, fontStyle: "italic" }}>
               Top product opportunities
             </h2>
-            <div className="text-[13px]" style={{ color: "#6b7280" }}>
-              {results.books.length} shown · {results.candidates_found} analysed
+            <div className="flex items-center gap-3">
+              <span className="text-[13px]" style={{ color: "#6b7280" }}>
+                {results.books.length} shown · {results.candidates_found} analysed
+              </span>
+              {results.books.length > 0 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const blob = new Blob([toCSV(results.books)], { type: "text/csv" });
+                      const a = document.createElement("a");
+                      a.href = URL.createObjectURL(blob);
+                      a.download = "skillies-products.csv";
+                      a.click();
+                      URL.revokeObjectURL(a.href);
+                    }}
+                    className="text-[12px] font-bold px-3 py-1.5 rounded-full"
+                    style={{ border: "1.5px solid #d6cdb9", color: "#141414", background: "#fff" }}
+                  >
+                    ↓ CSV
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard
+                        ?.writeText(toCSV(results.books))
+                        .then(() => setStatus({ kind: "info", message: "Copied — paste into a sheet." }))
+                        .catch(() => {});
+                    }}
+                    className="text-[12px] font-bold px-3 py-1.5 rounded-full"
+                    style={{ border: "1.5px solid #d6cdb9", color: "#141414", background: "#fff" }}
+                  >
+                    Copy
+                  </button>
+                </>
+              )}
             </div>
           </div>
+
+          {/* D) Free in-session refine */}
+          {searchId && results.books.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              <input
+                type="text"
+                value={refineText}
+                onChange={(e) => setRefineText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    doRefine();
+                  }
+                }}
+                placeholder="Refine free — e.g. cheaper, fewer reviews, more like #2"
+                className="pf-input"
+                style={{ flex: "1 1 260px", minWidth: 0 }}
+                disabled={refining}
+              />
+              <button
+                type="button"
+                onClick={doRefine}
+                disabled={refining || refineText.trim().length < 2}
+                className="pf-btn"
+                style={{ width: "auto", padding: "12px 22px", fontSize: 14 }}
+              >
+                {refining ? "Refining…" : "Refine (free)"}
+              </button>
+            </div>
+          )}
 
           {(!license || license.credits_remaining <= 0) && (
             <div
@@ -980,17 +1211,40 @@ export default function ProductFinder() {
                       {b.match_reason}
                     </div>
                   )}
-                  {b.amazon_url && (
+                  {b.action && (
+                    <div
+                      className="mt-2 text-[13px] rounded-lg px-3.5 py-2.5"
+                      style={{ background: "rgba(0,167,84,0.10)", color: "#1f5a3a", lineHeight: 1.5 }}
+                    >
+                      <strong style={{ textTransform: "uppercase", fontSize: 10, letterSpacing: "0.14em", color: "#00824a" }}>
+                        Your next move
+                      </strong>
+                      <br />
+                      {b.action}
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center gap-4 mt-3">
+                    {b.amazon_url && (
+                      <a
+                        href={b.amazon_url}
+                        target="_blank"
+                        rel="noopener"
+                        className="text-[13px] font-bold tracking-[0.16em] uppercase"
+                        style={{ color: "#c62828" }}
+                      >
+                        View on Amazon →
+                      </a>
+                    )}
                     <a
-                      href={b.amazon_url}
+                      href={sourceLink(b.title)}
                       target="_blank"
                       rel="noopener"
-                      className="inline-block mt-3 text-[13px] font-bold tracking-[0.16em] uppercase"
-                      style={{ color: "#c62828" }}
+                      className="text-[13px] font-bold tracking-[0.16em] uppercase"
+                      style={{ color: "#3d5a3d" }}
                     >
-                      View on Amazon →
+                      Source on Alibaba →
                     </a>
-                  )}
+                  </div>
                 </article>
               );
             })}
