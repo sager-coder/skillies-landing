@@ -93,6 +93,15 @@ const EXAMPLES: ExamplePrompt[] = [
   { label: "Home organization, bad reviews", brief: "Home organization products still selling despite bad reviews, weak brands" },
   { label: "Pet products, low competition", brief: "Pet products with strong US sales but very few reviews — early movers" },
   { label: "Fitness gear under $25", brief: "Home fitness and resistance gear under $25, selling steadily, generic brands" },
+  { label: "Beauty tools, weak brands", brief: "Beauty and personal-care tools selling well in the US with generic no-name brands and so-so reviews" },
+  { label: "Baby products, few reviews", brief: "Baby and toddler products with strong US sales but under 30 reviews — low-competition early movers" },
+  { label: "Car accessories, bad reviews", brief: "Car and automotive accessories still selling despite bad reviews and no major brand" },
+  { label: "Garden & outdoor under $30", brief: "Garden, patio and outdoor products under $30 selling steadily in the US with weak brands" },
+  { label: "Desk & office gadgets", brief: "Office and desk gadgets trending in the US right now, low competition, no famous brand" },
+  { label: "Kids toys, no moat", brief: "Toys and games selling well in the US with generic brands and mediocre reviews — easy to replicate" },
+  { label: "Health & wellness, premium", brief: "Premium-priced health and household products with weak incumbents and few reviews — fat margins" },
+  { label: "Tools & DIY, bad reviews", brief: "Hand tools and DIY gadgets still selling despite under-3.5-star reviews and no-name brands" },
+  { label: "Travel & bottles under $20", brief: "Travel accessories and water bottles under $20 selling steadily in the US, generic brands" },
 ];
 
 export default function ProductFinder() {
