@@ -478,7 +478,7 @@ export default function ToolsPage() {
                       color: "var(--sk-cream)",
                     }}
                   >
-                    ▶ Open the early preview
+                    ▶ Open the tool
                   </span>
                 </div>
               </div>
@@ -494,13 +494,13 @@ export default function ToolsPage() {
                     color: "#9a7822",
                   }}
                 >
-                  ● SOON
+                  ● LIVE
                 </span>
                 <span
                   className="text-[12px] font-medium"
                   style={{ color: "var(--sk-ink40)" }}
                 >
-                  early preview · joining the waitlist
+                  3 free searches · ₹ packs via Razorpay
                 </span>
               </div>
 
