@@ -38,6 +38,7 @@ type Tier = {
   price_inr: number;
   label: string;
 };
+type Pattern = { name: string; label: string; eyebrow: string; description: string };
 type License = {
   code: string;
   tier: string;
@@ -48,6 +49,7 @@ type License = {
 type Product = {
   asin?: string;
   title?: string;
+  brand?: string;
   binding?: string;
   price_usd?: number;
   rating?: number;
@@ -80,6 +82,49 @@ const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 const isValidEmail = (s: string) =>
   EMAIL_RE.test(s.trim()) && s.trim().length <= 200;
 
+/**
+ * Read the Supabase access token from the sitewide auth cookie (same
+ * proven approach as the KDP tool — the @supabase/ssr browser client is
+ * unreliable on a cold tool mount). Used only to RESTORE an existing
+ * Product Finder license bought under this email; the token is
+ * re-verified server-side, so reading the cookie grants no trust.
+ */
+function readSupabaseAccessTokenFromCookie(): string | null {
+  try {
+    if (typeof document === "undefined") return null;
+    const parts = document.cookie.split(";").map((c) => c.trim());
+    const names = parts.map((c) => c.slice(0, c.indexOf("=")));
+    const baseName = names.find((n) => /^sb-.*-auth-token$/.test(n));
+    const chunkZero = names.find((n) => /^sb-.*-auth-token\.0$/.test(n));
+    if (!baseName && !chunkZero) return null;
+    let raw = "";
+    if (chunkZero) {
+      const root = chunkZero.replace(/\.0$/, "");
+      for (let i = 0; ; i++) {
+        const pref = `${root}.${i}=`;
+        const ck = parts.find((c) => c.startsWith(pref));
+        if (!ck) break;
+        raw += decodeURIComponent(ck.slice(pref.length));
+      }
+    } else if (baseName) {
+      const pref = `${baseName}=`;
+      const ck = parts.find((c) => c.startsWith(pref));
+      if (!ck) return null;
+      raw = decodeURIComponent(ck.slice(pref.length));
+    }
+    if (!raw) return null;
+    const json = JSON.parse(atob(raw.replace(/^base64-/, ""))) as {
+      access_token?: string;
+      expires_at?: number;
+    };
+    if (!json?.access_token) return null;
+    if (json.expires_at && json.expires_at * 1000 < Date.now()) return null;
+    return json.access_token;
+  } catch {
+    return null;
+  }
+}
+
 const fmtN = (n: number | null | undefined) =>
   n == null ? "—" : new Intl.NumberFormat("en-US").format(n);
 const fmtUSD = (p: number | null | undefined) =>
@@ -109,12 +154,14 @@ export default function ProductFinder() {
   const [razorpayKeyId, setRazorpayKeyId] = useState("");
   const [license, setLicense] = useState<License | null>(null);
 
+  const [patterns, setPatterns] = useState<Pattern[]>([]);
+  const [pattern, setPattern] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<{ kind: "info" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchResponse | null>(null);
 
-  type AuthTab = "buy" | "code";
+  type AuthTab = "buy" | "code" | "email";
   const [authTab, setAuthTab] = useState<AuthTab>("buy");
   const [restoreCode, setRestoreCode] = useState("");
   const [showTopUp, setShowTopUp] = useState(false);
@@ -128,11 +175,18 @@ export default function ProductFinder() {
     let cancelled = false;
     (async () => {
       try {
-        const tRes = await fetch(`${API_URL}/api/tiers?tool=products`);
+        const [tRes, pRes] = await Promise.all([
+          fetch(`${API_URL}/api/tiers?tool=products`),
+          fetch(`${API_URL}/api/patterns?tool=products`),
+        ]);
         if (!cancelled && tRes.ok) {
           const d = await tRes.json();
           setTiers((d.tiers || []).filter((t: Tier) => t.price_inr > 0));
           setRazorpayKeyId(d.razorpay_key_id || "");
+        }
+        if (!cancelled && pRes.ok) {
+          const d = await pRes.json();
+          setPatterns(d.patterns || []);
         }
       } catch {
         if (!cancelled)
@@ -156,6 +210,32 @@ export default function ProductFinder() {
           }
         } catch {
           /* ignore */
+        }
+      }
+      // Signed in (sitewide email)? Restore an existing PRODUCTS license
+      // bought under this email — cross-device parity with the niche
+      // finder. 404 ⇒ no products pack on this email: stay silent and
+      // fall through to the 3 anonymous free searches.
+      if (!cancelled && !licenseSet) {
+        const tok = readSupabaseAccessTokenFromCookie();
+        if (tok) {
+          try {
+            const r = await fetch(`${API_URL}/api/license/auth-email-continue`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ access_token: tok, tool: "products" }),
+            });
+            if (r.ok) {
+              const d = await r.json();
+              if (!cancelled) {
+                localStorage.setItem(LS_KEY, d.license.code);
+                setLicense(d.license);
+                licenseSet = true;
+              }
+            }
+          } catch {
+            /* ignore — anon path below */
+          }
         }
       }
       if (!cancelled && !licenseSet && !localStorage.getItem(LS_FREE_USED)) {
@@ -337,6 +417,7 @@ export default function ProductFinder() {
         body: JSON.stringify({
           description: description.trim(),
           tool: "products",
+          pattern: pattern || null,
           license_code: license.code,
         }),
       });
@@ -519,8 +600,30 @@ export default function ProductFinder() {
         </div>
 
         <form onSubmit={onSubmit} className="pf-card">
+          <label className="block mb-6">
+            <span className="pf-label">1 · Pick the signal you want to hunt</span>
+            <select
+              value={pattern}
+              onChange={(e) => setPattern(e.target.value)}
+              className="pf-input"
+              style={{ cursor: "pointer" }}
+            >
+              <option value="">— let the AI pick from my description —</option>
+              {patterns.map((p) => (
+                <option key={p.name} value={p.name}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+            <span className="block text-[13px] italic mt-2" style={{ color: "#14141499" }}>
+              {pattern
+                ? patterns.find((p) => p.name === pattern)?.description ||
+                  "Or describe the product in your own words below."
+                : "Or just describe the product below — the AI reads the signal from your words."}
+            </span>
+          </label>
           <label className="block mb-2">
-            <span className="pf-label">Describe the product / niche</span>
+            <span className="pf-label">2 · Describe the product / niche</span>
             <textarea
               required
               value={description}
@@ -637,6 +740,7 @@ export default function ProductFinder() {
             <div className="flex gap-0 border-b mb-7 max-w-[420px] mx-auto" style={{ borderColor: "#e7dcc4" }}>
               {([
                 ["buy", "Buy searches"],
+                ["email", "Sign in"],
                 ["code", "Have a code?"],
               ] as Array<[AuthTab, string]>).map(([k, lbl]) => (
                 <button
@@ -715,6 +819,29 @@ export default function ProductFinder() {
                   })}
                 </div>
               </>
+            )}
+
+            {authTab === "email" && (
+              <div className="pf-card max-w-[440px] mx-auto text-center">
+                <div className="text-[20px] font-extrabold mb-1" style={{ color: "#141414", fontStyle: "italic" }}>
+                  Already bought a pack?
+                </div>
+                <p className="text-[14px] mb-5" style={{ color: "#14141499", lineHeight: 1.55 }}>
+                  Sign in with the same email you used at checkout and your
+                  remaining searches restore on this device automatically.
+                </p>
+                <a
+                  href="/login?next=/tools/dropshipping-products-finder"
+                  className="pf-btn"
+                  style={{ textDecoration: "none", display: "inline-flex" }}
+                >
+                  Sign in with email →
+                </a>
+                <p className="text-[12px] mt-4" style={{ color: "#14141466", lineHeight: 1.5 }}>
+                  New here? You get <strong>3 free searches</strong> with no
+                  sign-in — just start searching above.
+                </p>
+              </div>
             )}
 
             {authTab === "code" && (
@@ -801,9 +928,25 @@ export default function ProductFinder() {
                   <div className="text-[16px] sm:text-[18px] font-semibold mb-1.5" style={{ color: "#141414", lineHeight: 1.3, wordBreak: "break-word" }}>
                     {b.title || "(untitled)"}
                   </div>
-                  <div className="text-[13px] mb-3" style={{ color: "#6b7280" }}>
-                    {b.binding || "—"}
-                    {b.primary_category ? ` · ${b.primary_category}` : ""}
+                  <div className="flex items-center flex-wrap gap-2 mb-3">
+                    {b.brand ? (
+                      <span
+                        className="text-[11px] font-bold px-2 py-0.5 rounded"
+                        style={{ background: "rgba(20,20,20,0.06)", color: "#141414" }}
+                      >
+                        {b.brand}
+                      </span>
+                    ) : (
+                      <span
+                        className="text-[11px] font-extrabold uppercase tracking-[0.1em] px-2 py-0.5 rounded"
+                        style={{ background: "rgba(0,167,84,0.12)", color: "#00824a" }}
+                      >
+                        No-name brand
+                      </span>
+                    )}
+                    <span className="text-[13px]" style={{ color: "#6b7280" }}>
+                      {b.primary_category || "—"}
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-2 text-[12px] sm:text-[13px]" style={{ color: "#6b7280" }}>
                     <div>Rating <strong style={{ color: "#141414", marginLeft: 4 }}>{b.rating == null ? "—" : `${b.rating}★`}</strong></div>
