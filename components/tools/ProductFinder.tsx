@@ -156,6 +156,9 @@ export default function ProductFinder() {
 
   const [patterns, setPatterns] = useState<Pattern[]>([]);
   const [pattern, setPattern] = useState("");
+  // Render free-tier cold start can take 30–60s; show a loading state
+  // until boot resolves so an empty dropdown never looks broken.
+  const [booting, setBooting] = useState(true);
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<{ kind: "info" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -255,6 +258,7 @@ export default function ProductFinder() {
           /* ignore — they'll see the buy panel */
         }
       }
+      if (!cancelled) setBooting(false);
     })();
     return () => {
       cancelled = true;
@@ -606,17 +610,28 @@ export default function ProductFinder() {
               value={pattern}
               onChange={(e) => setPattern(e.target.value)}
               className="pf-input"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: booting && patterns.length === 0 ? "wait" : "pointer" }}
+              disabled={booting && patterns.length === 0}
             >
-              <option value="">— let the AI pick from my description —</option>
-              {patterns.map((p) => (
-                <option key={p.name} value={p.name}>
-                  {p.label}
+              {patterns.length === 0 ? (
+                <option value="">
+                  {booting ? "Loading signals…" : "— let the AI pick from my description —"}
                 </option>
-              ))}
+              ) : (
+                <>
+                  <option value="">— let the AI pick from my description —</option>
+                  {patterns.map((p) => (
+                    <option key={p.name} value={p.name}>
+                      {p.label}
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
             <span className="block text-[13px] italic mt-2" style={{ color: "#14141499" }}>
-              {pattern
+              {booting && patterns.length === 0
+                ? "Waking the engine… (first load can take up to a minute)"
+                : pattern
                 ? patterns.find((p) => p.name === pattern)?.description ||
                   "Or describe the product in your own words below."
                 : "Or just describe the product below — the AI reads the signal from your words."}
