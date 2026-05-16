@@ -203,6 +203,7 @@ export default function ProductFinder() {
 
   const [patterns, setPatterns] = useState<Pattern[]>([]);
   const [pattern, setPattern] = useState("");
+  const [scanAll, setScanAll] = useState(false);
   // Render free-tier cold start can take 30–60s; show a loading state
   // until boot resolves so an empty dropdown never looks broken.
   const [booting, setBooting] = useState(true);
@@ -388,7 +389,7 @@ export default function ProductFinder() {
           key: order.key_id || razorpayKeyId,
           amount: order.amount,
           currency: order.currency || "INR",
-          name: "Skillies Product Finder",
+          name: "Skillies Winning Products Finder",
           description: tiers.find((t) => t.name === tierName)?.label || "Search credits",
           order_id: order.order_id,
           prefill: { email },
@@ -548,6 +549,7 @@ export default function ProductFinder() {
           description: description.trim(),
           tool: "products",
           pattern: pattern || null,
+          scan_all: scanAll,
           license_code: license.code,
         }),
       });
@@ -786,6 +788,31 @@ export default function ProductFinder() {
               </button>
             ))}
           </div>
+          <label
+            className="flex items-start gap-3 mb-6 cursor-pointer rounded-xl p-4"
+            style={{
+              background: scanAll ? "rgba(217,52,43,0.06)" : "#fff",
+              border: `1.5px solid ${scanAll ? "#d9342b" : "rgba(20,20,20,0.12)"}`,
+              transition: "all 0.15s ease",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={scanAll}
+              onChange={(e) => setScanAll(e.target.checked)}
+              style={{ width: 18, height: 18, marginTop: 2, accentColor: "#d9342b", cursor: "pointer" }}
+            />
+            <span>
+              <span style={{ display: "block", fontSize: 14.5, fontWeight: 800, color: "#141414" }}>
+                Scan ALL of Amazon
+              </span>
+              <span style={{ display: "block", fontSize: 13, color: "#14141499", lineHeight: 1.5, marginTop: 2 }}>
+                Ignore category limits — hunt every Amazon US category at once for the
+                strongest weak-brand opportunities matching your description. Broader net,
+                more surprising finds. Leave off to stay focused on one product type.
+              </span>
+            </span>
+          </label>
           <button type="submit" disabled={loading} className="pf-btn" style={{ padding: "17px 30px", fontSize: 16 }}>
             {loading ? (
               <>

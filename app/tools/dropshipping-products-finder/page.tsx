@@ -12,7 +12,7 @@ import FooterEditorial from "@/components/design/FooterEditorial";
 import ProductFinder from "@/components/tools/ProductFinder";
 
 export const metadata: Metadata = {
-  title: "Product Finder for India · What's winning on Amazon US · Skillies",
+  title: "Winning Products Finder · What's winning on Amazon US · Skillies",
   description:
     "Products trend China → USA → India. Describe a product and scan live Amazon US data for what's selling now with weak/no-name brands and mediocre reviews — the exact profile that gets imported into India next. Books excluded. 3 free searches.",
 };

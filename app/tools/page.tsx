@@ -514,7 +514,7 @@ export default function ToolsPage() {
                   margin: "4px 0 6px",
                 }}
               >
-                Dropshipping Products Finder
+                Winning Products Finder
               </h3>
 
               <p
