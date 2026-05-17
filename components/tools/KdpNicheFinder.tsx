@@ -523,6 +523,19 @@ export default function KdpNicheFinder() {
               const data = await r.json();
               localStorage.setItem(LS_KEY, data.license.code);
               setLicense(data.license);
+              // Meta Pixel Purchase. eventID matches the server-side
+              // Conversions API event (PayPal order id) so Meta dedupes
+              // the browser + server events into one conversion.
+              (
+                window as unknown as {
+                  fbq?: (...a: unknown[]) => void;
+                }
+              ).fbq?.(
+                "track",
+                "Purchase",
+                { value: data.value ?? 0, currency: "USD" },
+                { eventID: data.event_id },
+              );
               setStatus({
                 kind: "info",
                 message: `Payment confirmed — license ${data.license.code} with ${data.license.credits_remaining} credits added. Save the code somewhere safe.`,
