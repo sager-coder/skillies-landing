@@ -212,7 +212,23 @@ export default function KdpNicheFinder() {
   // ── Form state ──
   const [pattern, setPattern] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [format, setFormat] = useState<string>("all");
+  const [format] = useState<string>("all");
+  // Power-user filters (owner mode). Numeric inputs kept as strings so
+  // "empty" cleanly means "no override".
+  const [bindings, setBindings] = useState<string[]>([]);
+  const [excludeFreeKindle, setExcludeFreeKindle] = useState(true);
+  const [minReviews, setMinReviews] = useState<string>("");
+  const [maxReviews, setMaxReviews] = useState<string>("");
+  const [bsrMin, setBsrMin] = useState<string>("");
+  const [bsrMax, setBsrMax] = useState<string>("");
+  const [priceMin, setPriceMin] = useState<string>("");
+  const [priceMax, setPriceMax] = useState<string>("");
+  const toggleBinding = (b: string) =>
+    setBindings((cur) =>
+      cur.includes(b) ? cur.filter((x) => x !== b) : [...cur, b],
+    );
+  const numOrNull = (s: string) =>
+    s.trim() === "" ? null : Number(s);
 
   // ── Status / results ──
   const [status, setStatus] = useState<{
@@ -641,6 +657,14 @@ export default function KdpNicheFinder() {
           format,
           pattern: pattern || null,
           license_code: license.code,
+          bindings: bindings.length ? bindings : null,
+          exclude_free_kindle: excludeFreeKindle,
+          min_reviews: numOrNull(minReviews),
+          max_reviews: numOrNull(maxReviews),
+          bsr_min: numOrNull(bsrMin),
+          bsr_max: numOrNull(bsrMax),
+          price_min_usd: numOrNull(priceMin),
+          price_max_usd: numOrNull(priceMax),
         }),
       });
       if (!r.ok) {
@@ -1243,24 +1267,87 @@ export default function KdpNicheFinder() {
             </div>
           </label>
 
-          <label className="block mb-7">
+          <div className="block mb-7">
             <span className="kdp-field-label">
               3 · Format
-              <span className="ml-2 normal-case tracking-normal text-[11px] font-medium" style={{ color: "#14141466" }}>(optional)</span>
+              <span className="ml-2 normal-case tracking-normal text-[11px] font-medium" style={{ color: "#14141466" }}>(pick any — none = all)</span>
             </span>
-            <select
-              value={format}
-              onChange={(e) => setFormat(e.target.value)}
-              className="kdp-select"
-              style={{ maxWidth: 360 }}
-            >
-              <option value="all">All formats</option>
-              <option value="paperback">Paperback</option>
-              <option value="hardcover">Hardcover</option>
-              <option value="kindle">Kindle eBook</option>
-              <option value="audiobook">Audiobook</option>
-            </select>
-          </label>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {["Paperback", "Hardcover", "Kindle eBook", "Kindle short reads", "Audiobook"].map(
+                (b) => {
+                  const on = bindings.includes(b);
+                  return (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => toggleBinding(b)}
+                      className="kdp-chip"
+                      style={{
+                        background: on ? "#2a1a08" : undefined,
+                        color: on ? "#fff" : undefined,
+                        borderColor: on ? "#2a1a08" : undefined,
+                      }}
+                    >
+                      {b}
+                    </button>
+                  );
+                },
+              )}
+            </div>
+            <label className="flex items-center gap-2 mt-3 text-[13px]" style={{ color: "#141414cc" }}>
+              <input
+                type="checkbox"
+                checked={excludeFreeKindle}
+                onChange={(e) => setExcludeFreeKindle(e.target.checked)}
+              />
+              Exclude free ($0) Kindle books
+            </label>
+          </div>
+
+          <div className="block mb-7">
+            <span className="kdp-field-label">
+              4 · Advanced filters
+              <span className="ml-2 normal-case tracking-normal text-[11px] font-medium" style={{ color: "#14141466" }}>(optional — overrides the AI)</span>
+            </span>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 mt-2" style={{ maxWidth: 520 }}>
+              <label className="text-[13px]" style={{ color: "#141414cc" }}>
+                Reviews — min
+                <input type="number" min={0} value={minReviews}
+                  onChange={(e) => setMinReviews(e.target.value)}
+                  placeholder="0" className="kdp-select" />
+              </label>
+              <label className="text-[13px]" style={{ color: "#141414cc" }}>
+                Reviews — under (max)
+                <input type="number" min={0} value={maxReviews}
+                  onChange={(e) => setMaxReviews(e.target.value)}
+                  placeholder="e.g. 50" className="kdp-select" />
+              </label>
+              <label className="text-[13px]" style={{ color: "#141414cc" }}>
+                BSR — min (best rank)
+                <input type="number" min={1} value={bsrMin}
+                  onChange={(e) => setBsrMin(e.target.value)}
+                  placeholder="1" className="kdp-select" />
+              </label>
+              <label className="text-[13px]" style={{ color: "#141414cc" }}>
+                BSR — max
+                <input type="number" min={1} value={bsrMax}
+                  onChange={(e) => setBsrMax(e.target.value)}
+                  placeholder="e.g. 100000" className="kdp-select" />
+              </label>
+              <label className="text-[13px]" style={{ color: "#141414cc" }}>
+                Price USD — min
+                <input type="number" min={0} step="0.01" value={priceMin}
+                  onChange={(e) => setPriceMin(e.target.value)}
+                  placeholder="0" className="kdp-select" />
+              </label>
+              <label className="text-[13px]" style={{ color: "#141414cc" }}>
+                Price USD — max
+                <input type="number" min={0} step="0.01" value={priceMax}
+                  onChange={(e) => setPriceMax(e.target.value)}
+                  placeholder="e.g. 19.99" className="kdp-select" />
+              </label>
+            </div>
+          </div>
 
           <button
             type="submit"
