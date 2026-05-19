@@ -51,13 +51,14 @@ export default function PrivacyPage() {
             margin: "0 0 48px",
           }}
         >
-          Last updated · 23 April 2026
+          Last updated · 19 May 2026
         </p>
 
         <Prose>
           <p>
-            Skillies.AI ("we", "us") is operated by Ehsan Asgar Parambatt from
-            Malappuram, Kerala, India. This policy explains how we collect,
+            Skillies.AI ("we", "us") is operated by Ehsan Asgar P (Ehsan Asgar
+            Parambatt), a sole proprietorship registered in Malappuram, Kerala,
+            India. This policy explains how we collect,
             use, and protect the personal data you share when visiting
             skillies.ai or purchasing a workshop, course, or mentorship.
           </p>
@@ -95,8 +96,12 @@ export default function PrivacyPage() {
           <H2>What we do NOT do</H2>
           <Ul>
             <Li>We don't sell your data.</Li>
-            <Li>We don't share your WhatsApp number or email with any third
-              party other than Razorpay (payment) and Meta (ad attribution).</Li>
+            <Li>We don't sell your data or share it with any third party for
+              their own purposes. We use trusted service providers that process
+              data only on our behalf and instructions — Vercel (application
+              hosting), Supabase (database storage, Mumbai region), and our AI
+              provider (reply drafting) — alongside Razorpay (payments) and Meta
+              (WhatsApp Business platform and ad attribution).</Li>
             <Li>We don't spam. If you hear from us after your purchase, it's
               either about your seat, your workshop, or a new Skillies.AI
               product you'd find relevant — with an unsubscribe link.</Li>
@@ -127,10 +132,10 @@ export default function PrivacyPage() {
             </Li>
             <Li>
               <strong>AI assistance:</strong> some replies you receive are
-              drafted by an AI agent (Claude Haiku via OpenRouter). Anything
-              the AI can&rsquo;t answer with confidence is escalated to a
-              human (Ehsan or a Skillies operator) within minutes during
-              business hours.
+              drafted by an AI agent (our AI provider &mdash; currently
+              Anthropic Claude; Sarvam AI may also be used). Anything the AI
+              can&rsquo;t answer with confidence is escalated to a human (Ehsan
+              or a Skillies operator) within minutes during business hours.
             </Li>
             <Li>
               <strong>What we never do over WhatsApp:</strong> diagnose
@@ -151,6 +156,19 @@ export default function PrivacyPage() {
               details). We do not send marketing broadcasts via WhatsApp.
             </Li>
           </Ul>
+
+          <H2>Business clients · technology provider services</H2>
+          <p>
+            Where Skillies.AI provides WhatsApp customer-service assistants to
+            business clients as a technology provider, each client connects
+            their own WhatsApp Business Account and remains the controller of
+            their customers&rsquo; data. Skillies.AI processes that data solely
+            on the relevant client&rsquo;s behalf and instructions, strictly to
+            operate that client&rsquo;s assistant. Each client&rsquo;s data is
+            isolated and is never shared with, or accessible to, any other
+            client. Customers of a client business should refer to that
+            business&rsquo;s own privacy notice for how it controls their data.
+          </p>
 
           <H2>Your rights under DPDP Act 2023</H2>
           <Ul>
@@ -194,7 +212,8 @@ export default function PrivacyPage() {
 
           <H2>Contact</H2>
           <p>
-            Ehsan Asgar Parambatt · Skillies.AI · Malappuram, Kerala, India
+            Ehsan Asgar P (Ehsan Asgar Parambatt) · Skillies.AI · Malappuram,
+            Kerala, India
             <br />
             Email:{" "}
             <a
