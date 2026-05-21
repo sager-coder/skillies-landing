@@ -139,13 +139,62 @@ export async function POST(req: NextRequest) {
       incomingFilename,
       ")",
     );
+    // Surface auth / billing / quota failures as 4xx, not 5xx. Cloudflare
+    // overrides 5xx origin responses with its own error page, which used
+    // to hide the upstream detail and made debugging billing issues
+    // (like ElevenLabs payment_required) look like an infra outage.
+    // We try to extract the upstream error code/message so the client
+    // can render a clear, actionable message in the chat.
+    let code = "stt_failed";
+    let message = "";
+    try {
+      const parsed = JSON.parse(body) as {
+        detail?:
+          | { code?: string; message?: string; status?: string }
+          | string;
+      };
+      if (parsed.detail && typeof parsed.detail === "object") {
+        code = parsed.detail.code ?? parsed.detail.status ?? code;
+        message = parsed.detail.message ?? "";
+      } else if (typeof parsed.detail === "string") {
+        message = parsed.detail;
+      }
+    } catch {
+      /* upstream returned non-JSON — keep defaults */
+    }
+
+    const isBilling =
+      code === "payment_issue" ||
+      code === "payment_required" ||
+      code === "quota_exceeded" ||
+      code === "free_trial_exceeded";
+    const isAuth = res.status === 401 || res.status === 403;
+    const isRate = res.status === 429;
+
+    const proxyStatus = isBilling
+      ? 402
+      : isAuth
+        ? 401
+        : isRate
+          ? 429
+          : res.status >= 400 && res.status < 500
+            ? res.status
+            : 422; // fall back to 4xx so Cloudflare passes the JSON through
+
     return NextResponse.json(
       {
-        error: "stt_failed",
-        status: res.status,
-        detail: body.slice(0, 400),
+        error: isBilling
+          ? "stt_billing_issue"
+          : isAuth
+            ? "stt_unauthorized"
+            : isRate
+              ? "stt_rate_limited"
+              : "stt_failed",
+        upstream_code: code,
+        upstream_status: res.status,
+        message: message || body.slice(0, 300),
       },
-      { status: 502 },
+      { status: proxyStatus },
     );
   }
 
