@@ -19,6 +19,7 @@ import StudentDashboardClient, {
   type StudentCourse,
   type StudentStats,
 } from "./StudentDashboardClient";
+import KdpCoachWidget from "./KdpCoachWidget";
 
 export const metadata: Metadata = { title: "Dashboard · Skillies School" };
 export const dynamic = "force-dynamic";
@@ -121,6 +122,9 @@ export default async function StudentDashboardPage() {
           userPhone={profile?.phone ?? null}
         />
       </section>
+      {/* Floating KDP Coach chat — only for paying students. The
+          /api/student/coach route re-checks enrollment server-side too. */}
+      {myCourses.length > 0 && <KdpCoachWidget userId={user.id} />}
     </main>
   );
 }
