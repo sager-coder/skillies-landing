@@ -454,15 +454,23 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
         const data = (await res.json()) as { transcript?: string };
         transcript = (data.transcript ?? "").trim();
       } else {
-        const data = (await res
-          .json()
-          .catch(() => ({}))) as { error?: string };
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          status?: number;
+          detail?: string;
+        };
+        // Log the full upstream detail so a debug session in DevTools
+        // → Console gives us the real ElevenLabs message even when the
+        // student doesn't have the Network panel open.
+        console.warn("[coach] transcribe failed", res.status, data);
         const niceError =
           data.error === "rate_limited"
             ? "Too many voice notes recently — try again in a bit."
             : data.error === "stt_not_configured"
               ? "Voice transcription isn't set up here yet."
-              : `Voice transcription failed (${res.status}).`;
+              : data.error === "stt_failed" && data.detail
+                ? `Voice transcription failed: ${data.detail.slice(0, 120)}`
+                : `Voice transcription failed (${res.status}).`;
         setMessages((prev) => prev.filter((m) => m.id !== pendingId));
         setError(niceError);
         setTranscribing(false);

@@ -24,8 +24,11 @@ import { rateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// 30s for the request → ElevenLabs Scribe → response.
-export const maxDuration = 30;
+// 60s for the request → ElevenLabs Scribe → response. Real voice
+// notes are capped at 90s on the client; transcription itself usually
+// finishes in <10s for short clips, but cold starts + ~60s of audio
+// were exceeding the previous 30s limit on the dashboard coach.
+export const maxDuration = 60;
 
 // Per-IP cap for the public path. Demo-cookie callers bypass.
 const PUBLIC_MAX_PER_HOUR = 30;
@@ -91,8 +94,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "file_too_large" }, { status: 413 });
   }
 
+  // Preserve the client-provided filename so ElevenLabs can hint format
+  // from the extension. The browser sends e.g. "voice-note.webm" — if
+  // we strip that to just "voice-note", Scribe occasionally rejects it
+  // with a generic 4xx that surfaces here as a confusing 502.
+  const incomingFilename =
+    file instanceof File && file.name ? file.name : "voice-note.webm";
+
   const upstream = new FormData();
-  upstream.append("file", file, "voice-note");
+  upstream.append("file", file, incomingFilename);
   upstream.append("model_id", "scribe_v1");
 
   let res: Response;
@@ -102,7 +112,12 @@ export async function POST(req: NextRequest) {
       headers: { "xi-api-key": apiKey },
       body: upstream,
     });
-  } catch {
+  } catch (err) {
+    console.error(
+      "[transcribe] upstream fetch threw:",
+      err instanceof Error ? err.message : err,
+      "(file:", file.size, "bytes, type:", file.type, "name:", incomingFilename, ")",
+    );
     return NextResponse.json(
       { error: "stt_network_error" },
       { status: 502 },
@@ -111,6 +126,19 @@ export async function POST(req: NextRequest) {
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
+    console.error(
+      "[transcribe] elevenlabs",
+      res.status,
+      "·",
+      body.slice(0, 500),
+      "(file:",
+      file.size,
+      "bytes, type:",
+      file.type,
+      "name:",
+      incomingFilename,
+      ")",
+    );
     return NextResponse.json(
       {
         error: "stt_failed",
