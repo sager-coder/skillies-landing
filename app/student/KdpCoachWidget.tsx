@@ -42,6 +42,9 @@ type ChatMessage = {
   pending?: boolean;
   /** Set when the request failed for this message. */
   error?: string;
+  /** Marks a user bubble as having come from a voice recording (so we
+   *  can show the mic icon + duration label instead of plain text). */
+  voice?: { durationSec: number; transcribing?: boolean };
   ts: number;
 };
 
@@ -63,9 +66,22 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Voice-note recording state — mirrors the SkilliesChatWidget pattern
+  // (MediaRecorder on the device, transcript via /api/transcribe). The
+  // ref chunks are kept off-state so a re-render doesn't reset them
+  // mid-recording.
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDurationSec, setRecordingDurationSec] = useState(0);
+  const [transcribing, setTranscribing] = useState(false);
+
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingStartMsRef = useRef<number>(0);
+  const durationIntervalRef = useRef<number | null>(null);
 
   // ── localStorage hydration / persistence ─────────────────────────
   useEffect(() => {
@@ -115,16 +131,23 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
     return () => abortRef.current?.abort();
   }, []);
 
-  const send = useCallback(async () => {
-    const text = draft.trim();
+  // `send` accepts an optional explicit body so voice notes (which
+  // resolve their text asynchronously after transcription) can hand off
+  // their transcript directly without round-tripping through the draft
+  // state. A `voice` option marks the user bubble for voice styling.
+  const send = useCallback(async (
+    explicit?: { text: string; voice?: { durationSec: number } },
+  ) => {
+    const text = (explicit?.text ?? draft).trim();
     if (!text || sending) return;
 
     setError(null);
-    setDraft("");
+    if (!explicit) setDraft("");
     const userMsg: ChatMessage = {
       id: `u-${Date.now()}`,
       role: "user",
       content: text,
+      voice: explicit?.voice,
       ts: Date.now(),
     };
     const assistantId = `a-${Date.now()}`;
@@ -278,6 +301,202 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
     }
   }, [storageKey]);
 
+  // ── Voice notes ──────────────────────────────────────────────────
+  // Tap mic → MediaRecorder starts, the composer swaps to a recording
+  // bar. The student either taps cancel (discard) or tap-to-send. On
+  // send we stop the recorder, optimistically render a "transcribing…"
+  // user bubble, upload the audio blob to /api/transcribe, then patch
+  // the bubble with the transcript and hand off to the normal coach
+  // send() so Claude sees plain text exactly like a typed message.
+
+  const stopMediaTracks = useCallback(() => {
+    if (durationIntervalRef.current !== null) {
+      window.clearInterval(durationIntervalRef.current);
+      durationIntervalRef.current = null;
+    }
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    mediaStreamRef.current = null;
+    mediaRecorderRef.current = null;
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    if (isRecording || sending || transcribing) return;
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      setError(
+        "Microphone permission was denied. You can still type your question.",
+      );
+      return;
+    }
+    let recorder: MediaRecorder;
+    try {
+      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+          ? "audio/mp4"
+          : "";
+      recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : {});
+    } catch (e) {
+      stream.getTracks().forEach((t) => t.stop());
+      const msg = e instanceof Error ? e.message : "recorder unavailable";
+      setError(`Couldn't start recording: ${msg}`);
+      return;
+    }
+    audioChunksRef.current = [];
+    recorder.addEventListener("dataavailable", (e) => {
+      if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+    });
+    recorder.start();
+
+    mediaStreamRef.current = stream;
+    mediaRecorderRef.current = recorder;
+    recordingStartMsRef.current = Date.now();
+    setRecordingDurationSec(0);
+    setIsRecording(true);
+    setError(null);
+
+    // 90s hard cap — matches WhatsApp voice-note behaviour, and keeps
+    // transcripts short enough that latency stays acceptable.
+    durationIntervalRef.current = window.setInterval(() => {
+      const sec = Math.floor(
+        (Date.now() - recordingStartMsRef.current) / 1000,
+      );
+      setRecordingDurationSec(sec);
+      if (sec >= 90) {
+        try {
+          recorder.stop();
+        } catch {
+          /* recorder already stopped — fine */
+        }
+      }
+    }, 250);
+  }, [isRecording, sending, transcribing]);
+
+  const cancelRecording = useCallback(() => {
+    if (!isRecording) return;
+    try {
+      mediaRecorderRef.current?.stop();
+    } catch {
+      /* noop */
+    }
+    audioChunksRef.current = [];
+    stopMediaTracks();
+    setIsRecording(false);
+    setRecordingDurationSec(0);
+  }, [isRecording, stopMediaTracks]);
+
+  const sendRecording = useCallback(async () => {
+    if (!isRecording) return;
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) {
+      cancelRecording();
+      return;
+    }
+    const durationSec = Math.max(
+      1,
+      Math.floor((Date.now() - recordingStartMsRef.current) / 1000),
+    );
+
+    // Wait for the recorder to flush its final chunk, then bundle the
+    // chunks into one Blob with the recorder's negotiated mime type.
+    const finalBlob: Blob = await new Promise((resolve) => {
+      recorder.addEventListener(
+        "stop",
+        () => {
+          const mime = recorder.mimeType || "audio/webm";
+          resolve(new Blob(audioChunksRef.current, { type: mime }));
+        },
+        { once: true },
+      );
+      try {
+        recorder.stop();
+      } catch {
+        resolve(new Blob(audioChunksRef.current, { type: "audio/webm" }));
+      }
+    });
+    stopMediaTracks();
+    setIsRecording(false);
+    setRecordingDurationSec(0);
+
+    if (finalBlob.size === 0) {
+      setError("Voice note was empty — try again.");
+      return;
+    }
+
+    setTranscribing(true);
+
+    // Optimistically render a "transcribing…" voice bubble so the
+    // student sees their action registered immediately.
+    const pendingId = `v-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: pendingId,
+        role: "user",
+        content: "",
+        voice: { durationSec, transcribing: true },
+        ts: Date.now(),
+      },
+    ]);
+
+    let transcript = "";
+    try {
+      const fd = new FormData();
+      const ext = finalBlob.type.includes("mp4") ? "m4a" : "webm";
+      fd.append("file", finalBlob, `voice-note.${ext}`);
+      const res = await fetch("/api/transcribe", {
+        method: "POST",
+        body: fd,
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { transcript?: string };
+        transcript = (data.transcript ?? "").trim();
+      } else {
+        const data = (await res
+          .json()
+          .catch(() => ({}))) as { error?: string };
+        const niceError =
+          data.error === "rate_limited"
+            ? "Too many voice notes recently — try again in a bit."
+            : data.error === "stt_not_configured"
+              ? "Voice transcription isn't set up here yet."
+              : `Voice transcription failed (${res.status}).`;
+        setMessages((prev) => prev.filter((m) => m.id !== pendingId));
+        setError(niceError);
+        setTranscribing(false);
+        return;
+      }
+    } catch {
+      setMessages((prev) => prev.filter((m) => m.id !== pendingId));
+      setError("Couldn't reach the transcription service.");
+      setTranscribing(false);
+      return;
+    }
+
+    setTranscribing(false);
+
+    if (!transcript) {
+      setMessages((prev) => prev.filter((m) => m.id !== pendingId));
+      setError("Couldn't make out the audio — try recording again.");
+      return;
+    }
+
+    // Drop the optimistic placeholder; send() appends its own bubble
+    // with the transcript text (single source of truth in localStorage).
+    setMessages((prev) => prev.filter((m) => m.id !== pendingId));
+    void send({ text: transcript, voice: { durationSec } });
+  }, [cancelRecording, isRecording, send, stopMediaTracks]);
+
+  // End any in-progress recording when the widget unmounts so we don't
+  // leak the mic stream into the background.
+  useEffect(() => {
+    return () => {
+      stopMediaTracks();
+    };
+  }, [stopMediaTracks]);
+
   return (
     <>
       {/* Launcher */}
@@ -402,54 +621,52 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
             ))}
           </div>
 
-          {/* Composer */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void send();
-            }}
-            style={composerWrap}
-          >
-            <textarea
-              ref={textareaRef}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  void send();
+          {/* Composer — swaps between idle (textarea + mic + send) and
+              recording (cancel + timer + send-voice). */}
+          {isRecording ? (
+            <div style={composerWrap} role="group" aria-label="Recording voice note">
+              <button
+                type="button"
+                onClick={cancelRecording}
+                aria-label="Cancel recording"
+                title="Discard"
+                style={{ ...iconBtn, width: 40, height: 40, color: "#7F1D1D" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "rgba(127,29,29,0.08)")
                 }
-              }}
-              placeholder="Ask about niches, BSR, covers, the workflow…"
-              rows={1}
-              disabled={sending}
-              style={textarea}
-            />
-            <button
-              type="submit"
-              aria-label="Send"
-              disabled={sending || !draft.trim()}
-              style={{
-                ...sendButton,
-                opacity: sending || !draft.trim() ? 0.5 : 1,
-                cursor: sending || !draft.trim() ? "not-allowed" : "pointer",
-              }}
-            >
-              {sending ? (
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
                 <svg
-                  width="16"
-                  height="16"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.4"
+                  strokeWidth="2.2"
                   strokeLinecap="round"
+                  strokeLinejoin="round"
                   aria-hidden
-                  style={{ animation: "kdp-spin 0.9s linear infinite" }}
                 >
-                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                 </svg>
-              ) : (
+              </button>
+              <div style={recordingBar} aria-live="polite">
+                <span style={recordingDot} aria-hidden />
+                <span style={recordingTimer}>
+                  {formatDuration(recordingDurationSec)}
+                </span>
+                <span style={recordingHint}>Recording — tap send when ready</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => void sendRecording()}
+                aria-label="Send voice note"
+                style={sendButton}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#B22020")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#C62828")}
+              >
                 <svg
                   width="16"
                   height="16"
@@ -459,20 +676,143 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
                 >
                   <path d="M3.4 20.6 22 12 3.4 3.4l-.5 7.1 13.8 1.5-13.8 1.5z" />
                 </svg>
+              </button>
+            </div>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void send();
+              }}
+              style={composerWrap}
+            >
+              <textarea
+                ref={textareaRef}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void send();
+                  }
+                }}
+                placeholder={
+                  transcribing
+                    ? "Transcribing voice note…"
+                    : "Ask about niches, BSR, covers, the workflow…"
+                }
+                rows={1}
+                disabled={sending || transcribing}
+                style={textarea}
+              />
+              {/* Mic button — only show when the textarea is empty so the
+                  "send what I typed" button stays the obvious primary
+                  action when there's typed text waiting. */}
+              {!draft.trim() && (
+                <button
+                  type="button"
+                  onClick={() => void startRecording()}
+                  aria-label="Record voice note"
+                  title="Record voice note"
+                  disabled={sending || transcribing}
+                  style={{
+                    ...iconBtn,
+                    width: 40,
+                    height: 40,
+                    color: "#525252",
+                    opacity: sending || transcribing ? 0.4 : 1,
+                    cursor: sending || transcribing ? "not-allowed" : "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (sending || transcribing) return;
+                    e.currentTarget.style.background = "rgba(17,24,39,0.06)";
+                    e.currentTarget.style.color = "#0A0A0A";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "#525252";
+                  }}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <rect x="9" y="2" width="6" height="12" rx="3" />
+                    <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="22" />
+                  </svg>
+                </button>
               )}
-            </button>
-          </form>
+              {draft.trim() && (
+                <button
+                  type="submit"
+                  aria-label="Send"
+                  disabled={sending || transcribing}
+                  style={{
+                    ...sendButton,
+                    opacity: sending || transcribing ? 0.5 : 1,
+                    cursor: sending || transcribing ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {sending ? (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      aria-hidden
+                      style={{ animation: "kdp-spin 0.9s linear infinite" }}
+                    >
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden
+                    >
+                      <path d="M3.4 20.6 22 12 3.4 3.4l-.5 7.1 13.8 1.5-13.8 1.5z" />
+                    </svg>
+                  )}
+                </button>
+              )}
+            </form>
+          )}
 
           {error && (
             <div style={errorBar} role="status">
               {error}
             </div>
           )}
-          <style>{`@keyframes kdp-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }`}</style>
+          <style>{`
+            @keyframes kdp-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+            @keyframes kdp-pulse {
+              0%, 100% { opacity: 1; transform: scale(1); }
+              50% { opacity: 0.55; transform: scale(0.8); }
+            }
+          `}</style>
         </div>
       )}
     </>
   );
+}
+
+function formatDuration(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
 // ── Bubble ──────────────────────────────────────────────────────────
@@ -520,6 +860,54 @@ function MessageBubble({ message }: { message: ChatMessage }) {
       <div style={wrap}>
         <div style={bubble}>
           <TypingDots />
+        </div>
+      </div>
+    );
+  }
+
+  // Voice bubble — show a small mic icon + duration label above the
+  // transcript. Mid-transcription, replace the text with a hint.
+  if (message.voice) {
+    return (
+      <div style={wrap}>
+        <div style={bubble}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              opacity: 0.85,
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              textTransform: "uppercase",
+              marginBottom: message.content || message.voice.transcribing ? 4 : 0,
+            }}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <rect x="9" y="2" width="6" height="12" rx="3" />
+              <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+            </svg>
+            <span>Voice · {formatDuration(message.voice.durationSec)}</span>
+          </div>
+          {message.voice.transcribing ? (
+            <span style={{ opacity: 0.85, fontStyle: "italic" }}>
+              Transcribing…
+            </span>
+          ) : (
+            message.content
+          )}
         </div>
       </div>
     );
@@ -722,4 +1110,46 @@ const errorBar: React.CSSProperties = {
   borderTop: "1px solid #FCA5A5",
   color: "#7F1D1D",
   fontSize: 12,
+};
+
+const recordingBar: React.CSSProperties = {
+  flex: 1,
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  padding: "10px 14px",
+  borderRadius: 10,
+  background: "#FFF1F0",
+  border: "1px solid #FCA5A5",
+  color: "#7F1D1D",
+  minHeight: 40,
+};
+
+const recordingDot: React.CSSProperties = {
+  display: "inline-block",
+  width: 10,
+  height: 10,
+  borderRadius: "50%",
+  background: "#C62828",
+  animation: "kdp-pulse 1.1s ease-in-out infinite",
+  flexShrink: 0,
+};
+
+const recordingTimer: React.CSSProperties = {
+  fontFamily:
+    "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
+  fontSize: 14,
+  fontWeight: 600,
+  letterSpacing: "-0.01em",
+  fontVariantNumeric: "tabular-nums",
+  color: "#0A0A0A",
+  flexShrink: 0,
+};
+
+const recordingHint: React.CSSProperties = {
+  fontSize: 12,
+  color: "#7F1D1D",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 };
