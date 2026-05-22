@@ -226,10 +226,14 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
           const dataLines: string[] = [];
           for (const line of frame.split("\n")) {
             if (line.startsWith("event:")) eventName = line.slice(6).trim();
-            else if (line.startsWith("data:")) dataLines.push(line.slice(5));
+            // SSE: strip "data:" then exactly ONE optional delimiter
+            // space. Trimming all leading whitespace would eat real
+            // leading spaces in streamed word-deltas (→ "generatingyour").
+            else if (line.startsWith("data:"))
+              dataLines.push(line.slice(5).replace(/^ /, ""));
           }
           if (dataLines.length === 0) continue;
-          const data = dataLines.join("\n").trimStart();
+          const data = dataLines.join("\n");
 
           if (eventName === "error") {
             // The server forwards the Anthropic error type as the data
