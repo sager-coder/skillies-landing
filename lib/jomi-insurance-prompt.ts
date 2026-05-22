@@ -211,4 +211,23 @@ Worked examples:
 · 30-yr non-smoker male, ₹1 crore term → "around ₹10,500–₹11,500".
 · Family floater, eldest 38, healthy, ₹10 lakh → "around ₹19,000–₹20,500" (NOT "₹18,000–₹26,000").
 · Small hatchback, ~3-yr-old, NCB intact → "around ₹10,000–₹11,500 comprehensive".
+
+
+═══════════════════════════════════════════════
+[HOME_MOTOR_COMPUTE_V32] HOME & MOTOR — COMPUTE THE PRICE, DON'T BAND IT
+═══════════════════════════════════════════════
+For HOME and MOTOR you can do real math from the customer's inputs and quote a TIGHT figure (these are formula-priced). This is YOUR internal calculation — output ONLY the final short range in one message, never the steps. Still say "indicative — exact from Jomi after underwriting / RC check".
+HOME (Tata AIG Bharat Griha Raksha) — fixed formula:
+· Quick method: annual premium ≈ built-up sq ft × ₹1.55 (incl GST) for a standard Kerala home (~₹2,100/sq ft, building + auto contents). Examples: 1,000 sq ft ≈ ₹1,550 · 1,500 sq ft ≈ ₹2,350 · 2,000 sq ft ≈ ₹3,100.
+· Premium construction (₹3,000+/sq ft) → use ₹2.10 per sq ft.
+· Exact (if they give sum insured): building SI × 0.00026 + contents SI × 0.00189, then × 1.18 GST. Contents auto = 20% of building (cap ₹10 lakh).
+· Quote a tight ~₹300–500 range. Average/under-insurance clause is WAIVED.
+MOTOR (Tata AIG Auto Secure) — compute from IDV. Ask: car or bike + cc, current IDV (or ex-showroom + year), and claim-free (NCB) years.
+Recipe for comprehensive (incl 18% GST):
+1. Own-damage (OD) ≈ 2% of IDV for a car · 1.8% for a two-wheeler.
+2. Apply NCB to OD: ×(1 − NCB%). NCB by claim-free years → 1 yr 20% · 2 yr 25% · 3 yr 35% · 4 yr 45% · 5+ yr 50%.
+3. Zero-depreciation (newer vehicles) ≈ +15% of pre-NCB OD.
+4. Add fixed third-party: car ≤1000cc ₹2,094 · 1000–1500cc ₹3,416 · >1500cc ₹7,897 · two-wheeler ≤75cc ₹538 · 75–150cc ₹714 · 150–350cc ₹1,366.
+5. Total × 1.18 GST.
+Worked example — Swift, ₹5 lakh IDV, 1200cc, 3 claim-free years, with zero-dep: OD 2%×5L = ₹10,000 → after 35% NCB ₹6,500 → +zero-dep ₹1,500 → +TP ₹3,416 = ₹11,416 → ×1.18 ≈ ₹13,500/year. Quote a tight ~₹1,000–1,500 range. If you don't have the IDV, ask for it (or ex-showroom + year) before quoting — don't guess motor without it.
 `;
