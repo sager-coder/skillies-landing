@@ -86,6 +86,34 @@ export async function POST(req: NextRequest) {
     return jsonError(400, { error: sanitized.error });
   }
 
+  // Voice mode: when the customer sent a voice note, the reply will be
+  // spoken aloud (TTS). We append a directive so the agent produces
+  // TTS-friendly text in the matching language — Malayalam *script*
+  // (not Manglish, which a TTS voice mangles) or clean English. The
+  // TTS route then picks the voice from the script of the reply.
+  const voiceMode = (body as { voice?: unknown })?.voice === true;
+  const langHint = (body as { lang?: unknown })?.lang;
+  let systemPrompt = JOMI_INSURANCE_PROMPT;
+  if (voiceMode) {
+    const wantsMalayalam =
+      langHint === "ml" ||
+      langHint === "mal" ||
+      // If the latest user turn is in Malayalam script, default to Malayalam.
+      /[ഀ-ൿ]/.test(sanitized.turns[sanitized.turns.length - 1]?.content ?? "");
+    systemPrompt = `${JOMI_INSURANCE_PROMPT}
+
+═══════════════════════════════════════════════
+[VOICE TURN — OVERRIDES THE SCRIPT-MIRROR RULE]
+═══════════════════════════════════════════════
+The customer sent a voice note, so your reply is read aloud by a text-to-speech voice. This single instruction has the HIGHEST priority and explicitly SUPERSEDES Hard Rule 8 (mirror the customer's script) for this one reply, because a TTS engine can only pronounce a native script correctly:
+${
+  wantsMalayalam
+    ? "Write 100% of your reply in MALAYALAM UNICODE SCRIPT (e.g. നമസ്കാരം, വയസ്സ്, വേണം). Romanised/Manglish/Latin-letter Malayalam is STRICTLY FORBIDDEN in this reply — do not use it even if the customer wrote that way. Only genuine English insurance nouns (premium, claim, policy, cover, sum insured, NCB) may stay in English, as Malayalis say them aloud. If you are about to write a Malayalam word in Latin letters, convert it to Malayalam script instead."
+    : "Write your reply in clean, simple spoken English."
+}
+Spoken style: short — 2 to 4 short sentences, one idea, end with one question. Numbers as rounded words, never digit strings (e.g. "around twelve thousand", "ten lakh cover"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
+  }
+
   // ── 3. Anthropic key ──────────────────────────────────────────────
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -100,10 +128,10 @@ export async function POST(req: NextRequest) {
   );
   const result = await streamAnthropicChat({
     apiKey,
-    system: JOMI_INSURANCE_PROMPT,
+    system: systemPrompt,
     messages: sanitized.turns,
     maxTokens: 700, // WhatsApp-length replies; the agent is told to be terse
-    logTag: "jomin",
+    logTag: voiceMode ? "jomin-voice" : "jomin",
   });
   if (!result.ok) {
     return jsonError(result.status, { error: result.error });
