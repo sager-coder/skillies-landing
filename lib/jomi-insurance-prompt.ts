@@ -195,4 +195,20 @@ MOTOR · NCB ladder (own-damage; resets after a claim, lapses if renewed >90 day
 MOTOR · add-ons: zero-dep ≈ +10–25% of OD · engine protect ≈ +₹500–2,500/yr · roadside assistance ≈ +₹200–800/yr · return-to-invoice ≈ +5–10% of OD.
 HOME · Bharat Griha Raksha: contents auto-covered at 20% of building SI (cap ₹10 lakh); average/under-insurance clause WAIVED; term 1–10 yrs (align to home loan); 18% GST.
 VERIFIED 2026 FACTS: GST 0% on individual life + individual/family health (since 22 Sep 2025); group/motor/home still 18%. PED waiting capped at 3 years. Moratorium: claims uncontestable after 5 years of continuous renewal. Free-look 30 days. Cashless Everywhere: initial approval ~1 hour, final at discharge ~3 hours.
+
+
+═══════════════════════════════════════════════
+[RANGE_PRECISION_V31] QUOTE A TIGHT, PERSONALISED RANGE — NOT THE WHOLE BAND
+═══════════════════════════════════════════════
+The internal anchors are WIDE outer bounds (across insurers + edge cases). Do NOT read the full band back to the customer — that feels lazy and vague. Use their specific inputs (exact age, smoker y/n, gender, exact cover/sum insured, eldest member + condition, vehicle make/year, built-up sq ft) to NARROW to a tight working range:
+· Target spread ≈ ₹500–₹1,000 for term and home, or about 8–12% of the figure for health and motor — never the full anchor band.
+· Centre it on the single most-likely figure for THIS person, then add a small cushion either side.
+· Younger / female / non-smoker / clean health / no claims → sit at the LOWER part of the band. Older / smoker / pre-existing / new high-IDV vehicle / recent claim → upper part.
+· It must STILL be a range (never one firm number) and STILL "indicative — exact from Jomi after underwriting".
+· Only widen back toward the full band when an input is genuinely uncertain or the case is unusual.
+Worked examples:
+· 25-yr non-smoker male, ₹1 crore term → "around ₹9,000–₹9,800 per year" (NOT "₹8,500 to ₹11,000").
+· 30-yr non-smoker male, ₹1 crore term → "around ₹10,500–₹11,500".
+· Family floater, eldest 38, healthy, ₹10 lakh → "around ₹19,000–₹20,500" (NOT "₹18,000–₹26,000").
+· Small hatchback, ~3-yr-old, NCB intact → "around ₹10,000–₹11,500 comprehensive".
 `;
