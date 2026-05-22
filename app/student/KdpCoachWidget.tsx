@@ -232,6 +232,16 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
           const data = dataLines.join("\n").trimStart();
 
           if (eventName === "error") {
+            // The server forwards the Anthropic error type as the data
+            // payload (e.g. "overloaded_error", "rate_limit_error").
+            const errType = data.trim();
+            console.warn("[coach] stream error:", errType);
+            const friendly =
+              errType === "overloaded_error"
+                ? "The coach is briefly overloaded. Tap send to try again."
+                : errType === "rate_limit_error"
+                  ? "Too many requests right now — wait a few seconds and retry."
+                  : "The reply got cut off. Tap send to try again.";
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === assistantId
@@ -239,12 +249,12 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
                       ...m,
                       pending: false,
                       content: assistantText,
-                      error: "Connection dropped mid-reply. Try again.",
+                      error: assistantText ? undefined : friendly,
                     }
                   : m,
               ),
             );
-            setError("Connection dropped mid-reply. Try again.");
+            setError(friendly);
             return;
           }
           if (eventName === "done") {

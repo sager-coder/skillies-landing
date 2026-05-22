@@ -45,8 +45,17 @@ import { SKILLIES_KDP_COACH_PROMPT } from "@/lib/skillies-kdp-coach-prompt";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Sonnet 4.6 — best balance of nuance and cost for this tutor chat.
-const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+// Model fallback chain. Sonnet 4.6 is the preferred tutor model, but
+// Anthropic occasionally returns `overloaded_error` (HTTP 529) for a
+// single model while others have capacity. We try these in order and
+// use the first that yields a streamable response — so a Sonnet
+// capacity blip transparently degrades to Opus, then Haiku, instead of
+// dropping the student's reply. When Sonnet recovers it's used again.
+const ANTHROPIC_MODEL_CHAIN = [
+  "claude-sonnet-4-6",
+  "claude-opus-4-6",
+  "claude-haiku-4-5-20251001",
+];
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 
@@ -127,8 +136,31 @@ export async function POST(req: NextRequest) {
     return jsonError(400, { error: "last_message_must_be_user" });
   }
 
+  // Anthropic requires strictly alternating roles starting with `user`.
+  // The client can occasionally produce two same-role turns in a row
+  // (e.g. a voice transcript appended right after a typed message, or a
+  // stale-closure race). Collapse consecutive same-role turns by merging
+  // their text so we never send an invalid shape that Anthropic rejects.
+  const collapsed: ChatTurn[] = [];
+  for (const t of turns) {
+    const last = collapsed[collapsed.length - 1];
+    if (last && last.role === t.role) {
+      last.content = `${last.content}\n\n${t.content}`;
+    } else {
+      collapsed.push({ ...t });
+    }
+  }
+  // Drop any leading assistant turn so the first message is always `user`.
+  while (collapsed.length && collapsed[0].role !== "user") collapsed.shift();
+
   // Keep the trailing window — that's what the model needs.
-  const trimmed = turns.slice(-MAX_TURNS);
+  const trimmed = collapsed.slice(-MAX_TURNS);
+  // Re-collapse after the window slice (the slice could start on an
+  // assistant turn) and guarantee we still lead with a user turn.
+  while (trimmed.length && trimmed[0].role !== "user") trimmed.shift();
+  if (trimmed.length === 0) {
+    return jsonError(400, { error: "no_user_turn" });
+  }
 
   // ── 4. Enrollment / admin gate ────────────────────────────────────
   const admin = createSupabaseAdminClient();
@@ -158,44 +190,127 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 6. Call Anthropic with streaming ──────────────────────────────
-  let upstream: Response;
-  try {
-    upstream = await fetch(ANTHROPIC_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": ANTHROPIC_VERSION,
-      },
-      body: JSON.stringify({
-        model: ANTHROPIC_MODEL,
-        max_tokens: 1024,
-        stream: true,
-        system: [
-          {
-            type: "text",
-            text: SKILLIES_KDP_COACH_PROMPT,
-            // Cache the huge methodology block. Cuts cost ~90% and
-            // shaves latency on every follow-up in the same session.
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages: trimmed.map((t) => ({
-          role: t.role,
-          content: t.content,
-        })),
-      }),
+  // Log the request shape (roles + sizes, not content) so a failure has
+  // a breadcrumb trail next to the error event.
+  console.log(
+    "[coach] request:",
+    trimmed.map((t) => `${t.role}:${t.content.length}`).join(","),
+  );
+  const requestBody = (model: string) =>
+    JSON.stringify({
+      model,
+      max_tokens: 1024,
+      stream: true,
+      system: [
+        {
+          type: "text",
+          text: SKILLIES_KDP_COACH_PROMPT,
+          // Cache the huge methodology block. Cuts cost ~90% and
+          // shaves latency on every follow-up in the same session.
+          cache_control: { type: "ephemeral" },
+        },
+      ],
+      messages: trimmed.map((t) => ({ role: t.role, content: t.content })),
     });
-  } catch (err) {
-    console.error("[coach] upstream fetch failed", err);
-    return jsonError(502, { error: "upstream_unreachable" });
+
+  // Walk the model chain. For each model we open the stream and peek at
+  // the first frames: if Anthropic returns a non-OK status (429/529/5xx)
+  // or emits an `error` event before any text, we abandon that model and
+  // try the next. The first model that produces real content wins, and
+  // we hand its reader (plus the bytes we already peeked) to the
+  // re-streaming stage below.
+  let chosenModel = "";
+  let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+  let prelude = ""; // bytes already pulled off `reader` during the peek
+  const peekDecoder = new TextDecoder();
+
+  for (const model of ANTHROPIC_MODEL_CHAIN) {
+    let upstream: Response;
+    try {
+      upstream = await fetch(ANTHROPIC_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": ANTHROPIC_VERSION,
+        },
+        body: requestBody(model),
+      });
+    } catch (err) {
+      console.error("[coach]", model, "fetch failed:", err);
+      continue;
+    }
+
+    if (!upstream.ok || !upstream.body) {
+      const errText = await upstream.text().catch(() => "");
+      console.error(
+        "[coach]",
+        model,
+        "non-ok",
+        upstream.status,
+        "·",
+        errText.slice(0, 200),
+        "→ trying next model",
+      );
+      continue;
+    }
+
+    // Peek: read frames until we see content (commit) or an error event
+    // (fall back). Cap the peek so a slow/empty stream can't hang us.
+    const r = upstream.body.getReader();
+    let buf = "";
+    let decided = false;
+    let good = false;
+    let peeks = 0;
+    while (!decided && peeks < 50) {
+      peeks++;
+      const { value, done } = await r.read();
+      if (done) break;
+      buf += peekDecoder.decode(value, { stream: true });
+      if (/event:\s*error/.test(buf) || /"type"\s*:\s*"error"/.test(buf)) {
+        const m = buf.match(/"type"\s*:\s*"([a-z_]+_error)"/);
+        console.error(
+          "[coach]",
+          model,
+          "error event:",
+          m?.[1] ?? "unknown",
+          "→ trying next model",
+        );
+        try {
+          await r.cancel();
+        } catch {
+          /* already closed */
+        }
+        decided = true; // fall back to next model
+      } else if (
+        buf.includes("content_block_delta") ||
+        buf.includes("content_block_start") ||
+        buf.includes('"type":"message_start"')
+      ) {
+        good = true;
+        decided = true;
+      }
+    }
+
+    if (good) {
+      chosenModel = model;
+      reader = r;
+      prelude = buf;
+      break;
+    }
+    // Not good → ensure the reader is released before the next attempt.
+    try {
+      await r.cancel();
+    } catch {
+      /* noop */
+    }
   }
 
-  if (!upstream.ok || !upstream.body) {
-    const errText = await upstream.text().catch(() => "");
-    console.error("[coach] upstream error", upstream.status, errText.slice(0, 500));
-    return jsonError(502, { error: "upstream_error", status: upstream.status });
+  if (!reader) {
+    console.error("[coach] all models failed/overloaded");
+    return jsonError(503, { error: "all_models_overloaded" });
   }
+  console.log("[coach] using model:", chosenModel);
 
   // ── 7. Re-stream as `text/event-stream` of plain delta lines ──────
   // We translate Anthropic's verbose SSE into a tiny line protocol the
@@ -209,10 +324,12 @@ export async function POST(req: NextRequest) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
+  const committedReader = reader;
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const reader = upstream.body!.getReader();
-      let buffer = "";
+      // Seed the parse buffer with the frames we already pulled off the
+      // reader during the model-selection peek, then continue reading.
+      let buffer = prelude;
 
       const writeChunk = (text: string) => {
         // Encode as a single SSE data line (handle multi-line text by
@@ -224,51 +341,81 @@ export async function POST(req: NextRequest) {
         controller.enqueue(encoder.encode(`event: ${name}\ndata: ${payload}\n\n`));
       };
 
+      // Parse whatever complete \n\n-separated frames sit in `buffer`,
+      // emit their translated output, and leave any partial trailing
+      // frame in `buffer` for the next chunk. Returns nothing; mutates
+      // the closed-over `buffer`.
+      const drainFrames = () => {
+        let sep = buffer.indexOf("\n\n");
+        while (sep !== -1) {
+          const frame = buffer.slice(0, sep);
+          buffer = buffer.slice(sep + 2);
+          sep = buffer.indexOf("\n\n");
+
+          let eventName: string | null = null;
+          const dataLines: string[] = [];
+          for (const line of frame.split("\n")) {
+            if (line.startsWith("event:")) {
+              eventName = line.slice(6).trim();
+            } else if (line.startsWith("data:")) {
+              dataLines.push(line.slice(5).trim());
+            }
+          }
+          if (dataLines.length === 0) continue;
+          const dataStr = dataLines.join("\n");
+
+          if (eventName === "content_block_delta") {
+            try {
+              const parsed = JSON.parse(dataStr) as {
+                delta?: { type?: string; text?: string };
+              };
+              if (parsed.delta?.type === "text_delta" && parsed.delta.text) {
+                writeChunk(parsed.delta.text);
+              }
+            } catch {
+              /* ignore unparseable frame */
+            }
+          } else if (eventName === "message_stop") {
+            writeEvent("done", "ok");
+          } else if (eventName === "error") {
+            // Anthropic mid-stream error (overloaded_error, api_error,
+            // etc.). Log it and forward the error TYPE so the widget can
+            // show something more useful than a generic "connection
+            // dropped". (Pre-stream overloads are handled earlier by the
+            // model-fallback chain; this only fires if a model fails
+            // AFTER we already committed to streaming it.)
+            let errType = "upstream_stream_error";
+            try {
+              const parsed = JSON.parse(dataStr) as {
+                error?: { type?: string; message?: string };
+              };
+              if (parsed.error?.type) errType = parsed.error.type;
+              console.error(
+                "[coach] anthropic stream error:",
+                parsed.error?.type,
+                "·",
+                parsed.error?.message,
+              );
+            } catch {
+              console.error(
+                "[coach] anthropic stream error (raw):",
+                dataStr.slice(0, 300),
+              );
+            }
+            writeEvent("error", errType);
+          }
+          // Other events (message_start, ping, etc.) are ignored.
+        }
+      };
+
       try {
+        // First flush the peeked prelude, then stream the rest.
+        drainFrames();
         while (true) {
-          const { value, done } = await reader.read();
+          const { value, done } = await committedReader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
-
-          // Anthropic SSE frames are separated by \n\n.
-          let sep = buffer.indexOf("\n\n");
-          while (sep !== -1) {
-            const frame = buffer.slice(0, sep);
-            buffer = buffer.slice(sep + 2);
-            sep = buffer.indexOf("\n\n");
-
-            // Each frame has lines like "event: foo" and "data: {...}".
-            let eventName: string | null = null;
-            const dataLines: string[] = [];
-            for (const line of frame.split("\n")) {
-              if (line.startsWith("event:")) {
-                eventName = line.slice(6).trim();
-              } else if (line.startsWith("data:")) {
-                dataLines.push(line.slice(5).trim());
-              }
-            }
-            if (dataLines.length === 0) continue;
-            const dataStr = dataLines.join("\n");
-
-            if (eventName === "content_block_delta") {
-              try {
-                const parsed = JSON.parse(dataStr) as {
-                  delta?: { type?: string; text?: string };
-                };
-                if (parsed.delta?.type === "text_delta" && parsed.delta.text) {
-                  writeChunk(parsed.delta.text);
-                }
-              } catch {
-                /* ignore unparseable frame */
-              }
-            } else if (eventName === "message_stop") {
-              writeEvent("done", "ok");
-            } else if (eventName === "error") {
-              writeEvent("error", "upstream_stream_error");
-            }
-            // Other Anthropic events (message_start, ping, etc.) are
-            // intentionally ignored — the client doesn't need them.
-          }
+          drainFrames();
         }
       } catch (err) {
         console.error("[coach] stream relay failed", err);
