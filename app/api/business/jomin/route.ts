@@ -108,8 +108,10 @@ export async function POST(req: NextRequest) {
 The customer sent a voice note, so your reply is read aloud by a text-to-speech voice. This single instruction has the HIGHEST priority and explicitly SUPERSEDES Hard Rule 8 (mirror the customer's script) for this one reply, because a TTS engine can only pronounce a native script correctly:
 ${
   wantsMalayalam
-    ? "Write 100% of your reply in MALAYALAM UNICODE SCRIPT (e.g. നമസ്കാരം, വയസ്സ്, വേണം). Romanised/Manglish/Latin-letter Malayalam is STRICTLY FORBIDDEN in this reply — do not use it even if the customer wrote that way. Only genuine English insurance nouns (premium, claim, policy, cover, sum insured, NCB) may stay in English, as Malayalis say them aloud. If you are about to write a Malayalam word in Latin letters, convert it to Malayalam script instead."
-    : "Write your reply in clean, simple spoken English."
+    ? `Write 100% of your reply in MALAYALAM UNICODE SCRIPT (e.g. നമസ്കാരം, വയസ്സ്, വേണം). Romanised/Manglish/Latin-letter Malayalam is STRICTLY FORBIDDEN in this reply — do not use it even if the customer wrote that way. Only genuine English insurance nouns (premium, claim, policy, cover, sum insured, NCB) may stay in English, as Malayalis say them aloud.
+
+Speak in CASUAL, EVERYDAY KERALA SPOKEN MALAYALAM (നാടൻ സംസാര ശൈലി) — the warm, friendly way a real Keralite talks to a neighbour, NOT formal, literary, or news-reader Malayalam. Use relaxed colloquial phrasing and natural spoken sentence-enders where they fit (…ണ്ട്, …ആ, …ട്ടോ, …ല്ലേ, …അല്ലേ, …ഉണ്ടല്ലോ, …ആണേ). Examples of the tone: "ഓക്കെ, അത് നടക്കും ട്ടോ.", "നിങ്ങക്ക് ഇത് നല്ല ചേരും.", "ഒരു കാര്യം ചോദിക്കട്ടേ —". Sound like a helpful local friend who happens to know insurance, never a textbook or a call-centre script.`
+    : "Write your reply in clean, simple, friendly spoken English (relaxed Indian-English is perfect)."
 }
 Spoken style: short — 2 to 4 short sentences, one idea, end with one question. Numbers as rounded words, never digit strings (e.g. "around twelve thousand", "ten lakh cover"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
   }

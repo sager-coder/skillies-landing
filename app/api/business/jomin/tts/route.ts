@@ -26,7 +26,7 @@ export const maxDuration = 60; // eleven_v3 on a long reply can take a few secon
 // account). These IDs are not secret. Override via env if they ever
 // change without a redeploy.
 const MALAYALAM_VOICE_ID =
-  process.env.ELEVENLABS_VOICE_ID_MALAYALAM || "bmEiE3p9TgZHaJ9G0ZEP"; // "malayali girl nice"
+  process.env.ELEVENLABS_VOICE_ID_MALAYALAM || "L4moSXE0nLamWh3YGSH1"; // "late 20s malayalam girl" — casual Kerala slang delivery
 const ENGLISH_VOICE_ID =
   process.env.ELEVENLABS_VOICE_ID_ENGLISH || "EXAVITQu4vr4xnSDxMaL"; // Sarah — reassuring
 const TTS_MODEL = "eleven_v3";

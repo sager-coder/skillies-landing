@@ -143,6 +143,11 @@ export default function JominChatClient() {
   }, []);
 
   useEffect(() => {
+    // Never persist the bare default (just the intro) — otherwise the
+    // mount-time run of this effect (doubled by React Strict Mode in
+    // dev) would clobber saved history before the hydration effect
+    // loads it, losing the conversation on refresh.
+    if (messages.length <= 1) return;
     // Don't persist live blob URLs (dead after reload) or pending flags.
     const safe = messages.map((m) => {
       const { audioUrl: _audioUrl, ...rest } = m;
@@ -745,7 +750,10 @@ function Bubble({ m }: { m: Msg }) {
   return (
     <div style={{ ...rowStyle, justifyContent: isUser ? "flex-end" : "flex-start" }}>
       <div style={{ ...bubbleBase, ...(isUser ? outBubble : inBubble) }}>
-        {isVoice && (
+        {isVoice ? (
+          // Authentic WhatsApp voice note — just the player, no transcript
+          // text. (The transcript still lives in `content` for the chat
+          // history sent to the API; it's simply not shown.)
           <VoicePlayer
             url={m.audioUrl}
             durationSec={m.voice!.durationSec}
@@ -753,13 +761,8 @@ function Bubble({ m }: { m: Msg }) {
             tint={isUser ? "#1fa855" : "#54656f"}
             transcribing={m.transcribing}
           />
-        )}
-        {m.transcribing ? (
-          <span style={{ ...bubbleText, opacity: 0.7, fontStyle: "italic" }}>Transcribing…</span>
         ) : m.content ? (
-          <span style={{ ...bubbleText, ...(isVoice ? { display: "block", marginTop: 6, fontSize: 13.5, opacity: 0.92 } : {}) }}>
-            {m.content}
-          </span>
+          <span style={bubbleText}>{m.content}</span>
         ) : null}
         <span style={metaRow}>
           <span style={timeText}>{clockTime(m.ts)}</span>
