@@ -1,21 +1,21 @@
 /**
- * POST /api/business/jomin/transcribe — speech-to-text for the voice
- * demo, via Gemini multimodal.
+ * POST /api/business/jomin/transcribe — speech-to-text for the Jomin
+ * insurance voice demo, via OpenAI gpt-4o-transcribe.
  *
- * Why Gemini and not ElevenLabs Scribe / OpenAI Whisper:
- *   - Scribe misdetected Malayalam as Hindi (wrong language + script).
- *   - Whisper (whisper-1) has weak Malayalam support — auto-detect gave
- *     Tamil script, forcing language=ml returned empty.
- *   - Gemini 2.5 Flash reliably detects Malayalam vs English AND can be
- *     instructed to return the correct NATIVE script (Malayalam Unicode,
- *     never romanised). That clean script is what makes the rest of the
- *     pipeline work: the agent mirrors it, and TTS picks the right voice.
+ * A caller speaks English, Malayalam, or a mix. gpt-4o-transcribe
+ * auto-detects the language and returns the correct NATIVE script
+ * (Malayalam Unicode for Malayalam, plain English for English) — verified
+ * on real clips. The `prompt` keeps insurance terms and brand names in
+ * English even within a Malayalam sentence.
  *
- * Input: multipart form with `file` — expected to be WAV (the client
- * converts the browser recording to 16kHz mono WAV, a format Gemini
- * always accepts; webm/opus and mp4/aac coverage is spotty).
+ * Key: reads the GENERAL OPENAI_API_KEY (shared), by design — unlike the
+ * Venture Navigator route which uses a client-scoped VN_OPENAI_API_KEY.
  *
- * Output: { transcript, language: "ml" | "en" }.
+ * Input: multipart form with `file` — the client converts the browser
+ * recording to 16kHz mono WAV.
+ *
+ * Output: { transcript, language: "ml" | "en" }. Language is derived from
+ * the script of the returned text.
  *
  * Public demo surface → per-IP rate limited.
  */
@@ -28,16 +28,18 @@ export const maxDuration = 45;
 
 const MAX_PER_WINDOW = 40;
 const WINDOW_SECONDS = 10 * 60;
-const MAX_BYTES = 20 * 1024 * 1024; // Gemini inline_data ceiling territory
-const AUDIO_MODEL = process.env.GEMINI_AUDIO_MODEL || "gemini-2.5-flash";
+const MAX_BYTES = 25 * 1024 * 1024; // OpenAI audio upload ceiling
+const STT_MODEL = process.env.JOMIN_STT_MODEL || "gpt-4o-transcribe";
 
 const PROMPT =
-  'Transcribe this audio exactly as spoken. The speaker is using either Malayalam or English. ' +
-  'Respond with STRICT JSON only, no markdown fences, in this shape: ' +
-  '{"language":"ml" or "en","text":"the transcript"}. ' +
-  'For Malayalam, write the transcript in Malayalam Unicode script (മലയാളം) — NEVER romanise it and never use any other Indic script. ' +
-  'For English, write plain English. Keep common English words (insurance terms, brand names) in English even within Malayalam. ' +
-  'If the audio is empty or unintelligible, return {"language":"en","text":""}.';
+  "The speaker is talking to an insurance agent, in English or Malayalam " +
+  "(often mixing in English insurance terms). Keep insurance terms and " +
+  "brand names in English even within a Malayalam sentence: premium, policy, " +
+  "claim, term plan, ULIP, sum assured, maturity, nominee, rider, Tata AIA, " +
+  "Axis Max, Niva Bupa, ABHI, Tata AIG.";
+
+// Malayalam Unicode block.
+const MALAYALAM_RE = /[ഀ-ൿ]/;
 
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
@@ -56,6 +58,15 @@ function jsonError(status: number, body: Record<string, unknown>) {
   });
 }
 
+function extForMime(mime: string): string {
+  if (mime.includes("webm")) return "webm";
+  if (mime.includes("ogg")) return "ogg";
+  if (mime.includes("mp4") || mime.includes("m4a") || mime.includes("aac")) return "m4a";
+  if (mime.includes("mpeg") || mime.includes("mp3") || mime.includes("mpga")) return "mp3";
+  if (mime.includes("flac")) return "flac";
+  return "wav";
+}
+
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
   const rl = rateLimit(`jomin-stt:${ip}`, MAX_PER_WINDOW, WINDOW_SECONDS);
@@ -66,9 +77,9 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    console.error("[jomin-stt] GEMINI_API_KEY not set");
+    console.error("[jomin-stt] OPENAI_API_KEY not set");
     return jsonError(503, { error: "stt_not_configured" });
   }
 
@@ -86,46 +97,33 @@ export async function POST(req: NextRequest) {
   if (file.size > MAX_BYTES) return jsonError(413, { error: "file_too_large" });
 
   const mime = file.type || "audio/wav";
-  const base64 = Buffer.from(await file.arrayBuffer()).toString("base64");
+  const out = new FormData();
+  out.append("file", file, `audio.${extForMime(mime)}`);
+  out.append("model", STT_MODEL);
+  out.append("response_format", "json");
+  out.append("prompt", PROMPT);
 
-  const reqBody = JSON.stringify({
-    contents: [
-      {
-        parts: [
-          { text: PROMPT },
-          { inline_data: { mime_type: mime, data: base64 } },
-        ],
-      },
-    ],
-    generationConfig: { temperature: 0 },
-  });
-
-  // Gemini occasionally returns 503 (overloaded) / 429. Retry a couple
-  // of times with short backoff before giving up.
+  // OpenAI can return transient 429/503 under load. Retry a couple of
+  // times with short backoff before giving up.
   let upstream: Response | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      upstream = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${AUDIO_MODEL}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: reqBody,
-        },
-      );
+      upstream = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}` },
+        body: out,
+      });
     } catch (err) {
-      console.error("[jomin-stt] gemini fetch failed:", err);
+      console.error("[jomin-stt] openai fetch failed:", err);
       if (attempt === 2) return jsonError(502, { error: "stt_unreachable" });
       await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
       continue;
     }
     if (upstream.ok) break;
-    if (upstream.status === 503 || upstream.status === 429) {
-      console.warn(`[jomin-stt] gemini ${upstream.status} — retry ${attempt + 1}`);
-      if (attempt < 2) {
-        await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
-        continue;
-      }
+    if ((upstream.status === 429 || upstream.status === 503) && attempt < 2) {
+      console.warn(`[jomin-stt] openai ${upstream.status} — retry ${attempt + 1}`);
+      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+      continue;
     }
     break; // non-retryable status
   }
@@ -133,37 +131,21 @@ export async function POST(req: NextRequest) {
   if (!upstream || !upstream.ok) {
     const status = upstream?.status ?? 502;
     const errText = upstream ? await upstream.text().catch(() => "") : "";
-    console.error("[jomin-stt] gemini failed", status, "·", errText.slice(0, 300));
+    console.error("[jomin-stt] openai failed", status, "·", errText.slice(0, 300));
     return jsonError(status < 500 ? status : 502, {
       error: "stt_failed",
       upstream_status: status,
     });
   }
 
-  let raw = "";
+  let transcript = "";
   try {
-    const data = (await upstream.json()) as {
-      candidates?: { content?: { parts?: { text?: string }[] } }[];
-    };
-    raw = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const data = (await upstream.json()) as { text?: string };
+    transcript = (data.text ?? "").trim();
   } catch {
     return jsonError(502, { error: "stt_bad_response" });
   }
 
-  // Gemini sometimes wraps JSON in ```json fences — strip and parse.
-  let transcript = "";
-  let language = "en";
-  try {
-    const cleaned = raw.replace(/```json\s*|\s*```/g, "").trim();
-    const parsed = JSON.parse(cleaned) as { language?: string; text?: string };
-    transcript = (parsed.text ?? "").trim();
-    language = parsed.language === "ml" ? "ml" : "en";
-  } catch {
-    // Couldn't parse JSON — fall back to using the raw text, and detect
-    // script for the language.
-    transcript = raw.trim();
-    language = /[ഀ-ൿ]/.test(transcript) ? "ml" : "en";
-  }
-
+  const language = MALAYALAM_RE.test(transcript) ? "ml" : "en";
   return Response.json({ transcript, language });
 }
