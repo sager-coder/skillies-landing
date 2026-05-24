@@ -89,32 +89,24 @@ export async function POST(req: NextRequest) {
     return jsonError(400, { error: sanitized.error });
   }
 
-  // Voice mode: when the founder sent a voice note, the reply is read
-  // aloud (TTS). We append a directive so the agent produces TTS-friendly
-  // text in the matching language — English, or Malayalam *script* (not
-  // Manglish, which a TTS voice mangles). The TTS route then picks the
-  // voice from the script of the reply.
+  // Voice mode: when the founder sent a voice note, the reply is spoken in
+  // Vivek's OWN cloned voice, which only sounds natural in Malayalam. So
+  // for every voice turn we force a Malayalam-script reply (English only
+  // for necessity startup words) regardless of the language the founder
+  // used — full English sounds robotic in his voice. The TTS route then
+  // transliterates the few English words to Malayalam script, giving his
+  // natural Manglish delivery.
   const voiceMode = (body as { voice?: unknown })?.voice === true;
-  const langHint = (body as { lang?: unknown })?.lang;
   let systemPrompt = VENTURE_NAVIGATOR_PROMPT;
   if (voiceMode) {
-    const wantsMalayalam =
-      langHint === "ml" ||
-      langHint === "mal" ||
-      // If the latest user turn is in Malayalam script, default to Malayalam.
-      /[ഀ-ൿ]/.test(sanitized.turns[sanitized.turns.length - 1]?.content ?? "");
     systemPrompt = `${VENTURE_NAVIGATOR_PROMPT}
 
 ═══════════════════════════════════════════════
 [VOICE TURN — SPOKEN DELIVERY OVERRIDE]
 ═══════════════════════════════════════════════
-The founder sent a voice note, so your reply is read aloud by a text-to-speech voice. This instruction has the HIGHEST priority for this one reply, because a TTS engine can only pronounce a single native script cleanly:
-${
-  wantsMalayalam
-    ? `Write 100% of your reply in MALAYALAM UNICODE SCRIPT. Romanised/Manglish/Latin-letter Malayalam is FORBIDDEN here — do not use it even if the founder spoke that way. Only genuine English startup nouns (startup, MRR, traction, pre-seed, runway, equity, pitch deck) may stay in English, the way founders actually say them aloud. Keep the tone that of a sharp, grounded operator talking straight to a founder — confident and warm, never a news-reader.`
-    : "Write your reply in clean, simple spoken English (relaxed Indian-English is perfect). Plain and direct, like an operator who respects the founder's time."
-}
-Spoken style: short — 2 to 4 short sentences, one idea, end with one question. Say numbers as rounded words, never digit strings (e.g. "around fifty lakhs", "twelve percent equity"). No markdown, no bullet symbols, no emoji, no asterisks. It has to sound natural read out loud.`;
+The founder sent a voice note, so your reply is spoken aloud in Vivek's own cloned voice — which only sounds natural in Malayalam. HIGHEST priority for this reply:
+Write the reply in MALAYALAM UNICODE SCRIPT (മലയാളം), the way Vivek actually talks to a founder — warm, sharp, grounded. Do NOT reply in full English: full English sounds robotic in his voice. Keep ONLY genuine English startup/business words that founders always say in English (startup, MRR, ARR, traction, pre-seed, runway, equity, pitch deck, cap table) sprinkled in, the way a Malayali founder naturally code-switches — everything else in Malayalam. Romanised/Manglish (Latin-letter Malayalam) is FORBIDDEN — use real Malayalam script for the Malayalam words.
+Spoken style: short — 2 to 4 short sentences, one idea, end with one question. Say numbers as rounded words, never digit strings (e.g. "ഏകദേശം അമ്പത് ലക്ഷം", "പന്ത്രണ്ട് ശതമാനം equity"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
   }
 
   // ── 3. Anthropic key ──────────────────────────────────────────────
