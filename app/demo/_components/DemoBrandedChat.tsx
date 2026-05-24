@@ -33,7 +33,8 @@ import {
 
 // Owned-voice TTS endpoint — self-hosted IndicF5 fine-tune (model_500) on Modal.
 // Agent replies are spoken in Vivek's cloned voice on demand via this API.
-const VOICE_API_URL = "https://sager-coder--vivek-voice-api-web.modal.run/tts";
+// Shared multi-voice API (one warm GPU serves both Ehsan + Vivek); voice="vivek" below.
+const VOICE_API_URL = "https://sager-coder--ehsan-voice-api-web.modal.run/tts";
 
 type ChatMessage = {
   id: string;
@@ -1060,7 +1061,7 @@ function VoicePlayButton({ text }: { text: string }) {
       const res = await fetch(VOICE_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, voice: "vivek" }),
       });
       if (!res.ok) throw new Error(`tts ${res.status}`);
       const blob = await res.blob();
