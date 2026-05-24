@@ -28,7 +28,7 @@ export const maxDuration = 45;
 const MAX_PER_WINDOW = 40;
 const WINDOW_SECONDS = 10 * 60;
 const MAX_BYTES = 25 * 1024 * 1024; // OpenAI audio upload ceiling
-const STT_MODEL = process.env.INSURANCE_CONSULTANT_STT_MODEL || "gpt-4o-transcribe";
+const STT_MODEL = "gpt-4o-transcribe";
 
 const PROMPT =
   "The speaker is talking to a life-insurance advisor, in English or " +
