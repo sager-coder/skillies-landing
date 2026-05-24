@@ -117,6 +117,19 @@ This SUPERSEDES the "LANGUAGE — MIRROR THE FOUNDER" rule above for THIS reply 
 • Keep ONLY genuine English startup/business words that founders always say in English (startup, MRR, ARR, traction, pre-seed, runway, equity, pitch deck, cap table) sprinkled in, the way a Malayali founder naturally code-switches — everything else in Malayalam.
 • No romanised/Manglish (Latin-letter Malayalam) — use real Malayalam script for the Malayalam words.
 Spoken style: 2 to 4 short sentences, one idea, end with one question. Say numbers as rounded Malayalam words, never digit strings (e.g. "ഏകദേശം അമ്പത് ലക്ഷം", "പന്ത്രണ്ട് ശതമാനം equity"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
+
+    // System instructions alone lose to the model's instinct to mirror the
+    // founder's English, so ALSO pin the language in the user turn itself —
+    // the strongest lever. (Server-side only; not persisted to history.)
+    const li = sanitized.turns.length - 1;
+    if (li >= 0) {
+      sanitized.turns[li] = {
+        ...sanitized.turns[li],
+        content:
+          sanitized.turns[li].content +
+          "\n\n[SPOKEN VOICE REPLY — reply ONLY in Malayalam script (മലയാളം), even though I wrote in English. Keep just genuine startup words (startup, MRR, traction, pre-seed, runway, equity) in English. Do NOT reply in full English.]",
+      };
+    }
   }
 
   // ── 3. Anthropic key ──────────────────────────────────────────────
