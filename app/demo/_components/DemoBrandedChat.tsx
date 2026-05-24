@@ -31,6 +31,10 @@ import {
   useState,
 } from "react";
 
+// Owned-voice TTS endpoint — self-hosted IndicF5 fine-tune (model_500) on Modal.
+// Agent replies are spoken in Vivek's cloned voice on demand via this API.
+const VOICE_API_URL = "https://sager-coder--vivek-voice-api-web.modal.run/tts";
+
 type ChatMessage = {
   id: string;
   role: "user" | "agent" | "system";
@@ -1024,6 +1028,92 @@ function TypingDots() {
   );
 }
 
+// ─── Owned-voice play button (speaks an agent reply in Vivek's cloned voice) ─
+// Tap → POST the reply text to the Modal voice API → play the returned mp3.
+// Generates on demand and caches the audio so replays don't re-fetch.
+function VoicePlayButton({ text }: { text: string }) {
+  const [state, setState] = useState<"idle" | "loading" | "playing">("idle");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const urlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      audioRef.current?.pause();
+      if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+    };
+  }, []);
+
+  const toggle = useCallback(async () => {
+    if (state === "playing") {
+      audioRef.current?.pause();
+      setState("idle");
+      return;
+    }
+    if (urlRef.current && audioRef.current) {
+      setState("playing");
+      audioRef.current.currentTime = 0;
+      void audioRef.current.play();
+      return;
+    }
+    setState("loading");
+    try {
+      const res = await fetch(VOICE_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error(`tts ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      urlRef.current = url;
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.addEventListener("ended", () => setState("idle"));
+      audio.addEventListener("pause", () => setState("idle"));
+      setState("playing");
+      await audio.play();
+    } catch {
+      setState("idle");
+    }
+  }, [state, text]);
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label="Play this reply in Vivek's voice"
+      title="Play in Vivek's voice"
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "4px 10px",
+        fontSize: 11,
+        fontWeight: 600,
+        letterSpacing: "0.02em",
+        color: "#0F766E",
+        background: "rgba(15,118,110,0.08)",
+        border: "1px solid rgba(15,118,110,0.25)",
+        borderRadius: 999,
+        cursor: "pointer",
+      }}
+    >
+      {state === "loading" ? (
+        <Spinner />
+      ) : (
+        <span style={{ fontSize: 10, lineHeight: 1 }}>
+          {state === "playing" ? "❚❚" : "▶"}
+        </span>
+      )}
+      {state === "loading"
+        ? "Generating…"
+        : state === "playing"
+          ? "Playing"
+          : "Vivek's voice"}
+    </button>
+  );
+}
+
 function MessageRow({ message }: { message: ChatMessage }) {
   if (message.role === "system") {
     return (
@@ -1097,6 +1187,11 @@ function MessageRow({ message }: { message: ChatMessage }) {
         ) : null}
         {message.audio ? <AudioBubble audio={message.audio} isUser={isUser} /> : null}
         {message.text}
+        {!isUser && message.text ? (
+          <div style={{ marginTop: 2 }}>
+            <VoicePlayButton text={message.text} />
+          </div>
+        ) : null}
       </div>
     </div>
   );
