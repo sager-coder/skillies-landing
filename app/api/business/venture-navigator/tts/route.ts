@@ -4,16 +4,23 @@
  *
  * Backed by the self-hosted IndicF5 voice clone served on Modal
  * (app `vivek-voice-api`), not a managed TTS provider. The model speaks
- * with Vivek's actual voice for both English and Malayalam replies — the
- * reference clip and fine-tune are baked into the Modal service, so this
- * route just forwards the text and streams back the mp3.
+ * with Vivek's actual voice for both English and Malayalam replies.
+ *
+ * IndicF5 is Indic-native and was fine-tuned on Vivek's Manglish reels
+ * transcribed into Malayalam script, so it mispronounces Latin-script
+ * English ("traction" → garbage). To fix that we transliterate the reply
+ * to Malayalam script (English words spelled phonetically) BEFORE sending
+ * it to the voice — the displayed chat text stays English-readable, only
+ * the spoken input changes. Pure-Malayalam replies skip transliteration;
+ * any transliteration failure falls back to the original text so voice
+ * never breaks.
  *
  * Public demo surface → per-IP rate limited. Returns audio/mpeg.
  *
- * Note on cold starts: the Modal service scales to zero, so the first
- * request after a long idle can take ~30-60s while a GPU container boots;
- * warm requests are ~1-2s. The client falls back to a text bubble if this
- * route doesn't return audio in time, so a cold first hit degrades
+ * Latency: Modal scales to zero, so the first request after idle cold-
+ * starts (~40-60s); warm requests are ~13-17s on A10G (IndicF5 runs ~32
+ * sequential diffusion steps). The client falls back to a text bubble if
+ * this route doesn't return audio in time, so a cold hit degrades
  * gracefully rather than breaking the demo.
  */
 import { type NextRequest } from "next/server";
@@ -36,6 +43,15 @@ const MAX_TTS_CHARS = 1200;
 // Malayalam Unicode block — informational only (the voice is always
 // Vivek's; this just tags the response for debugging).
 const MALAYALAM_RE = /[ഀ-ൿ]/;
+// Any Latin letter means there's English to transliterate for IndicF5.
+const LATIN_RE = /[A-Za-z]/;
+const TRANSLIT_MODEL = process.env.VN_TRANSLIT_MODEL || "gpt-4o";
+const TRANSLIT_PROMPT =
+  "Transliterate the following into Malayalam script the way a native " +
+  "Malayali would pronounce it out loud. Spell English words PHONETICALLY " +
+  "in Malayalam script (do not translate the meaning). Leave text that is " +
+  "already Malayalam unchanged. Output ONLY the Malayalam-script result, " +
+  "nothing else:\n\n";
 
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
@@ -52,6 +68,37 @@ function jsonError(status: number, body: Record<string, unknown>) {
     status,
     headers: { "Content-Type": "application/json" },
   });
+}
+
+// Render English (Latin) words as Malayalam script so IndicF5 pronounces
+// them like Vivek would. Best-effort: skips pure-Malayalam text and falls
+// back to the original on any failure so the voice path never breaks.
+async function toMalayalamScript(text: string): Promise<string> {
+  if (!LATIN_RE.test(text)) return text;
+  const apiKey = process.env.VN_OPENAI_API_KEY;
+  if (!apiKey) return text;
+  try {
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: TRANSLIT_MODEL,
+        temperature: 0,
+        messages: [{ role: "user", content: TRANSLIT_PROMPT + text }],
+      }),
+    });
+    if (!r.ok) return text;
+    const d = (await r.json()) as {
+      choices?: { message?: { content?: string } }[];
+    };
+    const out = (d?.choices?.[0]?.message?.content ?? "").trim();
+    return out || text;
+  } catch {
+    return text;
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -77,6 +124,10 @@ export async function POST(req: NextRequest) {
   const text = rawText.trim().slice(0, MAX_TTS_CHARS);
   const isMalayalam = MALAYALAM_RE.test(text);
 
+  // Transliterate English → Malayalam script for correct IndicF5 delivery.
+  const speakText = await toMalayalamScript(text);
+  const transliterated = speakText !== text;
+
   let upstream: Response;
   try {
     upstream = await fetch(VOICE_API_URL, {
@@ -85,7 +136,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         Accept: "audio/mpeg",
       },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text: speakText }),
     });
   } catch (err) {
     console.error("[vn-tts] owned-voice fetch failed:", err);
@@ -108,6 +159,7 @@ export async function POST(req: NextRequest) {
       "Cache-Control": "no-store",
       "X-Voice-Lang": isMalayalam ? "ml" : "en",
       "X-Voice-Source": "owned-indicf5",
+      "X-Spoke-Transliterated": transliterated ? "1" : "0",
     },
   });
 }
