@@ -15,6 +15,10 @@
  * Output: { transcript, language: "ml" | "en" }. Language is derived from
  * the script of the returned text (lets the agent mirror the language).
  *
+ * Key is read from VN_OPENAI_API_KEY — a Venture-Navigator-scoped OpenAI
+ * key, deliberately NOT the generic OPENAI_API_KEY, so this client's key
+ * stays isolated from other clients/surfaces.
+ *
  * Public demo surface → per-IP rate limited.
  */
 import { type NextRequest } from "next/server";
@@ -74,9 +78,9 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.VN_OPENAI_API_KEY;
   if (!apiKey) {
-    console.error("[vn-stt] OPENAI_API_KEY not set");
+    console.error("[vn-stt] VN_OPENAI_API_KEY not set");
     return jsonError(503, { error: "stt_not_configured" });
   }
 
