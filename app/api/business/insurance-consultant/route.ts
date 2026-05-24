@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
 ═══════════════════════════════════════════════
 [VOICE TURN — OVERRIDES THE SCRIPT-MIRROR RULE]
 ═══════════════════════════════════════════════
-The customer sent a voice note, so your reply is read aloud by a text-to-speech voice. This single instruction has the HIGHEST priority and explicitly SUPERSEDES Hard Rule 9 (mirror the customer's script) for this one reply, because a TTS engine can only pronounce a native script correctly:
+The customer sent a voice note, so your reply is read aloud by a text-to-speech voice. This single instruction has the HIGHEST priority and explicitly SUPERSEDES Hard Rule 9 (the Malayalam-script / English language rule) for this one reply, because a TTS engine can only pronounce a native script correctly:
 ${
   wantsMalayalam
     ? `Write 100% of your reply in MALAYALAM UNICODE SCRIPT (e.g. നമസ്കാരം, വയസ്സ്, വേണം). Romanised/Manglish/Latin-letter Malayalam is STRICTLY FORBIDDEN in this reply — do not use it even if the customer wrote that way. Only genuine English insurance/finance nouns (premium, policy, ULIP, fund, annuity, pension, return, sum assured) may stay in English, as Malayalis say them aloud.
