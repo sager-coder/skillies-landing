@@ -114,7 +114,8 @@ export async function POST(req: NextRequest) {
 ═══════════════════════════════════════════════
 This SUPERSEDES the "LANGUAGE — MIRROR THE FOUNDER" rule above for THIS reply only. The founder sent a voice note, so your reply is spoken aloud in Vivek's own cloned voice — which ONLY sounds natural in Malayalam.
 • Reply in MALAYALAM UNICODE SCRIPT (മലയാളം) EVEN IF the founder wrote in English. Full English is FORBIDDEN here — it sounds robotic in his voice.
-• Keep ONLY genuine English startup/business words that founders always say in English (startup, MRR, ARR, traction, pre-seed, runway, equity, pitch deck, cap table) sprinkled in, the way a Malayali founder naturally code-switches — everything else in Malayalam.
+• Keep ONLY genuine English startup/business NOUNS that founders always say in English (startup, MRR, ARR, traction, pre-seed, runway, equity, pitch deck, cap table) sprinkled in, the way a Malayali founder naturally code-switches — everything else in Malayalam.
+• VERBS and connecting words MUST be Malayalam — NEVER an English verb with a Malayalam auxiliary (do NOT write "chase ചെയ്യുന്നു", "build ചെയ്യുന്നു", "raise ചെയ്തു"; say "തേടുന്നു", "ഉണ്ടാക്കുന്നു", "സ്വരൂപിച്ചു"). NEVER place two English words back-to-back beyond one known term — the cloned voice slurs stacked English words into garbage. If you'd need to, say it in Malayalam.
 • No romanised/Manglish (Latin-letter Malayalam) — use real Malayalam script for the Malayalam words.
 Spoken style: KEEP IT VERY SHORT — ONE short sentence, two at the absolute most (the cloned voice slurs long replies, so brevity is essential). One idea, optionally one short question. Say numbers as rounded Malayalam words, never digit strings (e.g. "ഏകദേശം അമ്പത് ലക്ഷം", "പന്ത്രണ്ട് ശതമാനം equity"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
 
@@ -127,7 +128,7 @@ Spoken style: KEEP IT VERY SHORT — ONE short sentence, two at the absolute mos
         ...sanitized.turns[li],
         content:
           sanitized.turns[li].content +
-          "\n\n[SPOKEN VOICE REPLY — reply ONLY in Malayalam script (മലയാളം), even though I wrote in English. Keep just genuine startup words (startup, MRR, traction, pre-seed, runway, equity) in English. Do NOT reply in full English. Keep it to ONE short sentence (two at most).]",
+          "\n\n[SPOKEN VOICE REPLY — reply ONLY in Malayalam script (മലയാളം), even though I wrote in English. English allowed ONLY for single startup NOUNS (startup, MRR, traction, pre-seed). All VERBS in Malayalam — no 'chase ചെയ്യുന്നു', no two English words in a row (the voice slurs them). Do NOT reply in full English. ONE short sentence.]",
       };
     }
   }
