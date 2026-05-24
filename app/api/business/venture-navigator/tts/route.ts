@@ -163,3 +163,17 @@ export async function POST(req: NextRequest) {
     },
   });
 }
+
+// Warm-up: a GET boots the Modal container (which loads the model on
+// startup), so a voice reply that follows comes back warm instead of
+// cold-starting into a text fallback. Fired when the user starts
+// recording. Best-effort, fire-and-forget from the client.
+export async function GET() {
+  try {
+    const base = VOICE_API_URL.replace(/\/tts$/, "");
+    await fetch(`${base}/health`, { method: "GET" });
+  } catch {
+    /* best-effort warm-up */
+  }
+  return Response.json({ warming: true });
+}

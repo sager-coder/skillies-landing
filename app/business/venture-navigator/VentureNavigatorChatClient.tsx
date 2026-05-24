@@ -290,6 +290,9 @@ export default function VentureNavigatorChatClient() {
       if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
     });
     rec.start();
+    // Pre-warm Vivek's voice GPU now, while the founder speaks, so the
+    // spoken reply comes back warm instead of cold-starting into text.
+    void fetch("/api/business/venture-navigator/tts").catch(() => {});
     streamRef.current = stream;
     recorderRef.current = rec;
     recStartRef.current = Date.now();
@@ -487,23 +490,46 @@ export default function VentureNavigatorChatClient() {
       return;
     }
 
-    // 5) Synthesize the spoken reply. If TTS fails, gracefully fall back
-    //    to a text bubble so the demo still answers.
+    // 5) Synthesize the spoken reply IN VIVEK'S VOICE. This is a voice
+    //    turn, so we never fall back to text — retry through a cold start
+    //    (the failed attempt warms the GPU) until we have audio.
+    setAiStatus("recording audio…");
     let aiAudioUrl: string | undefined;
     let aiDur = 0;
-    try {
-      const tts = await fetch("/api/business/venture-navigator/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: replyText, lang: langShort }),
-      });
-      if (tts.ok) {
-        const audioBlob = await tts.blob();
-        aiAudioUrl = URL.createObjectURL(audioBlob);
-        aiDur = await audioDuration(aiAudioUrl).catch(() => 0);
+    for (let attempt = 0; attempt < 3 && !aiAudioUrl; attempt++) {
+      try {
+        const tts = await fetch("/api/business/venture-navigator/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: replyText, lang: langShort }),
+        });
+        if (tts.ok) {
+          const audioBlob = await tts.blob();
+          if (audioBlob.size > 0) {
+            aiAudioUrl = URL.createObjectURL(audioBlob);
+            aiDur = await audioDuration(aiAudioUrl).catch(() => 0);
+            break;
+          }
+        }
+      } catch {
+        /* retry — the cold-start attempt that failed is warming the GPU */
       }
-    } catch {
-      /* fall through — show as text */
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 1500));
+    }
+
+    // Voice turn: if we still couldn't get audio, surface it rather than
+    // silently replying in text.
+    if (!aiAudioUrl) {
+      finalizeError(
+        setMessages,
+        setError,
+        aiId,
+        "Vivek's voice is warming up — record once more and it'll reply in his voice.",
+        true,
+      );
+      setSending(false);
+      setAiStatus("");
+      return;
     }
 
     setMessages((prev) =>
@@ -513,9 +539,8 @@ export default function VentureNavigatorChatClient() {
               ...m,
               pending: false,
               content: replyText,
-              ...(aiAudioUrl
-                ? { audioUrl: aiAudioUrl, voice: { durationSec: aiDur } }
-                : {}),
+              audioUrl: aiAudioUrl,
+              voice: { durationSec: aiDur },
             }
           : m,
       ),
