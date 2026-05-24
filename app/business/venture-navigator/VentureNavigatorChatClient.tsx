@@ -40,8 +40,22 @@ type Msg = {
   voice?: { durationSec: number };
   audioUrl?: string;
   transcribing?: boolean;
+  // Multi-note voice replies: a turn can be several short voice notes that
+  // auto-play in sequence. `noteGroup` ties them together; `noteIndex` is
+  // the play order within the group.
+  noteGroup?: string;
+  noteIndex?: number;
   ts: number;
 };
+
+// Split an agent reply into separate short voice notes (one per line). Most
+// replies are a single line → one note.
+function splitNotes(text: string): string[] {
+  return text
+    .split(/\n+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
 
 const STORAGE_KEY = "vn.demo.v1";
 
@@ -122,6 +136,9 @@ export default function VentureNavigatorChatClient() {
   const [aiStatus, setAiStatus] = useState<"" | "typing…" | "recording audio…">(
     "",
   );
+  // Which voice note should be playing right now (drives sequential
+  // auto-play of a multi-note reply). Cleared when nothing is queued.
+  const [playNote, setPlayNote] = useState<{ group: string; index: number } | null>(null);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -199,7 +216,7 @@ export default function VentureNavigatorChatClient() {
       pending: true,
       ts: Date.now(),
     };
-    const history = [...messages.filter((m) => m.id !== "intro"), userMsg].map(
+    const history = [...messages.filter((m) => m.id !== "intro" && m.content), userMsg].map(
       (m) => ({ role: m.role, content: m.content }),
     );
     setMessages((prev) => [...prev, userMsg, placeholder]);
@@ -490,36 +507,50 @@ export default function VentureNavigatorChatClient() {
       return;
     }
 
-    // 5) Synthesize the spoken reply IN VIVEK'S VOICE. This is a voice
-    //    turn, so we never fall back to text — retry through a cold start
-    //    (the failed attempt warms the GPU) until we have audio.
+    // 5) Synthesize the reply as one or more short VOICE NOTES that auto-play
+    //    in sequence. Notes are synthesized in PARALLEL, so the wait ≈ one
+    //    note, not the sum. Voice turn → never fall back to text.
     setAiStatus("recording audio…");
-    let aiAudioUrl: string | undefined;
-    let aiDur = 0;
-    for (let attempt = 0; attempt < 3 && !aiAudioUrl; attempt++) {
-      try {
-        const tts = await fetch("/api/business/venture-navigator/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: replyText, lang: langShort }),
-        });
-        if (tts.ok) {
-          const audioBlob = await tts.blob();
-          if (audioBlob.size > 0) {
-            aiAudioUrl = URL.createObjectURL(audioBlob);
-            aiDur = await audioDuration(aiAudioUrl).catch(() => 0);
-            break;
-          }
-        }
-      } catch {
-        /* retry — the cold-start attempt that failed is warming the GPU */
-      }
-      if (attempt < 2) await new Promise((r) => setTimeout(r, 1500));
-    }
 
-    // Voice turn: if we still couldn't get audio, surface it rather than
-    // silently replying in text.
-    if (!aiAudioUrl) {
+    const parts = splitNotes(replyText);
+
+    const synthOne = async (
+      text: string,
+    ): Promise<{ url: string; dur: number } | null> => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const tts = await fetch("/api/business/venture-navigator/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, lang: langShort }),
+          });
+          if (tts.ok) {
+            const blob = await tts.blob();
+            if (blob.size > 0) {
+              const url = URL.createObjectURL(blob);
+              const dur = await audioDuration(url).catch(() => 0);
+              return { url, dur };
+            }
+          }
+        } catch {
+          /* retry — a failed cold-start attempt warms the GPU */
+        }
+        if (attempt < 2) await new Promise((r) => setTimeout(r, 1500));
+      }
+      return null;
+    };
+
+    const synthd = await Promise.all(parts.map((p) => synthOne(p)));
+    const notes = parts
+      .map((text, i) => ({ text, audio: synthd[i] }))
+      .filter(
+        (n): n is { text: string; audio: { url: string; dur: number } } =>
+          !!n.audio,
+      );
+
+    // Voice turn: if nothing synthesized, surface it rather than silently
+    // replying in text.
+    if (notes.length === 0) {
       finalizeError(
         setMessages,
         setError,
@@ -532,22 +563,32 @@ export default function VentureNavigatorChatClient() {
       return;
     }
 
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === aiId
-          ? {
-              ...m,
-              pending: false,
-              content: replyText,
-              audioUrl: aiAudioUrl,
-              voice: { durationSec: aiDur },
-            }
-          : m,
-      ),
-    );
+    // Replace the single placeholder with one bubble per note. Note 0 carries
+    // the full reply text (for chat history); the rest carry no text so they
+    // stay out of history (the history builder filters on content).
+    const noteMsgs: Msg[] = notes.map((n, i) => ({
+      id: i === 0 ? aiId : `${aiId}-${i}`,
+      role: "assistant" as const,
+      content: i === 0 ? replyText : "",
+      voice: { durationSec: n.audio.dur },
+      audioUrl: n.audio.url,
+      noteGroup: aiId,
+      noteIndex: i,
+      ts: Date.now() + i,
+    }));
+    setMessages((prev) => prev.flatMap((m) => (m.id === aiId ? noteMsgs : [m])));
+    setPlayNote({ group: aiId, index: 0 }); // start sequential auto-play
     setSending(false);
     setAiStatus("");
   }, [cancelRecording, isRecording, messages, stopTracks]);
+
+  // A voice note finished → advance to the next note in its group so the
+  // reply plays as a sequence of short notes.
+  const handleNoteEnded = useCallback((group?: string, index?: number) => {
+    if (group && typeof index === "number") {
+      setPlayNote({ group, index: index + 1 });
+    }
+  }, []);
 
   const headerStatus = isRecording ? "recording…" : aiStatus || "online";
 
@@ -568,7 +609,7 @@ export default function VentureNavigatorChatClient() {
             <span style={dayChipInner}>Demo conversation</span>
           </div>
           {messages.map((m) => (
-            <Bubble key={m.id} m={m} />
+            <Bubble key={m.id} m={m} activeNote={playNote} onNoteEnded={handleNoteEnded} />
           ))}
         </div>
 
@@ -751,8 +792,22 @@ function Spinner() {
 }
 
 // ── Bubble ──────────────────────────────────────────────────────────
-function Bubble({ m }: { m: Msg }) {
+function Bubble({
+  m,
+  activeNote,
+  onNoteEnded,
+}: {
+  m: Msg;
+  activeNote?: { group: string; index: number } | null;
+  onNoteEnded?: (group?: string, index?: number) => void;
+}) {
   const isUser = m.role === "user";
+  // A note bubble only auto-plays when it's the active note in its group;
+  // a non-note voice bubble keeps the old "play when ready" behavior.
+  const isActiveNote =
+    !!m.noteGroup &&
+    activeNote?.group === m.noteGroup &&
+    activeNote?.index === m.noteIndex;
 
   if (m.error) {
     return (
@@ -785,7 +840,14 @@ function Bubble({ m }: { m: Msg }) {
           <VoicePlayer
             url={m.audioUrl}
             durationSec={m.voice!.durationSec}
-            autoPlay={!isUser && !!m.audioUrl}
+            autoPlay={
+              !isUser && !!m.audioUrl && (m.noteGroup ? isActiveNote : true)
+            }
+            onEnded={
+              m.noteGroup
+                ? () => onNoteEnded?.(m.noteGroup, m.noteIndex)
+                : undefined
+            }
             tint={isUser ? "#1fa855" : "#54656f"}
             transcribing={m.transcribing}
           />
@@ -814,12 +876,14 @@ function VoicePlayer({
   url,
   durationSec,
   autoPlay,
+  onEnded,
   tint,
   transcribing,
 }: {
   url?: string;
   durationSec: number;
   autoPlay?: boolean;
+  onEnded?: () => void;
   tint: string;
   transcribing?: boolean;
 }) {
@@ -883,7 +947,7 @@ function VoicePlayer({
           preload="metadata"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
-          onEnded={() => { setPlaying(false); setProgress(0); setElapsed(0); }}
+          onEnded={() => { setPlaying(false); setProgress(0); setElapsed(0); onEnded?.(); }}
           onTimeUpdate={(e) => {
             const a = e.currentTarget;
             if (a.duration && Number.isFinite(a.duration)) {
