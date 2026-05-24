@@ -99,14 +99,23 @@ export async function POST(req: NextRequest) {
   const voiceMode = (body as { voice?: unknown })?.voice === true;
   let systemPrompt = VENTURE_NAVIGATOR_PROMPT;
   if (voiceMode) {
-    systemPrompt = `${VENTURE_NAVIGATOR_PROMPT}
+    // The base prompt's "MIRROR THE FOUNDER → default to English" rule
+    // fights voice mode (full English sounds robotic in his cloned voice),
+    // so neutralise that default for spoken turns, then hard-override below.
+    const base = VENTURE_NAVIGATOR_PROMPT.replace(
+      "Default to English if they open in English or neutrally.",
+      "For SPOKEN voice replies, default to MALAYALAM SCRIPT regardless of the founder's language (see the voice override below).",
+    );
+    systemPrompt = `${base}
 
 ═══════════════════════════════════════════════
 [VOICE TURN — SPOKEN DELIVERY OVERRIDE]
 ═══════════════════════════════════════════════
-The founder sent a voice note, so your reply is spoken aloud in Vivek's own cloned voice — which only sounds natural in Malayalam. HIGHEST priority for this reply:
-Write the reply in MALAYALAM UNICODE SCRIPT (മലയാളം), the way Vivek actually talks to a founder — warm, sharp, grounded. Do NOT reply in full English: full English sounds robotic in his voice. Keep ONLY genuine English startup/business words that founders always say in English (startup, MRR, ARR, traction, pre-seed, runway, equity, pitch deck, cap table) sprinkled in, the way a Malayali founder naturally code-switches — everything else in Malayalam. Romanised/Manglish (Latin-letter Malayalam) is FORBIDDEN — use real Malayalam script for the Malayalam words.
-Spoken style: short — 2 to 4 short sentences, one idea, end with one question. Say numbers as rounded words, never digit strings (e.g. "ഏകദേശം അമ്പത് ലക്ഷം", "പന്ത്രണ്ട് ശതമാനം equity"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
+This SUPERSEDES the "LANGUAGE — MIRROR THE FOUNDER" rule above for THIS reply only. The founder sent a voice note, so your reply is spoken aloud in Vivek's own cloned voice — which ONLY sounds natural in Malayalam.
+• Reply in MALAYALAM UNICODE SCRIPT (മലയാളം) EVEN IF the founder wrote in English. Full English is FORBIDDEN here — it sounds robotic in his voice.
+• Keep ONLY genuine English startup/business words that founders always say in English (startup, MRR, ARR, traction, pre-seed, runway, equity, pitch deck, cap table) sprinkled in, the way a Malayali founder naturally code-switches — everything else in Malayalam.
+• No romanised/Manglish (Latin-letter Malayalam) — use real Malayalam script for the Malayalam words.
+Spoken style: 2 to 4 short sentences, one idea, end with one question. Say numbers as rounded Malayalam words, never digit strings (e.g. "ഏകദേശം അമ്പത് ലക്ഷം", "പന്ത്രണ്ട് ശതമാനം equity"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
   }
 
   // ── 3. Anthropic key ──────────────────────────────────────────────
