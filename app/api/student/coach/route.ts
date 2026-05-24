@@ -25,7 +25,11 @@ import {
 } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { SKILLIES_KDP_COACH_PROMPT } from "@/lib/skillies-kdp-coach-prompt";
-import { sanitizeTurns, streamAnthropicChat } from "@/lib/anthropic-stream";
+import {
+  ANTHROPIC_HAIKU_MODEL,
+  sanitizeTurns,
+  streamAnthropicChat,
+} from "@/lib/anthropic-stream";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -124,6 +128,8 @@ export async function POST(req: NextRequest) {
     messages: sanitized.turns,
     maxTokens: 1024,
     logTag: "coach",
+    // Pin the student coach to Haiku (low-cost tier), no fallback.
+    modelChain: [ANTHROPIC_HAIKU_MODEL],
   });
   if (!result.ok) {
     return jsonError(result.status, { error: result.error });

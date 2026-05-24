@@ -25,6 +25,11 @@
  * IP and stay server-side).
  */
 
+// Haiku — the low-cost, low-latency model. Exported so callers that want
+// to pin a chat to the cheap tier (e.g. the student KDP Coach) can pass
+// it as a single-model chain.
+export const ANTHROPIC_HAIKU_MODEL = "claude-haiku-4-5-20251001";
+
 // Sonnet 4.6 is preferred. Anthropic occasionally returns
 // `overloaded_error` (HTTP 529) for one model while others have
 // capacity, so we degrade Sonnet → Opus → Haiku and use the first model
@@ -33,7 +38,7 @@
 export const ANTHROPIC_MODEL_CHAIN = [
   "claude-sonnet-4-6",
   "claude-opus-4-6",
-  "claude-haiku-4-5-20251001",
+  ANTHROPIC_HAIKU_MODEL,
 ];
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
@@ -114,6 +119,9 @@ export type StreamResult =
  * @param messages    Sanitised, alternating turns (use `sanitizeTurns`).
  * @param maxTokens   Response cap. Defaults to 1024 (WhatsApp-length).
  * @param logTag      Short prefix for server logs, e.g. "coach" / "jomin".
+ * @param modelChain  Models to try in order. Defaults to
+ *                    `ANTHROPIC_MODEL_CHAIN`. Pass a single-model array to
+ *                    pin a chat to one tier (no fallback).
  */
 export async function streamAnthropicChat(params: {
   apiKey: string;
@@ -121,10 +129,12 @@ export async function streamAnthropicChat(params: {
   messages: ChatTurn[];
   maxTokens?: number;
   logTag?: string;
+  modelChain?: string[];
 }): Promise<StreamResult> {
   const { apiKey, system, messages } = params;
   const maxTokens = params.maxTokens ?? 1024;
   const tag = params.logTag ?? "chat";
+  const modelChain = params.modelChain ?? ANTHROPIC_MODEL_CHAIN;
 
   const requestBody = (model: string) =>
     JSON.stringify({
@@ -151,7 +161,7 @@ export async function streamAnthropicChat(params: {
   let prelude = ""; // bytes already pulled off `reader` during the peek
   const peekDecoder = new TextDecoder();
 
-  for (const model of ANTHROPIC_MODEL_CHAIN) {
+  for (const model of modelChain) {
     let upstream: Response;
     try {
       upstream = await fetch(ANTHROPIC_API_URL, {
