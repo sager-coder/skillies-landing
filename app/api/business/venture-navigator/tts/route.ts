@@ -1,41 +1,40 @@
 /**
  * POST /api/business/venture-navigator/tts — text-to-speech for the
- * Venture Navigator founder demo. Turns the assistant's reply into a
- * spoken voice note in the matching language (English or Malayalam).
+ * Venture Navigator founder demo, in Vivek's OWN cloned voice.
  *
- * Voice selection is driven by the SCRIPT of the reply text, not a
- * client hint: Malayalam Unicode → the Malayalam voice, otherwise the
- * English voice. The chat route writes voice-turn replies in a single
- * clean script (English, or Malayalam Unicode — never Manglish), so the
- * detection always lands on the right voice.
- *
- * Model: eleven_v3 — handles English well and is the only ElevenLabs
- * model with real Malayalam (ml) support.
+ * Backed by the self-hosted IndicF5 voice clone served on Modal
+ * (app `vivek-voice-api`), not a managed TTS provider. The model speaks
+ * with Vivek's actual voice for both English and Malayalam replies — the
+ * reference clip and fine-tune are baked into the Modal service, so this
+ * route just forwards the text and streams back the mp3.
  *
  * Public demo surface → per-IP rate limited. Returns audio/mpeg.
+ *
+ * Note on cold starts: the Modal service scales to zero, so the first
+ * request after a long idle can take ~30-60s while a GPU container boots;
+ * warm requests are ~1-2s. The client falls back to a text bubble if this
+ * route doesn't return audio in time, so a cold first hit degrades
+ * gracefully rather than breaking the demo.
  */
 import { type NextRequest } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60; // eleven_v3 on a long reply can take a few seconds
+export const maxDuration = 60; // owned-voice cold start can take a while
 
-// Voices live in the connected ElevenLabs account. These IDs are not
-// secret. Override via env if you want a different voice without a
-// redeploy. English default is a confident male voice (investor-desk
-// feel); Malayalam falls back to a Kerala voice for native delivery.
-const ENGLISH_VOICE_ID =
-  process.env.VN_VOICE_ID_ENGLISH || "pNInz6obpgDQGcFmaJgB"; // confident male advisor voice
-const MALAYALAM_VOICE_ID =
-  process.env.VN_VOICE_ID_MALAYALAM || "L4moSXE0nLamWh3YGSH1"; // Kerala Malayalam voice
-const TTS_MODEL = "eleven_v3";
+// Self-hosted owned-voice endpoint (Modal). Public URL, not a secret;
+// override via env to repoint without a redeploy.
+const VOICE_API_URL =
+  process.env.VN_VOICE_API_URL ||
+  "https://sager-coder--vivek-voice-api-web.modal.run/tts";
 
 const MAX_PER_WINDOW = 40;
 const WINDOW_SECONDS = 10 * 60;
 const MAX_TTS_CHARS = 1200;
 
-// Malayalam Unicode block.
+// Malayalam Unicode block — informational only (the voice is always
+// Vivek's; this just tags the response for debugging).
 const MALAYALAM_RE = /[ഀ-ൿ]/;
 
 function clientIp(req: NextRequest): string {
@@ -76,57 +75,27 @@ export async function POST(req: NextRequest) {
     return jsonError(400, { error: "missing_text" });
   }
   const text = rawText.trim().slice(0, MAX_TTS_CHARS);
-
-  const apiKey = process.env.ELEVENLABS_API_KEY;
-  if (!apiKey) {
-    console.error("[vn-tts] ELEVENLABS_API_KEY not set");
-    return jsonError(503, { error: "tts_not_configured" });
-  }
-
-  // Pick the voice from the actual script of the text.
   const isMalayalam = MALAYALAM_RE.test(text);
-  const voiceId = isMalayalam ? MALAYALAM_VOICE_ID : ENGLISH_VOICE_ID;
 
   let upstream: Response;
   try {
-    upstream = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": apiKey,
-          "Content-Type": "application/json",
-          Accept: "audio/mpeg",
-        },
-        body: JSON.stringify({
-          text,
-          model_id: TTS_MODEL,
-          // Composed, credible delivery — a sharp operator, not a hype
-          // reel.
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
-        }),
+    upstream = await fetch(VOICE_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "audio/mpeg",
       },
-    );
+      body: JSON.stringify({ text }),
+    });
   } catch (err) {
-    console.error("[vn-tts] upstream fetch failed:", err);
+    console.error("[vn-tts] owned-voice fetch failed:", err);
     return jsonError(502, { error: "tts_unreachable" });
   }
 
   if (!upstream.ok || !upstream.body) {
     const errText = await upstream.text().catch(() => "");
-    console.error(
-      "[vn-tts] elevenlabs",
-      upstream.status,
-      "·",
-      errText.slice(0, 300),
-    );
-    const status =
-      upstream.status === 401 || upstream.status === 403
-        ? 401
-        : upstream.status === 429
-          ? 429
-          : 502;
-    return jsonError(status, {
+    console.error("[vn-tts] owned-voice", upstream.status, "·", errText.slice(0, 300));
+    return jsonError(502, {
       error: "tts_failed",
       upstream_status: upstream.status,
     });
@@ -138,6 +107,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "audio/mpeg",
       "Cache-Control": "no-store",
       "X-Voice-Lang": isMalayalam ? "ml" : "en",
+      "X-Voice-Source": "owned-indicf5",
     },
   });
 }
