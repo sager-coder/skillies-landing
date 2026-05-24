@@ -43,15 +43,18 @@ const MAX_TTS_CHARS = 1200;
 // Malayalam Unicode block — informational only (the voice is always
 // Vivek's; this just tags the response for debugging).
 const MALAYALAM_RE = /[ഀ-ൿ]/;
-// Any Latin letter means there's English to transliterate for IndicF5.
-const LATIN_RE = /[A-Za-z]/;
+// Latin letters or digits mean there's English / numbers to normalise for
+// IndicF5 (which only cleanly speaks Malayalam-script words).
+const NEEDS_NORMALISE_RE = /[A-Za-z0-9]/;
 const TRANSLIT_MODEL = process.env.VN_TRANSLIT_MODEL || "gpt-4o";
 const TRANSLIT_PROMPT =
-  "Transliterate the following into Malayalam script the way a native " +
-  "Malayali would pronounce it out loud. Spell English words PHONETICALLY " +
-  "in Malayalam script (do not translate the meaning). Leave text that is " +
-  "already Malayalam unchanged. Output ONLY the Malayalam-script result, " +
-  "nothing else:\n\n";
+  "Rewrite the following as clean SPOKEN text for a text-to-speech voice, " +
+  "then transliterate it into Malayalam script. Rules: drop any markdown, " +
+  "symbols, emojis and list/bullet formatting; spell out numbers, " +
+  "percentages and currency as spoken words; spell English words " +
+  "PHONETICALLY in Malayalam script (do NOT translate the meaning); leave " +
+  "existing Malayalam unchanged. Output ONLY the final Malayalam-script " +
+  "text, nothing else:\n\n";
 
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
@@ -70,11 +73,26 @@ function jsonError(status: number, body: Record<string, unknown>) {
   });
 }
 
-// Render English (Latin) words as Malayalam script so IndicF5 pronounces
-// them like Vivek would. Best-effort: skips pure-Malayalam text and falls
-// back to the original on any failure so the voice path never breaks.
+// Strip anything IndicF5 can't speak — emojis, markdown, list markers,
+// links — so only clean prose reaches the voice. The guardrail: agent
+// formatting can never again be read aloud literally and garble the voice.
+function cleanForSpeech(text: string): string {
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // [label](url) -> label
+    .replace(/https?:\/\/\S+/g, " ") // bare URLs
+    .replace(/[\p{Extended_Pictographic}‍️]/gu, " ") // emojis
+    .replace(/^\s*(?:[-*•]|\d+[.)])\s+/gm, " ") // list / bullet markers
+    .replace(/[*_`~#>|]+/g, " ") // markdown emphasis / code / headings
+    .replace(/\s*[—–]\s*/g, ", ") // em / en dash -> spoken pause
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Render English (Latin) words and numbers as Malayalam script so IndicF5
+// pronounces them like Vivek would. Best-effort: skips already-clean
+// Malayalam and falls back to the input on any failure so voice never breaks.
 async function toMalayalamScript(text: string): Promise<string> {
-  if (!LATIN_RE.test(text)) return text;
+  if (!NEEDS_NORMALISE_RE.test(text)) return text;
   const apiKey = process.env.VN_OPENAI_API_KEY;
   if (!apiKey) return text;
   try {
@@ -124,8 +142,10 @@ export async function POST(req: NextRequest) {
   const text = rawText.trim().slice(0, MAX_TTS_CHARS);
   const isMalayalam = MALAYALAM_RE.test(text);
 
-  // Transliterate English → Malayalam script for correct IndicF5 delivery.
-  const speakText = await toMalayalamScript(text);
+  // Strip formatting/emoji, then normalise + transliterate to clean
+  // Malayalam script so IndicF5 never reads markup or symbols aloud.
+  const cleaned = cleanForSpeech(text) || text;
+  const speakText = await toMalayalamScript(cleaned);
   const transliterated = speakText !== text;
 
   let upstream: Response;
