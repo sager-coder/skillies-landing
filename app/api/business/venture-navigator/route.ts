@@ -116,7 +116,7 @@ This SUPERSEDES the "LANGUAGE — MIRROR THE FOUNDER" rule above for THIS reply 
 • Reply in MALAYALAM UNICODE SCRIPT (മലയാളം) EVEN IF the founder wrote in English. Full English is FORBIDDEN here — it sounds robotic in his voice.
 • Keep ONLY genuine English startup/business words that founders always say in English (startup, MRR, ARR, traction, pre-seed, runway, equity, pitch deck, cap table) sprinkled in, the way a Malayali founder naturally code-switches — everything else in Malayalam.
 • No romanised/Manglish (Latin-letter Malayalam) — use real Malayalam script for the Malayalam words.
-Spoken style: 2 to 4 short sentences, one idea, end with one question. Say numbers as rounded Malayalam words, never digit strings (e.g. "ഏകദേശം അമ്പത് ലക്ഷം", "പന്ത്രണ്ട് ശതമാനം equity"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
+Spoken style: KEEP IT VERY SHORT — ONE short sentence, two at the absolute most (the cloned voice slurs long replies, so brevity is essential). One idea, optionally one short question. Say numbers as rounded Malayalam words, never digit strings (e.g. "ഏകദേശം അമ്പത് ലക്ഷം", "പന്ത്രണ്ട് ശതമാനം equity"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
 
     // System instructions alone lose to the model's instinct to mirror the
     // founder's English, so ALSO pin the language in the user turn itself —
@@ -127,7 +127,7 @@ Spoken style: 2 to 4 short sentences, one idea, end with one question. Say numbe
         ...sanitized.turns[li],
         content:
           sanitized.turns[li].content +
-          "\n\n[SPOKEN VOICE REPLY — reply ONLY in Malayalam script (മലയാളം), even though I wrote in English. Keep just genuine startup words (startup, MRR, traction, pre-seed, runway, equity) in English. Do NOT reply in full English.]",
+          "\n\n[SPOKEN VOICE REPLY — reply ONLY in Malayalam script (മലയാളം), even though I wrote in English. Keep just genuine startup words (startup, MRR, traction, pre-seed, runway, equity) in English. Do NOT reply in full English. Keep it to ONE short sentence (two at most).]",
       };
     }
   }

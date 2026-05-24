@@ -53,8 +53,13 @@ const TRANSLIT_PROMPT =
   "symbols, emojis and list/bullet formatting; spell out numbers, " +
   "percentages and currency as spoken words; spell English words " +
   "PHONETICALLY in Malayalam script (do NOT translate the meaning); leave " +
-  "existing Malayalam unchanged. Output ONLY the final Malayalam-script " +
-  "text, nothing else:\n\n";
+  "existing Malayalam unchanged. CRITICAL: when an English word is " +
+  "immediately followed by a Malayalam grammatical ending or postposition " +
+  "(ൽ, ഇൽ, ന്റെ, ന്, ക്ക്, ഉം, ഓട്, ലേക്ക്…), FUSE them into ONE natural " +
+  "Malayalam word — e.g. 'fintech ൽ' → 'ഫിന്ടെക്കിൽ', 'startup ന്റെ' → " +
+  "'സ്റ്റാർട്ടപ്പിന്റെ'. NEVER leave a Malayalam ending as a separate token " +
+  "after an English word (a stray ending makes the voice slur). Output ONLY " +
+  "the final Malayalam-script text, nothing else:\n\n";
 
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
