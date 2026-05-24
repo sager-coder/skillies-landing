@@ -99,12 +99,13 @@ export async function POST(req: NextRequest) {
   const voiceMode = (body as { voice?: unknown })?.voice === true;
   let systemPrompt = VENTURE_NAVIGATOR_PROMPT;
   if (voiceMode) {
-    // The base prompt's "MIRROR THE FOUNDER → default to English" rule
-    // fights voice mode (full English sounds robotic in his cloned voice),
-    // so neutralise that default for spoken turns, then hard-override below.
+    // The base prompt's whole "LANGUAGE — MIRROR THE FOUNDER" section makes
+    // the agent reply in English to English founders — which sounds robotic
+    // in Vivek's cloned voice. Excise that entire section for spoken turns
+    // so there's no conflict, then let the override below govern language.
     const base = VENTURE_NAVIGATOR_PROMPT.replace(
-      "Default to English if they open in English or neutrally.",
-      "For SPOKEN voice replies, default to MALAYALAM SCRIPT regardless of the founder's language (see the voice override below).",
+      /═+\nLANGUAGE — MIRROR THE FOUNDER\n═+\n[\s\S]*?(?=\n═+\n)/,
+      "",
     );
     systemPrompt = `${base}
 
