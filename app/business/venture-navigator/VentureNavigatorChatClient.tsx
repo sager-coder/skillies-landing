@@ -48,11 +48,13 @@ type Msg = {
   ts: number;
 };
 
-// Split an agent reply into separate short voice notes (one per line). Most
-// replies are a single line → one note.
+// Split an agent reply into separate short voice notes — one per SENTENCE
+// (also any explicit line breaks). The agent's reply length drives the
+// count: a one-sentence opener → one note; a fuller "engaged" reply → a few.
+// (Handles the model omitting the space after a full stop.)
 function splitNotes(text: string): string[] {
   return text
-    .split(/\n+/)
+    .split(/(?<=[.!?।])\s*|\n+/)
     .map((s) => s.trim())
     .filter(Boolean);
 }
