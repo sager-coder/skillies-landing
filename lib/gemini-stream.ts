@@ -108,7 +108,9 @@ export async function streamGeminiChat(params: {
         while (true) {
           const { value, done } = await reader.read();
           if (done) break;
-          buffer += decoder.decode(value, { stream: true });
+          // Gemini delimits SSE frames with CRLF (\r\n\r\n); strip \r so the
+          // \n\n frame-splitter in drain() matches (otherwise zero content).
+          buffer += decoder.decode(value, { stream: true }).replace(/\r/g, "");
           drain();
         }
         if (!doneSent) {
