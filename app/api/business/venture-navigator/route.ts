@@ -135,9 +135,15 @@ Spoken style: write in SHORT, self-contained sentences — each sentence is play
   }
 
   // ── 3. LLM brain key (OpenAI — Anthropic/Sonnet retired for this demo) ──
-  const apiKey = process.env.OPENAI_LLM_API_KEY;
+  // Prefer the dedicated OPENAI_LLM_API_KEY, but fall back to the other OpenAI
+  // keys already set on this project (OPENAI_API_KEY / VN_OPENAI_API_KEY) so the
+  // brain works even if the dedicated var hasn't been provisioned.
+  const apiKey =
+    process.env.OPENAI_LLM_API_KEY ||
+    process.env.OPENAI_API_KEY ||
+    process.env.VN_OPENAI_API_KEY;
   if (!apiKey) {
-    console.error("[vn] OPENAI_LLM_API_KEY not set");
+    console.error("[vn] no OpenAI key set (OPENAI_LLM_API_KEY/OPENAI_API_KEY/VN_OPENAI_API_KEY)");
     return jsonError(503, { error: "demo_not_configured" });
   }
 
