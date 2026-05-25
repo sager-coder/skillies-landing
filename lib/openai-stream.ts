@@ -15,8 +15,10 @@
  */
 import type { ChatTurn, StreamResult } from "./anthropic-stream";
 
-// gpt-4o is the Sonnet-equivalent default; fall back to mini if it errors.
-export const OPENAI_MODEL_CHAIN = ["gpt-4o", "gpt-4o-mini"];
+// gpt-5.5 is the brain (smarter than gpt-4o on the rich VN prompt — measured);
+// reasoning_effort "low" keeps it ~3s (as fast as gpt-4o). gpt-4o is the
+// fallback if 5.5 errors.
+export const OPENAI_MODEL_CHAIN = ["gpt-5.5", "gpt-4o"];
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
 export async function streamOpenAIChat(params: {
@@ -30,16 +32,26 @@ export async function streamOpenAIChat(params: {
   const maxTokens = params.maxTokens ?? 1024;
   const tag = params.logTag ?? "chat";
 
-  const requestBody = (model: string) =>
-    JSON.stringify({
+  const requestBody = (model: string) => {
+    const isGpt5 = model.startsWith("gpt-5");
+    const body: Record<string, unknown> = {
       model,
-      max_tokens: maxTokens,
       stream: true,
       messages: [
         { role: "system", content: system },
         ...messages.map((t) => ({ role: t.role, content: t.content })),
       ],
-    });
+    };
+    if (isGpt5) {
+      // gpt-5 series: max_completion_tokens (not max_tokens), fixed default
+      // temperature, and reasoning_effort "low" to keep latency ~3s.
+      body.max_completion_tokens = maxTokens;
+      body.reasoning_effort = "low";
+    } else {
+      body.max_tokens = maxTokens;
+    }
+    return JSON.stringify(body);
+  };
 
   // Walk the model chain: open the stream, peek the first frames; a non-OK
   // status → try the next model. First model to stream wins.
