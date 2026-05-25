@@ -93,6 +93,26 @@ function cleanForSpeech(text: string): string {
     .trim();
 }
 
+// Deterministic founder by-ear number-form fixup — NO LLM. The gpt-4o
+// transliteration won't reliably emit the founder's spoken Manglish numbers
+// (it writes തർട്ടി/നൈൻ/ലക്ഷം), so force them: "thirty" = തേട്ടി, "nine" =
+// ണയൻ, "lakh" = ലാക്ക്. Compound forms first; the anusvara-only lakh pattern
+// can't touch ലക്ഷ്യം (goal) / ലക്ഷുറി (luxury).
+function fixFounderForms(text: string): string {
+  let t = text;
+  const FIXES: ReadonlyArray<readonly [RegExp, string]> = [
+    [/ത്രട്ടി/g, "തേട്ടി"], // thirty (gpt-4o typo variant)
+    [/തർട്ടീൻ/g, "തേട്ടീൻ"], // thirteen
+    [/തേർട്ടി/g, "തേട്ടി"], // thirty (variant)
+    [/തർട്ടി/g, "തേട്ടി"], // thirty
+    [/നൈന്റീൻ/g, "ണയന്റീൻ"], // nineteen
+    [/നൈന്റി/g, "ണയന്റി"], // ninety
+    [/നൈൻ/g, "ണയൻ"], // nine
+  ];
+  for (const [re, rep] of FIXES) t = t.replace(re, rep);
+  return t.replace(/ലക്ഷം/g, "ലാക്ക്");
+}
+
 // Render English (Latin) words and numbers as Malayalam script so IndicF5
 // pronounces them like Vivek would. Best-effort: skips already-clean
 // Malayalam and falls back to the input on any failure so voice never breaks.
@@ -150,7 +170,8 @@ export async function POST(req: NextRequest) {
   // Strip formatting/emoji, then normalise + transliterate to clean
   // Malayalam script so IndicF5 never reads markup or symbols aloud.
   const cleaned = cleanForSpeech(text) || text;
-  const speakText = await toMalayalamScript(cleaned);
+  // transliterate → then force the founder's by-ear number forms (തേട്ടി/ണയൻ/ലാക്ക്)
+  const speakText = fixFounderForms(await toMalayalamScript(cleaned));
   const transliterated = speakText !== text;
 
   let upstream: Response;

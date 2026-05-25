@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import FooterEditorial from "@/components/design/FooterEditorial";
 import DemoBrandedChat from "../_components/DemoBrandedChat";
-import PasswordGate from "../venture-navigator/PasswordGate";
+import PasswordGate from "../_components/PasswordGate";
 import { cookieNameFor, verifyToken } from "@/lib/demo-auth";
 
 // Private demo URL for Agasthyam Kalaripayattu (Gurukkal Dr. S. Mahesh,
