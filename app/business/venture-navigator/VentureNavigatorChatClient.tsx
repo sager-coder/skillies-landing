@@ -53,11 +53,35 @@ type Msg = {
 // count: a one-sentence opener → one note; a fuller "engaged" reply → a few.
 // (Handles the model omitting the space after a full stop.)
 function splitNotes(text: string): string[] {
-  return text
+  const sentences = text
     .split(/(?<=[.!?।])\s*|\n+/)
     .map((s) => s.trim())
     .filter(Boolean);
+  // Fold sub-phrase fragments into the adjacent note: a tiny opener (e.g.
+  // "ഹായ്,") synthesized alone makes IndicF5 emit a junk onset-burst clip.
+  // Accumulate until a note has real content (~14 chars), so every note is a
+  // full spoken line, never a micro-fragment.
+  const MIN_NOTE_CHARS = 14;
+  const notes: string[] = [];
+  let buf = "";
+  for (const s of sentences) {
+    buf = buf ? `${buf} ${s}` : s;
+    if (buf.replace(/\s/g, "").length >= MIN_NOTE_CHARS) {
+      notes.push(buf);
+      buf = "";
+    }
+  }
+  if (buf) {
+    if (notes.length) notes[notes.length - 1] += ` ${buf}`;
+    else notes.push(buf);
+  }
+  return notes;
 }
+
+// IndicF5 sometimes emits a sub-second onset-burst ("electric") clip instead of
+// speech. Real spoken notes are ~2s+, so drop anything shorter than this rather
+// than play the junk. (dur===0 = unreadable duration → kept, benefit of doubt.)
+const MIN_NOTE_DUR_SEC = 1.0;
 
 const STORAGE_KEY = "vn.demo.v1";
 
@@ -547,7 +571,10 @@ export default function VentureNavigatorChatClient() {
       .map((text, i) => ({ text, audio: synthd[i] }))
       .filter(
         (n): n is { text: string; audio: { url: string; dur: number } } =>
-          !!n.audio,
+          // keep real speech notes; drop the sub-second onset-burst "electric"
+          // junk clips (dur 0 = unreadable → keep, benefit of doubt).
+          !!n.audio &&
+          (n.audio.dur === 0 || n.audio.dur >= MIN_NOTE_DUR_SEC),
       );
 
     // Voice turn: if nothing synthesized, surface it rather than silently
