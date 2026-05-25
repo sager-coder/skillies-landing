@@ -31,10 +31,13 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60; // owned-voice cold start can take a while
 
 // Self-hosted owned-voice endpoint (Modal). Public URL, not a secret;
-// override via env to repoint without a redeploy.
+// override via env to repoint without a redeploy. Uses the SHARED warm
+// multi-voice app (ehsan-voice-api) with voice:"vivek" — the same endpoint +
+// tuned audio chain the founder approved in A/B clips, not the old
+// vivek-voice-api app.
 const VOICE_API_URL =
   process.env.VN_VOICE_API_URL ||
-  "https://sager-coder--vivek-voice-api-web.modal.run/tts";
+  "https://sager-coder--ehsan-voice-api-web.modal.run/tts";
 
 const MAX_PER_WINDOW = 40;
 const WINDOW_SECONDS = 10 * 60;
@@ -43,23 +46,32 @@ const MAX_TTS_CHARS = 1200;
 // Malayalam Unicode block — informational only (the voice is always
 // Vivek's; this just tags the response for debugging).
 const MALAYALAM_RE = /[ഀ-ൿ]/;
-// Latin letters or digits mean there's English / numbers to normalise for
-// IndicF5 (which only cleanly speaks Malayalam-script words).
-const NEEDS_NORMALISE_RE = /[A-Za-z0-9]/;
+// Anything OUTSIDE the speakable set means there's something to normalise for
+// IndicF5 (which only cleanly speaks Malayalam-script words). This catches
+// Latin, digits, % / ₹, AND stray non-Malayalam scripts (e.g. a Tamil glyph
+// gpt-4o sometimes leaks like ஸ in "ஸീഡ്") — the old /[A-Za-z0-9]/ missed
+// those, so they slipped to the voice and garbled. Allowed: Malayalam block,
+// whitespace, ZWNJ/ZWJ (used IN Malayalam), basic sentence punctuation.
+const NEEDS_NORMALISE_RE =
+  /[^\s\u0D00-\u0D7F\u200C\u200D.,!?;:'"()\-]/u;
 const TRANSLIT_MODEL = process.env.VN_TRANSLIT_MODEL || "gpt-4o";
 const TRANSLIT_PROMPT =
   "Rewrite the following as clean SPOKEN text for a text-to-speech voice, " +
-  "then transliterate it into Malayalam script. Rules: drop any markdown, " +
-  "symbols, emojis and list/bullet formatting; spell out numbers, " +
-  "percentages and currency as spoken words; spell English words " +
-  "PHONETICALLY in Malayalam script (do NOT translate the meaning); leave " +
-  "existing Malayalam unchanged. CRITICAL: when an English word is " +
-  "immediately followed by a Malayalam grammatical ending or postposition " +
-  "(ൽ, ഇൽ, ന്റെ, ന്, ക്ക്, ഉം, ഓട്, ലേക്ക്…), FUSE them into ONE natural " +
-  "Malayalam word — e.g. 'fintech ൽ' → 'ഫിന്ടെക്കിൽ', 'startup ന്റെ' → " +
-  "'സ്റ്റാർട്ടപ്പിന്റെ'. NEVER leave a Malayalam ending as a separate token " +
-  "after an English word (a stray ending makes the voice slur). Output ONLY " +
-  "the final Malayalam-script text, nothing else:\n\n";
+  "then transliterate it into Malayalam script. The output MUST be 100% " +
+  "MALAYALAM SCRIPT: ZERO digits, ZERO Latin letters, and ZERO characters from " +
+  "any OTHER script (Tamil, Telugu, Devanagari, etc.) — convert every such " +
+  "character into Malayalam script. Rules: drop any markdown, symbols, emojis " +
+  "and list/bullet formatting; render numbers as ENGLISH number-WORDS in " +
+  "Malayalam script (NOT digits, NOT Malayalam numerals) — e.g. 1300 → " +
+  "'തേട്ടീൻ ഹണ്ട്രഡ്', 49999 → 'ഏകദേശം ഫിഫ്റ്റി തൗസൻഡ്' (round long numbers); " +
+  "percent → 'പേഴ്സന്റ്' (NOT 'ശതമാനം'); spell English words PHONETICALLY in " +
+  "Malayalam script (do NOT translate the meaning); leave existing Malayalam " +
+  "unchanged. CRITICAL: when an English word is immediately followed by a " +
+  "Malayalam grammatical ending or postposition (ൽ, ഇൽ, ന്റെ, ന്, ക്ക്, ഉം, " +
+  "ഓട്, ലേക്ക്…), FUSE them into ONE natural Malayalam word — e.g. 'fintech ൽ' " +
+  "→ 'ഫിന്ടെക്കിൽ', 'startup ന്റെ' → 'സ്റ്റാർട്ടപ്പിന്റെ'. NEVER leave a " +
+  "Malayalam ending as a separate token after an English word (a stray ending " +
+  "makes the voice slur). Output ONLY the final Malayalam-script text:\n\n";
 
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
@@ -86,6 +98,7 @@ function cleanForSpeech(text: string): string {
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // [label](url) -> label
     .replace(/https?:\/\/\S+/g, " ") // bare URLs
     .replace(/[\p{Extended_Pictographic}‍️]/gu, " ") // emojis
+    .replace(/[\u200B\uFEFF]/g, "") // zero-width space / BOM (gpt-4o leaks these; NOT ZWNJ/ZWJ which Malayalam needs)
     .replace(/^\s*(?:[-*•]|\d+[.)])\s+/gm, " ") // list / bullet markers
     .replace(/[*_`~#>|]+/g, " ") // markdown emphasis / code / headings
     .replace(/\s*[—–]\s*/g, ", ") // em / en dash -> spoken pause
@@ -110,7 +123,9 @@ function fixFounderForms(text: string): string {
     [/നൈൻ/g, "ണയൻ"], // nine
   ];
   for (const [re, rep] of FIXES) t = t.replace(re, rep);
-  return t.replace(/ലക്ഷം/g, "ലാക്ക്");
+  t = t.replace(/ലക്ഷം/g, "ലാക്ക്");
+  // founder wants English "percent" spoken, not literary Malayalam ശതമാനം
+  return t.replace(/ശതമാനം/g, "പേഴ്സന്റ്");
 }
 
 // Render English (Latin) words and numbers as Malayalam script so IndicF5
@@ -182,7 +197,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         Accept: "audio/mpeg",
       },
-      body: JSON.stringify({ text: speakText }),
+      body: JSON.stringify({ text: speakText, voice: "vivek" }),
     });
   } catch (err) {
     console.error("[vn-tts] owned-voice fetch failed:", err);
