@@ -123,7 +123,9 @@ function fixFounderForms(text: string): string {
     [/നൈൻ/g, "ണയൻ"], // nine
   ];
   for (const [re, rep] of FIXES) t = t.replace(re, rep);
-  t = t.replace(/ലക്ഷം/g, "ലാക്ക്");
+  // "lakh": ലക്ഷം (anusvara) and ലക്ഷ് (virama) → ലാക്ക്. The (?![യമ]) guard
+  // protects ലക്ഷ്യം (goal) / ലക്ഷ്മി; anusvara form can't hit those anyway.
+  t = t.replace(/ലക്ഷം/g, "ലാക്ക്").replace(/ലക്ഷ്(?![യമ])/g, "ലാക്ക്");
   // founder wants English "percent" spoken, not literary Malayalam ശതമാനം
   return t.replace(/ശതമാനം/g, "പേഴ്സന്റ്");
 }
