@@ -328,5 +328,38 @@ alter table public.video_sessions enable row level security;
 
 
 -- ===========================================================
+-- Skillies School v6 · KDP Coach usage tracking
+--   Added 2026-05 so admins can see who uses the student chatbot
+--   and how much it costs. One row per assistant reply. Tokens +
+--   estimated USD cost are written by the /api/student/coach route
+--   (service-role); pricing lives app-side in lib/anthropic-pricing.
+--   Idempotent; safe to re-run.
+-- ===========================================================
+
+create table if not exists public.coach_usage (
+  id                   uuid primary key default gen_random_uuid(),
+  user_id              uuid not null references public.profiles(id) on delete cascade,
+  model                text not null,
+  input_tokens         int  not null default 0,
+  output_tokens        int  not null default 0,
+  cache_read_tokens    int  not null default 0,
+  cache_creation_tokens int not null default 0,
+  estimated_cost_usd   numeric(12,6) not null default 0,
+  created_at           timestamptz not null default now()
+);
+
+create index if not exists coach_usage_user_idx
+  on public.coach_usage(user_id, created_at desc);
+create index if not exists coach_usage_created_idx
+  on public.coach_usage(created_at desc);
+
+alter table public.coach_usage enable row level security;
+-- Writes + admin reads go through the service-role client (bypasses
+-- RLS). No student-facing policy by design — usage data is admin-only.
+-- The /admin/analytics page reads raw rows filtered by date range and
+-- aggregates per-student / per-day in application code.
+
+
+-- ===========================================================
 -- Done. Visit Settings → API to grab the URL + keys.
 -- ===========================================================

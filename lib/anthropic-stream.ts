@@ -104,6 +104,15 @@ export type StreamResult =
   | { ok: true; response: Response }
   | { ok: false; status: number; error: string };
 
+/** Token usage for one completed assistant reply. */
+export type ChatUsage = {
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheCreationTokens: number;
+};
+
 /**
  * Open a streaming Anthropic chat with model fallback and re-stream it
  * as our minimal SSE line protocol. Returns a ready-to-return Response
@@ -121,10 +130,26 @@ export async function streamAnthropicChat(params: {
   messages: ChatTurn[];
   maxTokens?: number;
   logTag?: string;
+  /**
+   * Override the model fallback chain for this caller. Defaults to the
+   * shared `ANTHROPIC_MODEL_CHAIN`. Use a cheaper single-model chain (e.g.
+   * Haiku only) on cost-sensitive surfaces.
+   */
+  models?: string[];
+  /**
+   * Fired once when the reply finishes, with token counts for the model
+   * that actually answered. Used for usage/cost logging. Errors thrown
+   * here are swallowed so logging never breaks the chat.
+   */
+  onUsage?: (usage: ChatUsage) => void;
 }): Promise<StreamResult> {
-  const { apiKey, system, messages } = params;
+  const { apiKey, system, messages, onUsage } = params;
   const maxTokens = params.maxTokens ?? 1024;
   const tag = params.logTag ?? "chat";
+  const modelChain =
+    params.models && params.models.length > 0
+      ? params.models
+      : ANTHROPIC_MODEL_CHAIN;
 
   const requestBody = (model: string) =>
     JSON.stringify({
@@ -151,7 +176,7 @@ export async function streamAnthropicChat(params: {
   let prelude = ""; // bytes already pulled off `reader` during the peek
   const peekDecoder = new TextDecoder();
 
-  for (const model of ANTHROPIC_MODEL_CHAIN) {
+  for (const model of modelChain) {
     let upstream: Response;
     try {
       upstream = await fetch(ANTHROPIC_API_URL, {
@@ -244,6 +269,26 @@ export async function streamAnthropicChat(params: {
     async start(controller) {
       let buffer = prelude;
 
+      // Usage accumulates across frames: input + cache counts arrive in
+      // `message_start`, the final output count in `message_delta`.
+      const usage: ChatUsage = {
+        model: chosenModel,
+        inputTokens: 0,
+        outputTokens: 0,
+        cacheReadTokens: 0,
+        cacheCreationTokens: 0,
+      };
+      let usageReported = false;
+      const reportUsage = () => {
+        if (usageReported || !onUsage) return;
+        usageReported = true;
+        try {
+          onUsage(usage);
+        } catch (err) {
+          console.error(`[${tag}] onUsage callback threw`, err);
+        }
+      };
+
       const writeChunk = (text: string) => {
         const lines = text
           .split("\n")
@@ -287,7 +332,41 @@ export async function streamAnthropicChat(params: {
             } catch {
               /* ignore unparseable frame */
             }
+          } else if (eventName === "message_start") {
+            try {
+              const parsed = JSON.parse(dataStr) as {
+                message?: {
+                  usage?: {
+                    input_tokens?: number;
+                    output_tokens?: number;
+                    cache_read_input_tokens?: number;
+                    cache_creation_input_tokens?: number;
+                  };
+                };
+              };
+              const u = parsed.message?.usage;
+              if (u) {
+                usage.inputTokens = u.input_tokens ?? 0;
+                usage.cacheReadTokens = u.cache_read_input_tokens ?? 0;
+                usage.cacheCreationTokens = u.cache_creation_input_tokens ?? 0;
+                usage.outputTokens = u.output_tokens ?? 0;
+              }
+            } catch {
+              /* ignore unparseable frame */
+            }
+          } else if (eventName === "message_delta") {
+            try {
+              const parsed = JSON.parse(dataStr) as {
+                usage?: { output_tokens?: number };
+              };
+              if (typeof parsed.usage?.output_tokens === "number") {
+                usage.outputTokens = parsed.usage.output_tokens;
+              }
+            } catch {
+              /* ignore unparseable frame */
+            }
           } else if (eventName === "message_stop") {
+            reportUsage();
             writeEvent("done", "ok");
           } else if (eventName === "error") {
             let errType = "upstream_stream_error";
@@ -325,6 +404,9 @@ export async function streamAnthropicChat(params: {
         console.error(`[${tag}] stream relay failed`, err);
         writeEvent("error", "relay_failed");
       } finally {
+        // Safety net: if the stream ended without a clean message_stop
+        // we still log whatever usage we captured (output may be 0).
+        reportUsage();
         controller.close();
       }
     },

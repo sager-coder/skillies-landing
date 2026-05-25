@@ -26,6 +26,7 @@ import {
 import { rateLimit } from "@/lib/rate-limit";
 import { SKILLIES_KDP_COACH_PROMPT } from "@/lib/skillies-kdp-coach-prompt";
 import { sanitizeTurns, streamAnthropicChat } from "@/lib/anthropic-stream";
+import { estimateCostUsd } from "@/lib/anthropic-pricing";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -124,6 +125,28 @@ export async function POST(req: NextRequest) {
     messages: sanitized.turns,
     maxTokens: 1024,
     logTag: "coach",
+    // Cost-sensitive surface: run Haiku only. ~12× cheaper than Sonnet.
+    models: ["claude-haiku-4-5-20251001"],
+    // Log token usage + estimated cost once the reply finishes. Fire-and-
+    // forget; a failed insert must never break the chat. The streaming
+    // function stays alive until the relay closes, so this write lands.
+    onUsage: (usage) => {
+      const estimated_cost_usd = estimateCostUsd(usage);
+      void admin
+        .from("coach_usage")
+        .insert({
+          user_id: user.id,
+          model: usage.model,
+          input_tokens: usage.inputTokens,
+          output_tokens: usage.outputTokens,
+          cache_read_tokens: usage.cacheReadTokens,
+          cache_creation_tokens: usage.cacheCreationTokens,
+          estimated_cost_usd,
+        })
+        .then(({ error }) => {
+          if (error) console.error("[coach] usage insert failed:", error.message);
+        });
+    },
   });
   if (!result.ok) {
     return jsonError(result.status, { error: result.error });
