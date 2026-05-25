@@ -41,6 +41,10 @@ export async function streamGeminiChat(params: {
     generationConfig: {
       temperature: params.temperature ?? 0.6,
       maxOutputTokens: params.maxTokens ?? 1024,
+      // gemini-3.5-flash "thinks" by default, which eats the output-token
+      // budget and truncates the reply mid-sentence. These are short screening
+      // replies — no thinking needed; disabling it gives full answers + speed.
+      thinkingConfig: { thinkingBudget: 0 },
     },
   });
 
