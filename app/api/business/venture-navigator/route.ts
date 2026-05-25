@@ -25,6 +25,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { VENTURE_NAVIGATOR_PROMPT } from "@/lib/venture-navigator-prompt";
 import { sanitizeTurns } from "@/lib/anthropic-stream";
 import { streamOpenAIChat } from "@/lib/openai-stream";
+import { streamGeminiChat } from "@/lib/gemini-stream";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,6 +37,25 @@ const MAX_PER_WINDOW = 40;
 const WINDOW_SECONDS = 10 * 60;
 const MAX_TURNS = 24;
 const MAX_USER_CHARS = 2000;
+
+// Voice-mode brain prompt — deliberately SIMPLE. A clean prompt + gemini-3.5-flash
+// produced the best result of every model tested (naturalness 4.6, zero
+// Latin/digit/foreign leaks), writing clean spoken Malayalam directly. No
+// screener-bloat / override / user-pin / transliteration layer needed.
+const CLEAN_VOICE_PROMPT = `You are Vivek M V — a warm but sharp Kerala startup-accelerator founder. Founders message you on WhatsApp to be screened, and you reply with a VOICE NOTE in your own cloned voice. So everything you write is SPOKEN ALOUD.
+
+YOUR JOB: do a quick, honest "first read" of the founder — react to what they actually said, give your real take, and draw out the few facts that matter (traction, paying customers, revenue, the ask). Warm and encouraging, but straight — never flattery.
+
+HOW TO REPLY (every message):
+1. ENGAGE THE SUBSTANCE. React to what they ACTUALLY said — their specific numbers/situation — and give your honest read. If they ask a question, ANSWER it directly. Do NOT reflexively bounce back a question every turn; that sounds like a robot. A follow-up question is welcome only AFTER you have genuinely engaged.
+2. LANGUAGE: natural, COLLOQUIAL, spoken Kerala Malayalam in Malayalam script — the way a real Malayali mentor talks. Warm-professional: not buddy-casual, not stiff-formal.
+   - Keep ONLY the common English startup words Malayalis actually say — startup, seed, traction, fund, revenue, growth — but WRITE THEM IN MALAYALAM SCRIPT: സ്റ്റാർട്ടപ്പ്, സീഡ്, ട്രാക്ഷൻ, ഫണ്ട്, റവന്യൂ, ഗ്രോത്ത്.
+   - NEVER use literary/Sanskritized Malayalam, NEVER Hindi words, NEVER obscure coinages. If unsure, use the simple everyday word.
+   - Open with "ഹായ്" — never the formal "നമസ്കാരം".
+3. NUMBERS: English number-WORDS written in Malayalam script — NEVER digits, NEVER Malayalam numerals, NEVER any non-Malayalam script. Round long/exact numbers. Use these exact forms: thirty → തേട്ടി; nine → ണയൻ; lakh → ലാക്ക്; percent → പേഴ്സന്റ്; 25000 → ട്വന്റി ഫൈവ് തൗസൻഡ്; 49999 → ഏകദേശം ഫിഫ്റ്റി തൗസൻഡ്; 50 lakh → ഫിഫ്റ്റി ലാക്ക്; 5 crore → ഫൈവ് കോടി; 35% → തേട്ടി ഫൈവ് പേഴ്സന്റ്. "per month / per clinic" means EACH — never confuse "per" with "percent".
+4. LENGTH: 1-3 short, self-contained spoken sentences. No markdown, no emoji, no bullet symbols.
+
+Reply as Vivek to each founder message.`;
 
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
@@ -98,71 +118,45 @@ export async function POST(req: NextRequest) {
   // transliterates the few English words to Malayalam script, giving his
   // natural Manglish delivery.
   const voiceMode = (body as { voice?: unknown })?.voice === true;
-  let systemPrompt = VENTURE_NAVIGATOR_PROMPT;
-  if (voiceMode) {
-    // The base prompt's whole "LANGUAGE — MIRROR THE FOUNDER" section makes
-    // the agent reply in English to English founders — which sounds robotic
-    // in Vivek's cloned voice. Excise that entire section for spoken turns
-    // so there's no conflict, then let the override below govern language.
-    const base = VENTURE_NAVIGATOR_PROMPT.replace(
-      /═+\nLANGUAGE — MIRROR THE FOUNDER\n═+\n[\s\S]*?(?=\n═+\n)/,
-      "",
-    );
-    systemPrompt = `${base}
-
-═══════════════════════════════════════════════
-[VOICE TURN — spoken as Vivek in his own cloned Malayalam voice]
-═══════════════════════════════════════════════
-The founder sent a voice note; your reply is read aloud. Reply as Vivek: a warm but sharp Kerala startup mentor.
-
-ENGAGE THE SUBSTANCE — react to what they ACTUALLY said: their specific numbers/situation, give your honest read, ANSWER direct questions directly. Do NOT reflexively bounce back a question every turn (that sounds like a robot). A follow-up question is welcome ONLY after you have genuinely engaged.
-
-LANGUAGE — natural COLLOQUIAL Kerala Malayalam in Malayalam script (a real Malayali mentor, warm-professional; not buddy-casual, not stiff-formal). Keep the few English startup words Malayalis actually say (startup, seed, traction, fund, revenue, growth) but WRITE THEM IN MALAYALAM SCRIPT (സ്റ്റാർട്ടപ്പ്, സീഡ്, ട്രാക്ഷൻ, ഫണ്ട്, റവന്യൂ, ഗ്രോത്ത്). Never literary/Sanskritized Malayalam, never Hindi words, never obscure coinages. Open with "ഹായ്" (never "നമസ്കാരം"). Numbers as English number-WORDS in Malayalam script (round long ones), NEVER digits or non-Malayalam script; "percent" = "പേഴ്സന്റ്". 1-3 short spoken sentences.
-
-GOOD examples (warm-professional, engages the substance):
-• "ഹായ്! അമ്പത് ലാക്ക് സീഡ് കിട്ടിയത് നല്ല കാര്യം. ആ പണം എങ്ങനെ ഉപയോഗിക്കാനാണ് നോക്കുന്നത്?"
-• "ഫൈവ് പേഴ്സന്റ് മാത്രമേ പണം തരുന്നുള്ളൂ എന്നത് കുറവാണ്, പക്ഷേ പേടിക്കണ്ട. ആ ഫണൽ നന്നാക്കിയാൽ മതി."
-• "കോഫൗണ്ടർ ഇല്ലാത്തത് വലിയ പ്രശ്നമല്ല. നല്ലൊരു ടീമും ട്രാക്ഷനും ഉണ്ടെങ്കിൽ ഞങ്ങള് നോക്കും."`;
-
-    // System instructions alone lose to the model's instinct to mirror the
-    // founder's English, so ALSO pin the language in the user turn itself —
-    // the strongest lever. (Server-side only; not persisted to history.)
-    const li = sanitized.turns.length - 1;
-    if (li >= 0) {
-      sanitized.turns[li] = {
-        ...sanitized.turns[li],
-        content:
-          sanitized.turns[li].content +
-          "\n\n[Reply spoken aloud in Malayalam script. Engage what I actually said; answer directly, don't just ask another question. Open with ഹായ്.]",
-      };
-    }
-  }
-
-  // ── 3. LLM brain key (OpenAI — Anthropic/Sonnet retired for this demo) ──
-  // Prefer the dedicated OPENAI_LLM_API_KEY, but fall back to the other OpenAI
-  // keys already set on this project (OPENAI_API_KEY / VN_OPENAI_API_KEY) so the
-  // brain works even if the dedicated var hasn't been provisioned.
-  const apiKey =
-    process.env.OPENAI_LLM_API_KEY ||
-    process.env.OPENAI_API_KEY ||
-    process.env.VN_OPENAI_API_KEY;
-  if (!apiKey) {
-    console.error("[vn] no OpenAI key set (OPENAI_LLM_API_KEY/OPENAI_API_KEY/VN_OPENAI_API_KEY)");
-    return jsonError(503, { error: "demo_not_configured" });
-  }
-
-  // ── 4. Stream the reply (model fallback handled in the shared lib) ─
   console.log(
     "[vn] request:",
     sanitized.turns.map((t) => `${t.role}:${t.content.length}`).join(","),
+    voiceMode ? "(voice)" : "",
   );
-  const result = await streamOpenAIChat({
-    apiKey,
-    system: systemPrompt,
-    messages: sanitized.turns,
-    maxTokens: 700, // WhatsApp-length replies; the agent is told to be terse
-    logTag: voiceMode ? "vn-voice" : "vn",
-  });
+
+  let result;
+  if (voiceMode) {
+    // Voice = Vivek's cloned Malayalam voice → gemini-3.5-flash + the clean prompt.
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (!geminiKey) {
+      console.error("[vn] GEMINI_API_KEY / GOOGLE_API_KEY not set");
+      return jsonError(503, { error: "demo_not_configured" });
+    }
+    result = await streamGeminiChat({
+      apiKey: geminiKey,
+      system: CLEAN_VOICE_PROMPT,
+      messages: sanitized.turns,
+      maxTokens: 700,
+      logTag: "vn-voice",
+    });
+  } else {
+    // Text mode keeps the full screener on OpenAI (English-readable output).
+    const apiKey =
+      process.env.OPENAI_LLM_API_KEY ||
+      process.env.OPENAI_API_KEY ||
+      process.env.VN_OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error("[vn] no OpenAI key set");
+      return jsonError(503, { error: "demo_not_configured" });
+    }
+    result = await streamOpenAIChat({
+      apiKey,
+      system: VENTURE_NAVIGATOR_PROMPT,
+      messages: sanitized.turns,
+      maxTokens: 700,
+      logTag: "vn",
+    });
+  }
   if (!result.ok) {
     return jsonError(result.status, { error: result.error });
   }

@@ -46,33 +46,6 @@ const MAX_TTS_CHARS = 1200;
 // Malayalam Unicode block — informational only (the voice is always
 // Vivek's; this just tags the response for debugging).
 const MALAYALAM_RE = /[ഀ-ൿ]/;
-// Anything OUTSIDE the speakable set means there's something to normalise for
-// IndicF5 (which only cleanly speaks Malayalam-script words). This catches
-// Latin, digits, % / ₹, AND stray non-Malayalam scripts (e.g. a Tamil glyph
-// gpt-4o sometimes leaks like ஸ in "ஸീഡ്") — the old /[A-Za-z0-9]/ missed
-// those, so they slipped to the voice and garbled. Allowed: Malayalam block,
-// whitespace, ZWNJ/ZWJ (used IN Malayalam), basic sentence punctuation.
-const NEEDS_NORMALISE_RE =
-  /[^\s\u0D00-\u0D7F\u200C\u200D.,!?;:'"()\-]/u;
-const TRANSLIT_MODEL = process.env.VN_TRANSLIT_MODEL || "gpt-4o";
-const TRANSLIT_PROMPT =
-  "Rewrite the following as clean SPOKEN text for a text-to-speech voice, " +
-  "then transliterate it into Malayalam script. The output MUST be 100% " +
-  "MALAYALAM SCRIPT: ZERO digits, ZERO Latin letters, and ZERO characters from " +
-  "any OTHER script (Tamil, Telugu, Devanagari, etc.) — convert every such " +
-  "character into Malayalam script. Rules: drop any markdown, symbols, emojis " +
-  "and list/bullet formatting; render numbers as ENGLISH number-WORDS in " +
-  "Malayalam script (NOT digits, NOT Malayalam numerals) — e.g. 1300 → " +
-  "'തേട്ടീൻ ഹണ്ട്രഡ്', 49999 → 'ഏകദേശം ഫിഫ്റ്റി തൗസൻഡ്' (round long numbers); " +
-  "percent → 'പേഴ്സന്റ്' (NOT 'ശതമാനം'); spell English words PHONETICALLY in " +
-  "Malayalam script (do NOT translate the meaning); leave existing Malayalam " +
-  "unchanged. CRITICAL: when an English word is immediately followed by a " +
-  "Malayalam grammatical ending or postposition (ൽ, ഇൽ, ന്റെ, ന്, ക്ക്, ഉം, " +
-  "ഓട്, ലേക്ക്…), FUSE them into ONE natural Malayalam word — e.g. 'fintech ൽ' " +
-  "→ 'ഫിന്ടെക്കിൽ', 'startup ന്റെ' → 'സ്റ്റാർട്ടപ്പിന്റെ'. NEVER leave a " +
-  "Malayalam ending as a separate token after an English word (a stray ending " +
-  "makes the voice slur). Output ONLY the final Malayalam-script text:\n\n";
-
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
   return (
@@ -130,37 +103,6 @@ function fixFounderForms(text: string): string {
   return t.replace(/ശതമാനം/g, "പേഴ്സന്റ്");
 }
 
-// Render English (Latin) words and numbers as Malayalam script so IndicF5
-// pronounces them like Vivek would. Best-effort: skips already-clean
-// Malayalam and falls back to the input on any failure so voice never breaks.
-async function toMalayalamScript(text: string): Promise<string> {
-  if (!NEEDS_NORMALISE_RE.test(text)) return text;
-  const apiKey = process.env.VN_OPENAI_API_KEY;
-  if (!apiKey) return text;
-  try {
-    const r = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: TRANSLIT_MODEL,
-        temperature: 0,
-        messages: [{ role: "user", content: TRANSLIT_PROMPT + text }],
-      }),
-    });
-    if (!r.ok) return text;
-    const d = (await r.json()) as {
-      choices?: { message?: { content?: string } }[];
-    };
-    const out = (d?.choices?.[0]?.message?.content ?? "").trim();
-    return out || text;
-  } catch {
-    return text;
-  }
-}
-
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
   const rl = rateLimit(`vn-tts:${ip}`, MAX_PER_WINDOW, WINDOW_SECONDS);
@@ -187,8 +129,9 @@ export async function POST(req: NextRequest) {
   // Strip formatting/emoji, then normalise + transliterate to clean
   // Malayalam script so IndicF5 never reads markup or symbols aloud.
   const cleaned = cleanForSpeech(text) || text;
-  // transliterate → then force the founder's by-ear number forms (തേട്ടി/ണയൻ/ലാക്ക്)
-  const speakText = fixFounderForms(await toMalayalamScript(cleaned));
+  // Gemini (the brain) already outputs clean Malayalam script — no LLM
+  // transliteration needed; just the deterministic founder-form backstop.
+  const speakText = fixFounderForms(cleaned);
   const transliterated = speakText !== text;
 
   let upstream: Response;
