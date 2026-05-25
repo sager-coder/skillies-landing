@@ -23,7 +23,8 @@
 import { type NextRequest } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { VENTURE_NAVIGATOR_PROMPT } from "@/lib/venture-navigator-prompt";
-import { sanitizeTurns, streamAnthropicChat } from "@/lib/anthropic-stream";
+import { sanitizeTurns } from "@/lib/anthropic-stream";
+import { streamOpenAIChat } from "@/lib/openai-stream";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -133,10 +134,10 @@ Spoken style: write in SHORT, self-contained sentences — each sentence is play
     }
   }
 
-  // ── 3. Anthropic key ──────────────────────────────────────────────
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // ── 3. LLM brain key (OpenAI — Anthropic/Sonnet retired for this demo) ──
+  const apiKey = process.env.OPENAI_LLM_API_KEY;
   if (!apiKey) {
-    console.error("[vn] ANTHROPIC_API_KEY not set");
+    console.error("[vn] OPENAI_LLM_API_KEY not set");
     return jsonError(503, { error: "demo_not_configured" });
   }
 
@@ -145,7 +146,7 @@ Spoken style: write in SHORT, self-contained sentences — each sentence is play
     "[vn] request:",
     sanitized.turns.map((t) => `${t.role}:${t.content.length}`).join(","),
   );
-  const result = await streamAnthropicChat({
+  const result = await streamOpenAIChat({
     apiKey,
     system: systemPrompt,
     messages: sanitized.turns,
