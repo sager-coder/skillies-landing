@@ -25,10 +25,8 @@ export const maxDuration = 60; // eleven_v3 on a long reply can take a few secon
 // Voices live in the connected ElevenLabs account (the Skillies account).
 // These IDs are not secret. Override via env if they ever change without
 // a redeploy. Shared with the other WhatsApp demos by design.
-const MALAYALAM_VOICE_ID =
-  process.env.ELEVENLABS_VOICE_ID_MALAYALAM || "ddgPJ6IlSF2yT9JX3TZo"; // Malayalam-reply voice (Skillies ElevenLabs account)
-const ENGLISH_VOICE_ID =
-  process.env.ELEVENLABS_VOICE_ID_ENGLISH || "EXAVITQu4vr4xnSDxMaL"; // Sarah — reassuring
+const MALAYALAM_VOICE_ID = "nSAr5Z3qsWwP7QlIG49P"; // User's custom voice
+const ENGLISH_VOICE_ID = "nSAr5Z3qsWwP7QlIG49P"; // User's custom voice
 const TTS_MODEL = "eleven_v3";
 
 const MAX_PER_WINDOW = 40;

@@ -542,7 +542,7 @@ export default function VentureNavigatorChatClient() {
 
     const synthOne = async (
       text: string,
-    ): Promise<{ url: string; dur: number; blob: Blob } | null> => {
+    ): Promise<{ url: string; dur: number } | null> => {
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
           const tts = await fetch("/api/business/venture-navigator/tts", {
@@ -555,7 +555,7 @@ export default function VentureNavigatorChatClient() {
             if (blob.size > 0) {
               const url = URL.createObjectURL(blob);
               const dur = await audioDuration(url).catch(() => 0);
-              return { url, dur, blob };
+              return { url, dur };
             }
           }
         } catch {
@@ -570,24 +570,12 @@ export default function VentureNavigatorChatClient() {
     const notes = parts
       .map((text, i) => ({ text, audio: synthd[i] }))
       .filter(
-        (n): n is { text: string; audio: { url: string; dur: number; blob: Blob } } =>
+        (n): n is { text: string; audio: { url: string; dur: number } } =>
           // keep real speech notes; drop the sub-second onset-burst "electric"
           // junk clips (dur 0 = unreadable → keep, benefit of doubt).
           !!n.audio &&
           (n.audio.dur === 0 || n.audio.dur >= MIN_NOTE_DUR_SEC),
       );
-
-    // Tame the rare IndicF5 "electric" onset on the FIRST note with a short
-    // fade-in. Best-effort: if decode/encode fails, keep the original audio.
-    if (notes[0]) {
-      try {
-        const faded = await fadeInWav(notes[0].audio.blob, 0.15);
-        URL.revokeObjectURL(notes[0].audio.url);
-        notes[0].audio.url = URL.createObjectURL(faded);
-      } catch {
-        /* keep original first-note audio */
-      }
-    }
 
     // Voice turn: if nothing synthesized, surface it rather than silently
     // replying in text.
@@ -807,63 +795,6 @@ async function blobToWav16k(blob: Blob): Promise<Blob> {
     const s = Math.max(-1, Math.min(1, samples[i]));
     view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7fff, true);
     off += 2;
-  }
-  return new Blob([ab], { type: "audio/wav" });
-}
-
-// Apply a short linear fade-in to the START of a TTS audio blob, returned as a
-// PCM16 WAV. IndicF5 occasionally opens the FIRST voice note with a brief
-// "electric" onset transient; a ~150ms fade-in tames that click without
-// audibly dimming the spoken word (speech begins ~100ms in). Applied to the
-// first note ONLY — leaves every later note byte-for-byte as the model made it.
-async function fadeInWav(blob: Blob, fadeSec = 0.15): Promise<Blob> {
-  const arrayBuf = await blob.arrayBuffer();
-  const AudioCtx: typeof AudioContext =
-    window.AudioContext ||
-    (window as unknown as { webkitAudioContext: typeof AudioContext })
-      .webkitAudioContext;
-  const ctx = new AudioCtx();
-  const decoded = await ctx.decodeAudioData(arrayBuf);
-  void ctx.close();
-
-  const sr = decoded.sampleRate;
-  const ch = decoded.numberOfChannels;
-  const n = decoded.length;
-  const fadeFrames = Math.min(n, Math.round(fadeSec * sr));
-
-  const chans: Float32Array[] = [];
-  for (let c = 0; c < ch; c++) {
-    const data = decoded.getChannelData(c).slice();
-    for (let i = 0; i < fadeFrames; i++) data[i] *= i / fadeFrames;
-    chans.push(data);
-  }
-
-  const dataLen = n * ch * 2;
-  const ab = new ArrayBuffer(44 + dataLen);
-  const view = new DataView(ab);
-  const writeStr = (off: number, s: string) => {
-    for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i));
-  };
-  writeStr(0, "RIFF");
-  view.setUint32(4, 36 + dataLen, true);
-  writeStr(8, "WAVE");
-  writeStr(12, "fmt ");
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true); // PCM
-  view.setUint16(22, ch, true);
-  view.setUint32(24, sr, true);
-  view.setUint32(28, sr * ch * 2, true);
-  view.setUint16(32, ch * 2, true);
-  view.setUint16(34, 16, true);
-  writeStr(36, "data");
-  view.setUint32(40, dataLen, true);
-  let off = 44;
-  for (let i = 0; i < n; i++) {
-    for (let c = 0; c < ch; c++) {
-      const s = Math.max(-1, Math.min(1, chans[c][i]));
-      view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7fff, true);
-      off += 2;
-    }
   }
   return new Blob([ab], { type: "audio/wav" });
 }
