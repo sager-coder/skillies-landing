@@ -21,7 +21,7 @@
 import { type NextRequest } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { INSURANCE_CONSULTANT_PROMPT } from "@/lib/insurance-consultant-prompt";
-import { sanitizeTurns, streamAnthropicChat } from "@/lib/anthropic-stream";
+import { sanitizeTurns, streamOpenAIChat } from "@/lib/openai-stream";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -117,10 +117,10 @@ Speak in CASUAL, EVERYDAY KERALA SPOKEN MALAYALAM (നാടൻ സംസാര 
 Spoken style: short — 2 to 4 short sentences, one idea, end with one question. Numbers as rounded words, never digit strings (e.g. "around twelve thousand", "ten lakh cover", "about six percent"). No markdown, no bullet symbols, no emoji, no asterisks. It must sound natural read out loud.`;
   }
 
-  // ── 3. Anthropic key ──────────────────────────────────────────────
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // ── 3. OpenAI key ──────────────────────────────────────────────
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    console.error("[insurance-consultant] ANTHROPIC_API_KEY not set");
+    console.error("[insurance-consultant] OPENAI_API_KEY not set");
     return jsonError(503, { error: "demo_not_configured" });
   }
 
@@ -129,7 +129,7 @@ Spoken style: short — 2 to 4 short sentences, one idea, end with one question.
     "[insurance-consultant] request:",
     sanitized.turns.map((t) => `${t.role}:${t.content.length}`).join(","),
   );
-  const result = await streamAnthropicChat({
+  const result = await streamOpenAIChat({
     apiKey,
     system: systemPrompt,
     messages: sanitized.turns,

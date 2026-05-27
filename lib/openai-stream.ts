@@ -1,25 +1,90 @@
 /**
- * OpenAI streaming chat — a drop-in alternative to `streamAnthropicChat`
- * for when the Anthropic brain is unavailable (e.g. quota exhausted).
+ * Shared OpenAI streaming helper for our chat surfaces (the Skillies
+ * KDP Coach, the business demo agents, …).
  *
- * It emits the SAME tiny SSE line protocol the browser client already
- * parses, so a route can swap providers without any client change:
+ * What it does
+ * ────────────
+ * 1. `sanitizeTurns` — coerce a client-supplied messages array into a
+ *    clean, OpenAI-valid shape: drop junk, trim, guarantee a leading `user` turn.
+ * 2. `streamOpenAIChat` — re-stream the OpenAI SSE response as a tiny SSE line 
+ *    protocol the browser can read with a ReadableStream + TextDecoder:
  *
- *   data: <chunk of assistant text>\n\n   ← per delta
- *   event: done\ndata: ok\n\n             ← terminator
- *   event: error\ndata: <type>\n\n        ← mid-stream error
- *
- * Reuses `ChatTurn` / `StreamResult` / `sanitizeTurns` from
- * `anthropic-stream.ts` (which is kept as-is — the Anthropic path is not
- * deleted). The OpenAI key is read by the caller and passed in.
+ *      data: <chunk of assistant text>\n\n   ← repeated per delta
+ *      event: done\ndata: ok\n\n             ← terminator
+ *      event: error\ndata: <type>\n\n        ← only if a committed model
+ *                                              errors mid-stream
  */
-import type { ChatTurn, StreamResult } from "./anthropic-stream";
 
-// gpt-5.5 is the brain (smarter than gpt-4o on the rich VN prompt — measured);
-// reasoning_effort "low" keeps it ~3s (as fast as gpt-4o). gpt-4o is the
-// fallback if 5.5 errors.
-export const OPENAI_MODEL_CHAIN = ["gpt-5.5", "gpt-4o"];
+export const OPENAI_MODEL_CHAIN = [
+  "gpt-4o",
+  "gpt-4o-mini",
+];
+
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+
+export type ChatTurn = { role: "user" | "assistant"; content: string };
+
+export type SanitizeResult =
+  | { ok: true; turns: ChatTurn[] }
+  | { ok: false; error: string };
+
+export function sanitizeTurns(
+  messagesIn: unknown,
+  opts: { maxTurns?: number; maxUserChars?: number } = {},
+): SanitizeResult {
+  const maxTurns = opts.maxTurns ?? 20;
+  const maxUserChars = opts.maxUserChars ?? 4000;
+
+  if (!Array.isArray(messagesIn) || messagesIn.length === 0) {
+    return { ok: false, error: "missing_messages" };
+  }
+
+  const turns: ChatTurn[] = [];
+  for (const raw of messagesIn) {
+    if (!raw || typeof raw !== "object") continue;
+    const m = raw as { role?: unknown; content?: unknown };
+    if (m.role !== "user" && m.role !== "assistant") continue;
+    if (typeof m.content !== "string") continue;
+    const text = m.content.trim();
+    if (!text) continue;
+    turns.push({
+      role: m.role,
+      content: m.role === "user" ? text.slice(0, maxUserChars) : text,
+    });
+  }
+  if (turns.length === 0 || turns[turns.length - 1].role !== "user") {
+    return { ok: false, error: "last_message_must_be_user" };
+  }
+
+  const collapsed: ChatTurn[] = [];
+  for (const t of turns) {
+    const last = collapsed[collapsed.length - 1];
+    if (last && last.role === t.role) {
+      last.content = `${last.content}\n\n${t.content}`;
+    } else {
+      collapsed.push({ ...t });
+    }
+  }
+  while (collapsed.length && collapsed[0].role !== "user") collapsed.shift();
+
+  const trimmed = collapsed.slice(-maxTurns);
+  while (trimmed.length && trimmed[0].role !== "user") trimmed.shift();
+  if (trimmed.length === 0) return { ok: false, error: "no_user_turn" };
+
+  return { ok: true, turns: trimmed };
+}
+
+export type StreamResult =
+  | { ok: true; response: Response }
+  | { ok: false; status: number; error: string };
+
+export type ChatUsage = {
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheCreationTokens: number;
+};
 
 export async function streamOpenAIChat(params: {
   apiKey: string;
@@ -27,47 +92,42 @@ export async function streamOpenAIChat(params: {
   messages: ChatTurn[];
   maxTokens?: number;
   logTag?: string;
+  models?: string[];
+  onUsage?: (usage: ChatUsage) => void;
 }): Promise<StreamResult> {
-  const { apiKey, system, messages } = params;
+  const { apiKey, system, messages, onUsage } = params;
   const maxTokens = params.maxTokens ?? 1024;
   const tag = params.logTag ?? "chat";
+  const modelChain =
+    params.models && params.models.length > 0
+      ? params.models
+      : OPENAI_MODEL_CHAIN;
 
-  const requestBody = (model: string) => {
-    const isGpt5 = model.startsWith("gpt-5");
-    const body: Record<string, unknown> = {
+  const requestBody = (model: string) =>
+    JSON.stringify({
       model,
+      max_tokens: maxTokens,
       stream: true,
+      stream_options: { include_usage: true },
       messages: [
         { role: "system", content: system },
         ...messages.map((t) => ({ role: t.role, content: t.content })),
       ],
-    };
-    if (isGpt5) {
-      // gpt-5 series: max_completion_tokens (not max_tokens), fixed default
-      // temperature, and reasoning_effort "low" to keep latency ~3s.
-      body.max_completion_tokens = maxTokens;
-      body.reasoning_effort = "low";
-    } else {
-      body.max_tokens = maxTokens;
-    }
-    return JSON.stringify(body);
-  };
+    });
 
-  // Walk the model chain: open the stream, peek the first frames; a non-OK
-  // status → try the next model. First model to stream wins.
   let chosenModel = "";
   let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
   let prelude = "";
   const peekDecoder = new TextDecoder();
 
-  for (const model of OPENAI_MODEL_CHAIN) {
+  for (const model of modelChain) {
     let upstream: Response;
     try {
       upstream = await fetch(OPENAI_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${apiKey}`,
         },
         body: requestBody(model),
       });
@@ -100,7 +160,20 @@ export async function streamOpenAIChat(params: {
       const { value, done } = await r.read();
       if (done) break;
       buf += peekDecoder.decode(value, { stream: true });
-      if (buf.includes('"choices"') || buf.includes("[DONE]")) {
+      
+      // OpenAI streams return "data: {...}" or "data: [DONE]"
+      if (buf.includes('"error":')) {
+        console.error(
+          `[${tag}]`,
+          model,
+          "error in stream",
+          "→ trying next model",
+        );
+        try {
+          await r.cancel();
+        } catch {}
+        decided = true;
+      } else if (buf.includes("data: ")) {
         good = true;
         decided = true;
       }
@@ -114,13 +187,11 @@ export async function streamOpenAIChat(params: {
     }
     try {
       await r.cancel();
-    } catch {
-      /* noop */
-    }
+    } catch {}
   }
 
   if (!reader) {
-    console.error(`[${tag}] all openai models failed`);
+    console.error(`[${tag}] all models failed/overloaded`);
     return { ok: false, status: 503, error: "all_models_overloaded" };
   }
   console.log(`[${tag}] using model:`, chosenModel);
@@ -132,7 +203,24 @@ export async function streamOpenAIChat(params: {
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       let buffer = prelude;
-      let doneEmitted = false;
+
+      const usage: ChatUsage = {
+        model: chosenModel,
+        inputTokens: 0,
+        outputTokens: 0,
+        cacheReadTokens: 0,
+        cacheCreationTokens: 0,
+      };
+      let usageReported = false;
+      const reportUsage = () => {
+        if (usageReported || !onUsage) return;
+        usageReported = true;
+        try {
+          onUsage(usage);
+        } catch (err) {
+          console.error(`[${tag}] onUsage callback threw`, err);
+        }
+      };
 
       const writeChunk = (text: string) => {
         const lines = text
@@ -153,32 +241,39 @@ export async function streamOpenAIChat(params: {
           const frame = buffer.slice(0, sep);
           buffer = buffer.slice(sep + 2);
           sep = buffer.indexOf("\n\n");
+
           for (const line of frame.split("\n")) {
-            if (!line.startsWith("data:")) continue;
-            const data = line.slice(5).trim();
-            if (!data) continue;
-            if (data === "[DONE]") {
-              if (!doneEmitted) {
+            if (line.startsWith("data:")) {
+              const dataStr = line.slice(5).trim();
+              if (!dataStr) continue;
+              if (dataStr === "[DONE]") {
+                reportUsage();
                 writeEvent("done", "ok");
-                doneEmitted = true;
+                continue;
               }
-              continue;
-            }
-            try {
-              const parsed = JSON.parse(data) as {
-                choices?: { delta?: { content?: string } }[];
-              };
-              const t = parsed.choices?.[0]?.delta?.content;
-              if (t) writeChunk(t);
-            } catch {
-              /* ignore unparseable frame */
+              try {
+                const parsed = JSON.parse(dataStr);
+                
+                // Track usage if included
+                if (parsed.usage) {
+                  usage.inputTokens = parsed.usage.prompt_tokens ?? 0;
+                  usage.outputTokens = parsed.usage.completion_tokens ?? 0;
+                }
+                
+                const content = parsed.choices?.[0]?.delta?.content;
+                if (content) {
+                  writeChunk(content);
+                }
+              } catch (e) {
+                // Ignore unparseable chunks
+              }
             }
           }
         }
       };
 
       try {
-        drainFrames();
+        drainFrames(); // flush the peeked prelude first
         while (true) {
           const { value, done } = await committedReader.read();
           if (done) break;
@@ -186,10 +281,10 @@ export async function streamOpenAIChat(params: {
           drainFrames();
         }
       } catch (err) {
-        console.error(`[${tag}] openai stream relay failed`, err);
+        console.error(`[${tag}] stream relay failed`, err);
         writeEvent("error", "relay_failed");
       } finally {
-        if (!doneEmitted) writeEvent("done", "ok");
+        reportUsage();
         controller.close();
       }
     },
