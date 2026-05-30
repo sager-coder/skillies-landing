@@ -41,7 +41,7 @@ const AGENT_NAME = "skillies";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const MAX_PER_MINUTE = 8;
+const MAX_PER_MINUTE = 20;
 const WINDOW_SECONDS = 60;
 const TOKEN_TTL_S = 10 * 60;
 
