@@ -31,7 +31,8 @@ export type LockToVertical =
   | "coaching"
   | "interiors"
   | "retail"
-  | "insurance";
+  | "insurance"
+  | "ecommerce";
 
 const SCENARIOS: Scenario[] = [
   {

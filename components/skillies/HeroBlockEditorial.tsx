@@ -58,7 +58,8 @@ type Vertical =
   | "interiors"
   | "hajj"
   | "retail"
-  | "insurance";
+  | "insurance"
+  | "ecommerce";
 
 type Cta = { label: string; href: string };
 
@@ -122,6 +123,12 @@ function verticalAccent(vertical: Vertical): {
       return {
         accent: "var(--sk-insurance-navy)",
         tint: "var(--sk-insurance-gold)",
+      };
+    case "ecommerce":
+      // Reuses retail tokens until ecommerce gets its own palette block.
+      return {
+        accent: "var(--sk-retail-saffron)",
+        tint: "var(--sk-retail-clay)",
       };
   }
 }
@@ -444,6 +451,14 @@ const VERTICAL_CHAT: Record<
       { from: "buyer", text: "Father 62, diabetic. Health cover possible?" },
       { from: "agent", text: "Niva Bupa Senior First — yes, with 2-year waiting period. ₹38,400/yr ₹10L cover." },
       { from: "buyer", text: "Send the proposal." },
+    ],
+  },
+  ecommerce: {
+    contactName: "Skillies · D2C Store",
+    messages: [
+      { from: "buyer", text: "Order #1842 hasn't shipped yet?" },
+      { from: "agent", text: "Dispatched today 4pm — Delhivery AWB 7Y442. ETA Friday." },
+      { from: "buyer", text: "Thanks!" },
     ],
   },
 };

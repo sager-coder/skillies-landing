@@ -43,7 +43,7 @@ function clientIp(req: NextRequest): string {
 
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
-  const limited = await rateLimit({ key: `lk-token:${ip}`, max: MAX_PER_MINUTE, windowSeconds: WINDOW_SECONDS });
+  const limited = rateLimit(`lk-token:${ip}`, MAX_PER_MINUTE, WINDOW_SECONDS);
   if (!limited.ok) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
