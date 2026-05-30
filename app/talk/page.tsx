@@ -14,7 +14,7 @@
  */
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   LiveKitRoom,
   RoomAudioRenderer,
@@ -22,6 +22,7 @@ import {
   BarVisualizer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { DisconnectReason } from "livekit-client";
 
 type Connection = {
   token: string;
@@ -33,6 +34,12 @@ export default function TalkPage() {
   const [conn, setConn] = useState<Connection | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+
+  const addLog = useCallback((msg: string) => {
+    console.log("[talk]", msg);
+    setDebugLog((prev) => [...prev.slice(-9), `${new Date().toLocaleTimeString()}: ${msg}`]);
+  }, []);
 
   async function start() {
     setBusy(true);
@@ -84,11 +91,29 @@ export default function TalkPage() {
         connect
         audio
         video={false}
-        onDisconnected={() => setConn(null)}
+        onConnected={() => addLog("connected to room")}
+        onDisconnected={(reason?: DisconnectReason) => {
+          addLog(`disconnected: reason=${reason ?? "unknown"} (${DisconnectReason[reason!] ?? "?"})`);
+          // Don't reset immediately — show debug info
+        }}
+        onError={(err) => addLog(`room error: ${err.message}`)}
         className="min-h-screen flex flex-col items-center justify-center px-6"
       >
         <CallView roomName={conn.room} />
         <RoomAudioRenderer />
+        <button
+          onClick={() => setConn(null)}
+          className="mt-8 px-6 py-2 bg-[var(--sk-ink)] text-[var(--sk-cream)] rounded-full text-sm"
+        >
+          End call
+        </button>
+        {debugLog.length > 0 && (
+          <div className="mt-4 p-3 bg-black/5 rounded text-xs font-mono max-w-md w-full">
+            {debugLog.map((l, i) => (
+              <p key={i}>{l}</p>
+            ))}
+          </div>
+        )}
       </LiveKitRoom>
     </main>
   );
