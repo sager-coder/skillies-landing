@@ -24,9 +24,19 @@
  *   NEXT_PUBLIC_LIVEKIT_URL              — wss://voice.skillies.ai
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { AccessToken } from "livekit-server-sdk";
+import {
+  AccessToken,
+  RoomAgentDispatch,
+  RoomConfiguration,
+} from "livekit-server-sdk";
 import { rateLimit } from "@/lib/rate-limit";
 import { randomUUID } from "node:crypto";
+
+// Must match WorkerOptions(agent_name=...) in
+// skillies-frontdesk/scripts/modal_livekit_agent.py. LiveKit Cloud only
+// dispatches a self-hosted worker into a room when the room's access token
+// carries a matching RoomAgentDispatch entry.
+const AGENT_NAME = "skillies";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -68,6 +78,9 @@ export async function POST(req: NextRequest) {
     canPublish: true,
     canSubscribe: true,
     canPublishData: false,
+  });
+  at.roomConfig = new RoomConfiguration({
+    agents: [new RoomAgentDispatch({ agentName: AGENT_NAME })],
   });
   const token = await at.toJwt();
 
