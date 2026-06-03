@@ -1,6 +1,6 @@
 /**
  * Next.js 16 proxy · runs on every request to refresh Supabase
- * cookies and gate /learn and /admin behind login.
+ * cookies and gate /learn, /admin, and /my-tasks behind login.
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
@@ -51,6 +51,15 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Protect /my-tasks (employee task view) — must be signed in. The
+  // page itself fetches with the user-scoped client so RLS guarantees a
+  // person only sees their own tickets.
+  if (path.startsWith("/my-tasks") && !user) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("next", path);
+    return NextResponse.redirect(loginUrl);
+  }
+
   // ── One-device-per-account enforcement is DISABLED ─────────────────
   // The DB columns (`profiles.bound_device_id`, `device_bound_at`) and
   // the `/api/auth/claim-device` endpoint still exist, but the middleware
@@ -59,17 +68,33 @@ export async function proxy(req: NextRequest) {
   // ───────────────────────────────────────────────────────────────────
 
   // Already-logged-in users hitting /login → bounce to their dashboard.
-  // Admins default to /admin, everyone else to /student. /learn is a
-  // dynamic route with no index page, so we never use it as default.
+  // Admins → /admin, employees (team members) → /my-tasks, everyone
+  // else → /student. /learn is a dynamic route with no index page, so
+  // we never use it as default.
   if (path === "/login" && user) {
     let next = req.nextUrl.searchParams.get("next");
     if (!next) {
+      // Read is_admin first (always present). Admins are never affected
+      // by the team-member lookup below.
       const { data: profile } = await supabase
         .from("profiles")
         .select("is_admin")
         .eq("id", user.id)
         .maybeSingle();
-      next = profile?.is_admin ? "/admin" : "/student";
+      if (profile?.is_admin) {
+        next = "/admin";
+      } else {
+        // Employees → /my-tasks. Done as a separate read so that if the
+        // is_team_member column doesn't exist yet (migration not run),
+        // only this query fails — it falls back to /student instead of
+        // breaking the redirect for everyone.
+        const { data: tm } = await supabase
+          .from("profiles")
+          .select("is_team_member")
+          .eq("id", user.id)
+          .maybeSingle();
+        next = tm?.is_team_member ? "/my-tasks" : "/student";
+      }
     }
     return NextResponse.redirect(new URL(next, req.url));
   }
@@ -81,6 +106,7 @@ export const config = {
   matcher: [
     "/learn/:path*",
     "/admin/:path*",
+    "/my-tasks/:path*",
     "/login",
   ],
 };

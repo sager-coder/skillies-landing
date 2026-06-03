@@ -361,5 +361,120 @@ alter table public.coach_usage enable row level security;
 
 
 -- ===========================================================
+-- Skillies · Team Tickets v1
+--   Added 2026-06 to support the internal employee task / ticket
+--   tracker (+ AI digest in a later phase). Idempotent; safe to re-run.
+--
+--   Roles:
+--     - Founder / admin = profiles.is_admin = true
+--                         (creates + manages every ticket)
+--     - Employee        = profiles.is_team_member = true
+--                         (gets assigned tickets, changes status,
+--                          posts progress notes)
+--
+--   RLS mirrors the rest of this schema: employees can see + update
+--   ONLY their own assigned rows. ALL founder/admin reads + writes go
+--   through the service-role client in the API routes (which bypasses
+--   RLS), so we deliberately define NO admin policies here — a prior
+--   admin OR-branch through profiles triggered 42P17 recursion.
+-- ===========================================================
+
+-- Mark which profiles are employees (the founder's "team").
+alter table public.profiles
+  add column if not exists is_team_member boolean not null default false;
+
+-- ---------------------------------------------------------------
+-- tickets · one row per task
+-- ---------------------------------------------------------------
+create table if not exists public.tickets (
+  id           uuid primary key default gen_random_uuid(),
+  title        text not null,
+  description  text,
+  status       text not null default 'todo'
+                 check (status in ('todo','in_progress','blocked','done')),
+  priority     text not null default 'medium'
+                 check (priority in ('low','medium','high','urgent')),
+  assignee_id  uuid references public.profiles(id) on delete set null,
+  created_by   uuid references public.profiles(id) on delete set null,
+  due_date     date,
+  source       text not null default 'manual'
+                 check (source in ('manual','ai')),   -- how the ticket was created
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
+  done_at      timestamptz
+);
+
+create index if not exists tickets_assignee_idx on public.tickets(assignee_id, status);
+create index if not exists tickets_status_idx   on public.tickets(status, updated_at desc);
+create index if not exists tickets_updated_idx  on public.tickets(updated_at desc);
+
+alter table public.tickets enable row level security;
+
+-- Employees read tickets assigned to them.
+drop policy if exists "tickets_select_assignee" on public.tickets;
+create policy "tickets_select_assignee"
+  on public.tickets for select
+  using (auth.uid() = assignee_id);
+
+-- Employees update their own assigned tickets (status changes). The
+-- with-check keeps the row theirs — they can't reassign it to someone
+-- else. Founder writes go through the service-role client instead.
+drop policy if exists "tickets_update_assignee" on public.tickets;
+create policy "tickets_update_assignee"
+  on public.tickets for update
+  using       (auth.uid() = assignee_id)
+  with check  (auth.uid() = assignee_id);
+
+-- ---------------------------------------------------------------
+-- ticket_updates · activity log (comments + status changes)
+--   This is the backbone of "what was done today" — every change is
+--   a timestamped, attributed row the AI digest will read from later.
+-- ---------------------------------------------------------------
+create table if not exists public.ticket_updates (
+  id          uuid primary key default gen_random_uuid(),
+  ticket_id   uuid not null references public.tickets(id) on delete cascade,
+  author_id   uuid references public.profiles(id) on delete set null,
+  type        text not null default 'comment'
+                check (type in ('created','comment','status_change','assigned')),
+  body        text,
+  old_status  text,
+  new_status  text,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists ticket_updates_ticket_idx on public.ticket_updates(ticket_id, created_at desc);
+create index if not exists ticket_updates_recent_idx on public.ticket_updates(created_at desc);
+
+alter table public.ticket_updates enable row level security;
+
+-- Employees read the activity on tickets assigned to them.
+drop policy if exists "ticket_updates_select_assignee" on public.ticket_updates;
+create policy "ticket_updates_select_assignee"
+  on public.ticket_updates for select
+  using (
+    exists (
+      select 1 from public.tickets t
+      where t.id = ticket_updates.ticket_id
+        and t.assignee_id = auth.uid()
+    )
+  );
+
+-- Employees post their own updates on tickets assigned to them. (The
+-- API route also enforces this and writes via service-role; this policy
+-- is defense-in-depth and documents intent.)
+drop policy if exists "ticket_updates_insert_assignee" on public.ticket_updates;
+create policy "ticket_updates_insert_assignee"
+  on public.ticket_updates for insert
+  with check (
+    author_id = auth.uid()
+    and exists (
+      select 1 from public.tickets t
+      where t.id = ticket_updates.ticket_id
+        and t.assignee_id = auth.uid()
+    )
+  );
+
+
+-- ===========================================================
 -- Done. Visit Settings → API to grab the URL + keys.
 -- ===========================================================
