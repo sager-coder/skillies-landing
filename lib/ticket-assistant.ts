@@ -1,15 +1,13 @@
 /**
- * The /ehsan voice/text assistant — an agentic Claude loop that can
- * actually act on the founder's request:
- *   - create_task / update_task  → tool calls executed against the DB
- *   - summaries + questions       → answered directly from live context
+ * The /ehsan voice/text assistant, powered by Gemini (free tier).
  *
- * Returns a short text reply (shown in the WhatsApp-style chat) plus a
- * list of actions performed. Server-only (needs the service-role client).
+ * One call → the model returns JSON: a short reply + a list of actions
+ * (create_task / update_task). We execute the actions against the DB and
+ * return the reply. Questions/summaries come back as reply with no
+ * actions. Provider-agnostic: no tool-calling plumbing.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { ANTHROPIC_MODEL_CHAIN } from "@/lib/anthropic-stream";
-import { TicketAiError } from "@/lib/ticket-ai";
+import { geminiComplete, parseLlmJson } from "@/lib/gemini";
 import {
   listTickets,
   getRecentActivity,
@@ -19,101 +17,15 @@ import {
 } from "@/lib/ticket-queries";
 import { STATUS_LABEL, isTicketPriority, isTicketStatus } from "@/lib/tickets";
 
-const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const ANTHROPIC_VERSION = "2023-06-01";
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export type AssistantTurn = { role: "user" | "assistant"; content: string };
-
-type ContentBlock =
-  | { type: "text"; text: string }
-  | { type: "tool_use"; id: string; name: string; input: Record<string, unknown> }
-  | { type: "tool_result"; tool_use_id: string; content: string };
-
-type AnthropicMessage = { role: "user" | "assistant"; content: string | ContentBlock[] };
-type AnthropicResponse = { content?: ContentBlock[]; stop_reason?: string };
-
-const TOOLS = [
-  {
-    name: "create_task",
-    description: "Create a new task and (optionally) assign it to an employee.",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        title: { type: "string", description: "Short imperative task title." },
-        assignee_id: { type: "string", description: "id from the EMPLOYEES list, or empty if unassigned." },
-        priority: { type: "string", enum: ["low", "medium", "high", "urgent"] },
-        due_date: { type: "string", description: "YYYY-MM-DD, or empty." },
-        description: { type: "string", description: "Optional detail, or empty." },
-      },
-      required: ["title"],
-    },
-  },
-  {
-    name: "update_task",
-    description: "Change an existing task's status/assignee/priority/due date, or add a progress note.",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "id from the OPEN TASKS list." },
-        status: { type: "string", enum: ["todo", "in_progress", "blocked", "done"] },
-        assignee_id: { type: "string", description: "id from the EMPLOYEES list." },
-        priority: { type: "string", enum: ["low", "medium", "high", "urgent"] },
-        due_date: { type: "string", description: "YYYY-MM-DD." },
-        comment: { type: "string", description: "A note to add to the task." },
-      },
-      required: ["task_id"],
-    },
-  },
-];
 
 function str(v: unknown): string {
   return typeof v === "string" ? v.trim() : "";
 }
 
-async function callAnthropic(
-  apiKey: string,
-  body: Record<string, unknown>,
-): Promise<AnthropicResponse> {
-  let lastErr = "";
-  for (const model of ANTHROPIC_MODEL_CHAIN) {
-    let resp: Response;
-    try {
-      resp = await fetch(ANTHROPIC_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": ANTHROPIC_VERSION,
-        },
-        body: JSON.stringify({ ...body, model }),
-      });
-    } catch (e) {
-      lastErr = e instanceof Error ? e.message : "fetch failed";
-      continue;
-    }
-    if (!resp.ok) {
-      const errBody = await resp.text().catch(() => "");
-      if (/credit|billing|balance|too low/i.test(errBody)) {
-        throw new TicketAiError(
-          "AI credits are exhausted. Add credits in the Anthropic console (Plans & Billing), then try again.",
-          402,
-        );
-      }
-      lastErr = `${resp.status}`;
-      continue;
-    }
-    try {
-      return (await resp.json()) as AnthropicResponse;
-    } catch {
-      lastErr = "bad JSON";
-      continue;
-    }
-  }
-  throw new TicketAiError(`AI is busy right now (${lastErr}). Try again.`, 503);
-}
-
-async function buildSystem(admin: SupabaseClient): Promise<string> {
+async function buildContext(admin: SupabaseClient): Promise<string> {
   const tickets = await listTickets(admin);
   const open = tickets.filter((t) => t.status !== "done").slice(0, 60);
   const activity = await getRecentActivity(admin, startOfTodayISO());
@@ -153,15 +65,7 @@ async function buildSystem(admin: SupabaseClient): Promise<string> {
     : "(no activity logged today)";
 
   return [
-    "You are the employee-management assistant for a founder (Ehsan). He talks to you by voice or text to run his team.",
     `Today is ${today}.`,
-    "",
-    "What you can do:",
-    "- Create tasks (create_task) and assign them to an employee by id.",
-    "- Update tasks (update_task): change status/assignee/priority/due date, or add a note. Use the task_id from OPEN TASKS.",
-    "- Answer questions and give summaries directly from the data below — do NOT call a tool for those.",
-    "",
-    "Style: reply like a short WhatsApp message. Confirm any action in one concise sentence, using names. If you can't find a task/employee the user means, ask a brief clarifying question instead of guessing.",
     "",
     "EMPLOYEES (use the id to assign):",
     employees,
@@ -174,26 +78,45 @@ async function buildSystem(admin: SupabaseClient): Promise<string> {
   ].join("\n");
 }
 
-async function executeTool(
+const INSTRUCTIONS = [
+  "You are the employee-management assistant for a founder (Ehsan). He talks to you by voice or text to run his team.",
+  "",
+  "Output ONLY JSON (no prose, no code fences) of this exact shape:",
+  '{"reply":"<short WhatsApp-style message back to Ehsan>","actions":[]}',
+  "",
+  "Each item in actions is ONE of:",
+  '- {"type":"create_task","title":"...","assignee_id":"<id from EMPLOYEES or empty>","priority":"low|medium|high|urgent","due_date":"YYYY-MM-DD or empty","description":""}',
+  '- {"type":"update_task","task_id":"<id from OPEN TASKS>","status":"todo|in_progress|blocked|done","assignee_id":"...","priority":"...","due_date":"...","comment":"..."}',
+  "",
+  "Rules:",
+  '- For questions or summaries (e.g. "what happened today?"), set actions to [] and put the full answer in reply.',
+  "- When you create/update, confirm briefly in reply using names (e.g. \"Created the supplier call for Ramesh, urgent.\").",
+  "- For update_task include ONLY the fields you want to change.",
+  "- Use ids exactly as listed below in the ACTIONS. If you can't find the task/employee meant, set actions to [] and ask a short clarifying question in reply.",
+  "- NEVER show internal ids in the reply text — refer to tasks by their title and people by name.",
+  "- Resolve relative dates (tomorrow, Friday, etc.) to YYYY-MM-DD using today's date.",
+].join("\n");
+
+async function executeAction(
   admin: SupabaseClient,
   userId: string,
-  name: string,
-  input: Record<string, unknown>,
+  action: Record<string, unknown>,
   performed: string[],
 ): Promise<string> {
+  const type = str(action.type);
   const now = new Date().toISOString();
 
-  if (name === "create_task") {
-    const title = str(input.title);
-    if (!title) return "Error: a title is required.";
-    const priority = isTicketPriority(input.priority) ? input.priority : "medium";
-    const assignee_id = str(input.assignee_id) || null;
-    const due = str(input.due_date);
+  if (type === "create_task") {
+    const title = str(action.title);
+    if (!title) return "Error: a task title was missing.";
+    const priority = isTicketPriority(action.priority) ? action.priority : "medium";
+    const assignee_id = str(action.assignee_id) || null;
+    const due = str(action.due_date);
     const { data, error } = await admin
       .from("tickets")
       .insert({
         title,
-        description: str(input.description) || null,
+        description: str(action.description) || null,
         status: "todo",
         priority,
         assignee_id,
@@ -203,7 +126,7 @@ async function executeTool(
       })
       .select("id")
       .single();
-    if (error || !data) return `Error creating task: ${error?.message || "unknown"}`;
+    if (error || !data) return `Error creating "${title}": ${error?.message || "unknown"}`;
     const acts: Record<string, unknown>[] = [
       { ticket_id: data.id, author_id: userId, type: "created", body: title },
     ];
@@ -211,12 +134,12 @@ async function executeTool(
       acts.push({ ticket_id: data.id, author_id: userId, type: "assigned", body: null });
     await admin.from("ticket_updates").insert(acts);
     performed.push(`Created "${title}"`);
-    return `Created task "${title}".`;
+    return `Created "${title}".`;
   }
 
-  if (name === "update_task") {
-    const id = str(input.task_id);
-    if (!id) return "Error: task_id is required.";
+  if (type === "update_task") {
+    const id = str(action.task_id);
+    if (!id) return "Error: no task id given.";
     const { data: cur } = await admin
       .from("tickets")
       .select("status, assignee_id, title")
@@ -226,37 +149,38 @@ async function executeTool(
     const updates: Record<string, unknown> = {};
     const acts: Record<string, unknown>[] = [];
 
-    const newAssignee = input.assignee_id !== undefined ? str(input.assignee_id) || null : undefined;
+    const newAssignee = action.assignee_id !== undefined ? str(action.assignee_id) || null : undefined;
     if (newAssignee !== undefined && newAssignee !== cur.assignee_id) {
       updates.assignee_id = newAssignee;
       acts.push({ ticket_id: id, author_id: userId, type: "assigned", body: null });
     }
-    if (isTicketPriority(input.priority)) updates.priority = input.priority;
-    const due = str(input.due_date);
+    if (isTicketPriority(action.priority)) updates.priority = action.priority;
+    const due = str(action.due_date);
     if (DATE_RE.test(due)) updates.due_date = due;
-    if (isTicketStatus(input.status) && input.status !== cur.status) {
-      updates.status = input.status;
-      updates.done_at = input.status === "done" ? now : null;
+    if (isTicketStatus(action.status) && action.status !== cur.status) {
+      updates.status = action.status;
+      updates.done_at = action.status === "done" ? now : null;
       acts.push({
         ticket_id: id,
         author_id: userId,
         type: "status_change",
         old_status: cur.status,
-        new_status: input.status,
+        new_status: action.status,
       });
     }
-    const comment = str(input.comment);
+    const comment = str(action.comment);
     if (comment) acts.push({ ticket_id: id, author_id: userId, type: "comment", body: comment });
 
-    if (Object.keys(updates).length === 0 && acts.length === 0) return "Nothing to change on that task.";
+    if (Object.keys(updates).length === 0 && acts.length === 0)
+      return `Nothing to change on "${cur.title}".`;
     updates.updated_at = now;
     await admin.from("tickets").update(updates).eq("id", id);
     if (acts.length) await admin.from("ticket_updates").insert(acts);
     performed.push(`Updated "${cur.title}"`);
-    return `Updated task "${cur.title}".`;
+    return `Updated "${cur.title}".`;
   }
 
-  return "Unknown tool.";
+  return `Unknown action: ${type}`;
 }
 
 export async function runAssistant(opts: {
@@ -264,49 +188,30 @@ export async function runAssistant(opts: {
   userId: string;
   messages: AssistantTurn[];
 }): Promise<{ reply: string; performed: string[] }> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new TicketAiError("AI isn't configured (missing ANTHROPIC_API_KEY).", 500);
+  const context = await buildContext(opts.admin);
+  const system = `${INSTRUCTIONS}\n\n${context}`;
+  const messages = opts.messages.slice(-12);
+
+  const raw = await geminiComplete({ system, messages, json: true, maxTokens: 1024 });
+  const parsed = parseLlmJson<{ reply?: string; actions?: Record<string, unknown>[] }>(raw);
+
+  if (!parsed) {
+    // Model didn't return clean JSON — surface whatever text it gave.
+    return { reply: raw.trim() || "Sorry, try rephrasing that.", performed: [] };
   }
 
-  const system = await buildSystem(opts.admin);
-  const messages: AnthropicMessage[] = opts.messages
-    .slice(-12)
-    .map((m) => ({ role: m.role, content: m.content }));
   const performed: string[] = [];
-
-  for (let i = 0; i < 5; i++) {
-    const data = await callAnthropic(apiKey, {
-      max_tokens: 1024,
-      system,
-      tools: TOOLS,
-      messages,
-    });
-    const content = data.content || [];
-    const toolUses = content.filter(
-      (b): b is Extract<ContentBlock, { type: "tool_use" }> => b.type === "tool_use",
-    );
-
-    if (toolUses.length === 0) {
-      const text = content
-        .filter((b): b is Extract<ContentBlock, { type: "text" }> => b.type === "text")
-        .map((b) => b.text)
-        .join("")
-        .trim();
-      return { reply: text || "Done.", performed };
-    }
-
-    messages.push({ role: "assistant", content });
-    const results: ContentBlock[] = [];
-    for (const tu of toolUses) {
-      const out = await executeTool(opts.admin, opts.userId, tu.name, tu.input, performed);
-      results.push({ type: "tool_result", tool_use_id: tu.id, content: out });
-    }
-    messages.push({ role: "user", content: results });
+  const failures: string[] = [];
+  const actions = Array.isArray(parsed.actions) ? parsed.actions : [];
+  for (const action of actions) {
+    if (!action || typeof action !== "object") continue;
+    const result = await executeAction(opts.admin, opts.userId, action, performed);
+    if (/^(Error|Nothing|Unknown)/.test(result)) failures.push(result);
   }
 
-  return {
-    reply: performed.length ? `Done: ${performed.join(", ")}.` : "Done.",
-    performed,
-  };
+  let reply = str(parsed.reply);
+  if (!reply) reply = performed.length ? `Done: ${performed.join(", ")}.` : "Done.";
+  if (failures.length) reply += `\n\n⚠️ ${failures.join(" ")}`;
+
+  return { reply, performed };
 }
