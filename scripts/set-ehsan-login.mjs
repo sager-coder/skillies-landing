@@ -16,10 +16,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// ─── EDIT THESE ──────────────────────────────────────────────────────
-const USERNAME = "ehsan";          // your login username
-const PASSWORD = "change-this-now"; // pick a strong password (min 6 chars)
-const FULL_NAME = "Ehsan";          // shown in the dashboard
+// ─── Founder admin login (preset — just run the script once) ──────────
+// You can change the password later from Supabase, or re-run this.
+const USERNAME = "Ehsan";       // login username (case-insensitive)
+const PASSWORD = "123123123";   // login password
+const FULL_NAME = "Ehsan";      // shown in the dashboard
 // ─────────────────────────────────────────────────────────────────────
 
 // Must match lib/staff-auth.ts

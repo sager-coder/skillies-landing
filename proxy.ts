@@ -97,6 +97,13 @@ export const config = {
   matcher: [
     "/learn/:path*",
     "/admin/:path*",
+    // /ehsan + /my-tasks are matched ONLY so the proxy refreshes their
+    // Supabase session cookies (Server Components can't write cookies, so
+    // without this the access token would expire and force a re-login).
+    // There's no redirect block for them below — they self-gate on the
+    // page (show their own username/password login when signed out).
+    "/ehsan/:path*",
+    "/my-tasks/:path*",
     "/login",
   ],
 };
