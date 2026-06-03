@@ -27,9 +27,13 @@ export async function geminiComplete(opts: {
   json?: boolean;
   maxTokens?: number;
 }): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new TicketAiError("AI isn't configured (missing GEMINI_API_KEY).", 500);
+  // Try both keys the rest of the app uses, in order. Lets us recover if
+  // one is set-but-invalid in the environment.
+  const keys = [process.env.GEMINI_API_KEY, process.env.GOOGLE_API_KEY].filter(
+    (k): k is string => !!k,
+  );
+  if (keys.length === 0) {
+    throw new TicketAiError("AI isn't configured (set GEMINI_API_KEY in Vercel).", 500);
   }
 
   const contents = opts.messages.map((m) => ({
@@ -53,46 +57,67 @@ export async function geminiComplete(opts: {
   });
 
   let lastErr = "";
-  for (const model of GEMINI_MODELS) {
-    let resp: Response;
-    try {
-      resp = await fetch(`${GEMINI_BASE}/${model}:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
-    } catch (e) {
-      lastErr = e instanceof Error ? e.message : "fetch failed";
-      continue;
-    }
+  let keyRejected = "";
+  for (const apiKey of keys) {
+    for (const model of GEMINI_MODELS) {
+      let resp: Response;
+      try {
+        resp = await fetch(`${GEMINI_BASE}/${model}:generateContent?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+      } catch (e) {
+        lastErr = e instanceof Error ? e.message : "fetch failed";
+        continue;
+      }
 
-    if (resp.status === 429) {
-      throw new TicketAiError(
-        "AI free-tier limit reached for now. Wait a minute and try again — or enable Gemini billing for higher limits (still very cheap).",
-        429,
-      );
-    }
-    if (!resp.ok) {
-      // 503 high-demand etc. — try the next model.
-      lastErr = `${resp.status}`;
-      continue;
-    }
+      if (resp.status === 429) {
+        throw new TicketAiError(
+          "AI free-tier limit reached for now. Wait a minute and try again — or enable Gemini billing for higher limits (still very cheap).",
+          429,
+        );
+      }
+      if (!resp.ok) {
+        const errText = await resp.text().catch(() => "");
+        if (resp.status === 401 || resp.status === 403 || resp.status === 400) {
+          // Bad / blocked key — capture the real reason, skip to the next key.
+          let msg = `${resp.status}`;
+          try {
+            const parsed = JSON.parse(errText) as { error?: { message?: string } };
+            if (parsed.error?.message) msg = parsed.error.message;
+          } catch {
+            /* keep the status code */
+          }
+          keyRejected = msg;
+          break;
+        }
+        lastErr = `${resp.status}`; // 503 high-demand etc. — try the next model
+        continue;
+      }
 
-    let json: GeminiResponse;
-    try {
-      json = (await resp.json()) as GeminiResponse;
-    } catch {
-      lastErr = "bad JSON";
-      continue;
+      let json: GeminiResponse;
+      try {
+        json = (await resp.json()) as GeminiResponse;
+      } catch {
+        lastErr = "bad JSON";
+        continue;
+      }
+      const text = (json.candidates?.[0]?.content?.parts || [])
+        .map((p) => p.text ?? "")
+        .join("")
+        .trim();
+      if (text) return text;
+      lastErr = json.error?.message || "empty response";
     }
-    const text = (json.candidates?.[0]?.content?.parts || [])
-      .map((p) => p.text ?? "")
-      .join("")
-      .trim();
-    if (text) return text;
-    lastErr = json.error?.message || "empty response";
   }
 
+  if (keyRejected) {
+    throw new TicketAiError(
+      `Gemini rejected the API key (${keyRejected}). In Vercel, set GEMINI_API_KEY to a valid Google AI Studio key with the Generative Language API enabled.`,
+      502,
+    );
+  }
   throw new TicketAiError(`AI is busy right now (${lastErr}). Try again.`, 503);
 }
 
