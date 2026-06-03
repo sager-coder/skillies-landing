@@ -46,8 +46,11 @@ export default function EhsanLogin() {
         <div style={brandStyle}>
           SKILLIES<span style={{ color: "#C62828" }}>.AI</span>
         </div>
-        <div style={eyebrowStyle}>Admin console</div>
+        <div style={eyebrowStyle}>Employee Console</div>
         <h1 style={titleStyle}>Sign in</h1>
+        <p style={{ margin: "-12px 0 18px", fontSize: 13.5, color: "#6B7280", lineHeight: 1.5 }}>
+          Manage your employees and their tasks.
+        </p>
 
         <label style={labelStyle}>Username</label>
         <input

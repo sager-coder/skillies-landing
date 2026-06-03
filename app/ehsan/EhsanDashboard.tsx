@@ -58,7 +58,7 @@ export default function EhsanDashboard({
         <header style={headerStyle}>
           <div style={brandStyle}>
             SKILLIES<span style={{ color: "#C62828" }}>.AI</span>
-            <span style={consoleTag}>console</span>
+            <span style={consoleTag}>Employee Console</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {adminName && <span style={{ fontSize: 13, color: "#525252" }}>{adminName}</span>}
@@ -70,7 +70,7 @@ export default function EhsanDashboard({
         <div style={tabsWrap}>
           {(["today", "tasks", "team"] as Tab[]).map((t) => (
             <button key={t} type="button" onClick={() => setTab(t)} style={tabBtn(tab === t)}>
-              {t === "today" ? "Today" : t === "tasks" ? "Tasks" : "Team"}
+              {t === "today" ? "Today" : t === "tasks" ? "Tasks" : "Employees"}
             </button>
           ))}
         </div>
@@ -223,7 +223,7 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20, alignItems: "start" }} className="ehsan-team-grid">
-      <Card title="Add a teammate" subtitle="Creates their username + password login.">
+      <Card title="Add an employee" subtitle="Creates their username + password login.">
         <form onSubmit={add}>
           <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ramesh Kumar" required />
           <div style={{ height: 12 }} />
@@ -237,15 +237,15 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
           )}
           <div style={{ marginTop: 16 }}>
             <Button type="submit" loading={busy} disabled={!name.trim() || !username.trim() || password.length < MIN_PASSWORD_LENGTH}>
-              Add teammate
+              Add employee
             </Button>
           </div>
         </form>
       </Card>
 
-      <Card title={`Team (${team.length})`}>
+      <Card title={`Employees (${team.length})`}>
         {team.length === 0 ? (
-          <p style={mutedStyle}>No teammates yet. Add your first on the left.</p>
+          <p style={mutedStyle}>No employees yet. Add your first on the left.</p>
         ) : (
           <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
             {team.map((m) => (

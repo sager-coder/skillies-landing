@@ -512,7 +512,7 @@ function NewTaskForm({
       </label>
       {team.length === 0 && (
         <p style={{ fontSize: 12.5, color: "#A3A3A3", margin: "12px 0 0" }}>
-          Tip: add a teammate on the Team tab so you can assign this task.
+          Tip: add an employee on the Employees tab so you can assign this task.
         </p>
       )}
       <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end" }}>
