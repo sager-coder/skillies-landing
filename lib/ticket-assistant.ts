@@ -93,6 +93,13 @@ async function callAnthropic(
       continue;
     }
     if (!resp.ok) {
+      const errBody = await resp.text().catch(() => "");
+      if (/credit|billing|balance|too low/i.test(errBody)) {
+        throw new TicketAiError(
+          "AI credits are exhausted. Add credits in the Anthropic console (Plans & Billing), then try again.",
+          402,
+        );
+      }
       lastErr = `${resp.status}`;
       continue;
     }

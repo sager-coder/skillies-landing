@@ -144,6 +144,13 @@ export async function draftTicketsFromText(opts: {
     }
 
     if (!resp.ok) {
+      const errBody = await resp.text().catch(() => "");
+      if (/credit|billing|balance|too low/i.test(errBody)) {
+        throw new TicketAiError(
+          "AI credits are exhausted — add credits in the Anthropic console (Plans & Billing), then try again.",
+          402,
+        );
+      }
       lastErr = `${resp.status}`;
       // 429/529 => overloaded/rate-limited, try the next model.
       continue;
@@ -240,6 +247,13 @@ export async function answerQuestion(opts: {
       continue;
     }
     if (!resp.ok) {
+      const errBody = await resp.text().catch(() => "");
+      if (/credit|billing|balance|too low/i.test(errBody)) {
+        throw new TicketAiError(
+          "AI credits are exhausted — add credits in the Anthropic console (Plans & Billing), then try again.",
+          402,
+        );
+      }
       lastErr = `${resp.status}`;
       continue;
     }
