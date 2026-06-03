@@ -22,8 +22,9 @@ import {
 import type { ActivityItem } from "@/lib/ticket-queries";
 import AskBox from "./AskBox";
 import TasksBoard, { type TeamMember } from "./TasksBoard";
+import AssistantChat from "./AssistantChat";
 
-type Tab = "today" | "tasks" | "team";
+type Tab = "today" | "assistant" | "tasks" | "team";
 
 export default function EhsanDashboard({
   tickets,
@@ -68,9 +69,9 @@ export default function EhsanDashboard({
 
         {/* Tabs */}
         <div style={tabsWrap}>
-          {(["today", "tasks", "team"] as Tab[]).map((t) => (
+          {(["today", "assistant", "tasks", "team"] as Tab[]).map((t) => (
             <button key={t} type="button" onClick={() => setTab(t)} style={tabBtn(tab === t)}>
-              {t === "today" ? "Today" : t === "tasks" ? "Tasks" : "Employees"}
+              {t === "today" ? "Today" : t === "assistant" ? "Assistant" : t === "tasks" ? "Tasks" : "Employees"}
             </button>
           ))}
         </div>
@@ -85,6 +86,7 @@ export default function EhsanDashboard({
               loadError={loadError}
             />
           )}
+          {tab === "assistant" && <AssistantChat />}
           {tab === "tasks" && (
             <TasksBoard initialTickets={tickets} team={team} loadError={loadError} />
           )}
