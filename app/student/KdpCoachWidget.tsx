@@ -33,6 +33,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import type { CoachBudget } from "@/lib/coach-budget";
 
 type ChatMessage = {
   id: string;
@@ -57,7 +58,13 @@ const INTRO_MESSAGE: ChatMessage = {
   ts: 0,
 };
 
-export default function KdpCoachWidget({ userId }: { userId: string }) {
+export default function KdpCoachWidget({
+  userId,
+  initialBudget,
+}: {
+  userId: string;
+  initialBudget: CoachBudget;
+}) {
   const storageKey = `${STORAGE_KEY_PREFIX}${userId}`;
 
   const [open, setOpen] = useState(false);
@@ -65,6 +72,25 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Per-student monthly token budget, seeded from the server and
+  // refreshed after every reply. When it hits zero the composer locks
+  // until the monthly reset.
+  const [budget, setBudget] = useState<CoachBudget>(initialBudget);
+  const blocked = !budget.unlimited && budget.remaining <= 0;
+
+  const refreshBudget = useCallback(async () => {
+    try {
+      const res = await fetch("/api/student/coach/usage", {
+        cache: "no-store",
+      });
+      if (!res.ok) return;
+      const next = (await res.json()) as CoachBudget;
+      setBudget(next);
+    } catch {
+      /* transient — keep the last known figure */
+    }
+  }, []);
 
   // Voice-note recording state — mirrors the SkilliesChatWidget pattern
   // (MediaRecorder on the device, transcript via /api/transcribe). The
@@ -139,7 +165,7 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
     explicit?: { text: string; voice?: { durationSec: number } },
   ) => {
     const text = (explicit?.text ?? draft).trim();
-    if (!text || sending) return;
+    if (!text || sending || blocked) return;
 
     setError(null);
     if (!explicit) setDraft("");
@@ -181,20 +207,43 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
 
       if (!res.ok || !res.body) {
         let detail = "";
+        let payload: {
+          error?: string;
+          used?: number;
+          limit?: number;
+          resetAt?: string;
+        } = {};
         try {
-          const j = (await res.json()) as { error?: string };
-          detail = j.error ?? "";
+          payload = (await res.json()) as typeof payload;
+          detail = payload.error ?? "";
         } catch {
           /* not JSON */
+        }
+        const isBudget = res.status === 402 || detail === "budget_exceeded";
+        if (isBudget) {
+          // Reflect the exhausted allowance locally so the composer locks
+          // immediately without waiting for the next refresh.
+          setBudget((b) => ({
+            ...b,
+            used: payload.used ?? b.limit,
+            limit: payload.limit ?? b.limit,
+            remaining: 0,
+            resetAt: payload.resetAt ?? b.resetAt,
+            exceeded: true,
+          }));
         }
         const niceError =
           res.status === 429
             ? "You're sending messages too fast — try again in a minute."
             : res.status === 403
               ? "The coach is only available for enrolled students."
-              : detail === "coach_not_configured"
-                ? "The coach isn't configured on this server yet. Tell Ehsan."
-                : "Something broke. Try again in a moment.";
+              : isBudget
+                ? `You've used all your AI tokens for this month. Resets ${formatResetDate(
+                    payload.resetAt ?? budget.resetAt,
+                  )}.`
+                : detail === "coach_not_configured"
+                  ? "The coach isn't configured on this server yet. Tell Ehsan."
+                  : "Something broke. Try again in a moment.";
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantId
@@ -300,8 +349,11 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
     } finally {
       setSending(false);
       abortRef.current = null;
+      // The reply's tokens are logged server-side as the stream closes;
+      // pull the fresh figure so the meter reflects this turn.
+      void refreshBudget();
     }
-  }, [draft, messages, sending]);
+  }, [draft, messages, sending, blocked, budget.resetAt, refreshBudget]);
 
   const resetChat = useCallback(() => {
     abortRef.current?.abort();
@@ -579,7 +631,7 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={headerTitle}>Skillies KDP Coach</div>
-                <div style={headerSubtitle}>Your daily-use tutor · powered by Claude</div>
+                <div style={headerSubtitle}>Your daily-use tutor · powered by MiniMax</div>
               </div>
             </div>
             <div style={{ display: "flex", gap: 4 }}>
@@ -638,6 +690,9 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
             </div>
           </div>
 
+          {/* Monthly token meter — hidden for admins (unlimited). */}
+          {!budget.unlimited && <TokenMeter budget={budget} />}
+
           {/* Messages */}
           <div ref={scrollRef} style={messagesScroll}>
             {messages.map((m) => (
@@ -645,9 +700,31 @@ export default function KdpCoachWidget({ userId }: { userId: string }) {
             ))}
           </div>
 
-          {/* Composer — swaps between idle (textarea + mic + send) and
-              recording (cancel + timer + send-voice). */}
-          {isRecording ? (
+          {/* Composer — locks when the monthly budget is spent, otherwise
+              swaps between idle (textarea + mic + send) and recording
+              (cancel + timer + send-voice). */}
+          {blocked ? (
+            <div style={blockedNotice} role="status">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <span>
+                You&rsquo;ve used all your AI tokens this month. Resets{" "}
+                {formatResetDate(budget.resetAt)}.
+              </span>
+            </div>
+          ) : isRecording ? (
             <div style={composerWrap} role="group" aria-label="Recording voice note">
               <button
                 type="button"
@@ -837,6 +914,56 @@ function formatDuration(sec: number): string {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
   return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/** 1_000_000 → "1M", 847_000 → "847K", 950 → "950". */
+function formatTokens(n: number): string {
+  if (n >= 1_000_000) {
+    const m = n / 1_000_000;
+    return `${Number.isInteger(m) ? m : Number(m.toFixed(2))}M`;
+  }
+  if (n >= 1_000) return `${Math.round(n / 1_000)}K`;
+  return `${Math.max(0, Math.round(n))}`;
+}
+
+/** ISO reset timestamp → "Jul 1" (UTC, matches the server's month math). */
+function formatResetDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "next month";
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+// ── Token meter ─────────────────────────────────────────────────────
+// Slim strip under the header: remaining tokens for the month + a fill
+// bar that reddens as the student approaches the cap.
+function TokenMeter({ budget }: { budget: CoachBudget }) {
+  const pctUsed =
+    budget.limit > 0 ? Math.min(100, (budget.used / budget.limit) * 100) : 0;
+  const low = budget.remaining <= budget.limit * 0.1;
+  const out = budget.remaining <= 0;
+  const accent = out ? "#B91C1C" : low ? "#B45309" : "#C62828";
+  const track = out || low ? "#FEE2E2" : "rgba(17,24,39,0.08)";
+  return (
+    <div style={meterWrap} aria-label="Monthly AI token budget">
+      <div style={meterTopRow}>
+        <span style={meterLabel}>AI tokens · this month</span>
+        <span style={{ ...meterValue, color: accent }}>
+          {out
+            ? `0 left · resets ${formatResetDate(budget.resetAt)}`
+            : `${formatTokens(budget.remaining)} / ${formatTokens(
+                budget.limit,
+              )} left`}
+        </span>
+      </div>
+      <div style={{ ...meterTrack, background: track }}>
+        <div style={{ ...meterFill, width: `${pctUsed}%`, background: accent }} />
+      </div>
+    </div>
+  );
 }
 
 // ── Bubble ──────────────────────────────────────────────────────────
@@ -1134,6 +1261,61 @@ const errorBar: React.CSSProperties = {
   borderTop: "1px solid #FCA5A5",
   color: "#7F1D1D",
   fontSize: 12,
+};
+
+const meterWrap: React.CSSProperties = {
+  padding: "8px 14px 10px",
+  borderBottom: "1px solid rgba(17,24,39,0.06)",
+  background: "#FFFDF8",
+};
+
+const meterTopRow: React.CSSProperties = {
+  display: "flex",
+  alignItems: "baseline",
+  justifyContent: "space-between",
+  gap: 8,
+  marginBottom: 6,
+};
+
+const meterLabel: React.CSSProperties = {
+  fontSize: 10.5,
+  fontWeight: 600,
+  letterSpacing: "0.04em",
+  textTransform: "uppercase",
+  color: "#6B7280",
+};
+
+const meterValue: React.CSSProperties = {
+  fontSize: 11.5,
+  fontWeight: 700,
+  fontFamily:
+    "var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif",
+  fontVariantNumeric: "tabular-nums",
+  whiteSpace: "nowrap",
+};
+
+const meterTrack: React.CSSProperties = {
+  height: 4,
+  borderRadius: 999,
+  overflow: "hidden",
+};
+
+const meterFill: React.CSSProperties = {
+  height: "100%",
+  borderRadius: 999,
+  transition: "width 320ms ease, background 200ms ease",
+};
+
+const blockedNotice: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  padding: "14px 16px",
+  borderTop: "1px solid #FCA5A5",
+  background: "#FFF1F0",
+  color: "#7F1D1D",
+  fontSize: 13,
+  lineHeight: 1.45,
 };
 
 const recordingBar: React.CSSProperties = {

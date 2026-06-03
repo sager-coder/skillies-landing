@@ -16,7 +16,13 @@
  *   3. Body valid?                       → 400
  *   4. Enrolled in at least 1 course
  *      OR profiles.is_admin?             → 403
- *   5. All models overloaded?            → 503
+ *   5. Monthly token budget left?        → 402 (admins exempt)
+ *   6. Upstream model reachable?         → 502/503
+ *
+ * The model is MiniMax (MiniMax-Text-01); the key + streaming live in
+ * `lib/minimax-stream.ts`. Per-student monthly token budgeting lives in
+ * `lib/coach-budget.ts` and is surfaced to the widget so students self-
+ * moderate.
  */
 import { type NextRequest } from "next/server";
 import {
@@ -25,8 +31,13 @@ import {
 } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { SKILLIES_KDP_COACH_PROMPT } from "@/lib/skillies-kdp-coach-prompt";
-import { sanitizeTurns, streamAnthropicChat } from "@/lib/anthropic-stream";
+import {
+  sanitizeTurns,
+  streamMiniMaxChat,
+  MINIMAX_DEFAULT_MODEL,
+} from "@/lib/minimax-stream";
 import { estimateCostUsd } from "@/lib/anthropic-pricing";
+import { getCoachBudget } from "@/lib/coach-budget";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -107,26 +118,36 @@ export async function POST(req: NextRequest) {
     return jsonError(403, { error: "not_enrolled" });
   }
 
-  // ── 5. Anthropic key ──────────────────────────────────────────────
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // ── 5. Monthly token budget (admins exempt) ───────────────────────
+  const budget = await getCoachBudget(admin, user.id, { unlimited: isAdmin });
+  if (budget.exceeded) {
+    return jsonError(402, {
+      error: "budget_exceeded",
+      used: budget.used,
+      limit: budget.limit,
+      resetAt: budget.resetAt,
+    });
+  }
+
+  // ── 6. MiniMax key ────────────────────────────────────────────────
+  const apiKey = process.env.MINIMAX_API_KEY;
   if (!apiKey) {
-    console.error("[coach] ANTHROPIC_API_KEY not set");
+    console.error("[coach] MINIMAX_API_KEY not set");
     return jsonError(500, { error: "coach_not_configured" });
   }
 
-  // ── 6. Stream the reply (model fallback handled in the shared lib) ─
+  // ── 7. Stream the reply (MiniMax; re-streamed by the shared lib) ───
   console.log(
     "[coach] request:",
     sanitized.turns.map((t) => `${t.role}:${t.content.length}`).join(","),
   );
-  const result = await streamAnthropicChat({
+  const result = await streamMiniMaxChat({
     apiKey,
     system: SKILLIES_KDP_COACH_PROMPT,
     messages: sanitized.turns,
     maxTokens: 1024,
     logTag: "coach",
-    // Cost-sensitive surface: run Haiku only. ~12× cheaper than Sonnet.
-    models: ["claude-haiku-4-5-20251001"],
+    model: MINIMAX_DEFAULT_MODEL,
     // Log token usage + estimated cost once the reply finishes. Fire-and-
     // forget; a failed insert must never break the chat. The streaming
     // function stays alive until the relay closes, so this write lands.

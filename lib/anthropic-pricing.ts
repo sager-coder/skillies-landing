@@ -19,9 +19,11 @@ const MILLION = 1_000_000;
 const FALLBACK_RATE: ModelRate = { input: 1, output: 5 };
 
 const RATES: Record<string, ModelRate> = {
-  // Haiku 4.5 — the coach's model.
-  "claude-haiku-4-5-20251001": { input: 1, output: 5 },
+  // MiniMax-Text-01 — the coach's current model. Approximate list price
+  // (USD per 1M tokens); update if MiniMax changes pricing.
+  "MiniMax-Text-01": { input: 0.2, output: 1.1 },
   // Kept for the shared fallback chain / business agents.
+  "claude-haiku-4-5-20251001": { input: 1, output: 5 },
   "claude-sonnet-4-6": { input: 3, output: 15 },
   "claude-opus-4-6": { input: 15, output: 75 },
 };

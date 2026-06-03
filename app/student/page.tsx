@@ -20,6 +20,7 @@ import StudentDashboardClient, {
   type StudentStats,
 } from "./StudentDashboardClient";
 import KdpCoachWidget from "./KdpCoachWidget";
+import { getCoachBudget } from "@/lib/coach-budget";
 
 export const metadata: Metadata = { title: "Dashboard · Skillies School" };
 export const dynamic = "force-dynamic";
@@ -41,7 +42,7 @@ export default async function StudentDashboardPage() {
   ] = await Promise.all([
     admin
       .from("profiles")
-      .select("first_name, last_name, full_name, phone, email")
+      .select("first_name, last_name, full_name, phone, email, is_admin")
       .eq("id", user.id)
       .maybeSingle(),
     admin
@@ -104,6 +105,15 @@ export default async function StudentDashboardPage() {
     (profile?.full_name?.split(" ")[0] as string | undefined) ||
     null;
 
+  // Seed the coach's token meter on first paint (only for enrolled
+  // students who'll actually see the widget). Admins come back unlimited.
+  const coachBudget =
+    myCourses.length > 0
+      ? await getCoachBudget(admin, user.id, {
+          unlimited: !!profile?.is_admin,
+        })
+      : null;
+
   return (
     <main style={{ minHeight: "100vh", background: "#FAF5EB" }}>
       <TopNav />
@@ -124,7 +134,9 @@ export default async function StudentDashboardPage() {
       </section>
       {/* Floating KDP Coach chat — only for paying students. The
           /api/student/coach route re-checks enrollment server-side too. */}
-      {myCourses.length > 0 && <KdpCoachWidget userId={user.id} />}
+      {myCourses.length > 0 && coachBudget && (
+        <KdpCoachWidget userId={user.id} initialBudget={coachBudget} />
+      )}
     </main>
   );
 }
