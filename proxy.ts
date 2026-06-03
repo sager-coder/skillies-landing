@@ -51,15 +51,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Protect /my-tasks (employee task view) — must be signed in. The
-  // page itself fetches with the user-scoped client so RLS guarantees a
-  // person only sees their own tickets.
-  if (path.startsWith("/my-tasks") && !user) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("next", path);
-    return NextResponse.redirect(loginUrl);
-  }
-
   // ── One-device-per-account enforcement is DISABLED ─────────────────
   // The DB columns (`profiles.bound_device_id`, `device_bound_at`) and
   // the `/api/auth/claim-device` endpoint still exist, but the middleware
@@ -106,7 +97,6 @@ export const config = {
   matcher: [
     "/learn/:path*",
     "/admin/:path*",
-    "/my-tasks/:path*",
     "/login",
   ],
 };

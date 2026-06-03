@@ -5,10 +5,10 @@
  * the USER-scoped client so RLS (tickets_select_assignee) guarantees a
  * person only ever sees their own tickets.
  */
-import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Ticket } from "@/lib/tickets";
 import MyTasksClient from "./MyTasksClient";
+import EmployeeLogin from "./EmployeeLogin";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ export default async function MyTasksPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?next=/my-tasks");
+  if (!user) return <EmployeeLogin />;
 
   let rows: Row[] = [];
   try {

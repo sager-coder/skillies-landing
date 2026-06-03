@@ -87,7 +87,7 @@ export default function AskBox({ disabled }: { disabled?: boolean }) {
 
       {answer && (
         <div style={answerStyle}>
-          <div style={eyebrowStyle}>Answer</div>
+          <div style={ansEyebrowStyle}>Answer</div>
           <div style={{ whiteSpace: "pre-wrap", fontSize: 14, color: "#0A0A0A", lineHeight: 1.6 }}>
             {answer}
           </div>
@@ -125,7 +125,7 @@ const answerStyle: React.CSSProperties = {
   border: "1px solid rgba(198,40,40,0.15)",
   borderRadius: 12,
 };
-const eyebrowStyle: React.CSSProperties = {
+const ansEyebrowStyle: React.CSSProperties = {
   fontSize: 11,
   letterSpacing: "0.08em",
   textTransform: "uppercase",

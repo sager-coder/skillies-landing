@@ -383,6 +383,15 @@ alter table public.coach_usage enable row level security;
 alter table public.profiles
   add column if not exists is_team_member boolean not null default false;
 
+-- Username for credential (username + password) login. The actual auth
+-- happens via Supabase email+password using a synthetic email derived
+-- from this username (see lib/staff-auth.ts). Stored normalized
+-- (lowercased). Unique; NULL for everyone who doesn't use staff login.
+alter table public.profiles
+  add column if not exists username text;
+create unique index if not exists profiles_username_key
+  on public.profiles (username);
+
 -- ---------------------------------------------------------------
 -- tickets · one row per task
 -- ---------------------------------------------------------------

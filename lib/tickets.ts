@@ -1,6 +1,6 @@
 /**
  * Shared ticket vocabulary — statuses, priorities, and their display
- * labels + Badge variants. Imported by both the founder (/admin/tickets)
+ * labels + Badge variants. Imported by both the founder (/ehsan)
  * and employee (/my-tasks) UIs so the two stay perfectly in sync.
  *
  * Server-safe (pure constants, no client hooks).
