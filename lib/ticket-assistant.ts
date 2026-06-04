@@ -12,7 +12,6 @@ import {
   listTickets,
   getRecentActivity,
   personName,
-  startOfTodayISO,
   todayDateISO,
 } from "@/lib/ticket-queries";
 import { STATUS_LABEL, isTicketPriority, isTicketStatus } from "@/lib/tickets";
@@ -28,7 +27,10 @@ function str(v: unknown): string {
 async function buildContext(admin: SupabaseClient): Promise<string> {
   const tickets = await listTickets(admin);
   const open = tickets.filter((t) => t.status !== "done").slice(0, 60);
-  const activity = await getRecentActivity(admin, startOfTodayISO());
+  // Last 7 days of activity so the assistant can report real progress
+  // (not just today's), per task and per employee.
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const activity = await getRecentActivity(admin, since, 90);
   const { data: teamRows } = await admin
     .from("profiles")
     .select("id, full_name, first_name, last_name, phone, email")
@@ -62,7 +64,7 @@ async function buildContext(admin: SupabaseClient): Promise<string> {
           return `- ${who} noted on "${a.ticket_title}": ${a.body || ""}`;
         })
         .join("\n")
-    : "(no activity logged today)";
+    : "(no recent activity)";
 
   return [
     `Today is ${today}.`,
@@ -73,7 +75,7 @@ async function buildContext(admin: SupabaseClient): Promise<string> {
     "OPEN TASKS (use task_id to update):",
     openTasks,
     "",
-    "TODAY'S ACTIVITY:",
+    "RECENT ACTIVITY (last 7 days, newest first — use this to report progress):",
     activityLines,
   ].join("\n");
 }
@@ -93,6 +95,7 @@ const INSTRUCTIONS = [
   "- You CAN create, update, and delete tasks. (You cannot add/remove employees — that's done on the Employees tab.)",
   "- Delete a task only when the user clearly asks to delete/remove it. Confirm what you deleted in the reply.",
   '- For questions or summaries (e.g. "what happened today?"), set actions to [] and put the full answer in reply.',
+  '- To report a specific employee\'s progress (e.g. "what is Aminath doing?"), set actions to [] and answer from the data: list that person\'s tasks (OPEN TASKS matched by their name) and summarize their recent updates (RECENT ACTIVITY).',
   "- When you create/update, confirm briefly in reply using names (e.g. \"Created the supplier call for Ramesh, urgent.\").",
   "- For update_task include ONLY the fields you want to change.",
   "- Use ids exactly as listed below in the ACTIONS. If you can't find the task/employee meant, set actions to [] and ask a short clarifying question in reply.",

@@ -198,6 +198,8 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "success" | "error"; text: string } | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [pw, setPw] = useState("");
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,6 +218,33 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
       setName(""); setUsername(""); setPassword("");
       onChange();
     } finally { setBusy(false); }
+  };
+
+  const resetPassword = async (m: TeamMember) => {
+    if (pw.length < MIN_PASSWORD_LENGTH) {
+      setMsg({ kind: "error", text: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` });
+      return;
+    }
+    const res = await fetch(`/api/admin/team/${m.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pw }),
+    });
+    const json = await res.json();
+    if (!res.ok) { setMsg({ kind: "error", text: json.error || "Failed." }); return; }
+    setMsg({ kind: "success", text: `Password updated for ${m.name}. New password: ${pw}` });
+    setPw("");
+    setOpenId(null);
+  };
+
+  const remove = async (m: TeamMember) => {
+    if (!confirm(`Delete ${m.name}? They'll lose access immediately. Their tasks stay but become unassigned.`)) return;
+    const res = await fetch(`/api/admin/team/${m.id}`, { method: "DELETE" });
+    const json = await res.json();
+    if (!res.ok) { setMsg({ kind: "error", text: json.error || "Failed." }); return; }
+    setMsg({ kind: "success", text: `Deleted ${m.name}.` });
+    setOpenId(null);
+    onChange();
   };
 
   return (
@@ -250,12 +279,40 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
           <p style={mutedStyle}>No employees yet. Add your first on the left.</p>
         ) : (
           <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-            {team.map((m) => (
-              <li key={m.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", background: "#FCFCFC", border: "1px solid rgba(17,24,39,0.07)", borderRadius: 9 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#0A0A0A" }}>{m.name}</span>
-                {m.username && <span style={{ fontSize: 12.5, color: "#A3A3A3", fontFamily: "ui-monospace, Menlo, monospace" }}>@{m.username}</span>}
-              </li>
-            ))}
+            {team.map((m) => {
+              const open = openId === m.id;
+              return (
+                <li key={m.id} style={{ background: "#FCFCFC", border: "1px solid rgba(17,24,39,0.07)", borderRadius: 9 }}>
+                  <div
+                    onClick={() => { setOpenId(open ? null : m.id); setPw(""); }}
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", cursor: "pointer" }}
+                  >
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#0A0A0A" }}>{m.name}</div>
+                      {m.username && <div style={{ fontSize: 12, color: "#A3A3A3", fontFamily: "ui-monospace, Menlo, monospace", marginTop: 1 }}>@{m.username}</div>}
+                    </div>
+                    <span style={{ color: "#A3A3A3", fontSize: 13 }}>{open ? "▾" : "▸"}</span>
+                  </div>
+                  {open && (
+                    <div style={{ padding: "0 12px 12px", borderTop: "1px solid rgba(17,24,39,0.06)" }}>
+                      <div style={{ ...miniLabel2, marginTop: 10 }}>Reset password</div>
+                      <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                        <input
+                          value={pw}
+                          onChange={(e) => setPw(e.target.value)}
+                          placeholder={`new password (min ${MIN_PASSWORD_LENGTH})`}
+                          style={{ flex: 1, height: 36, padding: "0 10px", borderRadius: 8, border: "1px solid rgba(17,24,39,0.12)", outline: "none", fontSize: 13, background: "white", color: "#0A0A0A" }}
+                        />
+                        <Button size="sm" onClick={() => resetPassword(m)} disabled={pw.length < MIN_PASSWORD_LENGTH}>Set</Button>
+                      </div>
+                      <div style={{ marginTop: 12 }}>
+                        <Button size="sm" variant="danger" onClick={() => remove(m)}>Delete employee</Button>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </Card>
@@ -265,6 +322,8 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
     </div>
   );
 }
+
+const miniLabel2: React.CSSProperties = { fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 600, color: "#A3A3A3" };
 
 /* ---- bits ---- */
 
