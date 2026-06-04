@@ -6,7 +6,7 @@
  * desktop; on a phone, tap a card and use the status buttons (drag isn't
  * reliable on touch). Every change posts to /api/tickets/[id]/update.
  */
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Badge from "@/components/admin-ui/Badge";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -35,9 +35,11 @@ type Task = {
 export default function MyTasksClient({
   initialTickets,
   name,
+  userId,
 }: {
   initialTickets: Task[];
   name: string | null;
+  userId: string;
 }) {
   const [tasks, setTasks] = useState<Task[]>(initialTickets);
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -170,9 +172,21 @@ export default function MyTasksClient({
                           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
                             <Badge variant={PRIORITY_BADGE[t.priority]}>{PRIORITY_LABEL[t.priority]}</Badge>
                             {t.due_date && (
-                              <span style={{ fontSize: 11.5, color: overdue ? "#B91C1C" : "#A3A3A3", fontWeight: overdue ? 600 : 400 }}>
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                  fontSize: 11.5,
+                                  fontWeight: 600,
+                                  padding: "2px 8px",
+                                  borderRadius: 999,
+                                  background: overdue ? "rgba(220,38,38,0.10)" : "rgba(17,24,39,0.06)",
+                                  color: overdue ? "#B91C1C" : "#525252",
+                                }}
+                              >
+                                📅 {overdue ? "Overdue · " : "Due "}
                                 {new Date(t.due_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                                {overdue ? " · overdue" : ""}
                               </span>
                             )}
                           </div>
@@ -196,12 +210,13 @@ export default function MyTasksClient({
       {detail && (
         <TaskDetail
           task={detail}
+          userId={userId}
           onClose={() => setDetailId(null)}
           onMove={move}
           onNote={async (id, note) => {
             const ok = await post(id, { note });
-            if (ok) flash("Note added ✓");
-            else flash("Couldn't save the note.");
+            if (ok) flash("Update added ✓");
+            else flash("Couldn't save — try again.");
             return ok;
           }}
         />
@@ -210,87 +225,182 @@ export default function MyTasksClient({
   );
 }
 
+type UpdateRow = {
+  id: string;
+  type: string;
+  body: string | null;
+  old_status: string | null;
+  new_status: string | null;
+  created_at: string;
+  author_id: string | null;
+};
+
+/** Read this ticket's activity via RLS (employee can only see their own). */
+async function fetchTicketUpdates(ticketId: string): Promise<UpdateRow[]> {
+  try {
+    const supabase = createSupabaseBrowserClient();
+    const { data } = await supabase
+      .from("ticket_updates")
+      .select("id, type, body, old_status, new_status, created_at, author_id")
+      .eq("ticket_id", ticketId)
+      .order("created_at", { ascending: false });
+    return (data as UpdateRow[]) || [];
+  } catch {
+    return [];
+  }
+}
+
 function TaskDetail({
   task,
+  userId,
   onClose,
   onMove,
   onNote,
 }: {
   task: Task;
+  userId: string;
   onClose: () => void;
   onMove: (id: string, status: TicketStatus) => void;
   onNote: (id: string, note: string) => Promise<boolean>;
 }) {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [updates, setUpdates] = useState<UpdateRow[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetchTicketUpdates(task.id).then((rows) => {
+      if (alive) setUpdates(rows);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [task.id]);
 
   const submitNote = async () => {
     if (!note.trim()) return;
     setBusy(true);
     const ok = await onNote(task.id, note.trim());
     setBusy(false);
-    if (ok) setNote("");
+    if (ok) {
+      setNote("");
+      setUpdates(await fetchTicketUpdates(task.id));
+    }
   };
+
+  const overdue = !!task.due_date && task.status !== "done" && new Date(task.due_date) < new Date(new Date().toDateString());
 
   return (
     <div style={overlayStyle} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={sheetStyle}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#0A0A0A", lineHeight: 1.35 }}>{task.title}</h2>
+      <div style={drawerStyle}>
+        <style>{`@keyframes drawerIn { from { transform: translateX(24px); opacity: 0.4; } to { transform: translateX(0); opacity: 1; } }`}</style>
+
+        <div style={drawerHeaderStyle}>
+          <span style={{ fontSize: 11, color: "#A3A3A3", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Task</span>
           <button type="button" onClick={onClose} aria-label="Close" style={closeBtnStyle}>✕</button>
         </div>
-        {task.description && (
-          <p style={{ margin: "10px 0 0", fontSize: 14, color: "#525252", lineHeight: 1.5 }}>{task.description}</p>
-        )}
 
-        <div style={{ marginTop: 18 }}>
-          <div style={miniLabelStyle}>Status</div>
-          <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-            {TICKET_STATUSES.map((s) => {
-              const active = task.status === s;
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => { if (!active) onMove(task.id, s); }}
-                  style={{
-                    flex: "1 1 0",
-                    minWidth: 72,
-                    padding: "10px 8px",
-                    borderRadius: 9,
-                    border: active ? "1px solid #C62828" : "1px solid rgba(17,24,39,0.12)",
-                    background: active ? "#C62828" : "white",
-                    color: active ? "white" : "#525252",
-                    fontWeight: 600,
-                    fontSize: 13,
-                    cursor: active ? "default" : "pointer",
-                  }}
-                >
-                  {STATUS_LABEL[s]}
-                </button>
-              );
-            })}
+        <div style={{ padding: "4px 22px 28px", overflowY: "auto", flex: 1 }}>
+          <h2 style={{ margin: 0, fontSize: 19, fontWeight: 700, color: "#0A0A0A", lineHeight: 1.35 }}>{task.title}</h2>
+
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
+            <Badge variant={PRIORITY_BADGE[task.priority]}>{PRIORITY_LABEL[task.priority]}</Badge>
+            {task.due_date ? (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, padding: "4px 10px", borderRadius: 999, background: overdue ? "rgba(220,38,38,0.10)" : "rgba(17,24,39,0.06)", color: overdue ? "#B91C1C" : "#404040" }}>
+                📅 {overdue ? "Overdue · " : "Due "}
+                {new Date(task.due_date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
+              </span>
+            ) : (
+              <span style={{ fontSize: 12.5, color: "#A3A3A3" }}>No deadline</span>
+            )}
           </div>
-        </div>
 
-        <div style={{ marginTop: 18 }}>
-          <div style={miniLabelStyle}>Add a progress note</div>
-          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-            <input
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") submitNote(); }}
-              placeholder="What's the latest?"
-              style={noteInputStyle}
-            />
-            <button type="button" onClick={submitNote} disabled={busy || !note.trim()} style={{ ...postBtnStyle, opacity: busy || !note.trim() ? 0.5 : 1 }}>
-              {busy ? "…" : "Post"}
-            </button>
+          {task.description && (
+            <p style={{ margin: "14px 0 0", fontSize: 14, color: "#525252", lineHeight: 1.55 }}>{task.description}</p>
+          )}
+
+          <div style={{ marginTop: 22 }}>
+            <div style={miniLabelStyle}>Status</div>
+            <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+              {TICKET_STATUSES.map((s) => {
+                const active = task.status === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => { if (!active) onMove(task.id, s); }}
+                    style={{ flex: "1 1 0", minWidth: 72, padding: "10px 8px", borderRadius: 9, border: active ? "1px solid #C62828" : "1px solid rgba(17,24,39,0.12)", background: active ? "#C62828" : "white", color: active ? "white" : "#525252", fontWeight: 600, fontSize: 13, cursor: active ? "default" : "pointer" }}
+                  >
+                    {STATUS_LABEL[s]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ marginTop: 22 }}>
+            <div style={miniLabelStyle}>Add an update for your manager</div>
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <input
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") submitNote(); }}
+                placeholder="e.g. Finished the draft, sending for review…"
+                style={noteInputStyle}
+              />
+              <button type="button" onClick={submitNote} disabled={busy || !note.trim()} style={{ ...postBtnStyle, opacity: busy || !note.trim() ? 0.5 : 1 }}>
+                {busy ? "…" : "Post"}
+              </button>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 26 }}>
+            <div style={miniLabelStyle}>Progress &amp; history</div>
+            <div style={{ marginTop: 12 }}>
+              {updates === null ? (
+                <div style={{ fontSize: 13, color: "#A3A3A3" }}>Loading…</div>
+              ) : updates.length === 0 ? (
+                <div style={{ fontSize: 13, color: "#A3A3A3" }}>No updates yet — add the first one above.</div>
+              ) : (
+                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+                  {updates.map((u) => (
+                    <li key={u.id} style={{ display: "flex", gap: 10 }}>
+                      <div style={dotStyle} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13.5, color: "#0A0A0A", lineHeight: 1.45 }}>{activityText(u, userId)}</div>
+                        <div style={{ fontSize: 11, color: "#A3A3A3", marginTop: 2 }}>{relativeTime(u.created_at)}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+function activityText(u: UpdateRow, userId: string): string {
+  const you = u.author_id === userId;
+  if (u.type === "created") return "Manager created this task";
+  if (u.type === "assigned") return "Assigned to you";
+  if (u.type === "status_change")
+    return `${you ? "You" : "Manager"} moved it to ${u.new_status ? STATUS_LABEL[u.new_status as TicketStatus] : "?"}`;
+  return `${you ? "You" : "Manager"}: ${u.body || ""}`;
+}
+
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const min = Math.round(diff / 60000);
+  if (min < 1) return "just now";
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.round(hr / 24);
+  if (day < 7) return `${day}d ago`;
+  return new Date(iso).toLocaleDateString();
 }
 
 function LogoutButton() {
@@ -325,9 +435,11 @@ const dropZoneStyle: React.CSSProperties = { fontSize: 12, color: "#B8B8B8", pad
 const toastStyle: React.CSSProperties = { position: "sticky", top: 8, zIndex: 10, margin: "0 0 14px", padding: "10px 14px", background: "rgba(22,163,74,0.12)", border: "1px solid rgba(22,163,74,0.30)", borderRadius: 10, fontSize: 13.5, color: "#15803D", fontWeight: 500 };
 const emptyStyle: React.CSSProperties = { textAlign: "center", padding: "56px 24px", background: "white", border: "1px solid rgba(17,24,39,0.08)", borderRadius: 14 };
 const miniLabelStyle: React.CSSProperties = { fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 600, color: "#A3A3A3" };
-const overlayStyle: React.CSSProperties = { position: "fixed", inset: 0, zIndex: 60, background: "rgba(10,10,10,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center", padding: 0 };
-const sheetStyle: React.CSSProperties = { width: "100%", maxWidth: 520, background: "white", borderTopLeftRadius: 18, borderTopRightRadius: 18, padding: 20, boxShadow: "0 -10px 40px rgba(0,0,0,0.2)", maxHeight: "85vh", overflowY: "auto" };
-const closeBtnStyle: React.CSSProperties = { border: "none", background: "transparent", fontSize: 18, color: "#A3A3A3", cursor: "pointer", lineHeight: 1, padding: 4 };
+const overlayStyle: React.CSSProperties = { position: "fixed", inset: 0, zIndex: 60, background: "rgba(10,10,10,0.45)", display: "flex", justifyContent: "flex-end" };
+const drawerStyle: React.CSSProperties = { width: "min(460px, 100%)", height: "100%", background: "white", display: "flex", flexDirection: "column", boxShadow: "-12px 0 44px rgba(0,0,0,0.22)", animation: "drawerIn 200ms ease" };
+const drawerHeaderStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px 6px" };
+const closeBtnStyle: React.CSSProperties = { border: "none", background: "transparent", fontSize: 16, color: "#A3A3A3", cursor: "pointer", lineHeight: 1, padding: 6 };
+const dotStyle: React.CSSProperties = { width: 8, height: 8, borderRadius: 999, background: "#C62828", marginTop: 5, flexShrink: 0 };
 const noteInputStyle: React.CSSProperties = { flex: 1, height: 42, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(17,24,39,0.12)", outline: "none", fontSize: 14, background: "white", color: "#0A0A0A" };
 const postBtnStyle: React.CSSProperties = { height: 42, padding: "0 18px", borderRadius: 10, border: "none", background: "#C62828", color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer" };
 const logoutStyle: React.CSSProperties = { background: "transparent", border: "1px solid rgba(17,24,39,0.12)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 500, color: "#525252", cursor: "pointer" };

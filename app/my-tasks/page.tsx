@@ -53,5 +53,5 @@ export default async function MyTasksPage() {
 
   const name = profile?.first_name || profile?.full_name || null;
 
-  return <MyTasksClient initialTickets={rows} name={name} />;
+  return <MyTasksClient initialTickets={rows} name={name} userId={user.id} />;
 }
