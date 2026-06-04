@@ -87,8 +87,11 @@ const INSTRUCTIONS = [
   "Each item in actions is ONE of:",
   '- {"type":"create_task","title":"...","assignee_id":"<id from EMPLOYEES or empty>","priority":"low|medium|high|urgent","due_date":"YYYY-MM-DD or empty","description":""}',
   '- {"type":"update_task","task_id":"<id from OPEN TASKS>","status":"todo|in_progress|blocked|done","assignee_id":"...","priority":"...","due_date":"...","comment":"..."}',
+  '- {"type":"delete_task","task_id":"<id from OPEN TASKS>"}',
   "",
   "Rules:",
+  "- You CAN create, update, and delete tasks. (You cannot add/remove employees — that's done on the Employees tab.)",
+  "- Delete a task only when the user clearly asks to delete/remove it. Confirm what you deleted in the reply.",
   '- For questions or summaries (e.g. "what happened today?"), set actions to [] and put the full answer in reply.',
   "- When you create/update, confirm briefly in reply using names (e.g. \"Created the supplier call for Ramesh, urgent.\").",
   "- For update_task include ONLY the fields you want to change.",
@@ -178,6 +181,22 @@ async function executeAction(
     if (acts.length) await admin.from("ticket_updates").insert(acts);
     performed.push(`Updated "${cur.title}"`);
     return `Updated "${cur.title}".`;
+  }
+
+  if (type === "delete_task") {
+    const id = str(action.task_id);
+    if (!id) return "Error: no task id given.";
+    const { data: cur } = await admin
+      .from("tickets")
+      .select("title")
+      .eq("id", id)
+      .maybeSingle();
+    if (!cur) return "Error: that task wasn't found.";
+    // ticket_updates rows cascade-delete via the FK.
+    const { error } = await admin.from("tickets").delete().eq("id", id);
+    if (error) return `Error deleting "${cur.title}": ${error.message}`;
+    performed.push(`Deleted "${cur.title}"`);
+    return `Deleted "${cur.title}".`;
   }
 
   return `Unknown action: ${type}`;
