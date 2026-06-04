@@ -17,6 +17,7 @@ import Input from "@/components/admin-ui/Input";
 import {
   TICKET_STATUSES,
   TICKET_PRIORITIES,
+  BOARD_ORDER,
   STATUS_LABEL,
   PRIORITY_LABEL,
   STATUS_BADGE,
@@ -151,14 +152,16 @@ export default function TasksBoard({
 
       {/* Board */}
       <div style={{ display: "flex", gap: 14, overflowX: "auto", paddingBottom: 8, alignItems: "flex-start" }}>
-        {TICKET_STATUSES.map((status) => {
+        {BOARD_ORDER.map((status) => {
           const colTickets = visible.filter((t) => t.status === status);
           const isOver = overCol === status;
           return (
             <div
               key={status}
+              onDragEnter={(e) => e.preventDefault()}
               onDragOver={(e) => {
                 e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
                 if (overCol !== status) setOverCol(status);
               }}
               onDrop={(e) => {
@@ -179,7 +182,7 @@ export default function TasksBoard({
                 <span style={{ color: "#A3A3A3", fontSize: 12, fontWeight: 700 }}>{colTickets.length}</span>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 60 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 90 }}>
                 {colTickets.map((t) => {
                   const overdue =
                     !!t.due_date && t.status !== "done" && new Date(t.due_date) < new Date(new Date().toDateString());
@@ -190,8 +193,12 @@ export default function TasksBoard({
                       onDragStart={(e) => {
                         e.dataTransfer.setData("text/plain", t.id);
                         e.dataTransfer.effectAllowed = "move";
-                        setDraggingId(t.id);
                         didDrag.current = false;
+                        // Defer so the native drag starts before this card
+                        // re-renders (a sync re-render cancels the drag in
+                        // some browsers).
+                        const dragId = t.id;
+                        setTimeout(() => setDraggingId(dragId), 0);
                       }}
                       onDrag={() => {
                         didDrag.current = true;
@@ -225,11 +232,7 @@ export default function TasksBoard({
                     </div>
                   );
                 })}
-                {colTickets.length === 0 && (
-                  <div style={{ fontSize: 12, color: "#C4C4C4", padding: "10px 4px", textAlign: "center" }}>
-                    Drop here
-                  </div>
-                )}
+                {colTickets.length === 0 && <div style={dropZoneStyle}>Drop here</div>}
               </div>
             </div>
           );
@@ -617,4 +620,5 @@ const timelineDot: React.CSSProperties = { width: 8, height: 8, borderRadius: 99
 const columnStyle: React.CSSProperties = { flex: "1 0 250px", minWidth: 250, maxWidth: 340, borderRadius: 12, padding: 10, boxSizing: "border-box", transition: "background 120ms ease" };
 const colHeaderStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2px 4px 10px" };
 const cardStyle: React.CSSProperties = { background: "white", border: "1px solid rgba(17,24,39,0.08)", borderRadius: 10, padding: 12, boxShadow: "0 1px 2px rgba(0,0,0,0.04)", cursor: "grab" };
+const dropZoneStyle: React.CSSProperties = { fontSize: 12, color: "#B8B8B8", padding: "22px 4px", textAlign: "center", border: "1px dashed rgba(17,24,39,0.12)", borderRadius: 8 };
 const avatarDot: React.CSSProperties = { width: 18, height: 18, borderRadius: 999, background: "linear-gradient(135deg, #C62828, #8B1A1A)", color: "white", display: "grid", placeItems: "center", fontSize: 9, fontWeight: 700, flexShrink: 0 };

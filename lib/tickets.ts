@@ -22,6 +22,14 @@ export const TICKET_PRIORITIES = [
 ] as const;
 export type TicketPriority = (typeof TICKET_PRIORITIES)[number];
 
+/** Column order on the kanban boards (Blocked first so it's most visible). */
+export const BOARD_ORDER: TicketStatus[] = [
+  "blocked",
+  "todo",
+  "in_progress",
+  "done",
+];
+
 /** Human labels — short on purpose so they fit in pills + buttons. */
 export const STATUS_LABEL: Record<TicketStatus, string> = {
   todo: "To do",

@@ -11,6 +11,7 @@ import Badge from "@/components/admin-ui/Badge";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   TICKET_STATUSES,
+  BOARD_ORDER,
   STATUS_LABEL,
   STATUS_BADGE,
   PRIORITY_LABEL,
@@ -113,15 +114,17 @@ export default function MyTasksClient({
           </div>
         ) : (
           <div className="mytasks-board" style={{ display: "flex", gap: 14, overflowX: "auto", paddingBottom: 8, alignItems: "flex-start" }}>
-            {TICKET_STATUSES.map((status) => {
+            {BOARD_ORDER.map((status) => {
               const colTasks = tasks.filter((t) => t.status === status);
               const isOver = overCol === status;
               return (
                 <div
                   key={status}
                   className="mytasks-col"
+                  onDragEnter={(e) => e.preventDefault()}
                   onDragOver={(e) => {
                     e.preventDefault();
+                    e.dataTransfer.dropEffect = "move";
                     if (overCol !== status) setOverCol(status);
                   }}
                   onDrop={(e) => {
@@ -141,7 +144,7 @@ export default function MyTasksClient({
                     <Badge variant={STATUS_BADGE[status]}>{STATUS_LABEL[status]}</Badge>
                     <span style={{ color: "#A3A3A3", fontSize: 12, fontWeight: 700 }}>{colTasks.length}</span>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 50 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 90 }}>
                     {colTasks.map((t) => {
                       const overdue = !!t.due_date && t.status !== "done" && new Date(t.due_date) < new Date(new Date().toDateString());
                       return (
@@ -151,8 +154,12 @@ export default function MyTasksClient({
                           onDragStart={(e) => {
                             e.dataTransfer.setData("text/plain", t.id);
                             e.dataTransfer.effectAllowed = "move";
-                            setDraggingId(t.id);
                             didDrag.current = false;
+                            // Defer the state change so the native drag fully
+                            // starts before this card re-renders (a synchronous
+                            // re-render cancels the drag in some browsers).
+                            const dragId = t.id;
+                            setTimeout(() => setDraggingId(dragId), 0);
                           }}
                           onDrag={() => { didDrag.current = true; }}
                           onDragEnd={() => { setDraggingId(null); setOverCol(null); }}
@@ -173,7 +180,7 @@ export default function MyTasksClient({
                       );
                     })}
                     {colTasks.length === 0 && (
-                      <div style={{ fontSize: 12, color: "#C4C4C4", padding: "10px 4px", textAlign: "center" }}>—</div>
+                      <div style={dropZoneStyle}>Drop here</div>
                     )}
                   </div>
                 </div>
@@ -314,6 +321,7 @@ const h1Style: React.CSSProperties = { margin: 0, fontFamily: "var(--font-space-
 const columnStyle: React.CSSProperties = { flex: "1 0 250px", minWidth: 250, maxWidth: 360, borderRadius: 12, padding: 10, boxSizing: "border-box", transition: "background 120ms ease" };
 const colHeaderStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2px 4px 10px" };
 const cardStyle: React.CSSProperties = { background: "white", border: "1px solid rgba(17,24,39,0.08)", borderRadius: 12, padding: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.04)", cursor: "grab" };
+const dropZoneStyle: React.CSSProperties = { fontSize: 12, color: "#B8B8B8", padding: "22px 4px", textAlign: "center", border: "1px dashed rgba(17,24,39,0.12)", borderRadius: 8 };
 const toastStyle: React.CSSProperties = { position: "sticky", top: 8, zIndex: 10, margin: "0 0 14px", padding: "10px 14px", background: "rgba(22,163,74,0.12)", border: "1px solid rgba(22,163,74,0.30)", borderRadius: 10, fontSize: 13.5, color: "#15803D", fontWeight: 500 };
 const emptyStyle: React.CSSProperties = { textAlign: "center", padding: "56px 24px", background: "white", border: "1px solid rgba(17,24,39,0.08)", borderRadius: 14 };
 const miniLabelStyle: React.CSSProperties = { fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 600, color: "#A3A3A3" };
