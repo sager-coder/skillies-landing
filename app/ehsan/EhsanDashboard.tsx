@@ -20,7 +20,6 @@ import {
   type Ticket,
 } from "@/lib/tickets";
 import type { ActivityItem } from "@/lib/ticket-queries";
-import AskBox from "./AskBox";
 import TasksBoard, { type TeamMember } from "./TasksBoard";
 import AssistantChat from "./AssistantChat";
 
@@ -130,10 +129,6 @@ function TodayPanel({
         </Card>
       )}
 
-      <Card title="Ask anything" subtitle="Answered from your live task data.">
-        <AskBox disabled={migrationNeeded} />
-      </Card>
-
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 16 }}>
         <StatCard label="Done today" value={String(doneToday.length)} />
         <StatCard label="In progress" value={String(inProgress.length)} />
@@ -224,7 +219,12 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20, alignItems: "start" }} className="ehsan-team-grid">
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={loginNoteStyle}>
+        📲 Employees sign in at <b>/my-tasks</b> with the username + password you
+        create here — they see only their own tasks.
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20, alignItems: "start" }} className="ehsan-team-grid">
       <Card title="Add an employee" subtitle="Creates their username + password login.">
         <form onSubmit={add}>
           <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ramesh Kumar" required />
@@ -261,6 +261,7 @@ function TeamManager({ team, onChange }: { team: TeamMember[]; onChange: () => v
       </Card>
 
       <style>{`@media (max-width: 800px) { .ehsan-team-grid { grid-template-columns: 1fr !important; } }`}</style>
+      </div>
     </div>
   );
 }
@@ -308,4 +309,5 @@ const mutedStyle: React.CSSProperties = { fontSize: 13, color: "#A3A3A3", margin
 const listHeadingStyle: React.CSSProperties = { fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 700, color: "#A3A3A3" };
 const dotStyle: React.CSSProperties = { width: 8, height: 8, borderRadius: 999, background: "#C62828", marginTop: 5, flexShrink: 0 };
 const codeStyle: React.CSSProperties = { fontFamily: "ui-monospace, Menlo, monospace", fontSize: 12, background: "rgba(17,24,39,0.06)", padding: "1px 5px", borderRadius: 4 };
+const loginNoteStyle: React.CSSProperties = { padding: "12px 14px", background: "rgba(198,40,40,0.05)", border: "1px solid rgba(198,40,40,0.15)", borderRadius: 10, fontSize: 13.5, color: "#525252", lineHeight: 1.5 };
 const logoutStyle: React.CSSProperties = { background: "transparent", border: "1px solid rgba(17,24,39,0.12)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 500, color: "#525252", cursor: "pointer" };
