@@ -1,21 +1,19 @@
 "use client";
 
 /**
- * The task board for the /ehsan console.
- *   - Filter pills by status (live counts)
- *   - "New task" + "✨ AI create" (paste a note → drafts → save)
- *   - Row click expands a detail panel: inline status / assignee /
- *     priority / due controls, a note box, and the activity timeline.
- *
- * Team list comes in as a prop (managed on the Team tab).
+ * Linear-style task board for the /ehsan console.
+ *   - One column per status (To do / Doing / Blocked / Done)
+ *   - Drag a card between columns to change its status (native HTML5 DnD)
+ *   - Click a card to open full details (status/assignee/priority/due,
+ *     note, activity) — also the mobile way to change status
+ *   - "New task" + "✨ AI create", and an assignee filter
  */
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Card from "@/components/admin-ui/Card";
 import Button from "@/components/admin-ui/Button";
 import Badge from "@/components/admin-ui/Badge";
 import Modal from "@/components/admin-ui/Modal";
 import Input from "@/components/admin-ui/Input";
-import EmptyState from "@/components/admin-ui/EmptyState";
 import {
   TICKET_STATUSES,
   TICKET_PRIORITIES,
@@ -41,11 +39,14 @@ export default function TasksBoard({
   loadError: string | null;
 }) {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
-  const [filter, setFilter] = useState<TicketStatus | "all">("all");
   const [toast, setToast] = useState<Toast>(null);
   const [newOpen, setNewOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [assignee, setAssignee] = useState<string>("");
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [overCol, setOverCol] = useState<TicketStatus | null>(null);
+  const didDrag = useRef(false);
 
   const migrationNeeded =
     !!loadError && /exist|relation|schema cache|column/i.test(loadError);
@@ -62,17 +63,6 @@ export default function TasksBoard({
     const id = setTimeout(() => setToast(null), 3500);
     return () => clearTimeout(id);
   }, [toast]);
-
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { all: tickets.length };
-    for (const s of TICKET_STATUSES) c[s] = tickets.filter((t) => t.status === s).length;
-    return c;
-  }, [tickets]);
-
-  const filtered = useMemo(
-    () => (filter === "all" ? tickets : tickets.filter((t) => t.status === filter)),
-    [tickets, filter],
-  );
 
   const patchTicket = useCallback(
     async (id: string, patch: Record<string, unknown>) => {
@@ -92,13 +82,52 @@ export default function TasksBoard({
     [refresh],
   );
 
+  // Optimistic status move (drag-drop). Updates the card instantly, then saves.
+  const moveTicket = useCallback(
+    async (id: string, status: TicketStatus) => {
+      const t = tickets.find((x) => x.id === id);
+      if (!t || t.status === status) return;
+      const now = new Date().toISOString();
+      setTickets((prev) =>
+        prev.map((x) =>
+          x.id === id
+            ? { ...x, status, updated_at: now, done_at: status === "done" ? now : null }
+            : x,
+        ),
+      );
+      const res = await fetch(`/api/admin/tickets/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) {
+        setToast({ kind: "error", message: "Couldn't move that task." });
+        refresh();
+      }
+    },
+    [tickets, refresh],
+  );
+
+  const visible = useMemo(
+    () => (assignee ? tickets.filter((t) => t.assignee?.id === assignee) : tickets),
+    [tickets, assignee],
+  );
+
+  const detailTicket = detailId ? tickets.find((t) => t.id === detailId) || null : null;
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap" }}>
-        <p style={subtitleStyle}>
-          Everything your team is working on. Create a task or let AI draft them
-          from a note.
-        </p>
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 13, color: "#525252" }}>Assignee:</span>
+          <select value={assignee} onChange={(e) => setAssignee(e.target.value)} style={{ ...selectStyle, width: "auto", minWidth: 150 }}>
+            <option value="">Everyone</option>
+            {team.map((m) => (
+              <option key={m.id} value={m.id}>{m.name}</option>
+            ))}
+          </select>
+        </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <Button variant="secondary" onClick={() => setNewOpen(true)} disabled={migrationNeeded}>
             <span style={{ marginRight: 6 }}>＋</span>New task
@@ -112,83 +141,102 @@ export default function TasksBoard({
       {migrationNeeded && (
         <Card style={{ borderColor: "rgba(217,119,6,0.35)" }}>
           <div style={{ fontWeight: 600, color: "#B45309", marginBottom: 6 }}>One setup step left</div>
-          <p style={{ fontSize: 13.5, color: "#525252", margin: 0, lineHeight: 1.55 }}>
-            Run <code style={codeStyle}>supabase/schema.sql</code> in the Supabase
-            SQL Editor, then refresh.
+          <p style={{ fontSize: 13.5, color: "#525252", margin: 0 }}>
+            Run <code style={codeStyle}>supabase/schema.sql</code> in the Supabase SQL Editor, then refresh.
           </p>
         </Card>
       )}
 
       {toast && <ToastBanner toast={toast} />}
 
-      <div style={{ display: "inline-flex", gap: 4, padding: 4, background: "rgba(17,24,39,0.04)", borderRadius: 10, alignSelf: "flex-start", flexWrap: "wrap" }}>
-        <FilterPill active={filter === "all"} onClick={() => setFilter("all")} count={counts.all}>
-          All
-        </FilterPill>
-        {TICKET_STATUSES.map((s) => (
-          <FilterPill key={s} active={filter === s} onClick={() => setFilter(s)} count={counts[s] || 0}>
-            {STATUS_LABEL[s]}
-          </FilterPill>
-        ))}
+      {/* Board */}
+      <div style={{ display: "flex", gap: 14, overflowX: "auto", paddingBottom: 8, alignItems: "flex-start" }}>
+        {TICKET_STATUSES.map((status) => {
+          const colTickets = visible.filter((t) => t.status === status);
+          const isOver = overCol === status;
+          return (
+            <div
+              key={status}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (overCol !== status) setOverCol(status);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const id = e.dataTransfer.getData("text/plain") || draggingId;
+                if (id) moveTicket(id, status);
+                setOverCol(null);
+                setDraggingId(null);
+              }}
+              style={{
+                ...columnStyle,
+                background: isOver ? "rgba(198,40,40,0.06)" : "rgba(17,24,39,0.025)",
+                outline: isOver ? "2px dashed rgba(198,40,40,0.45)" : "2px dashed transparent",
+              }}
+            >
+              <div style={colHeaderStyle}>
+                <Badge variant={STATUS_BADGE[status]}>{STATUS_LABEL[status]}</Badge>
+                <span style={{ color: "#A3A3A3", fontSize: 12, fontWeight: 700 }}>{colTickets.length}</span>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 60 }}>
+                {colTickets.map((t) => {
+                  const overdue =
+                    !!t.due_date && t.status !== "done" && new Date(t.due_date) < new Date(new Date().toDateString());
+                  return (
+                    <div
+                      key={t.id}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", t.id);
+                        e.dataTransfer.effectAllowed = "move";
+                        setDraggingId(t.id);
+                        didDrag.current = false;
+                      }}
+                      onDrag={() => {
+                        didDrag.current = true;
+                      }}
+                      onDragEnd={() => {
+                        setDraggingId(null);
+                        setOverCol(null);
+                      }}
+                      onClick={() => {
+                        if (!didDrag.current) setDetailId(t.id);
+                      }}
+                      style={{ ...cardStyle, opacity: draggingId === t.id ? 0.45 : 1 }}
+                    >
+                      <div style={{ fontWeight: 600, fontSize: 13.5, color: "#0A0A0A", lineHeight: 1.35 }}>
+                        {t.title}
+                      </div>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+                        <Badge variant={PRIORITY_BADGE[t.priority]}>{PRIORITY_LABEL[t.priority]}</Badge>
+                        {t.due_date && (
+                          <span style={{ fontSize: 11.5, color: overdue ? "#B91C1C" : "#A3A3A3", fontWeight: overdue ? 600 : 400 }}>
+                            {new Date(t.due_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                            {overdue ? " · overdue" : ""}
+                          </span>
+                        )}
+                        {t.source === "ai" && <span style={{ fontSize: 11, color: "#A3A3A3" }}>✨</span>}
+                      </div>
+                      <div style={{ marginTop: 8, fontSize: 12, color: "#525252", display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={avatarDot}>{initials(t.assignee?.name)}</span>
+                        {t.assignee?.name || "Unassigned"}
+                      </div>
+                    </div>
+                  );
+                })}
+                {colTickets.length === 0 && (
+                  <div style={{ fontSize: 12, color: "#C4C4C4", padding: "10px 4px", textAlign: "center" }}>
+                    Drop here
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <Card padding={0}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-            <thead>
-              <tr>
-                {["Task", "Assignee", "Priority", "Status", "Due", "Updated", ""].map((h) => (
-                  <th key={h} style={thStyle}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7} style={{ padding: 0 }}>
-                    <EmptyState
-                      icon="🗂️"
-                      title={migrationNeeded ? "Run the migration to begin" : "No tasks yet"}
-                      description={migrationNeeded ? "Once the database is set up, your tasks will show here." : "Click “New task” or “AI create” to add the first one."}
-                    />
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((t) => {
-                  const open = openId === t.id;
-                  return (
-                    <React.Fragment key={t.id}>
-                      <tr
-                        onClick={() => setOpenId((p) => (p === t.id ? null : t.id))}
-                        style={{ background: open ? "rgba(17,24,39,0.02)" : "white", cursor: "pointer", borderTop: "1px solid rgba(17,24,39,0.06)" }}
-                      >
-                        <td style={tdStyle}>
-                          <div style={{ fontWeight: 600, color: "#0A0A0A" }}>{t.title}</div>
-                          {t.source === "ai" && <div style={{ fontSize: 11, color: "#A3A3A3", marginTop: 2 }}>✨ AI-created</div>}
-                        </td>
-                        <td style={tdStyle}>{t.assignee ? t.assignee.name : <span style={{ color: "#A3A3A3" }}>Unassigned</span>}</td>
-                        <td style={tdStyle}><Badge variant={PRIORITY_BADGE[t.priority]}>{PRIORITY_LABEL[t.priority]}</Badge></td>
-                        <td style={tdStyle}><Badge variant={STATUS_BADGE[t.status]}>{STATUS_LABEL[t.status]}</Badge></td>
-                        <td style={{ ...tdStyle, fontSize: 13 }}><DueLabel due={t.due_date} done={t.status === "done"} /></td>
-                        <td style={{ ...tdStyle, color: "#525252", fontSize: 13 }}>{relativeTime(t.updated_at)}</td>
-                        <td style={tdStyle}><span style={{ color: "#A3A3A3" }}>{open ? "▾" : "▸"}</span></td>
-                      </tr>
-                      {open && (
-                        <tr style={{ background: "rgba(17,24,39,0.02)" }}>
-                          <td colSpan={7} style={{ padding: 0 }}>
-                            <TicketDetail ticket={t} team={team} onPatch={patchTicket} />
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
+      {/* New task modal */}
       <Modal open={newOpen} onClose={() => setNewOpen(false)} title="New task" width={520}>
         <NewTaskForm
           team={team}
@@ -197,6 +245,7 @@ export default function TasksBoard({
         />
       </Modal>
 
+      {/* AI create modal */}
       <Modal open={aiOpen} onClose={() => setAiOpen(false)} title="Create tasks with AI" width={560}>
         <AiCreateForm
           team={team}
@@ -204,8 +253,18 @@ export default function TasksBoard({
           onError={(err) => setToast({ kind: "error", message: err })}
         />
       </Modal>
+
+      {/* Detail modal */}
+      <Modal open={!!detailTicket} onClose={() => setDetailId(null)} title={detailTicket?.title || "Task"} width={720}>
+        {detailTicket && <TicketDetail ticket={detailTicket} team={team} onPatch={patchTicket} />}
+      </Modal>
     </div>
   );
+}
+
+function initials(name?: string | null): string {
+  if (!name) return "?";
+  return (name.match(/\b[a-zA-Z0-9]/g) || []).slice(0, 2).join("").toUpperCase() || "?";
 }
 
 /* ---- detail panel ---- */
@@ -247,7 +306,7 @@ function TicketDetail({
   };
 
   return (
-    <div style={{ padding: "18px 22px 22px", borderTop: "1px solid rgba(17,24,39,0.06)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }} className="ticket-detail-grid">
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }} className="ticket-detail-grid">
       <div>
         <Eyebrow>Details</Eyebrow>
         {ticket.description ? (
@@ -396,15 +455,14 @@ function AiCreateForm({
     return (
       <div>
         <p style={{ fontSize: 13.5, color: "#525252", margin: "0 0 12px", lineHeight: 1.55 }}>
-          Paste a messy note — voice transcript, WhatsApp dump, whatever. The AI
-          turns it into clean tasks you can review before saving.
+          Paste a messy note — voice transcript, WhatsApp dump, whatever. The AI turns it into clean tasks you can review before saving.
         </p>
         <textarea
           autoFocus
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={6}
-          placeholder="e.g. Tell Ahmed to finish the Dubai order by Thursday, it's urgent. Priya needs to redo the monthly report. Someone should call the supplier."
+          placeholder="e.g. Tell Ahmed to finish the Dubai order by Thursday, urgent. Priya redo the report."
           style={{ ...selectStyle, height: "auto", padding: "10px 12px", resize: "vertical", lineHeight: 1.5 }}
         />
         <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
@@ -522,22 +580,7 @@ function NewTaskForm({
   );
 }
 
-/* ---- small pieces + styles ---- */
-
-function FilterPill({ active, count, onClick, children }: { active: boolean; count: number; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button type="button" onClick={onClick} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 8, border: "none", background: active ? "white" : "transparent", color: active ? "#0A0A0A" : "#525252", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: active ? "0 1px 2px rgba(0,0,0,0.06)" : "none" }}>
-      {children}
-      <span style={{ minWidth: 18, padding: "1px 6px", borderRadius: 999, background: active ? "rgba(198,40,40,0.10)" : "rgba(17,24,39,0.08)", color: active ? "#C62828" : "#525252", fontSize: 11, fontWeight: 700, textAlign: "center" }}>{count}</span>
-    </button>
-  );
-}
-
-function DueLabel({ due, done }: { due: string | null; done: boolean }) {
-  if (!due) return <span style={{ color: "#A3A3A3" }}>—</span>;
-  const overdue = !done && new Date(due) < new Date(new Date().toDateString());
-  return <span style={{ color: overdue ? "#B91C1C" : "#525252", fontWeight: overdue ? 600 : 400 }}>{new Date(due).toLocaleDateString()}{overdue ? " · overdue" : ""}</span>;
-}
+/* ---- bits + styles ---- */
 
 function ToastBanner({ toast }: { toast: NonNullable<Toast> }) {
   return (
@@ -556,8 +599,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 }
 
 function relativeTime(iso: string): string {
-  const then = new Date(iso).getTime();
-  const diff = Date.now() - then;
+  const diff = Date.now() - new Date(iso).getTime();
   const min = Math.round(diff / 60000);
   if (min < 1) return "just now";
   if (min < 60) return `${min}m ago`;
@@ -568,10 +610,11 @@ function relativeTime(iso: string): string {
   return new Date(iso).toLocaleDateString();
 }
 
-const subtitleStyle: React.CSSProperties = { margin: 0, fontSize: 14, color: "#525252", lineHeight: 1.5, maxWidth: 560 };
-const thStyle: React.CSSProperties = { textAlign: "left", padding: "12px 16px", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, color: "#A3A3A3", background: "rgba(17,24,39,0.02)", borderBottom: "1px solid rgba(17,24,39,0.06)" };
-const tdStyle: React.CSSProperties = { padding: "14px 16px", fontSize: 14, color: "#0A0A0A", verticalAlign: "middle" };
 const selectStyle: React.CSSProperties = { width: "100%", padding: "9px 12px", fontSize: 13, border: "1px solid rgba(17,24,39,0.10)", borderRadius: 8, outline: "none", background: "white", color: "#0A0A0A", boxSizing: "border-box" };
 const fieldLabelStyle: React.CSSProperties = { display: "block", fontSize: 12, fontWeight: 600, color: "#525252", marginBottom: 6 };
 const codeStyle: React.CSSProperties = { fontFamily: "ui-monospace, Menlo, monospace", fontSize: 12, background: "rgba(17,24,39,0.06)", padding: "1px 5px", borderRadius: 4 };
 const timelineDot: React.CSSProperties = { width: 8, height: 8, borderRadius: 999, background: "#C62828", marginTop: 5, flexShrink: 0 };
+const columnStyle: React.CSSProperties = { flex: "1 0 250px", minWidth: 250, maxWidth: 340, borderRadius: 12, padding: 10, boxSizing: "border-box", transition: "background 120ms ease" };
+const colHeaderStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2px 4px 10px" };
+const cardStyle: React.CSSProperties = { background: "white", border: "1px solid rgba(17,24,39,0.08)", borderRadius: 10, padding: 12, boxShadow: "0 1px 2px rgba(0,0,0,0.04)", cursor: "grab" };
+const avatarDot: React.CSSProperties = { width: 18, height: 18, borderRadius: 999, background: "linear-gradient(135deg, #C62828, #8B1A1A)", color: "white", display: "grid", placeItems: "center", fontSize: 9, fontWeight: 700, flexShrink: 0 };
