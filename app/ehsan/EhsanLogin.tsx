@@ -10,6 +10,7 @@
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { usernameToEmail } from "@/lib/staff-auth";
+import PasswordField from "@/components/PasswordField";
 
 export default function EhsanLogin() {
   const [username, setUsername] = useState("");
@@ -63,13 +64,7 @@ export default function EhsanLogin() {
         />
 
         <label style={{ ...labelStyle, marginTop: 14 }}>Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          style={inputStyle}
-        />
+        <PasswordField value={password} onChange={setPassword} placeholder="••••••••" inputStyle={inputStyle} />
 
         {err && <div style={errStyle}>{err}</div>}
 
