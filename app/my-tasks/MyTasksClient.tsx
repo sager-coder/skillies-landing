@@ -287,7 +287,8 @@ function LogoutButton() {
     } catch {
       /* swallow */
     }
-    window.location.href = "/login";
+    // Back to the employee login (the /my-tasks page shows it when logged out).
+    window.location.href = "/my-tasks";
   };
   return (
     <button type="button" onClick={logout} disabled={busy} style={logoutStyle}>
