@@ -1,9 +1,9 @@
 /**
- * /pricing interactive calculator (v2.1).
+ * /pricing interactive calculator (v3 · founding tiers).
  *
- * Pick vertical → live QC slider → capability checkboxes → live ₹ output.
- * Universal tier ladder (Solo → Pro+ → Scale), industry-varied setup,
- * human-team comparison scaled with actual QC volume.
+ * Pick vertical → live conversation slider → capability list → live ₹ output.
+ * 3 volume tiers (Starter / Growth / Pro → Custom), uniform ₹25k setup,
+ * all features included, human-team comparison scaled with volume.
  *
  * Powered by lib/pricing.ts (same engine the WhatsApp agent uses).
  *
@@ -30,7 +30,7 @@ type Props = {
   initialVertical?: VerticalKey;
 };
 
-const QC_SLIDER_MAX = 8_000;
+const QC_SLIDER_MAX = 12_000;
 const QC_SLIDER_STEP = 100;
 
 export default function PricingCalculator({ initialVertical }: Props) {
@@ -91,9 +91,9 @@ export default function PricingCalculator({ initialVertical }: Props) {
                 className="sk-font-body mb-4"
                 style={{ fontSize: "0.9375rem", color: "var(--sk-ink60)" }}
               >
-                Setup base varies with industry complexity — five insurers ×
-                four categories takes more setup than a single-product retail
-                catalogue.
+                One flat ₹25,000 setup for every industry — a ₹1.2 lakh build
+                at founding-client price. Pick yours so we tailor what gets
+                built.
               </p>
               <div className="flex flex-wrap gap-2">
                 {allVerticals.map((v) => (
@@ -121,7 +121,7 @@ export default function PricingCalculator({ initialVertical }: Props) {
                 className="sk-font-meta mt-3"
                 style={{ color: "var(--sk-ink40)" }}
               >
-                {industry.label} · setup base {formatINR(industry.base)} ·{" "}
+                {industry.label} · {formatINR(industry.base)} setup ·{" "}
                 {industry.complexity}
               </p>
             </fieldset>
@@ -213,8 +213,8 @@ export default function PricingCalculator({ initialVertical }: Props) {
                 className="sk-font-body mb-5"
                 style={{ fontSize: "0.9375rem", color: "var(--sk-ink60)" }}
               >
-                Add or remove modules. The price updates live. We charge only
-                for what you switch on.
+                Every capability is included in every plan — no feature
+                paywalls. Browse what your agent will do.
               </p>
               <div className="space-y-3">
                 {allModuleKeys.map((key) => {
@@ -254,10 +254,13 @@ export default function PricingCalculator({ initialVertical }: Props) {
                           </span>
                           <span
                             className="sk-font-meta"
-                            style={{ color: "var(--sk-ink60)" }}
+                            style={{
+                              color: "var(--sk-red)",
+                              fontWeight: 700,
+                              letterSpacing: "0.04em",
+                            }}
                           >
-                            +{formatINR(m.setup)} setup ·{" "}
-                            +{formatINR(m.monthly)}/mo
+                            INCLUDED
                           </span>
                         </div>
                         <p
@@ -478,8 +481,19 @@ export default function PricingCalculator({ initialVertical }: Props) {
               </span>
             </p>
 
+            <p
+              className="sk-font-body"
+              style={{
+                fontSize: "1rem",
+                color: "var(--sk-ink40)",
+                textDecoration: "line-through",
+                lineHeight: 1,
+              }}
+            >
+              {formatINR(1_20_000)} build value
+            </p>
             <div
-              className="sk-font-display"
+              className="sk-font-display mt-1"
               style={{
                 fontSize: "clamp(2rem, 3vw + 1rem, 2.75rem)",
                 color: "var(--sk-ink)",
@@ -492,7 +506,7 @@ export default function PricingCalculator({ initialVertical }: Props) {
               className="sk-font-body mt-1"
               style={{ fontSize: "0.9375rem", color: "var(--sk-ink60)" }}
             >
-              one-time setup
+              one-time setup · founding-client price
             </p>
 
             <div
