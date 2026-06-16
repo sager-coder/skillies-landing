@@ -11,7 +11,8 @@ const LINKS: Link[] = [
   { href: "/for", label: "For Business" },
   { href: "/tools", label: "Tools" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/skillies-school", label: "Skillies School" },
+  // ===== Hidden: Skillies School (nav link) — preserved for easy restore =====
+  // { href: "/skillies-school", label: "Skillies School" },
 ];
 
 // When the user clicks a link that points to "/", scroll to top.

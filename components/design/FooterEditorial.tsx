@@ -37,14 +37,15 @@ const COLUMNS: Col[] = [
       ["Book a 30-min call", "https://cal.com/sager-zmd4kl/30min"],
     ],
   },
-  {
-    kicker: "Skillies School",
-    items: [
-      ["Amazon KDP methodology", "/skillies-school"],
-      ["₹8.7L from 63 books · the proof", "/skillies-school#proof"],
-      ["Sign in · Alumni portal", "/login"],
-    ],
-  },
+  // ===== Hidden: Skillies School (footer column) — preserved for easy restore =====
+  // {
+  //   kicker: "Skillies School",
+  //   items: [
+  //     ["Amazon KDP methodology", "/skillies-school"],
+  //     ["₹8.7L from 63 books · the proof", "/skillies-school#proof"],
+  //     ["Sign in · Alumni portal", "/login"],
+  //   ],
+  // },
   {
     kicker: "Company",
     items: [
