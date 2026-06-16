@@ -1,6 +1,11 @@
 /**
  * Per-student token budget for the Skillies KDP Coach.
  *
+ * NOTE (2026-06): the monthly cap is currently DISABLED — see
+ * `COACH_BUDGET_ENFORCED` below. Every student is treated as unlimited
+ * (MiniMax billing is the only ceiling); the mechanics below stay in place
+ * so the cap can be switched back on by flipping that one flag.
+ *
  * Every student gets a fixed allowance of model tokens per calendar month
  * (resets on the 1st, UTC). Usage is derived from the `coach_usage` table
  * the chat already writes one row per reply into — we sum input+output
@@ -20,6 +25,20 @@ type Admin = ReturnType<typeof createSupabaseAdminClient>;
 
 /** Tokens (input + output) a student may spend per calendar month. */
 export const COACH_MONTHLY_TOKEN_LIMIT = 1_000_000;
+
+/**
+ * Master switch for the per-student monthly token cap.
+ *
+ * Currently OFF: every student gets UNLIMITED coach tokens — the only
+ * ceiling is MiniMax's own billing. With this off, students are never
+ * blocked (no 402) and the widget hides its token meter, exactly the path
+ * admins already take.
+ *
+ * Flip back to `true` to re-enable the COACH_MONTHLY_TOKEN_LIMIT cap and
+ * the monthly usage-summing below. (Per-reply token logging into
+ * `coach_usage` continues regardless, so cost analytics stay intact.)
+ */
+export const COACH_BUDGET_ENFORCED: boolean = false;
 
 export type CoachBudget = {
   used: number;
@@ -59,7 +78,12 @@ export async function getCoachBudget(
   const now = opts.now ?? new Date();
   const resetAt = nextMonthStartUTC(now).toISOString();
 
-  if (opts.unlimited) {
+  // Admins are always uncapped; with budgeting globally disabled
+  // (COACH_BUDGET_ENFORCED === false) so is every student. Either way we
+  // return the unlimited snapshot — the widget reads `unlimited` to hide
+  // the meter and keep the composer unlocked, and the send route sees
+  // `exceeded: false` so it never 402s.
+  if (opts.unlimited || !COACH_BUDGET_ENFORCED) {
     return {
       used: 0,
       limit: COACH_MONTHLY_TOKEN_LIMIT,
