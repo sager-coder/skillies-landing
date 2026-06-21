@@ -96,8 +96,8 @@ export const studyAbroadCopy = {
   },
 
   pricing: {
-    setup: "from ₹1,00,000",
-    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
+    setup: "₹1,20,000 build value · founding-client price ₹25,000",
+    monthly: "From ₹9,999/mo · volume-based (Starter → Growth → Pro) · all features included",
     bullets: [
       "Custom-trained on your partner-university list, intake calendars, fees",
       "12-18 month memory · student returns 6 months later, agent remembers",

@@ -25,7 +25,7 @@ import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { ecommerceCopy as copy } from "@/content/verticals/ecommerce";
 
 const DESCRIPTION =
-  "Recovers 22-31% of abandoned carts, flips COD to prepaid, auto-replies to 'where's my order?' DMs. Shopify, WooCommerce, Razorpay, Shiprocket compatible. ₹35k setup, ₹14,999/month. Live in 7 days.";
+  "Recovers 22-31% of abandoned carts, flips COD to prepaid, auto-replies to 'where's my order?' DMs. Shopify, WooCommerce, Razorpay, Shiprocket compatible. ₹25,000 founding setup, from ₹9,999/month. Live in 7 days.";
 
 export const metadata = verticalMetadata({
   slug: "ecommerce",

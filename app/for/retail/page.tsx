@@ -26,7 +26,7 @@ import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { retailCopy as copy } from "@/content/verticals/retail";
 
 const DESCRIPTION =
-  "Voice + photo + text orders, UPI link auto-generated, restock reminders, push to Marg/Vyapar/Khatabook. ₹35k setup, ₹14,999/month. Live in 7 days.";
+  "Voice + photo + text orders, UPI link auto-generated, restock reminders, push to Marg/Vyapar/Khatabook. ₹25,000 founding setup, monthly from ₹9,999. Live in 7 days.";
 
 export const metadata = verticalMetadata({
   slug: "retail",

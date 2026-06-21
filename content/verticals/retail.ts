@@ -2,9 +2,9 @@
  * Retail / Kirana vertical · typed copy file.
  * Sources: skillies-vertical-retail-DOSSIER.md + visual design system.
  *
- * LIGHT TIER. ₹35-75k setup, ₹14,999/mo. NO vision, NO voice-reply,
- * NO long-memory, NO CRM. Single language pair. Visual signal: lower
- * tier · saffron + clay accents · NOT corporate.
+ * Uniform ₹25,000 founding setup (₹1,20,000 build value); volume-based
+ * monthly from ₹9,999/mo (Starter). All features included. Visual signal:
+ * lower tier · saffron + clay accents · NOT corporate.
  */
 export const retailCopy = {
   hero: {
@@ -45,7 +45,7 @@ export const retailCopy = {
 
   capabilities: {
     eyebrow: "WHAT THE WORKER ACTUALLY DOES",
-    title: "Light tier. Text + payment + repeat-order memory. Done.",
+    title: "Text + payment + repeat-order memory. Done.",
     items: [
       {
         title: "Voice + photo + text orders",
@@ -92,8 +92,8 @@ export const retailCopy = {
   },
 
   pricing: {
-    setup: "from ₹50,000",
-    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
+    setup: "₹1,20,000 build value — founding-client price ₹25,000",
+    monthly: "From ₹9,999/mo (Starter) · pay the volume tier you hit · all features included",
     bullets: [
       "Text + payment · the entire product",
       "1 region's language pair (Malayalam + English default)",
@@ -118,7 +118,7 @@ export const retailCopy = {
   },
 
   bookCall: {
-    heading: "Light tier. Cheapest setup. Live in a week.",
-    note: "Talk to me directly — no enterprise discovery call. 15 minutes is enough. I'll show you the agent on a real Kerala kirana number. ₹35k setup, ₹14,999/month, cancel any month.",
+    heading: "Founding-client setup. Live in a week.",
+    note: "Talk to me directly — no enterprise discovery call. 15 minutes is enough. I'll show you the agent on a real Kerala kirana number. ₹25,000 founding setup, monthly from ₹9,999, cancel any month.",
   },
 } as const;

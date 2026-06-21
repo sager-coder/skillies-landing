@@ -99,8 +99,8 @@ export const realEstateCopy = {
 
   // Pricing snapshot
   pricing: {
-    setup: "from ₹1,25,000",
-    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
+    setup: "₹1,20,000 build value · founding-client price ₹25,000",
+    monthly: "From ₹9,999/mo · tier by conversation volume · all features included",
     bullets: [
       "Custom-trained agent for your inventory",
       "Lead-routing into Sell.do / LeadSquared / Zoho",

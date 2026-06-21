@@ -38,7 +38,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
       },
       {
         "q": "How much does it cost?",
-        "a": "Setup starts from ₹1,25,000. Monthly is tier-based, from ₹50K (Solo) up to ₹1.85L (Pro+), and you pay the tier you actually hit. Every plan includes a custom-trained agent for your inventory, CRM lead routing, floor-plan auto-send, and the 30-day follow-up sequence."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price). Monthly is by conversation volume — from ₹9,999/mo (Starter) — and every plan includes the full feature set: a custom-trained agent for your inventory, CRM lead routing, floor-plan auto-send, and the 30-day follow-up sequence."
       },
       {
         "q": "What languages can it handle?",
@@ -83,11 +83,11 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
       },
       {
         "q": "How much does it cost?",
-        "a": "Setup starts at ₹35,000 with the monthly plan at ₹14,999, and you can cancel any month. Higher monthly tiers run from ₹50K (Solo) up to ₹1.85L (Pro+) — you pay the tier you actually hit."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price), and you can cancel any month. Monthly is by conversation volume — from ₹9,999/mo (Starter, up to 3,000 conversations) to ₹19,999 and ₹34,999 — and every plan ships the full feature set."
       },
       {
         "q": "How fast can it go live, and do I need a developer?",
-        "a": "You're live in 7 days, and no coding is needed — your existing support team can run it. It's the light tier built for D2C brands doing ₹10L–₹2Cr a month."
+        "a": "You're live in 7 days, and no coding is needed — your existing support team can run it. It's built for D2C brands doing ₹10L–₹2Cr a month, with monthly priced by your conversation volume."
       },
       {
         "q": "What languages does it reply in?",
@@ -116,7 +116,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
     "faqs": [
       {
         "q": "How much does the Skillies retail agent cost?",
-        "a": "It is our Light tier, the cheapest setup: ₹35k to set up and ₹14,999 a month, and you can cancel any month. Setup scales with what you need, and pricing follows the tier you land on as your order volume grows."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price), and you can cancel any month. Monthly is by conversation volume, from ₹9,999/mo (Starter), and the price follows the tier you land on as your order volume grows — every plan includes the full feature set."
       },
       {
         "q": "Which languages does it speak?",
@@ -128,7 +128,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
       },
       {
         "q": "How long does setup take and do I need a developer?",
-        "a": "You are live in 7 days, and your own staff can run it with no coding needed. It is a Light tier built to be simple: text plus payment is the entire product."
+        "a": "You are live in 7 days, and your own staff can run it with no coding needed. It is built to be simple: text plus payment is the entire product, and every feature is included in the plan."
       },
       {
         "q": "What does the agent actually do?",
@@ -169,7 +169,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
       },
       {
         "q": "How much does it cost?",
-        "a": "Setup starts from ₹1,00,000. Monthly is tier-based, from ₹50K (Solo) up to ₹1.85L (Pro+), and you pay the tier you actually hit. It's custom-trained on your partner-university list, intake calendars and fees."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price). Monthly is by conversation volume — from ₹9,999/mo (Starter) — and every plan includes the full feature set. It's custom-trained on your partner-university list, intake calendars and fees."
       },
       {
         "q": "Can it read documents, and how does compliance work?",
@@ -206,7 +206,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
       },
       {
         "q": "What does it cost?",
-        "a": "Setup starts from ₹75,000. Monthly is tier-based, from ₹50K (Solo) up to ₹1.85L (Pro+), and you pay the tier you actually hit."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price). Monthly is by conversation volume — from ₹9,999/mo (Starter) — and every plan includes the full feature set."
       },
       {
         "q": "How long is setup, and what is it trained on?",
@@ -247,7 +247,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
       },
       {
         "q": "What does it cost?",
-        "a": "Setup is from ₹1,00,000, and the monthly is tier-based — ₹50K (Solo) up to ₹1.85L (Pro+), and you pay the tier you actually hit. It's built for studios doing ₹5L–₹50L jobs."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price), and the monthly is by conversation volume — from ₹9,999/mo (Starter) — with every feature included. It's built for studios doing ₹5L–₹50L jobs."
       },
       {
         "q": "Which channels and integrations does it work with?",
@@ -288,7 +288,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
       },
       {
         "q": "How much does it cost?",
-        "a": "Setup is from Rs 75,000. Monthly is tier-based, from Rs 50K (Solo) up to Rs 1.85L (Pro+), and you pay the tier you actually hit."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price). Monthly is by conversation volume — from ₹9,999/mo (Starter) — and every plan includes the full feature set."
       },
       {
         "q": "Does it integrate with Nusuk or the Saudi visa process?",
@@ -321,7 +321,7 @@ export const VERTICAL_SEO: Record<string, VerticalSeoPack> = {
     "faqs": [
       {
         "q": "How much does the Insurance WhatsApp agent cost?",
-        "a": "Setup starts from Rupees 1,50,000, and monthly is tier-based, from Rupees 50K (Solo) up to Rupees 1.85L (Pro+) where you pay the tier you actually hit. Razorpay and PayU are built in for premium collection."
+        "a": "Setup is a flat ₹25,000 (₹1,20,000 build value, founding-client price), and monthly is by conversation volume — from ₹9,999/mo (Starter) — with every feature included. Razorpay and PayU are built in for premium collection."
       },
       {
         "q": "Which languages does it handle?",

@@ -96,8 +96,8 @@ export const hajjCopy = {
   },
 
   pricing: {
-    setup: "from ₹75,000",
-    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
+    setup: "₹1,20,000 build value — founding-client price ₹25,000",
+    monthly: "From ₹9,999/mo · pay the volume tier you hit · all features included",
     bullets: [
       "Custom-trained on your packages, embarkation cities, seasons",
       "Voice note transcription · Malayalam + Urdu + Hindi + English",
