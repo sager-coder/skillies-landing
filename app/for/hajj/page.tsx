@@ -19,6 +19,7 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import { AGENTS_SIGNUP_URL } from "@/lib/links";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
 import AgentWorkflow from "@/components/skillies/AgentWorkflow";
 import AgentFAQ from "@/components/skillies/AgentFAQ";
@@ -136,7 +137,7 @@ export default function HajjPage() {
 
       <AgentFAQ slug="hajj" />
 
-      <BookCallCTA
+      <BookCallCTA startFreeHref={AGENTS_SIGNUP_URL}
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
         variant="soft"

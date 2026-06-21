@@ -24,14 +24,19 @@ export const FOUNDER_EMAIL = "ehsan@skillies.ai";
  * subdomain (e.g. agents.skillies.ai/real-estate). The landing page shows
  * that address on each vertical card so the structure reads clearly.
  *
- * `AGENTS_LIVE` gates whether those cards actually navigate to the subdomain.
- * As of 2026-06, agents.skillies.ai DNS is not resolving yet, so we fall back
- * to the rich internal /for/<slug> page and never dead-end a live visitor.
- * Flip `AGENTS_LIVE` to true the moment the subdomain is serving traffic and
- * every vertical card across the site repoints — no other edits needed.
+ * `AGENTS_LIVE` gates whether the vertical CARDS deep-link to per-vertical routes
+ * on the subdomain (e.g. agents.skillies.ai/real-estate). As of 2026-06 the app
+ * is LIVE at agents.skillies.ai (self-serve, signup at /login) — but it does NOT
+ * yet serve per-vertical routes, so those deep-links would 404. Keep
+ * `AGENTS_LIVE = false` (cards fall back to the rich internal /for/<slug> pages)
+ * until the app serves /<vertical> routes. The self-serve "Start free" CTA
+ * (`AGENTS_SIGNUP_URL`) links straight to the live app and works today regardless.
  */
 export const AGENTS_BASE = "https://agents.skillies.ai";
 export const AGENTS_LIVE = false;
+
+/** Live self-serve app — the "Start free / set up your agent" CTA destination. */
+export const AGENTS_SIGNUP_URL = `${AGENTS_BASE}/login`;
 
 /** Visible "address" we print on each vertical card (always the subdomain). */
 export function agentAddressForVertical(slug: string): string {
