@@ -22,7 +22,13 @@ type ProductProps = {
   url: string;
 };
 
-export type JsonLdProps = OrgWebsiteProps | ProductProps;
+type FaqProps = {
+  /** Variant for any page with an FAQ. Emits FAQPage for rich results. */
+  variant: "faq";
+  faqs: { q: string; a: string }[];
+};
+
+export type JsonLdProps = OrgWebsiteProps | ProductProps | FaqProps;
 
 const ORGANIZATION = {
   "@context": "https://schema.org",
@@ -73,6 +79,25 @@ export default function JsonLd(props: JsonLdProps) {
     );
   }
 
+  if (props.variant === "faq") {
+    const faqPage = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: props.faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    };
+    return (
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPage) }}
+      />
+    );
+  }
+
   const softwareApp = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -94,13 +119,39 @@ export default function JsonLd(props: JsonLdProps) {
     },
   };
 
+  // BreadcrumbList → makes Google show Home › For Business › <Vertical>
+  // in the result snippet instead of a raw URL.
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://skillies.ai" },
+      { "@type": "ListItem", position: 2, name: "For Business", item: "https://skillies.ai/for" },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `Skillies for ${props.verticalLabel}`,
+        item: props.url,
+      },
+    ],
+  };
+
   return (
-    <script
-      type="application/ld+json"
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(softwareApp),
-      }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(softwareApp),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumb),
+        }}
+      />
+    </>
   );
 }

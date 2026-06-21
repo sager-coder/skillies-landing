@@ -20,6 +20,30 @@ export const PUBLIC_WHATSAPP_URL =
 export const FOUNDER_EMAIL = "ehsan@skillies.ai";
 
 /**
+ * Live agent platform. Every vertical gets its own deep-link on the agent
+ * subdomain (e.g. agents.skillies.ai/real-estate). The landing page shows
+ * that address on each vertical card so the structure reads clearly.
+ *
+ * `AGENTS_LIVE` gates whether those cards actually navigate to the subdomain.
+ * As of 2026-06, agents.skillies.ai DNS is not resolving yet, so we fall back
+ * to the rich internal /for/<slug> page and never dead-end a live visitor.
+ * Flip `AGENTS_LIVE` to true the moment the subdomain is serving traffic and
+ * every vertical card across the site repoints — no other edits needed.
+ */
+export const AGENTS_BASE = "https://agents.skillies.ai";
+export const AGENTS_LIVE = false;
+
+/** Visible "address" we print on each vertical card (always the subdomain). */
+export function agentAddressForVertical(slug: string): string {
+  return `agents.skillies.ai/${slug}`;
+}
+
+/** Where a vertical card actually navigates (subdomain when live, else internal). */
+export function agentUrlForVertical(slug: string): string {
+  return AGENTS_LIVE ? `${AGENTS_BASE}/${slug}` : `/for/${slug}`;
+}
+
+/**
  * Build a Cal.com booking URL with a vertical hint pre-filled in the
  * Cal.com `notes` field — used by per-vertical pages so the inbound
  * booking comes in tagged.

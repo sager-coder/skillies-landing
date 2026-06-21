@@ -5,7 +5,8 @@
  * Spec: skillies-visual-design-system-DRAFT.md Part 3.5
  * Copy: content/verticals/interiors.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
@@ -17,17 +18,29 @@ import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { interiorsCopy as copy } from "@/content/verticals/interiors";
 
-export const metadata: Metadata = {
-  title: "Skillies for Modular Kitchen &amp; Interiors · AI sales worker for design studios",
-  description:
-    "Photo of empty kitchen + Pinterest reference → quote range, design suggestion, booked site visit in 60 seconds. Built for studios doing ₹5L–₹50L jobs. Beat HomeLane's reply speed.",
-};
+const DESCRIPTION =
+  "Photo of empty kitchen + Pinterest reference → quote range, design suggestion, booked site visit in 60 seconds. Built for studios doing ₹5L–₹50L jobs. Beat HomeLane's reply speed.";
+
+export const metadata = verticalMetadata({
+  slug: "interiors",
+  title: "Skillies for Modular Kitchen · AI WhatsApp Agent",
+  description: DESCRIPTION,
+});
 
 export default function InteriorsPage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Modular Kitchen & Interiors"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/interiors"
+      />
       <TopNav />
 
       <HeroBlockEditorial
@@ -76,6 +89,10 @@ export default function InteriorsPage() {
       </RevealOnScroll>
 
       <RevealOnScroll>
+        <AgentWorkflow slug="interiors" />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
         <DemoCTA
           demoHref="/demo/interiors"
           heading={copy.demoCTA.heading}
@@ -113,10 +130,14 @@ export default function InteriorsPage() {
         />
       </RevealOnScroll>
 
+      <AgentFAQ slug="interiors" />
+
       <BookCallCTA
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
       />
+
+      <RelatedAgents slug="interiors" />
 
       <FooterEditorial />
     </main>

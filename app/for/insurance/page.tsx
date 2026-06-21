@@ -9,7 +9,8 @@
  * Spec · 7th vertical, founder-added 2026-05-03.
  * Copy · content/verticals/insurance.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import InsuranceInteractiveHero from "@/components/skillies/InsuranceInteractiveHero";
@@ -20,17 +21,29 @@ import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { insuranceCopy as copy } from "@/content/verticals/insurance";
 
-export const metadata: Metadata = {
-  title: "Skillies for Insurance · AI sales worker for brokers + agencies",
-  description:
-    "Calm anxious insurance buyers, qualify without pressure, handle pre-existing-disease conversations in 5 Indian languages. IRDAI-aware. Built for brokers and agencies.",
-};
+const DESCRIPTION =
+  "Calm anxious insurance buyers, qualify without pressure, handle pre-existing-disease conversations in 5 Indian languages. IRDAI-aware. Built for brokers and agencies.";
+
+export const metadata = verticalMetadata({
+  slug: "insurance",
+  title: "Skillies for Insurance · AI WhatsApp Sales Agent",
+  description: DESCRIPTION,
+});
 
 export default function InsurancePage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Insurance"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/insurance"
+      />
       <TopNav />
 
       <InsuranceInteractiveHero />
@@ -52,6 +65,10 @@ export default function InsurancePage() {
           cardHairline="var(--sk-insurance-gold)"
           hairlinePosition="top"
         />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
+        <AgentWorkflow slug="insurance" />
       </RevealOnScroll>
 
       <RevealOnScroll>
@@ -92,11 +109,15 @@ export default function InsurancePage() {
         />
       </RevealOnScroll>
 
+      <AgentFAQ slug="insurance" />
+
       <BookCallCTA
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
         verticalLabel="Insurance"
       />
+
+      <RelatedAgents slug="insurance" />
 
       <FooterEditorial />
     </main>

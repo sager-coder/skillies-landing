@@ -7,7 +7,8 @@
  * Spec: skillies-visual-design-system-DRAFT.md Part 3.6
  * Copy: content/verticals/hajj.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
@@ -19,17 +20,29 @@ import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { hajjCopy as copy } from "@/content/verticals/hajj";
 
-export const metadata: Metadata = {
-  title: "Skillies for Hajj &amp; Umrah · AI sales worker for pilgrimage operators",
-  description:
-    "An always-on assistant for Hajj and Umrah operators. Speaks Malayalam, Urdu, Hindi, English. Voice notes from older pilgrims. Family group routing. Document checklist without nagging. Built in Malappuram.",
-};
+const DESCRIPTION =
+  "An always-on assistant for Hajj and Umrah operators. Speaks Malayalam, Urdu, Hindi, English. Voice notes from older pilgrims. Family group routing. Document checklist without nagging. Built in Malappuram.";
+
+export const metadata = verticalMetadata({
+  slug: "hajj",
+  title: "Skillies for Hajj & Umrah · AI WhatsApp Sales Agent",
+  description: DESCRIPTION,
+});
 
 export default function HajjPage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Hajj & Umrah"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/hajj"
+      />
       <TopNav />
 
       <HeroBlockEditorial
@@ -79,6 +92,10 @@ export default function HajjPage() {
       </RevealOnScroll>
 
       <RevealOnScroll>
+        <AgentWorkflow slug="hajj" />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
         <DemoCTA
           demoHref="/demo/hajj"
           heading={copy.demoCTA.heading}
@@ -117,11 +134,15 @@ export default function HajjPage() {
         />
       </RevealOnScroll>
 
+      <AgentFAQ slug="hajj" />
+
       <BookCallCTA
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
         variant="soft"
       />
+
+      <RelatedAgents slug="hajj" />
 
       <FooterEditorial />
     </main>
