@@ -307,7 +307,9 @@ export default function HeroBlockEditorial({
                 margin: 0,
               }}
             >
-              <span style={{ display: "block" }}>{headlineLead}</span>
+              {/* Trailing spaces keep the flattened/indexed H1 text correctly
+                  word-separated (display:block collapses them visually). */}
+              <span style={{ display: "block" }}>{headlineLead}{" "}</span>
               <span
                 className="sk-font-display-italic"
                 style={{
@@ -315,7 +317,7 @@ export default function HeroBlockEditorial({
                   color: "var(--sk-red)",
                 }}
               >
-                {headlineEmphasis}
+                {headlineEmphasis}{" "}
               </span>
               <span style={{ display: "block" }}>{headlineTail}</span>
             </motion.h1>

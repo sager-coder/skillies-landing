@@ -21,6 +21,9 @@ export type BookCallCTAProps = {
   verticalLabel?: string;
   variant?: "default" | "soft";
   manglishLine?: string;
+  /** When set, shows a secondary self-serve link to the live app, kept below the
+   *  Cal.com primary so the founder-contact funnel stays the headline action. */
+  startFreeHref?: string;
 };
 
 const DEFAULT_CAL = "https://cal.com/sager-zmd4kl/30min";
@@ -39,6 +42,7 @@ export default function BookCallCTA({
   verticalLabel,
   variant = "default",
   manglishLine,
+  startFreeHref,
 }: BookCallCTAProps) {
   const calWithVertical = verticalLabel
     ? `${calHref}?notes=${encodeURIComponent("Vertical · " + verticalLabel)}`
@@ -146,6 +150,19 @@ export default function BookCallCTA({
             <p className="sk-font-meta mt-10 text-[10px] text-sk-ink20 font-black tracking-[0.3em] uppercase">
               Free · 30 minutes · auto-confirmed
             </p>
+            {startFreeHref && (
+              <p className="sk-font-body mt-8 text-sk-ink40" style={{ fontSize: "0.95rem" }}>
+                Prefer to explore on your own?{" "}
+                <Link
+                  href={startFreeHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-sk-red underline underline-offset-4 transition hover:opacity-80"
+                >
+                  Start free in the app →
+                </Link>
+              </p>
+            )}
           </motion.div>
         </motion.div>
       </div>

@@ -6,7 +6,8 @@
  *
  * Copy: content/verticals/coaching.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
@@ -17,18 +18,31 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import { AGENTS_SIGNUP_URL } from "@/lib/links";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { coachingCopy as copy } from "@/content/verticals/coaching";
 
-export const metadata: Metadata = {
-  title: "Skillies for Coaching Institutes · AI sales worker for NEET, JEE, UPSC, IELTS",
-  description:
-    "Result-day surge — 5,000 messages in 48 hours, in 4 Indian languages. Skillies books every demo class without your counsellors burning out. Dual-persona handling for parent + student.",
-};
+const DESCRIPTION =
+  "Result-day surge — 5,000 messages in 48 hours, in 4 Indian languages. Skillies books every demo class without your counsellors burning out. Dual-persona handling for parent + student.";
+
+export const metadata = verticalMetadata({
+  slug: "coaching",
+  title: "Skillies for Coaching Institutes · AI WhatsApp Agent",
+  description: DESCRIPTION,
+});
 
 export default function CoachingPage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Coaching Institutes"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/coaching"
+      />
       <TopNav />
 
       <HeroBlockEditorial
@@ -77,6 +91,10 @@ export default function CoachingPage() {
       </RevealOnScroll>
 
       <RevealOnScroll>
+        <AgentWorkflow slug="coaching" />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
         <DemoCTA
           demoHref="/demo/coaching"
           heading={copy.demoCTA.heading}
@@ -114,10 +132,14 @@ export default function CoachingPage() {
         />
       </RevealOnScroll>
 
-      <BookCallCTA
+      <AgentFAQ slug="coaching" />
+
+      <BookCallCTA startFreeHref={AGENTS_SIGNUP_URL}
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
       />
+
+      <RelatedAgents slug="coaching" />
 
       <FooterEditorial />
     </main>

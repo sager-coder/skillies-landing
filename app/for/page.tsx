@@ -31,6 +31,16 @@ export const metadata: Metadata = {
   title: "Your sales team should close deals — Skillies handles the conversations. · Skillies AI",
   description:
     "Skillies AI automates conversations, qualifies leads, and closes sales on autopilot. Explore how our per-vertical AI workers deliver 3X more qualified sales and 70% time savings.",
+  alternates: { canonical: "https://skillies.ai/for" },
+  openGraph: {
+    title: "Skillies for Business — an AI sales worker for your industry",
+    description:
+      "Per-vertical AI sales agents that qualify leads, take orders, and close on WhatsApp. Find the agent built for your business.",
+    url: "https://skillies.ai/for",
+    siteName: "Skillies.AI",
+    type: "website",
+    images: [{ url: "/brand/skillies-meta-app-icon.png", width: 1200, height: 630, alt: "Skillies for Business" }],
+  },
 };
 
 export default function ForIndexPage() {
@@ -46,25 +56,23 @@ export default function ForIndexPage() {
 
       <BusinessResults />
 
-      {/* <VerticalAgentGrid /> */}
+      <VerticalAgentGrid />
 
-      {/* 
+      {/*
       <RevealOnScroll>
-        <HumansVsAgent 
+        <HumansVsAgent
           headline="The Economics of Growth."
           subhead="Traditional sales teams scale linearly with cost. Skillies scales exponentially with volume. Capture every lead, qualify every intent, and close every sale without the overhead."
         />
       </RevealOnScroll>
 
-      <ScopeCallout /> 
+      <ScopeCallout />
       */}
 
-      {/* 
       <BookCallCTA
         heading="Not sure which vertical fits?"
         note="30 min with Ehsan — we'll figure it out together. Even if it's a vertical we don't have a page for yet, we can build."
-      /> 
-      */}
+      />
 
       <FooterEditorial />
     </main>

@@ -1,9 +1,9 @@
 /**
  * Ecommerce / D2C vertical · typed copy file.
  *
- * LIGHT TIER. ₹35-75k setup, ₹14,999/mo. NO vision, NO voice-reply,
- * NO long-memory, NO CRM. Single language pair. Visual signal: lower
- * tier · electric + ink accents · NOT corporate.
+ * Uniform ₹25,000 founding setup (₹1.2L build value) · volume-based monthly
+ * from ₹9,999/mo. All features included. Visual signal: electric + ink
+ * accents · NOT corporate.
  */
 export const ecommerceCopy = {
   hero: {
@@ -44,7 +44,7 @@ export const ecommerceCopy = {
 
   capabilities: {
     eyebrow: "WHAT THE WORKER ACTUALLY DOES",
-    title: "Light tier. Cart recovery + order ops + repeat-order memory. Done.",
+    title: "Cart recovery + order ops + repeat-order memory. Done.",
     items: [
       {
         title: "Abandoned-cart recovery in 9 seconds",
@@ -91,8 +91,8 @@ export const ecommerceCopy = {
   },
 
   pricing: {
-    setup: "from ₹50,000",
-    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
+    setup: "₹1,20,000 build value — founding-client price ₹25,000",
+    monthly: "From ₹9,999/mo · pay the volume tier you hit · all features included",
     bullets: [
       "Cart recovery + order ops + repeat-order memory · the entire product",
       "1 region's language pair (English + your regional language)",
@@ -117,7 +117,7 @@ export const ecommerceCopy = {
   },
 
   bookCall: {
-    heading: "Light tier. Cheapest setup. Live in a week.",
-    note: "Talk to me directly — no enterprise discovery call. 15 minutes is enough. I'll show you the agent on a real D2C store's WhatsApp number. ₹35k setup, ₹14,999/month, cancel any month.",
+    heading: "Founding-client setup. Live in a week.",
+    note: "Talk to me directly — no enterprise discovery call. 15 minutes is enough. I'll show you the agent on a real D2C store's WhatsApp number. ₹25,000 founding setup (₹1.2L build value), from ₹9,999/month, cancel any month.",
   },
 } as const;

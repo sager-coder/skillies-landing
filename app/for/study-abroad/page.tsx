@@ -5,7 +5,8 @@
  * Spec: skillies-visual-design-system-DRAFT.md Part 3.3
  * Copy: content/verticals/studyabroad.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
@@ -16,18 +17,31 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import { AGENTS_SIGNUP_URL } from "@/lib/links";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { studyAbroadCopy as copy } from "@/content/verticals/studyabroad";
 
-export const metadata: Metadata = {
-  title: "Skillies for Study Abroad · AI sales worker for consultants",
-  description:
-    "Reply to every UK, Canada, Germany enquiry before they ghost. 12-18 month memory across the application cycle. Parent + student dual-thread in Malayalam, Hindi, English. ICEF-aware.",
-};
+const DESCRIPTION =
+  "Reply to every UK, Canada, Germany enquiry before they ghost. 12-18 month memory across the application cycle. Parent + student dual-thread in Malayalam, Hindi, English. ICEF-aware.";
+
+export const metadata = verticalMetadata({
+  slug: "study-abroad",
+  title: "Skillies for Study Abroad · AI WhatsApp Agent",
+  description: DESCRIPTION,
+});
 
 export default function StudyAbroadPage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Study Abroad"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/study-abroad"
+      />
       <TopNav />
 
       <HeroBlockEditorial
@@ -76,6 +90,10 @@ export default function StudyAbroadPage() {
       </RevealOnScroll>
 
       <RevealOnScroll>
+        <AgentWorkflow slug="study-abroad" />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
         <DemoCTA
           demoHref="/demo/study-abroad"
           heading={copy.demoCTA.heading}
@@ -114,11 +132,15 @@ export default function StudyAbroadPage() {
         />
       </RevealOnScroll>
 
-      <BookCallCTA
+      <AgentFAQ slug="study-abroad" />
+
+      <BookCallCTA startFreeHref={AGENTS_SIGNUP_URL}
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
         manglishLine="From one Malappuram founder to another."
       />
+
+      <RelatedAgents slug="study-abroad" />
 
       <FooterEditorial />
     </main>

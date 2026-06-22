@@ -95,8 +95,8 @@ export const coachingCopy = {
   },
 
   pricing: {
-    setup: "from ₹75,000",
-    monthly: "Tier-based · ₹50K (Solo) → ₹1.85L (Pro+) · pay the tier you hit",
+    setup: "₹1,20,000 build value — founding-client price ₹25,000",
+    monthly: "From ₹9,999/mo · priced by conversation volume · all features included",
     bullets: [
       "Custom-trained on your batches, fees, faculty, results, scholarships",
       "Dual-persona handling · parent + student in the same thread",

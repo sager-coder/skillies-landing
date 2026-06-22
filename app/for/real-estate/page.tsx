@@ -8,7 +8,8 @@
  * Spec: skillies-visual-design-system-DRAFT.md Part 3.2
  * Copy: content/verticals/realestate.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
@@ -19,18 +20,31 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import { AGENTS_SIGNUP_URL } from "@/lib/links";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { realEstateCopy as copy } from "@/content/verticals/realestate";
 
-export const metadata: Metadata = {
-  title: "Skillies for Real Estate · AI sales worker for developers + brokers",
-  description:
-    "78% of property buyers go with whoever replies first. Skillies replies in 15 seconds, in 5 Indian languages, books site visits in your CRM, and keeps the lead alive for 30 days. RERA-aware.",
-};
+const DESCRIPTION =
+  "78% of property buyers go with whoever replies first. Skillies replies in 15 seconds, in 5 Indian languages, books site visits in your CRM, and keeps the lead alive for 30 days. RERA-aware.";
+
+export const metadata = verticalMetadata({
+  slug: "real-estate",
+  title: "Skillies for Real Estate · AI WhatsApp Sales Agent",
+  description: DESCRIPTION,
+});
 
 export default function RealEstatePage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Real Estate"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/real-estate"
+      />
       <TopNav />
 
       <HeroBlockEditorial
@@ -79,6 +93,10 @@ export default function RealEstatePage() {
       </RevealOnScroll>
 
       <RevealOnScroll>
+        <AgentWorkflow slug="real-estate" />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
         <DemoCTA
           demoHref="/demo/real-estate"
           heading={copy.demoCTA.heading}
@@ -117,10 +135,14 @@ export default function RealEstatePage() {
         />
       </RevealOnScroll>
 
-      <BookCallCTA
+      <AgentFAQ slug="real-estate" />
+
+      <BookCallCTA startFreeHref={AGENTS_SIGNUP_URL}
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
       />
+
+      <RelatedAgents slug="real-estate" />
 
       <FooterEditorial />
     </main>

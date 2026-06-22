@@ -6,7 +6,8 @@
  * Spec: skillies-visual-design-system-DRAFT.md Part 3.7
  * Copy: content/verticals/retail.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
@@ -17,18 +18,31 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import { AGENTS_SIGNUP_URL } from "@/lib/links";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { retailCopy as copy } from "@/content/verticals/retail";
 
-export const metadata: Metadata = {
-  title: "Skillies for Retail &amp; Kirana · WhatsApp orders for shops, salons, gyms",
-  description:
-    "Voice + photo + text orders, UPI link auto-generated, restock reminders, push to Marg/Vyapar/Khatabook. ₹35k setup, ₹14,999/month. Live in 7 days.",
-};
+const DESCRIPTION =
+  "Voice + photo + text orders, UPI link auto-generated, restock reminders, push to Marg/Vyapar/Khatabook. ₹25,000 founding setup, monthly from ₹9,999. Live in 7 days.";
+
+export const metadata = verticalMetadata({
+  slug: "retail",
+  title: "Skillies for Retail & Kirana · WhatsApp Orders",
+  description: DESCRIPTION,
+});
 
 export default function RetailPage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Retail & Kirana"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/retail"
+      />
       <TopNav />
 
       <HeroBlockEditorial
@@ -71,6 +85,10 @@ export default function RetailPage() {
       </RevealOnScroll>
 
       <RevealOnScroll>
+        <AgentWorkflow slug="retail" />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
         <DemoCTA
           demoHref="/demo/retail"
           heading={copy.demoCTA.heading}
@@ -108,10 +126,14 @@ export default function RetailPage() {
         />
       </RevealOnScroll>
 
-      <BookCallCTA
+      <AgentFAQ slug="retail" />
+
+      <BookCallCTA startFreeHref={AGENTS_SIGNUP_URL}
         heading={copy.bookCall.heading}
         note={copy.bookCall.note}
       />
+
+      <RelatedAgents slug="retail" />
 
       <FooterEditorial />
     </main>

@@ -1,17 +1,17 @@
 /**
- * Skillies pricing engine · single source of truth (v2.1).
+ * Skillies pricing engine · single source of truth (v3 · founding tiers).
  *
  * Used by:
  *   1. /pricing interactive calculator UI (client + server)
  *   2. WhatsApp scoping agent's calculate_quote() webhook tool
  *
- * Model:
- *   - Universal QC-volume tier ladder (Solo → Squad → Floor → Pro → Pro+ → Scale)
- *   - Per-industry setup base (varies with complexity, not flat)
- *   - Capability modules add to setup + monthly
+ * Model (founder ruling, Jun 2026):
+ *   - 3 conversation-volume tiers: Starter ₹9,999 (3k) · Growth ₹19,999 (5k) ·
+ *     Pro ₹34,999 (10k); above 10k = custom. All features in all plans.
+ *   - Uniform ₹25,000 setup across every vertical (presented as ₹1.2L value).
  *
- * Setup_total  = INDUSTRY_SETUP[vertical].base + Σ MODULES[m].setup
- * Monthly_total = TIER.monthly (picked from QC volume) + Σ MODULES[m].monthly
+ * Setup_total  = ₹25,000 (uniform; modules included at ₹0)
+ * Monthly_total = TIER.monthly (picked from conversation volume)
  * Year-1        = setup + 12 × monthly
  *
  * Human comparison scales with QC volume using Kerala benchmarks
@@ -24,50 +24,29 @@
 export const TIERS = [
   {
     name: "Starter",
-    qcMax: 500,
-    monthly: 30_000,
-    perQc: 60,
-    humanEquivalent: "~1 caller, but 24/7 + memory",
+    qcMax: 3_000,
+    monthly: 9_999,
+    perQc: 3,
+    humanEquivalent: "less than half a telecaller's salary · 24/7 + memory",
   },
   {
-    name: "Solo",
-    qcMax: 1_000,
-    monthly: 50_000,
-    perQc: 50,
-    humanEquivalent: "~1.5 callers + manager share",
-  },
-  {
-    name: "Squad",
-    qcMax: 2_500,
-    monthly: 85_000,
-    perQc: 34,
-    humanEquivalent: "3–4 callers + manager share",
-  },
-  {
-    name: "Floor",
-    qcMax: 4_000,
-    monthly: 1_20_000,
-    perQc: 30,
-    humanEquivalent: "5–6 callers + 1 manager",
+    name: "Growth",
+    qcMax: 5_000,
+    monthly: 19_999,
+    perQc: 4,
+    humanEquivalent: "one telecaller's salary · three shifts of work",
   },
   {
     name: "Pro",
-    qcMax: 6_000,
-    monthly: 1_55_000,
-    perQc: 26,
-    humanEquivalent: "8–9 callers + 1 manager",
+    qcMax: 10_000,
+    monthly: 34_999,
+    perQc: 3,
+    humanEquivalent: "replaces a 4-person enquiry desk (~₹64K/mo, one shift)",
   },
   {
-    name: "Pro+",
-    qcMax: 8_000,
-    monthly: 1_85_000,
-    perQc: 23,
-    humanEquivalent: "10–12 callers + 2 managers (~₹2.5 L/mo human cost)",
-  },
-  {
-    name: "Scale",
+    name: "Custom",
     qcMax: Number.POSITIVE_INFINITY,
-    monthly: null, // quoted custom
+    monthly: null, // above 10k conversations · custom quote
     perQc: null,
     humanEquivalent: "Enterprise — custom quote",
   },
@@ -79,43 +58,45 @@ export function pickTier(monthlyQc: number) {
   return TIERS.find((t) => monthlyQc <= t.qcMax) ?? TIERS[TIERS.length - 1];
 }
 
-// ─── Per-industry setup base (varies with complexity) ────────────────────────
-// Industry complexity drives KB ingestion depth, integration count, training time.
+// ─── Setup · uniform founding-client price (v3) ──────────────────────────────
+// Uniform ₹25,000 setup across every vertical (founder ruling, no per-industry
+// gating). Presented as a ₹1,20,000 build value, founding-client price ₹25,000.
+const SETUP_BASE = 25_000;
 export const INDUSTRY_SETUP = {
   retail: {
-    base: 50_000,
+    base: SETUP_BASE,
     label: "Retail / Kirana",
-    complexity: "Low · single-product catalogue, simple flows",
+    complexity: "Single-product catalogue, simple flows",
   },
   hajj: {
-    base: 75_000,
+    base: SETUP_BASE,
     label: "Travels",
-    complexity: "Medium · package variants + group bookings + Mahram rules",
+    complexity: "Package variants + group bookings + Mahram rules",
   },
   coaching: {
-    base: 75_000,
+    base: SETUP_BASE,
     label: "Coaching / Edtech",
-    complexity: "Medium · batch + faculty + fee-quote logic",
+    complexity: "Batch + faculty + fee-quote logic",
   },
   "study-abroad": {
-    base: 1_00_000,
+    base: SETUP_BASE,
     label: "Study Abroad",
-    complexity: "Medium-high · multi-country + counselling + document workflow",
+    complexity: "Multi-country + counselling + document workflow",
   },
   interiors: {
-    base: 1_00_000,
+    base: SETUP_BASE,
     label: "Modular Kitchen / Interior",
-    complexity: "Medium-high · vision-heavy + quote complexity + measurement",
+    complexity: "Vision-heavy + quote complexity + measurement",
   },
   "real-estate": {
-    base: 1_25_000,
+    base: SETUP_BASE,
     label: "Real Estate",
-    complexity: "High · multi-project KB + RERA + floor-plan vision + CRM",
+    complexity: "Multi-project KB + RERA + floor-plan vision + CRM",
   },
   insurance: {
-    base: 1_50_000,
+    base: SETUP_BASE,
     label: "Insurance (multi-insurer)",
-    complexity: "High · 5 insurers × 4 categories + IRDAI + KYC vision",
+    complexity: "5 insurers × 4 categories + IRDAI + KYC vision",
   },
 } as const;
 
@@ -131,62 +112,66 @@ export const VERTICAL_LABELS: Record<VerticalKey, string> = {
   insurance: "Insurance",
 };
 
-// ─── Capability modules · add-ons ────────────────────────────────────────────
+// ─── Capabilities · ALL included in every plan (v3 · no feature paywalls) ─────
+// Founder ruling: every plan ships the full feature set. The only gates are
+// volume (tier), support level, and the founder-voice-clone. Modules are kept
+// here as the feature list (priced at ₹0 — included); per-use variables on
+// vision/voice still apply and are billed as overage, not setup/monthly.
 export const MODULES = {
   payment: {
     label: "Payment links (Razorpay / UPI)",
-    setup: 7_500,
-    monthly: 2_500,
-    description: "Auto-generated payment links per order, Razorpay or UPI.",
+    setup: 0,
+    monthly: 0,
+    description: "Auto-generated payment links per order, Razorpay or UPI. Included.",
   },
   vision: {
     label: "Image / vision understanding",
-    setup: 15_000,
-    monthly: 7_500,
-    description: "Customer photos, floor plans, room images. Per-image variable also applies (₹15/image).",
+    setup: 0,
+    monthly: 0,
+    description: "Customer photos, floor plans, room images. Included (per-image overage ₹15/image).",
   },
   voice: {
     label: "Voice note transcription + understanding",
-    setup: 10_000,
-    monthly: 4_999,
-    description: "Indic voice notes from older customers, transcribed and answered. ₹8/voice variable also applies.",
+    setup: 0,
+    monthly: 0,
+    description: "Indic voice notes from older customers, transcribed and answered. Included (overage ₹5/voice note).",
   },
   multilingual: {
-    label: "Additional Indic Language (Bilingual Support)",
-    setup: 12_500,
-    monthly: 3_500,
-    description: "English + 1 Indic is base; this adds support for a second Indic language (Total 2 Indic + English).",
+    label: "Multilingual support (5 languages)",
+    setup: 0,
+    monthly: 0,
+    description: "Text + voice replies across 5 languages. Included.",
   },
   memory: {
     label: "Lifelong per-customer memory",
-    setup: 5_000,
-    monthly: 2_500,
-    description: "Customer returns 3 years later, agent remembers everything. Family composition, prior policies, kids' DOBs.",
+    setup: 0,
+    monthly: 0,
+    description: "Customer returns 3 years later, agent remembers everything. Family composition, prior policies, kids' DOBs. Included.",
   },
   calendar: {
     label: "Calendar booking (Cal.com / Google)",
-    setup: 7_500,
-    monthly: 2_500,
-    description: "Site visits, demos, consultations booked into your calendar.",
+    setup: 0,
+    monthly: 0,
+    description: "Site visits, demos, consultations booked into your calendar. Included.",
   },
   multichannel: {
-    label: "Extra channel (per channel: IG DM / Email / Web)",
-    setup: 10_000,
-    monthly: 3_500,
-    description: "Same agent across multiple inbound channels.",
+    label: "Multichannel (IG DM / Email / Web)",
+    setup: 0,
+    monthly: 0,
+    description: "Same agent across multiple inbound channels. Included.",
   },
   workerDashboard: {
     label: "Worker Dashboard (per-staff login + queue UI)",
-    setup: 35_000,
-    monthly: 9_999,
-    perSeat: 2_500,
-    description: "Role-based access for your sales team. Hot-lead routing, performance reports, audit log.",
+    setup: 0,
+    monthly: 0,
+    perSeat: 0,
+    description: "Role-based access for your sales team. Hot-lead routing, performance reports, audit log. Included.",
   },
   industryCustom: {
     label: "Industry-custom integration (RERA, EMR, IATA, etc.)",
-    setup: 50_000,
-    monthly: 12_500,
-    description: "Bespoke integrations specific to your vertical. Quoted case-by-case.",
+    setup: 0,
+    monthly: 0,
+    description: "Bespoke integrations specific to your vertical. Included in setup; deep custom work quoted case-by-case.",
   },
 } as const;
 

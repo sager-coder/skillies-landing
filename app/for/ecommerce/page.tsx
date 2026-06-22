@@ -5,7 +5,8 @@
  *
  * Copy: content/verticals/ecommerce.ts
  */
-import type { Metadata } from "next";
+import { verticalMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 import TopNav from "@/components/design/TopNav";
 import FooterEditorial from "@/components/design/FooterEditorial";
 import HeroBlockEditorial from "@/components/skillies/HeroBlockEditorial";
@@ -16,19 +17,31 @@ import DemoCTA from "@/components/skillies/DemoCTA";
 import PricingSnapshot from "@/components/skillies/PricingSnapshot";
 import CaseStudyCard from "@/components/skillies/CaseStudyCard";
 import BookCallCTA from "@/components/skillies/BookCallCTA";
+import { AGENTS_SIGNUP_URL } from "@/lib/links";
 import RevealOnScroll from "@/components/skillies/RevealOnScroll";
+import AgentWorkflow from "@/components/skillies/AgentWorkflow";
+import AgentFAQ from "@/components/skillies/AgentFAQ";
+import RelatedAgents from "@/components/skillies/RelatedAgents";
 import { ecommerceCopy as copy } from "@/content/verticals/ecommerce";
 
-export const metadata: Metadata = {
-  title:
-    "Skillies for Ecommerce &amp; D2C · WhatsApp cart recovery, COD-to-prepaid, order ops",
-  description:
-    "Recovers 22-31% of abandoned carts, flips COD to prepaid, auto-replies to 'where's my order?' DMs. Shopify, WooCommerce, Razorpay, Shiprocket compatible. ₹35k setup, ₹14,999/month. Live in 7 days.",
-};
+const DESCRIPTION =
+  "Recovers 22-31% of abandoned carts, flips COD to prepaid, auto-replies to 'where's my order?' DMs. Shopify, WooCommerce, Razorpay, Shiprocket compatible. ₹25,000 founding setup, from ₹9,999/month. Live in 7 days.";
+
+export const metadata = verticalMetadata({
+  slug: "ecommerce",
+  title: "Skillies for Ecommerce · WhatsApp Cart Recovery & Orders",
+  description: DESCRIPTION,
+});
 
 export default function EcommercePage() {
   return (
     <main className="relative">
+      <JsonLd
+        variant="vertical"
+        verticalLabel="Ecommerce & D2C"
+        description={DESCRIPTION}
+        url="https://skillies.ai/for/ecommerce"
+      />
       <TopNav />
 
       <HeroBlockEditorial
@@ -71,6 +84,10 @@ export default function EcommercePage() {
       </RevealOnScroll>
 
       <RevealOnScroll>
+        <AgentWorkflow slug="ecommerce" />
+      </RevealOnScroll>
+
+      <RevealOnScroll>
         <DemoCTA
           demoHref="/demo/ecommerce"
           heading={copy.demoCTA.heading}
@@ -108,7 +125,11 @@ export default function EcommercePage() {
         />
       </RevealOnScroll>
 
-      <BookCallCTA heading={copy.bookCall.heading} note={copy.bookCall.note} />
+      <AgentFAQ slug="ecommerce" />
+
+      <BookCallCTA startFreeHref={AGENTS_SIGNUP_URL} heading={copy.bookCall.heading} note={copy.bookCall.note} />
+
+      <RelatedAgents slug="ecommerce" />
 
       <FooterEditorial />
     </main>
